@@ -10,8 +10,8 @@
  * file that was distributed with this source code.
  */
 
-use Flarum\Database\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\Builder;
 
 /*
  * Links de convite do Discourse: quem convida gera um link com validade e um
@@ -20,18 +20,29 @@ use Illuminate\Database\Schema\Blueprint;
  * O código é o que vai no link (único, imprevisível). Apagar quem convidou
  * apaga os convites dele: um link órfão não tem a quem avisar.
  */
-return Migration::createTable(
-    'canela_invites',
-    function (Blueprint $table) {
-        $table->increments('id');
-        $table->string('code', 40)->unique();
-        $table->unsignedInteger('user_id');
-        $table->unsignedSmallInteger('max_redemptions')->default(1);
-        $table->unsignedSmallInteger('redemption_count')->default(0);
-        $table->dateTime('expires_at')->nullable();
-        $table->timestamps();
+return [
+    'up' => static function (Builder $schema): void {
+        // Idempotente: quem vem do Canela já tem a tabela, mas a migração
+        // antiga não está registrada com este nome.
+        if ($schema->hasTable('canela_invites')) {
+            return;
+        }
 
-        $table->index('user_id');
-        $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
-    }
-);
+        $schema->create('canela_invites', static function (Blueprint $table): void {
+            $table->increments('id');
+            $table->string('code', 40)->unique();
+            $table->unsignedInteger('user_id');
+            $table->unsignedSmallInteger('max_redemptions')->default(1);
+            $table->unsignedSmallInteger('redemption_count')->default(0);
+            $table->dateTime('expires_at')->nullable();
+            $table->timestamps();
+
+            $table->index('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
+        });
+    },
+
+    'down' => static function (Builder $schema): void {
+        $schema->dropIfExists('canela_invites');
+    },
+];

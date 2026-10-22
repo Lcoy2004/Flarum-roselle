@@ -10,8 +10,8 @@
  * file that was distributed with this source code.
  */
 
-use Flarum\Database\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\Builder;
 
 /*
  * Histórico de edições: uma linha por edição, com o texto que existia ANTES
@@ -23,18 +23,29 @@ use Illuminate\Database\Schema\Blueprint;
  *   no histórico (só sem o nome de quem editou).
  * - `content` é `mediumText`, a mesma coluna das postagens do core.
  */
-return Migration::createTable(
-    'canela_post_revisions',
-    function (Blueprint $table) {
-        $table->increments('id');
-        $table->unsignedInteger('post_id');
-        $table->unsignedInteger('user_id')->nullable();
-        $table->unsignedInteger('revision');
-        $table->mediumText('content');
-        $table->dateTime('created_at');
+return [
+    'up' => static function (Builder $schema): void {
+        // Idempotente: quem vem do Canela já tem a tabela, mas a migração
+        // antiga não está registrada com este nome.
+        if ($schema->hasTable('canela_post_revisions')) {
+            return;
+        }
 
-        $table->unique(['post_id', 'revision']);
-        $table->foreign('post_id')->references('id')->on('posts')->cascadeOnDelete();
-        $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
-    }
-);
+        $schema->create('canela_post_revisions', static function (Blueprint $table): void {
+            $table->increments('id');
+            $table->unsignedInteger('post_id');
+            $table->unsignedInteger('user_id')->nullable();
+            $table->unsignedInteger('revision');
+            $table->mediumText('content');
+            $table->dateTime('created_at');
+
+            $table->unique(['post_id', 'revision']);
+            $table->foreign('post_id')->references('id')->on('posts')->cascadeOnDelete();
+            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
+        });
+    },
+
+    'down' => static function (Builder $schema): void {
+        $schema->dropIfExists('canela_post_revisions');
+    },
+];

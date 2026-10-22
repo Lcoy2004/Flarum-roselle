@@ -10,8 +10,8 @@
  * file that was distributed with this source code.
  */
 
-use Flarum\Database\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\Builder;
 
 /*
  * Um clique por linha num link de postagem, como o `topic_link_clicks` do
@@ -23,23 +23,34 @@ use Illuminate\Database\Schema\Blueprint;
  * caberia no limite de chave do MariaDB). `user_id` fica vazio para
  * visitantes; quem apagar a conta deixa os cliques, que são do link, não dela.
  */
-return Migration::createTable(
-    'canela_link_clicks',
-    static function (Blueprint $table): void {
-        $table->increments('id');
-        $table->unsignedInteger('post_id');
-        $table->unsignedInteger('discussion_id');
-        $table->unsignedInteger('user_id')->nullable();
-        $table->char('url_hash', 40);
-        $table->string('url', 2000);
-        $table->dateTime('created_at');
+return [
+    'up' => static function (Builder $schema): void {
+        // Idempotente: quem vem do Canela já tem a tabela, mas a migração
+        // antiga não está registrada com este nome.
+        if ($schema->hasTable('canela_link_clicks')) {
+            return;
+        }
 
-        $table->index(['discussion_id', 'url_hash']);
-        $table->index(['post_id', 'url_hash']);
-        $table->index('created_at');
+        $schema->create('canela_link_clicks', static function (Blueprint $table): void {
+            $table->increments('id');
+            $table->unsignedInteger('post_id');
+            $table->unsignedInteger('discussion_id');
+            $table->unsignedInteger('user_id')->nullable();
+            $table->char('url_hash', 40);
+            $table->string('url', 2000);
+            $table->dateTime('created_at');
 
-        $table->foreign('post_id')->references('id')->on('posts')->cascadeOnDelete();
-        $table->foreign('discussion_id')->references('id')->on('discussions')->cascadeOnDelete();
-        $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
-    }
-);
+            $table->index(['discussion_id', 'url_hash']);
+            $table->index(['post_id', 'url_hash']);
+            $table->index('created_at');
+
+            $table->foreign('post_id')->references('id')->on('posts')->cascadeOnDelete();
+            $table->foreign('discussion_id')->references('id')->on('discussions')->cascadeOnDelete();
+            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
+        });
+    },
+
+    'down' => static function (Builder $schema): void {
+        $schema->dropIfExists('canela_link_clicks');
+    },
+];

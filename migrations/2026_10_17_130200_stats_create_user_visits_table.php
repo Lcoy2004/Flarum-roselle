@@ -10,8 +10,8 @@
  * file that was distributed with this source code.
  */
 
-use Flarum\Database\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\Builder;
 
 /*
  * Um dia de visita por linha, como o `user_visits` do Discourse: daqui saem os
@@ -19,18 +19,29 @@ use Illuminate\Database\Schema\Blueprint;
  * perfil. Por dia (e não por acesso) para a tabela crescer no máximo uma
  * linha por pessoa por dia, e para a soma do perfil ser um SUM simples.
  */
-return Migration::createTable(
-    'canela_user_visits',
-    static function (Blueprint $table): void {
-        $table->increments('id');
-        $table->unsignedInteger('user_id');
-        $table->date('visited_at');
-        $table->unsignedInteger('posts_read')->default(0);
-        $table->unsignedInteger('time_read')->default(0);
-        $table->boolean('mobile')->default(false);
+return [
+    'up' => static function (Builder $schema): void {
+        // Idempotente: quem vem do Canela já tem a tabela, mas a migração
+        // antiga não está registrada com este nome.
+        if ($schema->hasTable('canela_user_visits')) {
+            return;
+        }
 
-        $table->unique(['user_id', 'visited_at']);
+        $schema->create('canela_user_visits', static function (Blueprint $table): void {
+            $table->increments('id');
+            $table->unsignedInteger('user_id');
+            $table->date('visited_at');
+            $table->unsignedInteger('posts_read')->default(0);
+            $table->unsignedInteger('time_read')->default(0);
+            $table->boolean('mobile')->default(false);
 
-        $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
-    }
-);
+            $table->unique(['user_id', 'visited_at']);
+
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
+        });
+    },
+
+    'down' => static function (Builder $schema): void {
+        $schema->dropIfExists('canela_user_visits');
+    },
+];

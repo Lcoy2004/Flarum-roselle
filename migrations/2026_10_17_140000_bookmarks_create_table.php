@@ -10,8 +10,8 @@
  * file that was distributed with this source code.
  */
 
-use Flarum\Database\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\Builder;
 
 /*
  * Marcadores (bookmarks) do Discourse: cada usuário marca posts, com um nome
@@ -25,22 +25,33 @@ use Illuminate\Database\Schema\Blueprint;
  * - As chaves estrangeiras apagam o marcador junto com o post ou o usuário —
  *   um marcador órfão não tem para onde levar.
  */
-return Migration::createTable(
-    'canela_bookmarks',
-    function (Blueprint $table) {
-        $table->increments('id');
-        $table->unsignedInteger('user_id');
-        $table->unsignedInteger('post_id');
-        $table->string('name', 100)->nullable();
-        $table->dateTime('reminder_at')->nullable();
-        $table->dateTime('reminded_at')->nullable();
-        $table->timestamps();
+return [
+    'up' => static function (Builder $schema): void {
+        // Idempotente: quem vem do Canela já tem a tabela, mas a migração
+        // antiga não está registrada com este nome.
+        if ($schema->hasTable('canela_bookmarks')) {
+            return;
+        }
 
-        $table->unique(['user_id', 'post_id']);
-        // O comando agendado varre por aqui a cada poucos minutos.
-        $table->index(['reminded_at', 'reminder_at']);
+        $schema->create('canela_bookmarks', static function (Blueprint $table): void {
+            $table->increments('id');
+            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('post_id');
+            $table->string('name', 100)->nullable();
+            $table->dateTime('reminder_at')->nullable();
+            $table->dateTime('reminded_at')->nullable();
+            $table->timestamps();
 
-        $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
-        $table->foreign('post_id')->references('id')->on('posts')->cascadeOnDelete();
-    }
-);
+            $table->unique(['user_id', 'post_id']);
+            // O comando agendado varre por aqui a cada poucos minutos.
+            $table->index(['reminded_at', 'reminder_at']);
+
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->foreign('post_id')->references('id')->on('posts')->cascadeOnDelete();
+        });
+    },
+
+    'down' => static function (Builder $schema): void {
+        $schema->dropIfExists('canela_bookmarks');
+    },
+];
