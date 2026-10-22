@@ -738,6 +738,15 @@
     margin: 0;
     padding: var(--cn-space-2) var(--cn-space-1);
     cursor: pointer;
+
+    // O checkbox do core tem `margin-left: -20px; float: left`, pensado para
+    // o label com `padding-left: 20px`. Aqui o label é flex e mais estreito,
+    // então o input saía pela esquerda e era cortado pelo `overflow-y: auto`.
+    input[type='checkbox'] {
+      flex: none;
+      margin: 0;
+      float: none;
+    }
   }
 
   .CanelaSidebarCustomize-item--child label {

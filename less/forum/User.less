@@ -412,29 +412,54 @@
     }
   }
 
-  // 社交按钮只有一个「+」：做成虚线小圆钮，和数字胶囊区分开。
+  // fof/socialprofile：有链接时是一排圆形小按钮，按数量自然变宽；空状态
+  // 只有一个「+」时，才是虚线小圆钮。别用 `background` 简写：favicon 是
+  // `background-image`，会被它一并清掉，图标就只剩 0×0 的空盒子。
   > li.item-fofsocialprofile {
     justify-content: center;
-    width: 1.9em;
+    width: auto;
+    gap: 0.25em;
     padding: 0;
     background: transparent;
-    border-style: dashed;
-    border-color: var(--cn-primary-100);
+    border-color: transparent;
 
     .Badge,
     .Badge--social {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: auto;
-      height: auto;
-      min-width: 0;
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
       padding: 0;
       border: 0;
       border-radius: 50%;
-      background: transparent;
+      background-color: transparent;
       box-shadow: none;
-      font-size: 0.9em;
+      font-size: 0.85em;
+      transform: none;
+    }
+
+    .Badge-icon,
+    .icon,
+    svg {
+      width: 1em;
+      height: 1em;
+      flex: none;
+    }
+
+    .social-favicon-button {
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 60%;
+    }
+
+    // 空的「添加社交网络」：虚线小圆钮，和数字胶囊区分开。
+    &:has(> .Badge--social:only-child) {
+      width: 1.9em;
+      padding: 0;
+      border-style: dashed;
+      border-color: var(--cn-primary-100);
     }
   }
 

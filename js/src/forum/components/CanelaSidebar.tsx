@@ -4,6 +4,7 @@ import Button from 'flarum/common/components/Button';
 import LinkButton from 'flarum/common/components/LinkButton';
 import Link from 'flarum/common/components/Link';
 import Dropdown from 'flarum/common/components/Dropdown';
+import Separator from 'flarum/common/components/Separator';
 import ItemList from 'flarum/common/utils/ItemList';
 import listItems from 'flarum/common/helpers/listItems';
 import classList from 'flarum/common/utils/classList';
@@ -183,7 +184,7 @@ export default class CanelaSidebar extends IndexSidebar {
     const items = this.communityItems();
     const hidden = new Set(getCommunityMore());
     const entries: { key: string; label: string; icon?: string }[] = [];
-    const moved: Mithril.Children[] = [];
+    const moved: { key: string; node: Mithril.Children }[] = [];
 
     Object.keys(items.toObject()).forEach((key) => {
       if (key === 'more') return;
@@ -194,7 +195,7 @@ export default class CanelaSidebar extends IndexSidebar {
 
       // O item ativo nunca some: quem está na página vê onde está.
       if (hidden.has(key) && vnode?.attrs?.active !== true && vnode?.attrs?.active !== 'true') {
-        moved.push(vnode);
+        moved.push({ key, node: vnode });
         items.remove(key);
       }
     });
@@ -252,7 +253,10 @@ export default class CanelaSidebar extends IndexSidebar {
     return items;
   }
 
-  moreDropdown(moved: Mithril.Children[] = [], entries: { key: string; label: string; icon?: string }[] = []): Mithril.Children {
+  moreDropdown(
+    moved: { key: string; node: Mithril.Children }[] = [],
+    entries: { key: string; label: string; icon?: string }[] = []
+  ): Mithril.Children {
     const more = this.moreItems();
 
     if (entries.length) {
@@ -265,6 +269,16 @@ export default class CanelaSidebar extends IndexSidebar {
       );
     }
 
+    // Os itens movidos entram na mesma ItemList do resto: `toArray()` dá
+    // `itemName` a todos, e o Dropdown usa esse nome como key. Misturar vnodes
+    // soltos com o separador fazia o Mithril recusar a lista inteira
+    // ("vnodes must either all have keys or none have keys").
+    const menu = new ItemList<Mithril.Children>();
+
+    moved.forEach(({ key, node }, index) => menu.add(key, node, 200 - index));
+    if (moved.length) menu.add('canelaMovedSeparator', <Separator />, 150);
+    menu.merge(more);
+
     return (
       <Dropdown
         className="CanelaSidebar-more"
@@ -275,7 +289,7 @@ export default class CanelaSidebar extends IndexSidebar {
         accessibleToggleLabel={t('sidebar.more')}
         onshow={() => placeMoreMenu()}
       >
-        {[...moved, ...(moved.length ? [<li className="Dropdown-separator" />] : []), ...more.toArray()]}
+        {menu.toArray()}
       </Dropdown>
     );
   }
