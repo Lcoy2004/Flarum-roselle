@@ -4,6 +4,8 @@
 
 ![Flarum](https://img.shields.io/badge/flarum-2.x-e7672e?style=flat-square) [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 
+[English](README.md) · [简体中文](README.zh-Hans.md)
+
 A Flarum 2 theme forked from [Canela](https://github.com/ram0ng1/canela), inspired by Discourse's Horizon theme and laid out after meta.discourse.org.
 
 Roselle keeps the Discourse structure — a sidebar with sections, a discussion list in columns, a topic map and timeline, profiles with a cover — and adds this forum's own customizations. Every feature can be switched on or off from the admin panel, and the whole palette derives from Flarum's primary colour in both light and dark mode.
