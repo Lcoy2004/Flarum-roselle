@@ -320,8 +320,8 @@ function postersView(item: DiscussionListItem): Mithril.Children {
   }
 
   const shown = posters.slice(0, 4);
-  const authorId = author?.id();
-  const latestId = latest?.id();
+  const authorId = author ? author.id() : undefined;
+  const latestId = latest ? latest.id() : undefined;
 
   const avatars = shown.map((poster) => {
     const isLatest = !!latestId && poster.id === latestId;

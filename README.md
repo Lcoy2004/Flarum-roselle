@@ -71,6 +71,7 @@ The theme never reimplements what an installed extension already does: it styles
 | `flarum/markdown`, `flarum/bbcode` | Format selector and toolbar in the composer |
 | `flarum/emoji` | Emoji rendering in posts and the composer preview |
 | `flarum/pusher` | "There are N new replies" bar while reading a topic |
+| `flarum/deck` | `/deck` fits the theme shell: no reserved footer space, full-screen mode hides the global sidebar, and its strings are translated into Simplified Chinese |
 | `fof/discussion-views` | Delegated: counts and exposes views. The theme keeps its Views column and "Most viewed" sort, reading `views` / `view_count` |
 | `pianotell/flarum-ext-flamoji` | Delegated: owns the composer emoji picker; the theme lays out the toolbar around it |
 | `fof/photoswipe` | Delegated: image zoom in posts |
@@ -85,7 +86,7 @@ The theme never reimplements what an installed extension already does: it styles
 | `fof/drafts` | Discourse-style drafts: autosave, resume, close prompt and drafts list |
 | `fof/links` | Links moved into the sidebar |
 | `fof/follow-tags` | Tag notification bell in the category header; the extension's duplicate follow button is removed |
-| `fof/forum-widgets-core` | News, stats, online users and top posters widgets rendered as sidebar sections |
+| `fof/forum-widgets-core` | News, stats and online user widgets rendered as sidebar sections (the monthly top-posters widget is not shown) |
 | `fof/pages` | Extra tabs in the About area |
 | `fof/terms` | Terms and privacy tabs, `/tos` and `/privacy` redirects |
 | `fof/formatting` | Formatting buttons and markdown tables in the composer |

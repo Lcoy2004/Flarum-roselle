@@ -11,8 +11,6 @@ import type Mithril from 'mithril';
 import WelcomeBanner from '../list/WelcomeBanner';
 import SearchMenu from './SearchMenu';
 
-export { default as SearchMenu } from './SearchMenu';
-
 export default function installSearchMenu(): void {
   extend(WelcomeBanner.prototype, 'bodyItems', function (items: ItemList<Mithril.Children>) {
     if (!items.has('search')) return;

@@ -14,9 +14,6 @@ import { discussionLinks, isExternalUrl, linksEnabled, trackClick } from './data
 import { t } from '../../utils/settings';
 import { formatViews } from '../../utils/views';
 
-export { discussionLinks, linksEnabled, trackClick } from './data';
-export type { DiscussionLinks, TopicLink } from './data';
-
 const BADGE = 'CanelaLinkClicks';
 
 export default function installLinks(): void {

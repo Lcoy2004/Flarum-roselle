@@ -49,6 +49,10 @@
 .CanelaList .DiscussionListItem .ThumbSlider__counter {
   right: 4px;
   bottom: 4px;
+  // 扩展给的是 z-index: 10（为了浮在图片上）。行内的计数只需要压住图片，
+  // 10 会让它盖到导航栏的下拉面板上：`.CanelaNav` 的 z-index: 4 把面板关在
+  // 自己的层叠上下文里，而计数器在根上下文按 10 绘制，于是浮在面板之上。
+  z-index: 1;
   border-radius: 4px;
   font-size: 9.5px;
   line-height: 1.3;

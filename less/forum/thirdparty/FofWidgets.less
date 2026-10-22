@@ -1,4 +1,4 @@
-// fof/forum-widgets-core：右侧那列小组件（公告 / 在线用户 / 活跃用户 / 论坛统计）
+// fof/forum-widgets-core：右侧那列小组件（公告 / 在线用户 / 论坛统计）
 //
 // 扩展把 `end` 的 widget 画在 180px 宽的 `.FofWidgets-sideNavAlt` 里，那一列在主题
 // 的居中卡片外面，1440px 窗口下右边界到 1608，几乎整列在屏幕外，还把文档撑宽
@@ -63,39 +63,6 @@
 
     .Avatar {
       --size: 22px;
-      font-size: var(--cn-font-down-3);
-    }
-  }
-
-  // ── 活跃用户（fof/top-posters-widget）───────────────────────────
-  .FoF-TopPostersWidget-users {
-    gap: 2px;
-  }
-
-  .FoF-TopPostersWidget-users-item {
-    --avatar-size: 22px;
-    grid-template-columns: calc(~"var(--avatar-size) + 8px") minmax(0, 1fr);
-    padding: 2px 0;
-
-    .Avatar {
-      --size: var(--avatar-size);
-    }
-  }
-
-  .FoF-TopPostersWidget-users-item-name {
-    overflow: hidden;
-    color: var(--cn-primary);
-    font-weight: 500;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  .FoF-TopPostersWidget-users-item-value {
-    color: var(--cn-sidebar-suffix);
-    font-size: var(--cn-font-down-2);
-    opacity: 1;
-
-    .icon {
       font-size: var(--cn-font-down-3);
     }
   }

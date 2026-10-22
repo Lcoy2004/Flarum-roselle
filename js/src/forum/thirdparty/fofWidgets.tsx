@@ -45,9 +45,21 @@ interface WidgetSection {
   node: Mithril.Children;
 }
 
-/** 一个 widget 一个分区，顺序同后台布局里的 position。 */
+/**
+ * Widgets que a barra não mostra.
+ *
+ * `topPosters` é o "发帖之星 do mês" do fof/top-posters-widget: a lista muda a
+ * cada mês e ocupava uma seção inteira da barra. Continua instalado (o filtro
+ * `top_poster` da busca segue funcionando), mas não vira seção.
+ */
+const HIDDEN_WIDGETS = new Set(['topPosters']);
+
+/** Um widget um分区，顺序同后台布局里的 position。 */
 function widgetSections(): WidgetSection[] {
-  const widgets = (app.widgets?.get('end') ?? []).slice().sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0));
+  const widgets = (app.widgets?.get('end') ?? [])
+    .filter((widget: any) => !HIDDEN_WIDGETS.has(widget.key))
+    .slice()
+    .sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0));
 
   return widgets.map((widget: any) => ({
     key: widget.key,

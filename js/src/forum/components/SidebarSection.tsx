@@ -63,11 +63,12 @@ export default class SidebarSection extends Component<SidebarSectionAttrs> {
             )}
           </div>
         )}
-        {!this.collapsed && (
-          <ul className="CanelaSidebar-sectionContent" id={contentId}>
-            {vnode.children}
-          </ul>
-        )}
+        {/* O conteúdo continua montado quando a seção está recolhida: os
+            widgets das extensões só buscam os dados no `oncreate`, e
+            desmontá-los deixaria a seção vazia ao reabrir. O CSS esconde. */}
+        <ul className="CanelaSidebar-sectionContent" id={contentId}>
+          {vnode.children}
+        </ul>
       </section>
     );
   }

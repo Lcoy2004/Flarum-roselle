@@ -30,10 +30,6 @@ import { forumBool } from '../utils/settings';
 
 // O menu aberto e os painéis moram num chunk (lazy.ts); quem quiser
 // estendê-los usa o nome do módulo (`ext:lcoy/roselle/forum/usermenu/UserMenu`).
-export { userMenu };
-export type { UserMenuTab } from './UserMenu';
-export { menuIcon } from './icons';
-
 export function userMenuEnabled(): boolean {
   return !!app.session.user && forumBool('canelaUserMenu', true);
 }

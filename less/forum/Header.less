@@ -590,9 +590,14 @@
     }
 
     // O logo enviado costuma ser da cor primária e sumiria no fundo: vira a
-    // silhueta na cor de contraste.
+    // silhueta na cor de contraste do cabeçalho. A máscara preserva a forma —
+    // o filtro antigo achatava tudo em branco, e numa primária clara o logo
+    // ficava invisível.
     .Header-logo {
-      filter: brightness(0) invert(1);
+      object-position: -99999px 0;
+      background-color: var(--cn-header-on);
+      -webkit-mask: var(--cn-logo-mask) center / contain no-repeat;
+      mask: var(--cn-logo-mask) center / contain no-repeat;
     }
 
     // "Cadastrar-se" e "Entrar" sobre a cor: claros, com o texto na cor.

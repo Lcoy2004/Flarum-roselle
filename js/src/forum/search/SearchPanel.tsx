@@ -25,6 +25,8 @@ import { clearRecentSearches, randomTip, recentSearches, suggestionShortcuts, ty
 import { isCategory } from './engine';
 import type SearchMenu from './SearchMenu';
 
+// O painel expõe o `trigger` do motor: `search/state` chama o método pelo
+// módulo carregado sob demanda (`panelLazy`), e é o nome exportado que dá tipo.
 export { trigger } from './engine';
 
 interface AssistantItemOpts {

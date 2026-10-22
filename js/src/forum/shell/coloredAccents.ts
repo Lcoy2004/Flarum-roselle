@@ -53,21 +53,31 @@ function activeColor(): string | null {
 }
 
 /**
- * Texto sobre a cor: escuro quando a cor é clara (amarelo, lima…), para o
- * botão primário continuar legível — a mesma conta YIQ que o core usa.
+ * Texto sobre a cor: escuro quando a cor é clara (amarelo, lima, azul-claro…),
+ * para o botão primário e o logo do cabeçalho continuarem legíveis. Usa a
+ * luminância relativa do WCAG: o limiar do YIQ deixava passar cores claras.
  */
 function textOn(hex: string): string {
   const value = hex.replace('#', '');
   const full = value.length === 3 ? value.replace(/./g, (c) => c + c) : value;
   const [r, g, b] = [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16));
+  const channel = (v: number) => {
+    const s = v / 255;
 
-  return (r * 299 + g * 587 + b * 114) / 1000 >= 160 ? '#1a1a1a' : '#ffffff';
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+  };
+  const luminance = 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+
+  return luminance > 0.179 ? '#1a1a1a' : '#ffffff';
 }
 
 /**
  * "Pintar o logo" (como o avocado): o logo vira só a forma, na cor de
  * destaque — e, com os destaques coloridos, na cor da tag. O CSS usa o
  * próprio arquivo do logo como máscara (`--cn-logo-mask`).
+ *
+ * A máscara também serve ao cabeçalho colorido: lá o logo vira a silhueta na
+ * cor de contraste, e sem ela não haveria como preservar a forma.
  */
 function updateLogoTint(): void {
   const root = document.documentElement;
@@ -76,8 +86,15 @@ function updateLogoTint(): void {
 
   root.classList.toggle('Canela--logoTinted', on);
 
-  if (on) root.style.setProperty('--cn-logo-mask', `url("${url!.replace(/"/g, '%22')}")`);
+  if (url) root.style.setProperty('--cn-logo-mask', `url("${url.replace(/"/g, '%22')}")`);
   else root.style.removeProperty('--cn-logo-mask');
+}
+
+/** A cor de texto sobre a primária do fórum (a mesma conta do botão primário). */
+function forumTextColor(): string | null {
+  const color = app.forum?.attribute<string>('themePrimaryColor');
+
+  return color && /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(color) ? textOn(color) : null;
 }
 
 export function updateColoredAccents(): void {
@@ -98,8 +115,14 @@ export function updateColoredAccents(): void {
   } else {
     root.style.removeProperty('--cn-accent');
     root.style.removeProperty('--primary-color');
-    root.style.removeProperty('--cn-accent-text');
     root.classList.remove('Canela--colored');
+
+    // Sem a tag, o texto sobre a primária do fórum: uma primária clara precisa
+    // de texto escuro — inclusive no logo do cabeçalho colorido.
+    const fallback = forumTextColor();
+
+    if (fallback) root.style.setProperty('--cn-accent-text', fallback);
+    else root.style.removeProperty('--cn-accent-text');
   }
 }
 

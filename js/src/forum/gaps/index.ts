@@ -27,8 +27,6 @@ import installCategoryNotifications from './integrations/categoryNotifications';
 import installGapNotifications from './backend/notifications';
 import installInvites from './backend/invites';
 
-export { openShare } from './topic/share';
-
 export function installGaps(): void {
   installMentionCards();
   installGapShortcuts();

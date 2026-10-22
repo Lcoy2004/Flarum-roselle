@@ -11,9 +11,6 @@ import installTooltips from './tooltips';
 import installTyping from './typing';
 import installFeedback from './feedback';
 
-export { postActionFeedback } from './feedback';
-export { startLoading, endLoading } from './loadingSlider';
-
 export default function installMotion() {
   // As configurações só existem depois do boot (`app.forum`): cada módulo
   // as lê na hora de agir, nunca aqui.
@@ -25,5 +22,3 @@ export default function installMotion() {
   installTyping();
   installFeedback();
 }
-
-export { installMotion };

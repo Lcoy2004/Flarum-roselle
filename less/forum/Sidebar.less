@@ -184,6 +184,13 @@
   list-style: none;
 }
 
+// Recolhida, a seção esconde o conteúdo mas o mantém montado: os widgets das
+// extensões só carregam os dados no `oncreate`, e desmontar ao recolher os
+// deixaria vazios ao reabrir.
+.CanelaSidebar-section.collapsed > .CanelaSidebar-sectionContent {
+  display: none;
+}
+
 // Links: o LinkButton do core (seção da comunidade e itens de extensões) e os
 // links de categoria/etiqueta têm a mesma cara.
 .CanelaSidebar-sectionContent > li {

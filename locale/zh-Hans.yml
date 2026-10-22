@@ -1463,3 +1463,93 @@ fof-oauth:
   forum:
     providers:
       passkey: 通行密钥
+flarum-deck:
+  admin:
+    permissions:
+      use_deck_label: 使用看板
+    settings:
+      max_columns_help: 每一栏在刷新时都会单独发起一次请求。范围 1 到 12。
+      max_columns_label: 每位成员的最大栏数
+      poll_interval_help: 未连接实时服务时，栏目检查新动态的间隔。设为 0 可关闭；最小值为 15。
+      poll_interval_label: 刷新间隔（秒）
+  forum:
+    add_column:
+      author_label: 用户
+      author_placeholder: 搜索用户
+      back_button: 返回
+      discussion_label: 讨论
+      discussion_placeholder: 搜索讨论
+      filter_help: "组合搜索中的过滤条件，例如 tag:、author:、is:unread 或 is:following。不支持普通文字。"
+      filter_invalid_message: "只能使用过滤条件，例如 tag:support is:unread。不支持普通文字。"
+      filter_label: 过滤条件
+      group_invalid_message: 请选择一个用户组。
+      group_label: 用户组
+      in_deck_badge: 已在你的看板中
+      in_deck_count_badge: "已在你的看板中 ×{count}"
+      filter_placeholder: 例如 tag:support is:unread
+      invalid_value_message: "请为 {field} 输入有效的值。"
+      pick_a_result_message: "请从建议中为 {field} 选择一项。"
+      submit_button: 添加栏目
+      title: 添加一栏
+      use_filters_button: 使用这些过滤条件
+    column:
+      controls_label: "{title} 栏目选项"
+      drag_handle_label: "拖动以移动 {title}"
+      move_left_button: 左移
+      move_right_button: 右移
+      move_to_bottom_row_button: 移到下一行
+      move_to_top_row_button: 移到上一行
+      moved_announcement: "已移到第 {position} 位（共 {count} 位）。"
+      moved_in_bottom_row_announcement: "已移到下一行第 {position} 位（共 {count} 位）。"
+      moved_in_top_row_announcement: "已移到上一行第 {position} 位（共 {count} 位）。"
+      new_items_button: "{count} 条新内容"
+      open_discussion_button: 打开讨论
+      refresh_button: 刷新
+      remove_button: 移除这一栏
+      reset_width_button: 重置宽度
+      resize_label: "调整 {title} 的宽度"
+    column_types:
+      all: 全部讨论
+      author: 指定用户的讨论
+      author_posts: 指定用户的回复
+      author_posts_title: "{username} 的回复"
+      author_title: "{username} 发起的讨论"
+      discussion: 指定讨论
+      filter: 自定义过滤
+      group_posts: 指定用户组的回复
+      group_posts_title: "{group} 的回复"
+      typing: 正在输入
+      unread: 未读
+    discussion_controls:
+      add_to_deck_button: 添加到看板
+      added_message: 该讨论已添加为看板中的一栏。
+    index:
+      deck_link: 看板
+    typing:
+      empty_text: 现在没有人在输入。
+      offline_text: 输入动态需要与实时服务器保持连接。
+      replying_text: "{name} 正在回复《{discussion}》"
+      someone: 有人
+      starting_in_text: "{name} 正在 {tags} 中发起讨论"
+      starting_text: "{name} 正在发起讨论"
+      was_replying_text: "{name} 刚才在回复《{discussion}》"
+      was_starting_in_text: "{name} 刚才在 {tags} 中发起讨论"
+      was_starting_text: "{name} 刚才在发起讨论"
+    page:
+      add_column_button: 添加栏目
+      column_limit_reached_text: 已达到栏目数量上限。
+      drop_row_hint: 把一栏拖到这里以开始第二行
+      empty_text: 你的看板还是空的。添加一栏，实时跟进讨论。
+      exit_fullscreen_button: 退出全屏
+      fullscreen_button: 全屏
+      hero:
+        hide_label: 隐藏这段介绍
+        subtitle: 并排、实时地跟进你关心的讨论。添加栏目、拖动排序，最多排成两行。
+      navigator_label: 栏目
+      options_label: 看板选项
+      reset_button: 重置栏目
+      resize_rows_label: 调整行高
+      reset_confirmation: 用默认栏目替换当前栏目？此操作无法撤销。
+      scroll_left_label: 向左滚动
+      scroll_right_label: 向右滚动
+      title: 看板

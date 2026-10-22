@@ -24,7 +24,9 @@ const loadSection = once(() => import('./ProfileSettingsSection').then((mod) => 
 let Section: any = null;
 const LazySection = lazyComponent(loadSection);
 
-const FIELDS: ProfileField[] = ['bio', 'location', 'website', 'title', 'status', 'cover', 'birthday'];
+// Só os campos do tema: bio/local/site vêm do fof/user-bio e do fof/socialprofile,
+// e a capa da forumaker/profile-cover é checada à parte (`thirdParty.profileCover()`).
+const FIELDS: ProfileField[] = ['title', 'status', 'birthday'];
 
 export default function installSettingsPage() {
   beforeChunk(

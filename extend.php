@@ -128,7 +128,6 @@ $forumSettings = [
 
     // Recursos do Discourse que faltavam (js/src/forum/gaps)
     'canela.post_shortcuts' => ['canelaPostShortcuts', true, 'boolval'],
-    'canela.lightbox' => ['canelaLightbox', true, 'boolval'],
     'canela.code_buttons' => ['canelaCodeButtons', true, 'boolval'],
     'canela.heading_anchors' => ['canelaHeadingAnchors', true, 'boolval'],
     'canela.table_expand' => ['canelaTableExpand', true, 'boolval'],

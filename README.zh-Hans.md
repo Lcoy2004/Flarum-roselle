@@ -71,6 +71,7 @@ php flarum assets:publish
 | `flarum/markdown`、`flarum/bbcode` | 编辑器的格式选择器和工具栏 |
 | `flarum/emoji` | 帖子与编辑器预览中的 emoji 渲染 |
 | `flarum/pusher` | 浏览主题时的「有 N 条新回复」提示条 |
+| `flarum/deck` | `/deck` 看板页适配主题外壳：不再保留页脚空间，全屏时隐藏全局侧栏，并补齐简体中文文案 |
 | `fof/discussion-views` | 委托：统计并暴露浏览量。主题保留浏览列和「浏览最多」排序，读取 `views` / `view_count` |
 | `pianotell/flarum-ext-flamoji` | 委托：负责编辑器表情选择器；主题围绕它排布工具栏 |
 | `fof/photoswipe` | 委托：帖子图片放大 |
@@ -85,7 +86,7 @@ php flarum assets:publish
 | `fof/drafts` | Discourse 风格草稿：自动保存、恢复、关闭提示和草稿列表 |
 | `fof/links` | 链接移入侧栏 |
 | `fof/follow-tags` | 分类头部的标签通知铃铛；移除扩展重复的关注按钮 |
-| `fof/forum-widgets-core` | 新闻、统计、在线用户、热门发帖人小部件作为侧栏分区 |
+| `fof/forum-widgets-core` | 新闻、统计、在线用户小部件作为侧栏分区（不再显示本月发帖之星） |
 | `fof/pages` | 关于区域的额外标签页 |
 | `fof/terms` | 条款与隐私标签页、`/tos` 和 `/privacy` 跳转 |
 | `fof/formatting` | 编辑器格式按钮与 Markdown 表格 |
