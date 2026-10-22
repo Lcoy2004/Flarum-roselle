@@ -89,6 +89,10 @@
 // ---------------------------------------------------------------------
 @media (min-width: 925px) {
   .CanelaTopic--timeline .DiscussionPage-nav {
+    // A fileira de controles reage à largura da própria coluna (não à da
+    // janela): numa coluna estreita o rótulo do "只看楼主" é o que a quebra.
+    container-type: inline-size;
+
     > ul {
       display: flex;
       flex-wrap: wrap;
@@ -140,8 +144,26 @@
       margin-top: var(--cn-space-2);
     }
 
+    // O "只看楼主" (lcoy/only-op) entra no fim da fileira de controles.
+    > ul > li.item-onlyOp {
+      min-width: 0;
+    }
+
     .CanelaNotifications-menu {
       min-width: 300px;
+    }
+  }
+
+  // Abaixo de 270px de coluna, o rótulo "只看楼主" é o que faz a fileira
+  // quebrar: o botão vira um ícone (o `aria-label` continua) e os controles
+  // permanecem numa linha só.
+  @container (max-width: 270px) {
+    .CanelaTopic--timeline .DiscussionPage-nav .item-onlyOp .OnlyOp-button {
+      padding-inline: 10px;
+
+      .Button-label {
+        display: none;
+      }
     }
   }
 
