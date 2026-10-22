@@ -589,16 +589,10 @@
       border-color: ~"color-mix(in srgb, var(--cn-header-on) 35%, transparent)" !important;
     }
 
-    // O logo enviado costuma ser da cor primária e sumiria no fundo: vira a
-    // silhueta na cor de contraste do cabeçalho. A máscara preserva a forma —
-    // o filtro antigo achatava tudo em branco, e numa primária clara o logo
-    // ficava invisível.
-    .Header-logo {
-      object-position: -99999px 0;
-      background-color: var(--cn-header-on);
-      -webkit-mask: var(--cn-logo-mask) center / contain no-repeat;
-      mask: var(--cn-logo-mask) center / contain no-repeat;
-    }
+    // O logo enviado aparece como veio, com as cores do arquivo. A silhueta
+    // monocromática é uma opção explícita ("Pintar o logo", `--cn-logo-mask`,
+    // tratada acima) — aplicá-la aqui trocava o logo por uma única cor em todo
+    // cabeçalho colorido.
 
     // "Cadastrar-se" e "Entrar" sobre a cor: claros, com o texto na cor.
     .Header-secondary .Button--primary,
