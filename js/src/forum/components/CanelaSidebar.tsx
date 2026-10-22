@@ -275,7 +275,10 @@ export default class CanelaSidebar extends IndexSidebar {
     // ("vnodes must either all have keys or none have keys").
     const menu = new ItemList<Mithril.Children>();
 
-    moved.forEach(({ key, node }, index) => menu.add(key, node, 200 - index));
+    // Só prefixa em caso de colisão com as chaves fixas do "Mais"
+    // (categories, notifications, settings, shortcuts…): assim o item movido
+    // mantém a classe `item-<chave>` que o resto do tema/extensões conhece.
+    moved.forEach(({ key, node }, index) => menu.add(more.has(key) ? `moved-${key}` : key, node, 200 - index));
     if (moved.length) menu.add('canelaMovedSeparator', <Separator />, 150);
     menu.merge(more);
 

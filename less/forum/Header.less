@@ -104,8 +104,14 @@
     transition: background-color 0.2s;
   }
 
+  // No cabeçalho colorido o logo enviado mantém as cores do arquivo, mesmo
+  // com o "Pintar o logo" ligado: o fundo colorido já dá o contraste, e a
+  // silhueta branca/preta descaracterizava a marca.
   [data-colored-header=true].Canela--logoTinted .Canela .Header-logo {
-    background-color: var(--cn-accent-text, #fff);
+    object-position: center;
+    background-color: transparent;
+    -webkit-mask: none;
+    mask: none;
     filter: none;
   }
 
