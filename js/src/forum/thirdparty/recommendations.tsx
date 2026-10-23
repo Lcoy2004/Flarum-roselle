@@ -164,7 +164,7 @@ function itemRow(group: Group, item: Recommendation): Mithril.Children {
         <span className="LcoySidebar-recommendationTitle">{item.title}</span>
         <span className="LcoySidebar-recommendationMeta">
           {avatar ? (
-            <img className="LcoySidebar-recommendationAvatar" src={avatar} alt="" loading="lazy" />
+            <img className="LcoySidebar-recommendationAvatar" src={avatar} alt="" loading="lazy" decoding="async" />
           ) : (
             <span className="LcoySidebar-recommendationAvatar LcoySidebar-recommendationAvatar--empty" />
           )}

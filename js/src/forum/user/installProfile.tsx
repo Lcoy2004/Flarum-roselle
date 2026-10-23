@@ -206,7 +206,7 @@ function extendUserPage() {
         {activityActive && <ScrollNav className="LcoyUserNav-secondary">{listItems(activity.toArray())}</ScrollNav>}
         {prefTab && (
           <ul className="LcoyUserNav-secondary LcoyUserNav-prefs">
-            {visibleTabs(this.user!).map((tab) => (
+            {visibleTabs().map((tab) => (
               <li className={`item-${tab}`}>
                 <LinkButton href={tabUrl(this.user!, tab)} icon={TAB_ICONS[tab]} active={tab === prefTab}>
                   {t(`user.preferences.tabs.${tab}`)}

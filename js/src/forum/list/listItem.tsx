@@ -98,7 +98,7 @@ function posterAvatar(poster: Participant, role: string, className = ''): Mithri
     <Tooltip text={label}>
       <Link href={app.route('user', { username: poster.slug })} className={classList('LcoyPosters-avatar', className)} aria-label={label}>
         {poster.avatarUrl ? (
-          <img className="Avatar" src={poster.avatarUrl} srcSet={poster.avatarSrcset || undefined} alt="" loading="lazy" />
+          <img className="Avatar" src={poster.avatarUrl} srcSet={poster.avatarSrcset || undefined} alt="" loading="lazy" decoding="async" />
         ) : (
           <span className="Avatar" style={{ '--avatar-bg': `#${stringToColor(poster.displayName)}` }} role="img" aria-label={poster.displayName}>
             {poster.displayName.charAt(0).toUpperCase()}

@@ -20,6 +20,7 @@ use Flarum\Frontend\Document;
 use Flarum\Http\RequestUtil;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\User\User;
+use Illuminate\Contracts\Cache\Repository as Cache;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
@@ -43,10 +44,18 @@ final class PreloadContent
      */
     private const CRAWLER_PATTERN = '/bot|crawl|spider|slurp|bingpreview|facebookexternalhit|google-inspectiontool|headless|curl|wget/i';
 
+    /**
+     * 预加载响应的缓存秒数：同一页面在短时间内被再次打开时，不必重复
+     * 走一遍内部 API（每个个人主页预加载约 3~5 个请求）。键里带操作者
+     * id，登录用户之间不会串数据。
+     */
+    private const PRELOAD_CACHE_TTL = 60;
+
     public function __construct(
         private readonly Client $api,
         private readonly SettingsRepositoryInterface $settings,
         private readonly ExtensionManager $extensions,
+        private readonly Cache $cache,
     ) {
     }
 
@@ -233,6 +242,22 @@ final class PreloadContent
     /** @param array<string, mixed> $query */
     private function fetch(ServerRequestInterface $request, string $path, array $query): ?object
     {
+        // 通知列表会改变已读状态，不缓存；其余按“路径 + 参数 + 操作者”
+        // 缓存，权限与个人字段也随操作者隔离。
+        $cacheKey = null;
+
+        if ($path !== '/notifications') {
+            $actor = RequestUtil::getActor($request);
+            $locale = (string) ($request->getAttribute('locale') ?? '');
+            $cacheKey = 'lcoy.preload.'.sha1($path.'?'.http_build_query($query).'|'.$locale.'|'.$actor->id);
+
+            $cached = $this->cache->get($cacheKey);
+
+            if (is_object($cached)) {
+                return $cached;
+            }
+        }
+
         try {
             $api = $this->api->withParentRequest($request)->withQueryParams($query);
 
@@ -259,7 +284,15 @@ final class PreloadContent
             // 对象仍然是对象（`attributes: {}` 不会变成 `[]`）。
             $data = json_decode((string) $response->getBody(), false);
 
-            return is_object($data) ? $data : null;
+            if (! is_object($data)) {
+                return null;
+            }
+
+            if ($cacheKey !== null) {
+                $this->cache->put($cacheKey, $data, self::PRELOAD_CACHE_TTL);
+            }
+
+            return $data;
         } catch (Throwable) {
             return null;
         }

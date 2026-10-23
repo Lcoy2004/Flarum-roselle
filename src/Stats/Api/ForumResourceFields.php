@@ -26,7 +26,8 @@ final class ForumResourceFields
 
     public function __invoke(): array
     {
-        $visible = fn (object $model, Context $context): bool => $this->settings->countsEnabled() && ! $context->getActor()->isGuest();
+        $countsOn = $this->settings->countsEnabled();
+        $visible = fn (object $model, Context $context): bool => $countsOn && ! $context->getActor()->isGuest();
 
         return [
             Schema\Integer::make('lcoyNewCount')

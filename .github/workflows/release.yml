@@ -1,6 +1,6 @@
 name: Release
 
-# Ao publicar uma tag vX.Y.Z, cria a release com o pacote distribuível.
+# 发布 vX.Y.Z 标签时，用它创建带可分发包的 release。
 on:
   push:
     tags:
@@ -24,15 +24,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      # O pacote leva o JS já compilado (js/dist é versionado). Se a tag não
-      # tiver os arquivos, é melhor falhar do que publicar sem frontend.
+      # 包内包含已编译的 JS（js/dist 已纳入版本控制）。如果标签里没有这些
+      # 文件，宁可失败也不要发布一个没有前端的包。
       - name: Check compiled assets
         run: |
           test -f js/dist/forum.js
           test -f js/dist/admin.js
 
-      # git archive respeita o .gitattributes: tests, js/src, node_modules,
-      # configurações de dev e source maps ficam fora do zip.
+      # git archive 会遵循 .gitattributes：tests、js/src、node_modules、
+      # 开发配置和 source map 都不会进入 zip。
       - name: Build the package
         run: |
           version="${GITHUB_REF_NAME#v}"
@@ -46,6 +46,6 @@ jobs:
           name: Roselle ${{ env.VERSION }}
           files: roselle-${{ env.VERSION }}.zip
           generate_release_notes: true
-          # v1.0.0-rc.1 e afins viram pré-release.
+          # v1.0.0-rc.1 这类标签会成为预发布。
           prerelease: ${{ contains(github.ref_name, '-') }}
           fail_on_unmatched_files: true

@@ -31,7 +31,9 @@ final class PostBookmarkFields
 {
     public function __invoke(): array
     {
-        $visible = static fn (Post $post, Context $context): bool => ! $context->getActor()->isGuest() && BookmarksFeature::enabled();
+        // 设置在一次请求内不变：不要为每个帖子的四个字段重复解析。
+        $enabled = BookmarksFeature::enabled();
+        $visible = static fn (Post $post, Context $context): bool => ! $context->getActor()->isGuest() && $enabled;
 
         $bookmark = static fn (Post $post, Context $context) => BookmarkBuffer::defer($context->getActor()->id, $post->id);
 

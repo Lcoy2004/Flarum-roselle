@@ -268,7 +268,7 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
             <li className="LcoySummaryUsers-item" key={user.id}>
               <Link className="LcoySummaryUsers-avatar" href={app.route('user', { username: user.username })} tabindex="-1" aria-hidden="true">
                 {user.avatarUrl ? (
-                  <img className="Avatar" src={user.avatarUrl} alt="" loading="lazy" />
+                  <img className="Avatar" src={user.avatarUrl} alt="" loading="lazy" decoding="async" />
                 ) : (
                   <span className="Avatar" style={{ '--avatar-bg': user.color || `#${stringToColor(user.displayName || user.username)}` }}>
                     {(user.displayName || user.username).charAt(0).toUpperCase()}

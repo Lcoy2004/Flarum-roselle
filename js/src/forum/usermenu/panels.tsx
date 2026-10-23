@@ -12,7 +12,6 @@ import Component from 'flarum/common/Component';
 import type { ComponentAttrs } from 'flarum/common/Component';
 import Link from 'flarum/common/components/Link';
 import listItems from 'flarum/common/helpers/listItems';
-import classList from 'flarum/common/utils/classList';
 import type ItemList from 'flarum/common/utils/ItemList';
 import type Notification from 'flarum/common/models/Notification';
 import type Post from 'flarum/common/models/Post';

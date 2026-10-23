@@ -67,7 +67,7 @@ export function rememberOther(value: boolean): void {
 }
 
 /** 该用户拥有的标签页，按 Discourse 的顺序。 */
-export function visibleTabs(user: User): PrefTab[] {
+export function visibleTabs(): PrefTab[] {
   const tabs: PrefTab[] = ['account', 'security'];
 
   if (thirdParty.profileCover()) tabs.push('profile');

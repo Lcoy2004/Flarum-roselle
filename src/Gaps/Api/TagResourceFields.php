@@ -34,9 +34,12 @@ final class TagResourceFields
 
     public function __invoke(): array
     {
+        // 每个标签都会检查可见性：设置只读一次。
+        $unreadOn = $this->gaps->on(GapsSettings::CATEGORY_UNREAD);
+
         return [
             Schema\Boolean::make('lcoyHasUnread')
-                ->visible(fn (Tag $tag, Context $context) => ! $context->getActor()->isGuest() && $this->gaps->on(GapsSettings::CATEGORY_UNREAD))
+                ->visible(fn (Tag $tag, Context $context) => ! $context->getActor()->isGuest() && $unreadOn)
                 ->get(fn (Tag $tag, Context $context) => isset($this->unread->for($context->getActor())[(int) $tag->id])),
         ];
     }

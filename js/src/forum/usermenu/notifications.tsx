@@ -155,7 +155,7 @@ export function describeNotification(notification: Notification): NotificationVi
 function systemAvatar(): Mithril.Children {
   const src = app.forum.attribute<string | null>('faviconUrl') || app.forum.attribute<string | null>('logoUrl');
 
-  return src ? <img className="Avatar LcoyUserMenu-systemAvatar" src={src} alt="" loading="lazy" /> : <Avatar user={null} />;
+  return src ? <img className="Avatar LcoyUserMenu-systemAvatar" src={src} alt="" loading="lazy" decoding="async" /> : <Avatar user={null} />;
 }
 
 /** Discourse 的 `.icon-avatar`：2em 头像，角落的圆形徽章中带类型图标。 */

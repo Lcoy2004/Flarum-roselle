@@ -147,7 +147,7 @@ export default function installPosts(): void {
   });
 
   // “已编辑”变成 Discourse 的铅笔，并带与编辑者一致的 tooltip。
-  override(PostEdited.prototype, 'view', function (this: any, original: () => Mithril.Children) {
+  override(PostEdited.prototype, 'view', function (this: any) {
     const post = this.attrs.post;
 
     const info = app.translator.trans('core.forum.post.edited_tooltip', { user: post.editedUser(), ago: humanTime(post.editedAt()) });

@@ -200,20 +200,19 @@ function sections(page: any): ItemList<Mithril.Children> {
 }
 
 export default function renderTab(page: any): Mithril.Children {
-  const user: User = page.user;
   const all = sections(page);
   const keys = Object.keys(all.toObject());
   const hasOther = keys.some((key) => sectionTab(key) === 'other');
 
   // “其他”标签页仅在存在无处安放的分区时出现；导航已经
   // 绘制，因此如有变化就通知。
-  if (visibleTabs(user).includes('other') !== hasOther) {
+  if (visibleTabs().includes('other') !== hasOther) {
     rememberOther(hasOther);
     setTimeout(m.redraw);
   }
 
   let tab = currentTab() as PrefTab;
-  if (!visibleTabs(user).includes(tab) && !(tab === 'other' && hasOther)) tab = 'account';
+  if (!visibleTabs().includes(tab) && !(tab === 'other' && hasOther)) tab = 'account';
 
   const shown = new ItemList<Mithril.Children>();
   Object.entries(all.toObject()).forEach(([key, item]) => {

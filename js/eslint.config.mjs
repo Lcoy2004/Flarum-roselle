@@ -67,10 +67,10 @@ export default [
     },
 
     rules: {
-      // ── react/jsx-key fica DESLIGADA no Canela ────────────────────────────────
-      // No Mithril uma lista sem nenhuma key é válida; o que quebra é misturar
-      // itens com e sem key (regra mithril-key abaixo). Pôr key em todo .map()
-      // mudaria a reconciliação de listas que hoje funcionam.
+      // ── 在 Roselle 中关闭 react/jsx-key ──────────────────────────────────────
+      // 在 Mithril 中，整个列表都没有 key 是合法的；真正会出问题的是混用
+      // 有 key 和无 key 的兄弟节点（见下面的 mithril-key 规则）。给每个
+      // .map() 都加 key 会改变目前正常的列表复用行为。
       'react/jsx-key': 'off',
 
       // ── No duplicate props ────────────────────────────────────────────────────
