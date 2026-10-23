@@ -58,8 +58,7 @@
       top: var(--lcoy-direct-node);
     }
 
-    // ……并在已加载的最后一个帖子的头像处结束（话题末尾的
-    // 回复邀请也是一个 .Post，但不计入其中）。
+    // ……并在已加载的最后一个帖子的头像处结束。
     .PostStream-item:not(:has(~ .PostStream-item > :is(.CommentPost, .EventPost))) > .CommentPost::before {
       bottom: auto;
       height: var(--lcoy-direct-node);

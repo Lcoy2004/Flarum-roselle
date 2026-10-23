@@ -181,18 +181,6 @@ parameters:
 			path: src/Gaps/NotFound/NotFoundPage.php
 
 		-
-			message: '#^Method Lcoy\\Roselle\\Gaps\\Notification\\InviteAcceptedBlueprint\:\:getFromUser\(\) never returns null so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: src/Gaps/Notification/InviteAcceptedBlueprint.php
-
-		-
-			message: '#^Method Lcoy\\Roselle\\Gaps\\Notification\\InviteAcceptedBlueprint\:\:getSubject\(\) never returns null so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: src/Gaps/Notification/InviteAcceptedBlueprint.php
-
-		-
 			message: '#^Method Lcoy\\Roselle\\Gaps\\Notification\\PostEditedBlueprint\:\:getFromUser\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
 			count: 1
@@ -221,12 +209,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: src/Gaps/UnreadTags.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\Post\\Post\>\:\:whereVisibleTo\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Links/Api/RecordLinkClickController.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Flarum\\Discussion\\Discussion\>\:\:whereVisibleTo\(\)\.$#'

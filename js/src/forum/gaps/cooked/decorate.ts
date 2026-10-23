@@ -288,6 +288,14 @@ export default function installCookedDecorators(): void {
 
     if (!body || !post) return;
 
+    // Mithril 会在每次重绘时调用 onupdate（点赞、展开回复……），但这些
+    // 操作不改正文。用正文长度和编辑时间做签名，内容没变就不再重复扫描
+    // 这个帖子的 DOM。
+    const signature = `${post.id()}:${String(post.attribute('contentHtml') ?? '').length}:${String(post.editedAt?.()?.getTime?.() ?? '')}`;
+
+    if (this.lcoyDecoratedFor === signature) return;
+    this.lcoyDecoratedFor = signature;
+
     decorateCooked(body, String(post.id()));
   });
 }

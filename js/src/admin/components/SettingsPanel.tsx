@@ -71,7 +71,7 @@ export const GROUPS: GroupDef[] = [
     key: 'moderation',
     icon: 'fas fa-shield-halved',
     label: () => trans(`${SHELL}.group_moderation`, '审核'),
-    description: () => trans(`${SHELL}.group_moderation_desc`, '管理工具：批量操作、编辑历史，以及给作者的提示。'),
+    description: () => trans(`${SHELL}.group_moderation_desc`, '管理工具：批量操作与给作者的提示。'),
     advanced: true,
   },
   {

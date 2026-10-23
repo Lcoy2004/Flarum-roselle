@@ -38,6 +38,11 @@ use Throwable;
  */
 final class PreloadContent
 {
+    /**
+     * 明显的爬虫/预取客户端：它们不执行 JS，预加载的数据只会浪费查询。
+     */
+    private const CRAWLER_PATTERN = '/bot|crawl|spider|slurp|bingpreview|facebookexternalhit|google-inspectiontool|headless|curl|wget/i';
+
     public function __construct(
         private readonly Client $api,
         private readonly SettingsRepositoryInterface $settings,
@@ -47,6 +52,10 @@ final class PreloadContent
 
     public function __invoke(Document $document, ServerRequestInterface $request): void
     {
+        if (preg_match(self::CRAWLER_PATTERN, $request->getHeaderLine('User-Agent')) === 1) {
+            return;
+        }
+
         try {
             $plan = $this->plan($document, $request);
         } catch (Throwable) {

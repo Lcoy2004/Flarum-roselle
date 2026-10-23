@@ -220,19 +220,17 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
     const extra = this.extra;
 
     if (extra) {
-      // 各对区域始终并排，与 Discourse 一致：没有数据的区域显示标题和
-      // “暂无内容”，而不是消失，让另一个单独占一行。
+      // 没有数据的区域显示标题和“暂无内容”，而不是消失；“赞”的两列仍然
+      // 并排，与 Discourse 一致。
       items.add(
         'mostRepliedTo',
-        <div className="LcoyUserSummary-columns">
-          {this.userSection(
-            'most-replied-to',
-            t('user.summary.most_replied_to'),
-            extra.mostRepliedTo || [],
-            'fas fa-reply',
-            t('user.summary.empty_replied')
-          )}
-        </div>,
+        this.userSection(
+          'most-replied-to',
+          t('user.summary.most_replied_to'),
+          extra.mostRepliedTo || [],
+          'fas fa-reply',
+          t('user.summary.empty_replied')
+        ),
         88
       );
 

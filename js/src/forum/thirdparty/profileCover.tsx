@@ -76,20 +76,16 @@ export function cssImage(url: string): string {
 }
 
 /**
- * 图片的 CSS 变量，用于个人资料或名片的元素
- * `style`。`--lcoy-cover` 是个人资料 hero 已读取的封面
- * 上层；`--lcoy-user-cover` 和 `--lcoy-user-card-bg` 留给
- * 只想使用其中某一个的地方。
+ * 图片的 CSS 变量，用于个人资料或名片的元素 `style`：
+ * `--lcoy-cover` 供个人资料头部读取，`--lcoy-user-card-bg`
+ * 供用户卡片背景读取。
  */
 export function profileImageStyle(user: User): Record<string, string> {
   const style: Record<string, string> = {};
   const cover = userCoverUrl(user);
   const card = userCardBackgroundUrl(user);
 
-  if (cover) {
-    style['--lcoy-cover'] = cssImage(cover);
-    style['--lcoy-user-cover'] = cssImage(cover);
-  }
+  if (cover) style['--lcoy-cover'] = cssImage(cover);
 
   if (card) style['--lcoy-user-card-bg'] = cssImage(card);
 

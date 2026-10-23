@@ -57,7 +57,9 @@ function fofAutosave(): boolean {
  * 写入。正在发送时不写入（fof 在发布时会删除草稿）。
  */
 function startAutosave(body: any): () => void {
-  let lastSeen = '';
+  let lastContent = '';
+  let lastTitle = '';
+  let lastTags = '';
   let dueAt = 0;
   let saving = false;
   const composerBody = app.composer.body;
@@ -69,10 +71,14 @@ function startAutosave(body: any): () => void {
     }
 
     const fields: any = app.composer.fields || {};
-    const seen = JSON.stringify([fields.content?.() || '', fields.title?.() || '', (fields.tags || []).map((tag: any) => tag?.id?.())]);
+    const content = fields.content?.() || '';
+    const title = fields.title?.() || '';
+    const tags = (fields.tags || []).map((tag: any) => tag?.id?.()).join(',');
 
-    if (seen !== lastSeen) {
-      lastSeen = seen;
+    if (content !== lastContent || title !== lastTitle || tags !== lastTags) {
+      lastContent = content;
+      lastTitle = title;
+      lastTags = tags;
       dueAt = Date.now() + SAVE_DELAY;
       return;
     }

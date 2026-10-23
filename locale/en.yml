@@ -136,7 +136,7 @@ lcoy-roselle:
         group_composer_desc: The Discourse composer, drafts, hashtags and advanced search.
         group_people_desc: Profile page, user card, extra fields and activity.
         group_community_desc: About, guidelines, users and groups.
-        group_moderation_desc: 'Staff tools: bulk actions, edit history and notices to the author.'
+        group_moderation_desc: 'Staff tools: bulk actions and notices to the author.'
         group_integrations_desc: The Discourse look for third-party extensions. Each one only works with its extension enabled.
         'on': 'On'
         'off': 'Off'

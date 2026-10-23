@@ -47,21 +47,21 @@ final class UserActivity
             return $this->memo[$id];
         }
 
+        $recentSince = Carbon::now()->subDays(self::RECENT_DAYS)->toDateString();
+
+        // 该表按天存储：总量和“最近 60 天”可以在同一次查询里求和。
         $visits = $this->db->table(VisitRecorder::TABLE)
             ->where('user_id', $id)
-            ->selectRaw('COUNT(*) AS days, COALESCE(SUM(time_read), 0) AS time_read, COALESCE(SUM(posts_read), 0) AS posts_read')
+            ->selectRaw(
+                'COUNT(*) AS days, COALESCE(SUM(time_read), 0) AS time_read, COALESCE(SUM(posts_read), 0) AS posts_read, COALESCE(SUM(CASE WHEN visited_at >= ? THEN time_read ELSE 0 END), 0) AS recent_time_read',
+                [$recentSince]
+            )
             ->first();
-
-        // 该表本身按天存储：近期数据就是加上截止日期后的同一求和。
-        $recent = $this->db->table(VisitRecorder::TABLE)
-            ->where('user_id', $id)
-            ->where('visited_at', '>=', Carbon::now()->subDays(self::RECENT_DAYS)->toDateString())
-            ->sum('time_read');
 
         $summary = [
             'daysVisited' => (int) ($visits->days ?? 0),
             'timeRead' => (int) ($visits->time_read ?? 0),
-            'recentTimeRead' => (int) $recent,
+            'recentTimeRead' => (int) ($visits->recent_time_read ?? 0),
             'postsRead' => (int) ($visits->posts_read ?? 0),
             'likesGiven' => null,
             'likesReceived' => null,

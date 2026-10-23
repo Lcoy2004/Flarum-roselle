@@ -136,7 +136,7 @@ lcoy-roselle:
         group_composer_desc: Discourse 风格的编辑器、草稿、#标签与高级搜索。
         group_people_desc: 个人主页、用户卡片、扩展字段与活动。
         group_community_desc: 关于、社区准则、用户与用户组。
-        group_moderation_desc: 管理工具：批量操作、编辑历史，以及给作者的提示。
+        group_moderation_desc: 管理工具：批量操作与给作者的提示。
         group_integrations_desc: 为第三方扩展套用 Discourse 外观。每项都只有在启用对应扩展后才会生效。
         'on': 开启
         'off': 关闭

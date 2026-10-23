@@ -49,6 +49,18 @@ class DraftsDropdown extends Dropdown {
 }
 
 export default class DraftsMenu extends Component {
+  private frame = 0;
+
+  /** 滚动/缩放时每帧最多重算一次位置，避免逐事件读写布局。 */
+  private readonly schedulePlace = () => {
+    if (this.frame) return;
+
+    this.frame = requestAnimationFrame(() => {
+      this.frame = 0;
+      this.place();
+    });
+  };
+
   private readonly place = () => {
     const root = this.element as HTMLElement | undefined;
     const menu = root?.querySelector<HTMLElement>('.LcoyDraftsMenu-menu');
@@ -88,8 +100,8 @@ export default class DraftsMenu extends Component {
   oncreate(vnode: Mithril.VnodeDOM) {
     super.oncreate(vnode);
 
-    window.addEventListener('resize', this.place);
-    window.addEventListener('scroll', this.place, true);
+    window.addEventListener('resize', this.schedulePlace);
+    window.addEventListener('scroll', this.schedulePlace, true);
   }
 
   onupdate(vnode: Mithril.VnodeDOM) {
@@ -101,8 +113,9 @@ export default class DraftsMenu extends Component {
   onremove(vnode: Mithril.VnodeDOM) {
     super.onremove(vnode);
 
-    window.removeEventListener('resize', this.place);
-    window.removeEventListener('scroll', this.place, true);
+    window.removeEventListener('resize', this.schedulePlace);
+    window.removeEventListener('scroll', this.schedulePlace, true);
+    cancelAnimationFrame(this.frame);
   }
 
   view() {

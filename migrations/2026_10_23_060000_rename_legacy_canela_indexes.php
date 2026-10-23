@@ -69,7 +69,11 @@ return [
             $fullOld = $prefix.$old;
 
             if ($fkExists($fullTable, $fullOld)) {
-                $db->statement("ALTER TABLE `{$fullTable}` DROP FOREIGN KEY `{$fullOld}`");
+                try {
+                    $db->statement("ALTER TABLE `{$fullTable}` DROP FOREIGN KEY `{$fullOld}`");
+                } catch (\Throwable) {
+                    // 版本差异或约束已不在：继续。
+                }
             }
         }
 
@@ -82,7 +86,11 @@ return [
                 $fullNew = $prefix.$new;
 
                 if ($indexExists($fullTable, $fullOld) && ! $indexExists($fullTable, $fullNew)) {
-                    $db->statement("ALTER TABLE `{$fullTable}` RENAME INDEX `{$fullOld}` TO `{$fullNew}`");
+                    try {
+                        $db->statement("ALTER TABLE `{$fullTable}` RENAME INDEX `{$fullOld}` TO `{$fullNew}`");
+                    } catch (\Throwable) {
+                        // 老版本不支持 RENAME INDEX：保留旧名，不影响功能。
+                    }
                 }
             }
         }
@@ -94,9 +102,13 @@ return [
             $fullReferences = $prefix.$references;
 
             if (! $fkExists($fullTable, $fullNew)) {
-                $db->statement(
-                    "ALTER TABLE `{$fullTable}` ADD CONSTRAINT `{$fullNew}` FOREIGN KEY (`{$column}`) REFERENCES `{$fullReferences}` (`id`) ON DELETE CASCADE"
-                );
+                try {
+                    $db->statement(
+                        "ALTER TABLE `{$fullTable}` ADD CONSTRAINT `{$fullNew}` FOREIGN KEY (`{$column}`) REFERENCES `{$fullReferences}` (`id`) ON DELETE CASCADE"
+                    );
+                } catch (\Throwable) {
+                    // 索引缺失或版本差异：保留现状，下一次升级或手动处理。
+                }
             }
         }
 
@@ -104,7 +116,11 @@ return [
         $dialogUser = $prefix.'dialog_user';
 
         if ($indexExists($dialogUser, 'dialog_user_canela_archived_index')) {
-            $db->statement("ALTER TABLE `{$dialogUser}` DROP INDEX `dialog_user_canela_archived_index`");
+            try {
+                $db->statement("ALTER TABLE `{$dialogUser}` DROP INDEX `dialog_user_canela_archived_index`");
+            } catch (\Throwable) {
+                // 已被别的迁移删掉：忽略。
+            }
         }
     },
 
