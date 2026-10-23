@@ -137,10 +137,3 @@ export const AdminSubGroup: any = {
     return <div className="LcoyAdmin-subGroup">{children}</div>;
   },
 };
-
-/** 分隔卡片内各个区块的小标题。 */
-export const SubTitle: any = {
-  view({ children }: any) {
-    return <h4 className="LcoyAdmin-subTitle">{children}</h4>;
-  },
-};

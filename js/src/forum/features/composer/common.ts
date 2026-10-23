@@ -2,7 +2,6 @@
  * 编辑器各功能共用的部分：管理员的开关，以及在其它扩展之后
  * 扩展编辑器工具栏的方式。
  */
-import { extend } from 'flarum/common/extend';
 import TextEditor from 'flarum/common/components/TextEditor';
 import type ComposerState from 'flarum/forum/states/ComposerState';
 import type EditorDriverInterface from 'flarum/common/utils/EditorDriverInterface';
@@ -17,36 +16,6 @@ export type ComposerFeature = 'Similar' | 'Hashtags' | 'Drafts' | 'LinkedTopic' 
  */
 export function composerOn(feature: ComposerFeature): boolean {
   return forumBool('lcoyComposerEnabled', true) && forumBool(`lcoyComposer${feature}`, true);
-}
-
-type ToolbarHook = (this: TextEditor, items: any) => void;
-
-const lateToolbarHooks: ToolbarHook[] = [];
-let lateHooksInstalled = false;
-
-/**
- * 在所有扩展之后扩展 `TextEditor#toolbarItems`。
- *
- * 扩展 initializer 的执行顺序并无保证，因此该钩子只在编辑器的
- * 首次 `oninit` 时挂载：此时所有 initializer 均已运行，我们的
- * 钩子排在最后。
- */
-export function extendToolbarLate(hook: ToolbarHook): void {
-  lateToolbarHooks.push(hook);
-
-  if (lateHooksInstalled) return;
-  lateHooksInstalled = true;
-
-  let applied = false;
-
-  extend(TextEditor.prototype, 'oninit', function () {
-    if (applied) return;
-    applied = true;
-
-    extend(TextEditor.prototype, 'toolbarItems', function (this: TextEditor, items) {
-      lateToolbarHooks.forEach((fn) => fn.call(this, items));
-    });
-  });
 }
 
 /**

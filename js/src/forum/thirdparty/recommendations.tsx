@@ -130,13 +130,19 @@ function saveGroup(group: Group): void {
 }
 
 /**
- * 行尾那一块：回帖数（推荐）和发布时间（最新）。
+ * 行尾那一块：回帖数（推荐）、发布时间（最新）和浏览量（热门）。
  *
- * 「热门」一组不带浏览量：那一组就是按浏览量排的，行尾再写一遍数字、配个眼睛
- * 图标，只是把同一件事说了两遍。
+ * 「热门」一组虽然按浏览量排序，行尾仍显示具体数字和眼睛图标：排序说明的是
+ * 相对高低，读者要判断一条帖子有多热，还是得看绝对数字。
  */
 function stat(group: Group, item: Recommendation): Mithril.Children {
-  if (group === 'mostViewed') return null;
+  if (group === 'mostViewed')
+    return (
+      <span className="LcoySidebar-recommendationStat">
+        <Icon name="far fa-eye" />
+        {abbreviateNumber(item.viewCount)}
+      </span>
+    );
 
   if (group === 'recommended')
     return (

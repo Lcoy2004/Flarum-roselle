@@ -139,8 +139,6 @@ export const extensionName = (id: string): string => installedExtension(id)?.ext
 
 export const extensionInstalled = (id: string): boolean => !!installedExtension(id);
 
-export const extensionOn = (id: string): boolean => isExtensionEnabled(id);
-
 /** 列表中的第一个未启用（或未安装）的扩展。 */
 export const missingExtension = (ids: string[] = []): string | null => ids.find((id) => !isExtensionEnabled(id)) ?? null;
 

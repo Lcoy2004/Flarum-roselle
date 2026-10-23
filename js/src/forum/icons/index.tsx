@@ -56,8 +56,11 @@ function glyph(name: string): IconNode | null {
   return GLYPHS[name] ?? null;
 }
 
+let lucideEnabled: boolean | null = null;
+
+/** 设置在启动后不变；每次绘制都读一遍只会做无谓的属性查找。 */
 function enabled(): boolean {
-  return forumBool('lcoyLucideIcons', true);
+  return (lucideEnabled ??= forumBool('lcoyLucideIcons', true));
 }
 
 /**

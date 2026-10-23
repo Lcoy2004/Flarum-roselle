@@ -22,7 +22,17 @@ const EDGE = 2;
 export default class ScrollNav extends Component<ScrollNavAttrs> {
   private list: HTMLElement | null = null;
   private observer: ResizeObserver | null = null;
-  private readonly sync = () => this.updateArrows();
+  private frame = 0;
+
+  /** 滚动/缩放时每帧最多重算一次箭头，避免逐事件读写布局。 */
+  private readonly sync = () => {
+    if (this.frame) return;
+
+    this.frame = requestAnimationFrame(() => {
+      this.frame = 0;
+      this.updateArrows();
+    });
+  };
 
   view(vnode: Mithril.Vnode<ScrollNavAttrs, this>) {
     return (
@@ -90,6 +100,7 @@ export default class ScrollNav extends Component<ScrollNavAttrs> {
     this.list?.removeEventListener('scroll', this.sync);
     this.observer?.disconnect();
     window.removeEventListener('resize', this.sync);
+    cancelAnimationFrame(this.frame);
   }
 
   private updateArrows(): void {

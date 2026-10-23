@@ -6,16 +6,16 @@
 // 在两种模式下都适用，而无需为每种模式各配一组颜色。
 
 .LcoyAdmin {
-  --cna-accent: var(--primary-color);
-  --cna-surface: var(--body-bg, #fff);
-  --cna-subtle: var(--control-bg, #f2f3f5);
-  --cna-border: ~"color-mix(in srgb, var(--text-color) 11%, transparent)";
-  --cna-border-soft: ~"color-mix(in srgb, var(--text-color) 7%, transparent)";
-  --cna-tint: ~"color-mix(in srgb, var(--primary-color) 12%, transparent)";
-  --cna-success: var(--success-color, #1f9d55);
-  --cna-warning: #c27803;
-  --cna-danger: var(--alert-error-bg, #d83e3e);
-  --cna-radius: 14px;
+  --lcoy-admin-accent: var(--primary-color);
+  --lcoy-admin-surface: var(--body-bg, #fff);
+  --lcoy-admin-subtle: var(--control-bg, #f2f3f5);
+  --lcoy-admin-border: ~"color-mix(in srgb, var(--text-color) 11%, transparent)";
+  --lcoy-admin-border-soft: ~"color-mix(in srgb, var(--text-color) 7%, transparent)";
+  --lcoy-admin-tint: ~"color-mix(in srgb, var(--primary-color) 12%, transparent)";
+  --lcoy-admin-success: var(--success-color, #1f9d55);
+  --lcoy-admin-warning: #c27803;
+  --lcoy-admin-danger: var(--alert-error-bg, #d83e3e);
+  --lcoy-admin-radius: 14px;
 
   display: grid;
   grid-template-columns: 224px minmax(0, 1fr);
@@ -40,9 +40,9 @@
   gap: 8px;
   height: 38px;
   padding: 0 12px;
-  border: 1px solid var(--cna-border);
+  border: 1px solid var(--lcoy-admin-border);
   border-radius: 10px;
-  background: var(--cna-surface);
+  background: var(--lcoy-admin-surface);
   transition: border-color 0.15s, box-shadow 0.15s;
 
   > i {
@@ -52,8 +52,8 @@
   }
 
   &:focus-within {
-    border-color: var(--cna-accent);
-    box-shadow: 0 0 0 3px var(--cna-tint);
+    border-color: var(--lcoy-admin-accent);
+    box-shadow: 0 0 0 3px var(--lcoy-admin-tint);
   }
 }
 
@@ -116,30 +116,30 @@
     color: var(--muted-color);
   }
 
-  &:hover { background: var(--cna-subtle); }
+  &:hover { background: var(--lcoy-admin-subtle); }
 
   &:focus-visible {
-    outline: 2px solid var(--cna-accent);
+    outline: 2px solid var(--lcoy-admin-accent);
     outline-offset: -2px;
   }
 
   &.is-active {
-    background: var(--cna-tint);
-    color: var(--cna-accent);
+    background: var(--lcoy-admin-tint);
+    color: var(--lcoy-admin-accent);
     font-weight: 700;
 
-    > i { color: var(--cna-accent); }
+    > i { color: var(--lcoy-admin-accent); }
 
     .LcoyAdmin-navCount {
-      background: var(--cna-surface);
-      color: var(--cna-accent);
+      background: var(--lcoy-admin-surface);
+      color: var(--lcoy-admin-accent);
     }
   }
 
   &.LcoyAdmin-navMore {
     margin-top: 6px;
     padding-top: 9px;
-    border-top: 1px solid var(--cna-border);
+    border-top: 1px solid var(--lcoy-admin-border);
     border-radius: 0 0 9px 9px;
     color: var(--muted-color);
     font-weight: 500;
@@ -158,7 +158,7 @@
   flex-shrink: 0;
   padding: 1px 7px;
   border-radius: 999px;
-  background: var(--cna-subtle);
+  background: var(--lcoy-admin-subtle);
   color: var(--muted-color);
   font-size: 11px;
   font-weight: 700;
@@ -189,7 +189,7 @@
 
   > i {
     font-size: 17px;
-    color: var(--cna-accent);
+    color: var(--lcoy-admin-accent);
   }
 }
 
@@ -207,31 +207,31 @@
   margin-top: 2px;
   padding: 5px 11px;
   border-radius: 999px;
-  background: var(--cna-subtle);
+  background: var(--lcoy-admin-subtle);
   color: var(--muted-color);
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
   transition: background 0.2s, color 0.2s;
 
-  &.is-saving { color: var(--cna-accent); }
+  &.is-saving { color: var(--lcoy-admin-accent); }
 
   &.is-saved {
-    background: ~"color-mix(in srgb, var(--cna-success) 14%, transparent)";
-    color: var(--cna-success);
+    background: ~"color-mix(in srgb, var(--lcoy-admin-success) 14%, transparent)";
+    color: var(--lcoy-admin-success);
   }
 
   &.is-error {
-    background: ~"color-mix(in srgb, var(--cna-danger) 14%, transparent)";
-    color: var(--cna-danger);
+    background: ~"color-mix(in srgb, var(--lcoy-admin-danger) 14%, transparent)";
+    color: var(--lcoy-admin-danger);
   }
 }
 
 .LcoyAdmin-empty {
   margin: 8px 0;
   padding: 24px;
-  border: 1px dashed var(--cna-border);
-  border-radius: var(--cna-radius);
+  border: 1px dashed var(--lcoy-admin-border);
+  border-radius: var(--lcoy-admin-radius);
   text-align: center;
   color: var(--muted-color);
   font-size: 13px;
@@ -245,9 +245,9 @@
 }
 
 .LcoyAdmin-card {
-  border: 1px solid var(--cna-border);
-  border-radius: var(--cna-radius);
-  background: var(--cna-surface);
+  border: 1px solid var(--lcoy-admin-border);
+  border-radius: var(--lcoy-admin-radius);
+  background: var(--lcoy-admin-surface);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: box-shadow 0.3s, border-color 0.3s;
   scroll-margin-top: 90px;
@@ -256,8 +256,8 @@
 
   // 通过"需要…"链接跳转到达时：一圈快速闪烁标出是哪张卡片。
   &[data-flash] {
-    border-color: var(--cna-accent);
-    box-shadow: 0 0 0 4px var(--cna-tint);
+    border-color: var(--lcoy-admin-accent);
+    box-shadow: 0 0 0 4px var(--lcoy-admin-tint);
   }
 }
 
@@ -268,7 +268,7 @@
   padding: 14px 18px;
 
   .LcoyAdmin-card:not(.is-empty) > & {
-    border-bottom: 1px solid var(--cna-border-soft);
+    border-bottom: 1px solid var(--lcoy-admin-border-soft);
   }
 }
 
@@ -280,8 +280,8 @@
   width: 32px;
   height: 32px;
   border-radius: 9px;
-  background: var(--cna-tint);
-  color: var(--cna-accent);
+  background: var(--lcoy-admin-tint);
+  color: var(--lcoy-admin-accent);
   font-size: 14px;
   transition: background 0.2s, color 0.2s;
 }
@@ -308,7 +308,7 @@
 .LcoyAdmin-card-group {
   padding: 1px 8px;
   border-radius: 999px;
-  background: var(--cna-subtle);
+  background: var(--lcoy-admin-subtle);
   color: var(--muted-color);
   font-size: 11px;
   font-weight: 600;
@@ -337,7 +337,7 @@
   text-transform: uppercase;
   color: var(--muted-color);
 
-  .LcoyAdmin-card.is-feature:not(.is-off) & { color: var(--cna-accent); }
+  .LcoyAdmin-card.is-feature:not(.is-off) & { color: var(--lcoy-admin-accent); }
 }
 
 // "已保存"：出现在被改动的卡片上并自动消失（util.ts，flashCard）。
@@ -347,7 +347,7 @@
   gap: 5px;
   flex-shrink: 0;
   padding-top: 6px;
-  color: var(--cna-success);
+  color: var(--lcoy-admin-success);
   font-size: 12px;
   font-weight: 600;
   opacity: 0;
@@ -366,7 +366,7 @@
   box-shadow: none;
 
   .LcoyAdmin-card-icon {
-    background: var(--cna-subtle);
+    background: var(--lcoy-admin-subtle);
     color: var(--muted-color);
   }
 }
@@ -386,18 +386,18 @@
   margin: 0 18px 14px 62px;
   padding: 9px 12px;
   border-radius: 10px;
-  background: ~"color-mix(in srgb, var(--cna-warning) 12%, transparent)";
+  background: ~"color-mix(in srgb, var(--lcoy-admin-warning) 12%, transparent)";
   color: var(--text-color);
   font-size: 12.5px;
   line-height: 1.45;
 
-  > i { color: var(--cna-warning); }
+  > i { color: var(--lcoy-admin-warning); }
   > span { flex: 1; min-width: 160px; }
 }
 
 .LcoyAdmin-card-lockLink {
   font-weight: 600;
-  color: var(--cna-accent);
+  color: var(--lcoy-admin-accent);
 }
 
 .LcoyAdmin-card-body {
@@ -437,11 +437,11 @@
   transition: background 0.18s;
 
   &:focus-visible {
-    outline: 2px solid var(--cna-accent, var(--primary-color));
+    outline: 2px solid var(--lcoy-admin-accent, var(--primary-color));
     outline-offset: 2px;
   }
 
-  &.is-on { background: var(--cna-accent, var(--primary-color)); }
+  &.is-on { background: var(--lcoy-admin-accent, var(--primary-color)); }
 
   &:disabled {
     opacity: 0.45;
@@ -476,7 +476,7 @@
 
 // ─── 开关选项 ─────────────────────────────────────────────────────────
 .LcoyAdmin-toggle + .LcoyAdmin-toggle {
-  border-top: 1px solid var(--cna-border-soft);
+  border-top: 1px solid var(--lcoy-admin-border-soft);
 }
 
 .LcoyAdmin-toggleRow {
@@ -516,8 +516,8 @@
   gap: 5px;
   padding: 1px 8px;
   border-radius: 999px;
-  background: ~"color-mix(in srgb, var(--cna-warning) 14%, transparent)";
-  color: ~"color-mix(in srgb, var(--cna-warning) 80%, var(--text-color))";
+  background: ~"color-mix(in srgb, var(--lcoy-admin-warning) 14%, transparent)";
+  color: ~"color-mix(in srgb, var(--lcoy-admin-warning) 80%, var(--text-color))";
   font-size: 11px;
   font-weight: 600;
 }
@@ -526,7 +526,7 @@
 .LcoyAdmin-subDivider {
   height: 1px;
   margin: 6px 0;
-  background: var(--cna-border-soft);
+  background: var(--lcoy-admin-border-soft);
 }
 
 // 仅在上方选项启用时才生效的选项：缩进到同一个块中。
@@ -536,30 +536,22 @@
   margin: 2px 0 8px;
   padding: 2px 14px;
   border-radius: 10px;
-  border-left: 3px solid var(--cna-tint);
-  background: var(--cna-subtle);
+  border-left: 3px solid var(--lcoy-admin-tint);
+  background: var(--lcoy-admin-subtle);
 
   // 浅色字段：在块的灰色背景上，灰色字段会显得像被禁用。
   .FormControl {
-    background: var(--cna-surface) !important;
+    background: var(--lcoy-admin-surface) !important;
   }
 }
 
-.LcoyAdmin-subTitle {
-  margin: 14px 0 4px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--muted-color);
-}
 
 // ─── 隐藏项（依赖某个已关闭的功能） ───────────────────────────────────────
 .LcoyAdmin-hidden {
   margin-top: 16px;
   padding: 12px 16px;
-  border: 1px dashed var(--cna-border);
-  border-radius: var(--cna-radius);
+  border: 1px dashed var(--lcoy-admin-border);
+  border-radius: var(--lcoy-admin-radius);
   color: var(--muted-color);
   font-size: 12.5px;
 
@@ -594,7 +586,7 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--cna-accent);
+  color: var(--lcoy-admin-accent);
   font-family: inherit;
   font-size: 12.5px;
   font-weight: 600;
@@ -609,11 +601,11 @@
   align-items: center;
   gap: 12px;
   padding: 12px 18px;
-  border: 1px dashed var(--cna-border);
-  border-radius: var(--cna-radius);
+  border: 1px dashed var(--lcoy-admin-border);
+  border-radius: var(--lcoy-admin-radius);
 
   .LcoyAdmin-card-icon {
-    background: var(--cna-subtle);
+    background: var(--lcoy-admin-subtle);
     color: var(--muted-color);
   }
 }
@@ -636,7 +628,7 @@
 
 .LcoyAdmin-stub-go {
   flex-shrink: 0;
-  color: var(--cna-accent) !important;
+  color: var(--lcoy-admin-accent) !important;
   font-weight: 600;
 }
 
@@ -698,14 +690,14 @@
   margin: 8px 0;
   padding: 10px 12px;
   border-radius: 10px;
-  background: var(--cna-tint);
+  background: var(--lcoy-admin-tint);
   color: var(--text-color);
   font-size: 12.5px;
   line-height: 1.45;
 
   > i {
     margin-top: 2px;
-    color: var(--cna-accent);
+    color: var(--lcoy-admin-accent);
   }
 }
 
@@ -736,7 +728,7 @@
   .LcoyAdmin-navItem {
     width: auto;
     flex-shrink: 0;
-    border: 1px solid var(--cna-border);
+    border: 1px solid var(--lcoy-admin-border);
     border-radius: 999px;
     white-space: nowrap;
   }
