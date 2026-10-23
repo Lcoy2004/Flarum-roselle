@@ -1,12 +1,12 @@
 /*
- * "Melhores" por período, como no Discourse: na aba Melhores, um seletor
- * (Todo o período / Ano / Trimestre / Mês / Semana / Hoje) limita a lista aos
- * tópicos criados no intervalo.
+ * 按时间段的“最佳”，与 Discourse 一致：在“最佳”标签中，一个选择器
+ * （全部时间 / 年 / 季度 / 月 / 周 / 今天）将列表限制为在该区间内
+ * 创建的主题。
  *
- * O período vai na URL (`?sort=top&period=monthly`), entra nos parâmetros
- * "grudentos" da busca e chega ao DiscussionListState, que o traduz no filtro
- * `created` do core (`AAAA-MM-DD..AAAA-MM-DD`). Assim recarregar, voltar e
- * compartilhar o link mantêm o período.
+ * 时间段放在 URL 中（`?sort=top&period=monthly`），进入搜索的
+ * “粘性”参数，并传到 DiscussionListState，由其转换为核心的
+ * `created` 筛选（`YYYY-MM-DD..YYYY-MM-DD`）。因此刷新、后退和
+ * 分享链接都会保留该时间段。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -23,7 +23,7 @@ import { lastDaysRange } from '../../utils/dates';
 
 const TOP_SORT = 'top';
 
-/** Período => dias para trás. `all` não filtra. */
+/** 时间段 => 往回的天数。`all` 不筛选。 */
 export const TOP_PERIODS: Record<string, number> = {
   all: 0,
   yearly: 365,
@@ -34,14 +34,14 @@ export const TOP_PERIODS: Record<string, number> = {
 };
 
 function enabled(): boolean {
-  return forumBool('canelaTopPeriodsEnabled', true);
+  return forumBool('lcoyTopPeriodsEnabled', true);
 }
 
 function validPeriod(value: unknown): string | null {
   return typeof value === 'string' && value in TOP_PERIODS && value !== 'all' ? value : null;
 }
 
-/** A ordenação ativa da página: a da URL ou, sem ela, a padrão. */
+/** 页面当前使用的排序：来自 URL，若没有则为默认值。 */
 function currentSort(): string {
   return app.search.state.params().sort || app.search.state.defaultSort();
 }
@@ -52,8 +52,8 @@ export default function installTopPeriods(): void {
 
     const period = validPeriod(m.route.param('period'));
 
-    // Só acompanha a lista enquanto ela é a de Melhores: trocar de aba não
-    // pode levar um filtro de data invisível para "Recentes".
+    // 仅当该列表就是“最佳”时才跟随：切换标签时不能把隐藏的日期
+    // 筛选带到“最新”。
     if (period && (m.route.param('sort') || app.search.state.defaultSort()) === TOP_SORT) params.period = period;
   });
 
@@ -76,17 +76,17 @@ export default function installTopPeriods(): void {
     const routeName = app.current.get('routeName') || 'index';
     const base: Record<string, any> = { ...app.search.state.params() };
 
-    // Parâmetros vazios só sujariam a URL ("?q=&filter=").
+    // 空参数只会弄脏 URL（"?q=&filter="）。
     Object.keys(base).forEach((key) => {
       const value = base[key];
       if (value === undefined || value === '' || (typeof value === 'object' && value && !Object.keys(value).length)) delete base[key];
     });
 
     items.add(
-      'canelaTopPeriod',
+      'lcoyTopPeriod',
       <SelectDropdown
-        className="CanelaTopPeriod"
-        buttonClassName="Button CanelaTopPeriod-button"
+        className="LcoyTopPeriod"
+        buttonClassName="Button LcoyTopPeriod-button"
         caretIcon="fas fa-chevron-down"
         accessibleToggleLabel={t('extras.top_periods.label')}
       >
@@ -103,7 +103,7 @@ export default function installTopPeriods(): void {
           );
         })}
       </SelectDropdown>,
-      // Logo depois da ordenação do core (100), que o tema esconde.
+      // 紧接在核心的排序（100）之后，主题会隐藏它。
       90
     );
   });

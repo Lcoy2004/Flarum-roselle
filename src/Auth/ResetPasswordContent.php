@@ -25,15 +25,14 @@ use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * /reset/{token} no fórum (a página "Redefinir senha" do tema), no lugar da
- * página solta do core (reset-password.blade.php).
+ * 论坛中的 `/reset/{token}`（主题的"重置密码"页面），用来替代核心的
+ * 独立页面（reset-password.blade.php）。
  *
- * Valida o token exatamente como o ResetPasswordController do core (404 sem
- * token, erro de token inválido depois de um dia) e entrega ao JS o token e
- * os erros da tentativa anterior: o SavePasswordController do core continua
- * recebendo o POST /reset e, num erro de validação, volta para cá com os
- * erros na sessão — que o ShareErrorsFromSession já tirou da sessão e
- * compartilhou com as views.
+ * 校验 token 的方式与核心的 ResetPasswordController 完全一致（没有 token
+ * 返回 404，超过一天视为 token 无效），并把 token 和上一次尝试的错误交给
+ * JS：核心的 SavePasswordController 仍会收到 POST /reset，在校验失败时
+ * 带着会话中的错误回到这里——这些错误已由 ShareErrorsFromSession
+ * 从会话中取出并共享给视图。
  */
 final class ResetPasswordContent
 {
@@ -55,7 +54,7 @@ final class ResetPasswordContent
         $messages = $errors instanceof MessageProvider ? $errors->getMessageBag()->all() : [];
 
         $document->title = $this->translator->trans('core.views.reset_password.title');
-        $document->payload['canelaReset'] = [
+        $document->payload['lcoyReset'] = [
             'token' => $token->token,
             'errors' => array_values(array_map('strval', $messages)),
         ];

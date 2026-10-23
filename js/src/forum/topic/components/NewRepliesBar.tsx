@@ -1,8 +1,7 @@
 /*
- * "Há N novas respostas" — a barra do Discourse quando chegam posts pelo
- * realtime enquanto o leitor está no meio do tópico. No fim do tópico o
- * flarum/realtime já acrescenta o post direto no stream, e a barra não
- * aparece; no meio, ele só atualiza a contagem, e é aí que ela avisa.
+ * “有 N 条新回复”——读者停在主题中间时，realtime 送来新帖子后出现的
+ * Discourse 横条。在主题末尾，flarum/realtime 会直接把帖子追加进 stream，
+ * 横条不出现；在中间，它只更新计数，这时横条才提醒。
  */
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
 import Icon from 'flarum/common/components/Icon';
@@ -13,7 +12,7 @@ import { t } from '../../utils/settings';
 export interface NewRepliesBarAttrs extends ComponentAttrs {
   discussion: Discussion;
   stream: any;
-  /** Onde a página guarda a contagem de comentários vista por último. */
+  /** 页面保存上次所见评论数的地方。 */
   page: any;
 }
 
@@ -22,19 +21,19 @@ export default class NewRepliesBar extends Component<NewRepliesBarAttrs> {
     const { discussion, stream, page } = this.attrs;
     const count = discussion.commentCount() || 0;
 
-    if (page.canelaSeenCount === undefined || stream.viewingEnd()) page.canelaSeenCount = count;
+    if (page.lcoySeenCount === undefined || stream.viewingEnd()) page.lcoySeenCount = count;
 
-    const fresh = count - page.canelaSeenCount;
+    const fresh = count - page.lcoySeenCount;
 
     if (fresh <= 0) return null;
 
     return (
-      <div className="CanelaNewReplies" role="status">
+      <div className="LcoyNewReplies" role="status">
         <button
           type="button"
-          className="CanelaNewReplies-button"
+          className="LcoyNewReplies-button"
           onclick={() => {
-            page.canelaSeenCount = count;
+            page.lcoySeenCount = count;
             stream.goToLast();
           }}
         >

@@ -26,12 +26,11 @@ use Lcoy\Roselle\Gaps\GapsSettings;
 use Lcoy\Roselle\Gaps\Notification\TopicLinkedBlueprint;
 
 /**
- * "Fulano vinculou seu tópico" — o `linked` do Discourse: uma postagem nova
- * (ou editada) com link para um tópico de outra pessoa avisa o autor dele.
+ * "某某引用了你的主题"——即 Discourse 的 `linked`：新帖子（或被编辑的
+ * 帖子）中链接到他人的主题时，通知该主题的作者。
  *
- * Os links são procurados no texto da postagem, apontando para este fórum
- * (/d/123 ou o endereço completo). No máximo alguns por postagem: uma lista
- * de links não pode virar uma enxurrada de notificações.
+ * 链接在帖子正文中查找，指向本论坛（/d/123 或完整地址）。每个帖子最多
+ * 处理少数几个：一串链接不能变成通知轰炸。
  */
 final class NotifyTopicLinked
 {
@@ -61,7 +60,7 @@ final class NotifyTopicLinked
                 continue;
             }
 
-            // O autor precisa poder ver a postagem que fez o link.
+            // 作者必须能看到发出该链接的帖子。
             if (! Post::query()->whereVisibleTo($author)->whereKey($post->id)->exists()) {
                 continue;
             }
@@ -77,7 +76,7 @@ final class NotifyTopicLinked
         $base = preg_quote(rtrim($this->url->to('forum')->base(), '/'), '#');
         $path = preg_quote((string) parse_url($this->url->to('forum')->base(), PHP_URL_PATH), '#');
 
-        // O endereço completo do fórum ou o caminho dele, seguido de /d/{id}.
+        // 论坛的完整地址或其路径，后接 /d/{id}。
         preg_match_all('#(?:'.$base.'|(?<![\w/.])'.$path.')/d/(\d+)#i', $text, $matches);
 
         $ids = array_values(array_unique(array_map('intval', $matches[1] ?? [])));

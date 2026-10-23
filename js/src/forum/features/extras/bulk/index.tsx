@@ -1,12 +1,11 @@
 /*
- * Seleção em massa do Discourse (para quem modera): um botão na barra da
- * lista liga caixas de seleção em cada tópico e uma barra de ações acima da
- * lista — marcar como lido, fixar, trancar, alterar etiquetas, ocultar,
- * excluir.
+ * Discourse 的批量选择（面向有管理权限者）：列表栏中的按钮为每个
+ * 主题启用复选框，并在列表上方显示操作栏——标记为已读、置顶、
+ * 锁定、更改标签、隐藏、删除。
  *
- * Tudo por ItemLists do core: o botão em `IndexPage.actionItems` (que a barra
- * de navegação do tema desenha à direita), a barra em `contentItems`, e a
- * caixa em `DiscussionListItem.contentItems`.
+ * 全部通过核心的 ItemLists 实现：按钮位于 `IndexPage.actionItems`
+ * （主题的导航栏绘制在右侧），工具栏位于 `contentItems`，复选框位于
+ * `DiscussionListItem.contentItems`。
  */
 import { extend } from 'flarum/common/extend';
 import IndexPage from 'flarum/forum/components/IndexPage';
@@ -21,7 +20,7 @@ import { t } from '../../../utils/settings';
 import { bulkActions } from './actions';
 import { bulkAvailable, loadedDiscussions, selection } from './selection';
 
-/** O MinimalDiscussionListItem (resultados do modal) herda do item; ali não há seleção. */
+/** MinimalDiscussionListItem（弹窗结果）继承自列表项；在那里没有选择功能。 */
 function isMinimal(item: DiscussionListItem): boolean {
   return String(item.elementAttrs().className || '').includes('MinimalDiscussionListItem');
 }
@@ -32,7 +31,7 @@ function toggleButton(): Mithril.Children {
   return (
     <Tooltip text={label}>
       <Button
-        className={classList('Button Button--icon CanelaBulk-toggle', { active: selection.active })}
+        className={classList('Button Button--icon LcoyBulk-toggle', { active: selection.active })}
         icon="fas fa-list-check"
         aria-label={label}
         aria-pressed={selection.active ? 'true' : 'false'}
@@ -49,25 +48,25 @@ function bar(): Mithril.Children {
   const actions = bulkActions().filter((action) => selected.some((discussion) => action.applies(discussion as any)));
 
   return (
-    <div className="CanelaBulkBar" role="toolbar" aria-label={t('extras.bulk.bar_label')}>
-      <div className="CanelaBulkBar-status">
-        <span className="CanelaBulkBar-count">{t('extras.bulk.selected', { count })}</span>
+    <div className="LcoyBulkBar" role="toolbar" aria-label={t('extras.bulk.bar_label')}>
+      <div className="LcoyBulkBar-status">
+        <span className="LcoyBulkBar-count">{t('extras.bulk.selected', { count })}</span>
         {count < total ? (
-          <Button className="Button Button--link CanelaBulkBar-link" onclick={() => selection.selectAll()}>
+          <Button className="Button Button--link LcoyBulkBar-link" onclick={() => selection.selectAll()}>
             {t('extras.bulk.select_all', { count: total })}
           </Button>
         ) : null}
         {count > 0 && (
-          <Button className="Button Button--link CanelaBulkBar-link" onclick={() => selection.clear()}>
+          <Button className="Button Button--link LcoyBulkBar-link" onclick={() => selection.clear()}>
             {t('extras.bulk.clear')}
           </Button>
         )}
       </div>
-      <div className="CanelaBulkBar-actions">
-        {count === 0 && <span className="CanelaBulkBar-hint">{t('extras.bulk.hint')}</span>}
+      <div className="LcoyBulkBar-actions">
+        {count === 0 && <span className="LcoyBulkBar-hint">{t('extras.bulk.hint')}</span>}
         {actions.map((action) => (
           <Button
-            className={classList('Button CanelaBulkBar-action', { 'CanelaBulkBar-action--danger': action.danger })}
+            className={classList('Button LcoyBulkBar-action', { 'LcoyBulkBar-action--danger': action.danger })}
             icon={action.icon}
             onclick={() => action.run(selection.selected() as any)}
           >
@@ -75,7 +74,7 @@ function bar(): Mithril.Children {
           </Button>
         ))}
         <Button
-          className="Button Button--icon Button--link CanelaBulkBar-close"
+          className="Button Button--icon Button--link LcoyBulkBar-close"
           icon="fas fa-times"
           aria-label={t('extras.bulk.toggle_off')}
           onclick={() => selection.setActive(false)}
@@ -87,27 +86,27 @@ function bar(): Mithril.Children {
 
 export default function installBulkSelect(): void {
   extend(IndexPage.prototype, 'oninit', function () {
-    // Outra lista, outra seleção: marcar tópicos de uma tag e trocar de tag
-    // não pode deixar a ação valendo para o que sumiu da tela.
+    // 另一个列表，另一份选择：在某个标签中勾选主题后切换标签，
+    // 不能让操作仍然作用于已从屏幕上消失的内容。
     selection.setActive(false);
   });
 
   extend(IndexPage.prototype, 'actionItems', function (items: ItemList<Mithril.Children>) {
     if (!bulkAvailable()) return;
 
-    items.add('canelaBulk', toggleButton(), 5);
+    items.add('lcoyBulk', toggleButton(), 5);
   });
 
   extend(IndexPage.prototype, 'contentItems', function (items: ItemList<Mithril.Children>) {
     if (!selection.active || !bulkAvailable()) return;
 
-    // Entre a barra de navegação (100) e a lista (90).
-    items.add('canelaBulkBar', bar(), 95);
+    // 位于导航栏（100）与列表（90）之间。
+    items.add('lcoyBulkBar', bar(), 95);
   });
 
   extend(DiscussionListItem.prototype, 'oninit', function (this: DiscussionListItem) {
-    // O item só se redesenha quando o SubtreeRetainer vê mudança; a seleção
-    // precisa entrar nessa conta, senão a caixa não reage ao clique.
+    // 仅当 SubtreeRetainer 检测到变化时该项才会重绘；选择状态
+    // 必须纳入该判断，否则复选框不会响应点击。
     this.subtree.check(
       () => selection.active,
       () => selection.active && selection.has(this.attrs.discussion)
@@ -121,8 +120,8 @@ export default function installBulkSelect(): void {
     const checked = selection.has(discussion);
 
     items.add(
-      'canelaBulkCheck',
-      <label className="CanelaBulkCheck" onclick={(event: MouseEvent) => event.stopPropagation()}>
+      'lcoyBulkCheck',
+      <label className="LcoyBulkCheck" onclick={(event: MouseEvent) => event.stopPropagation()}>
         <input
           type="checkbox"
           checked={checked}
@@ -130,21 +129,21 @@ export default function installBulkSelect(): void {
           onclick={(event: MouseEvent) => {
             selection.toggle(discussion, event.shiftKey);
 
-            // Com shift+clique o estado final vem do intervalo, não do clique:
-            // a caixa clicada é acertada aqui, porque o item pode nem se
-            // redesenhar (SubtreeRetainer) se o estado dele não mudou.
+            // shift+点击时最终状态来自区间而非本次点击：
+            // 在此校正被点击的复选框，因为若其自身状态未变，
+            // 该项甚至可能不会重绘（SubtreeRetainer）。
             (event.currentTarget as HTMLInputElement).checked = selection.has(discussion);
           }}
         />
       </label>,
-      // Antes de tudo, inclusive do avatar do celular (100).
+      // 排在最前，包括手机端的头像（100）之前。
       110
     );
   });
 
   extend(DiscussionListItem.prototype, 'elementAttrs', function (this: DiscussionListItem, attrs: Record<string, any>) {
     if (selection.active && selection.has(this.attrs.discussion)) {
-      attrs.className = classList(attrs.className, 'CanelaBulk-selected');
+      attrs.className = classList(attrs.className, 'LcoyBulk-selected');
     }
   });
 }

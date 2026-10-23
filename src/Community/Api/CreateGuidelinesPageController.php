@@ -23,9 +23,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Lcoy\Roselle\Community\GuidelinesPage;
 
 /**
- * POST /api/canela-guidelines/page — só admin: cria no fof/pages a página
- * "Diretrizes" com o texto atual das diretrizes do tema e a escolhe para o
- * /guidelines. Daí em diante, o conteúdo se edita no próprio fof/pages.
+ * POST /api/lcoy-guidelines/page——仅管理员：在 fof/pages 中创建
+ * "指南"页面，内容为主题当前的指南文本，并把它设为 /guidelines 的页面。
+ * 此后内容直接在 fof/pages 中编辑。
  */
 final class CreateGuidelinesPageController implements RequestHandlerInterface
 {

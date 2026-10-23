@@ -1,8 +1,7 @@
 /*
- * Um post embutido dentro de outro, como os "embedded posts" do Discourse: as
- * respostas que se abrem abaixo de um post, ou o post respondido que se abre
- * acima dele. O conteúdo é o HTML já renderizado pelo servidor; quando o post
- * veio só como relação (sem o HTML), quem embute busca antes de mostrar.
+ * 一个帖子嵌在另一个帖子中，类似 Discourse 的 “embedded posts”：
+ * 在帖子下方展开的回复，或在其上方展开的被回复帖子。内容是服务端已渲染的
+ * HTML；当帖子只作为关联返回（没有 HTML）时，嵌入方会先拉取再显示。
  */
 import app from 'flarum/forum/app';
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
@@ -20,7 +19,7 @@ import { userIcons } from '../../utils/userIcons';
 
 export interface EmbeddedPostAttrs extends ComponentAttrs {
   post: Post;
-  /** Para onde aponta o link de ir ao post: acima (respondido) ou abaixo (resposta). */
+  /** 跳转到帖子的链接指向哪边：上方（被回复的）还是下方（回复）。 */
   direction: 'up' | 'down';
   className?: string;
 }
@@ -33,15 +32,15 @@ export default class EmbeddedPost extends Component<EmbeddedPostAttrs> {
     const time = post.createdAt();
 
     return (
-      <article className={classList('CanelaEmbeddedPost', this.attrs.className)} data-number={post.number()}>
-        <div className="CanelaEmbeddedPost-side">
+      <article className={classList('LcoyEmbeddedPost', this.attrs.className)} data-number={post.number()}>
+        <div className="LcoyEmbeddedPost-side">
           <Avatar user={user || null} />
         </div>
-        <div className="CanelaEmbeddedPost-main">
-          <header className="CanelaEmbeddedPost-header">
-            <span className="CanelaEmbeddedPost-name">{username(user || null)}</span>
+        <div className="LcoyEmbeddedPost-main">
+          <header className="LcoyEmbeddedPost-header">
+            <span className="LcoyEmbeddedPost-name">{username(user || null)}</span>
             {userIcons(user || null, 'embedded')}
-            <Link className="CanelaEmbeddedPost-link" href={app.route.post(post)} title={t('topic.embedded.go_to_post')}>
+            <Link className="LcoyEmbeddedPost-link" href={app.route.post(post)} title={t('topic.embedded.go_to_post')}>
               {time ? (
                 <time dateTime={time.toISOString()} title={fullDate(time)}>
                   {shortAge(time)}
@@ -50,14 +49,14 @@ export default class EmbeddedPost extends Component<EmbeddedPostAttrs> {
               <Icon name={this.attrs.direction === 'up' ? 'fas fa-arrow-up' : 'fas fa-arrow-down'} />
             </Link>
           </header>
-          <div className="CanelaEmbeddedPost-body">{html ? m.trust(html) : <p>{post.contentPlain() || ''}</p>}</div>
+          <div className="LcoyEmbeddedPost-body">{html ? m.trust(html) : <p>{post.contentPlain() || ''}</p>}</div>
         </div>
       </article>
     );
   }
 }
 
-/** Busca, numa requisição só, os posts que vieram sem o HTML. */
+/** 用一次请求拉取缺少 HTML 的帖子。 */
 export function loadMissingContent(posts: Post[]): Promise<unknown> {
   const missing = posts.filter((post) => !post.contentHtml()).map((post) => post.id()!);
 
@@ -67,5 +66,5 @@ export function loadMissingContent(posts: Post[]): Promise<unknown> {
 }
 
 export function embeddedLoading() {
-  return <LoadingIndicator size="small" display="block" className="CanelaEmbeddedPost-loading" />;
+  return <LoadingIndicator size="small" display="block" className="LcoyEmbeddedPost-loading" />;
 }

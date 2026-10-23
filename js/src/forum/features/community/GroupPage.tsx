@@ -26,11 +26,11 @@ type Tab = 'members' | 'activity';
 const EXCERPT_LENGTH = 300;
 
 /**
- * A página de um grupo do Discourse (/g/:nome): o cabeçalho com o símbolo e o
- * nome, e as abas Membros e Atividade.
+ * Discourse 的用户组页面（/g/:name）：带符号和名称的页头，
+ * 以及“成员”和“动态”两个标签。
  *
- * A aba vai na própria URL (?tab=activity) pelo mesmo motivo do diretório:
- * trocar de aba não deve recriar a página e perder a lista carregada.
+ * 标签状态放在 URL 本身（?tab=activity）中，原因与目录页相同：
+ * 切换标签不应重建页面并丢失已加载的列表。
  */
 export default class GroupPage extends CommunityPage {
   group: Group | null = null;
@@ -44,7 +44,7 @@ export default class GroupPage extends CommunityPage {
   postsHasMore = false;
 
   oninit(vnode: Mithril.Vnode<any, this>) {
-    // O grupo antes do `super`: o título da aba sai do nome dele.
+    // 先取用户组再调用 `super`：标签页标题来自其名称。
     this.group = findGroup(m.route.param('name'));
     this.tab = m.route.param('tab') === 'activity' && this.activityEnabled() ? 'activity' : 'members';
 
@@ -65,7 +65,7 @@ export default class GroupPage extends CommunityPage {
   }
 
   className(): string {
-    return 'CanelaGroupPage';
+    return 'LcoyGroupPage';
   }
 
   enabled(): boolean {
@@ -73,19 +73,19 @@ export default class GroupPage extends CommunityPage {
   }
 
   activityEnabled(): boolean {
-    return forumBool('canelaGroupsActivity', true);
+    return forumBool('lcoyGroupsActivity', true);
   }
 
   canViewMembers(): boolean {
-    return forumBool('canelaCanViewDirectory', false);
+    return forumBool('lcoyCanViewDirectory', false);
   }
 
   content(): Mithril.Children {
     if (!this.group) {
       return (
-        <div className="CanelaGroup">
-          <p className="CanelaCommunity-empty">{t('community.groups.not_found')}</p>
-          <LinkButton className="Button" href={app.route('canela.groups')} icon="fas fa-arrow-left">
+        <div className="LcoyGroup">
+          <p className="LcoyCommunity-empty">{t('community.groups.not_found')}</p>
+          <LinkButton className="Button" href={app.route('lcoy.groups')} icon="fas fa-arrow-left">
             {t('community.groups.back')}
           </LinkButton>
         </div>
@@ -93,23 +93,23 @@ export default class GroupPage extends CommunityPage {
     }
 
     return (
-      <div className="CanelaGroup">
+      <div className="LcoyGroup">
         {this.header(this.group)}
         {this.tabs()}
-        <div className="CanelaGroup-body">{this.tab === 'activity' ? this.activity() : this.membersView()}</div>
+        <div className="LcoyGroup-body">{this.tab === 'activity' ? this.activity() : this.membersView()}</div>
       </div>
     );
   }
 
-  /** O `group-details-container`: o flair de 50px, o nome grande e o @endereço. */
+  /** `group-details-container`：50px 的 flair、大号名称和 @地址。 */
   header(group: Group): Mithril.Children {
     return (
-      <header className="CanelaGroup-header" style={group.color() ? { '--group-color': group.color() } : undefined}>
-        <div className="CanelaGroup-info">
+      <header className="LcoyGroup-header" style={group.color() ? { '--group-color': group.color() } : undefined}>
+        <div className="LcoyGroup-info">
           {group.icon() && <GroupFlair group={group} size="large" />}
-          <div className="CanelaGroup-headerInfo">
-            <h1 className="CanelaGroup-name">{group.namePlural()}</h1>
-            <div className="CanelaGroup-mention">@{groupSlug(group)}</div>
+          <div className="LcoyGroup-headerInfo">
+            <h1 className="LcoyGroup-name">{group.namePlural()}</h1>
+            <div className="LcoyGroup-mention">@{groupSlug(group)}</div>
           </div>
         </div>
       </header>
@@ -127,7 +127,7 @@ export default class GroupPage extends CommunityPage {
     }
 
     return (
-      <nav className="CanelaGroup-tabs" aria-label={t('community.groups.tabs_label')}>
+      <nav className="LcoyGroup-tabs" aria-label={t('community.groups.tabs_label')}>
         <ul>{items.toArray()}</ul>
       </nav>
     );
@@ -139,13 +139,13 @@ export default class GroupPage extends CommunityPage {
     return (
       <li className={classList({ active })}>
         <Button
-          className={classList('Button CanelaGroup-tab', { active })}
+          className={classList('Button LcoyGroup-tab', { active })}
           icon={icon}
           aria-current={active ? 'page' : undefined}
           onclick={() => this.setTab(tab)}
         >
           {label}
-          {count !== null && <span className="CanelaGroup-tabCount">({count})</span>}
+          {count !== null && <span className="LcoyGroup-tabCount">({count})</span>}
         </Button>
       </li>
     );
@@ -156,14 +156,14 @@ export default class GroupPage extends CommunityPage {
 
     if (tab === 'activity' && !this.postsLoaded && !this.postsLoading) this.loadActivity();
 
-    const url = app.route('canela.group', { name: m.route.param('name') }) + (tab === 'activity' ? '?tab=activity' : '');
+    const url = app.route('lcoy.group', { name: m.route.param('name') }) + (tab === 'activity' ? '?tab=activity' : '');
     window.history.replaceState(window.history.state, '', url);
   }
 
   membersView(): Mithril.Children {
     if (!this.members) {
       return (
-        <p className="CanelaCommunity-empty">{app.session.user ? t('community.groups.members_forbidden') : t('community.groups.members_login')}</p>
+        <p className="LcoyCommunity-empty">{app.session.user ? t('community.groups.members_forbidden') : t('community.groups.members_login')}</p>
       );
     }
 
@@ -183,8 +183,8 @@ export default class GroupPage extends CommunityPage {
 
         if (!response.data.length) return [] as Post[];
 
-        // Os ids já vêm filtrados pela visibilidade; o /api/posts serializa
-        // cada postagem com o que as extensões acrescentam.
+        // id 已按可见性过滤；/api/posts 会序列化每条帖子，
+        // 并包含各扩展添加的内容。
         return app.store.find<Post[]>('posts', {
           filter: { id: response.data.join(',') },
           include: 'user,discussion',
@@ -206,14 +206,14 @@ export default class GroupPage extends CommunityPage {
   activity(): Mithril.Children {
     if (!this.postsLoaded && this.postsLoading) return <LoadingIndicator display="block" />;
 
-    if (!this.posts.length) return <p className="CanelaCommunity-empty">{t('community.groups.no_activity')}</p>;
+    if (!this.posts.length) return <p className="LcoyCommunity-empty">{t('community.groups.no_activity')}</p>;
 
     return (
-      <div className="CanelaGroup-activity">
-        <ul className="CanelaStream">{this.posts.map((post) => this.streamItem(post))}</ul>
+      <div className="LcoyGroup-activity">
+        <ul className="LcoyStream">{this.posts.map((post) => this.streamItem(post))}</ul>
         {this.postsLoading && <LoadingIndicator display="block" />}
         {!this.postsLoading && this.postsHasMore && (
-          <div className="CanelaCommunity-more">
+          <div className="LcoyCommunity-more">
             <Button className="Button" onclick={() => this.loadActivity()}>
               {t('community.load_more')}
             </Button>
@@ -223,31 +223,31 @@ export default class GroupPage extends CommunityPage {
     );
   }
 
-  /** Um item do "stream" de usuário do Discourse: avatar, tópico, quando e o começo do texto. */
+  /** Discourse 用户动态流中的一项：头像、主题、时间和文本开头。 */
   streamItem(post: Post): Mithril.Children {
     const user = post.user();
     const discussion = post.discussion();
     const createdAt = post.createdAt();
 
     return (
-      <li key={post.id()} className="CanelaStream-item">
-        <div className="CanelaStream-header">
+      <li key={post.id()} className="LcoyStream-item">
+        <div className="LcoyStream-header">
           {user ? (
-            <Link href={app.route.user(user)} className="CanelaStream-avatar">
+            <Link href={app.route.user(user)} className="LcoyStream-avatar">
               <Avatar user={user} />
             </Link>
           ) : (
-            <span className="CanelaStream-avatar">
+            <span className="LcoyStream-avatar">
               <Avatar user={null} />
             </span>
           )}
-          <div className="CanelaStream-titles">
+          <div className="LcoyStream-titles">
             {discussion && (
-              <Link href={app.route.post(post)} className="CanelaStream-topic">
+              <Link href={app.route.post(post)} className="LcoyStream-topic">
                 {discussion.title()}
               </Link>
             )}
-            <span className="CanelaStream-meta">
+            <span className="LcoyStream-meta">
               {user && <Link href={app.route.user(user)}>{user.displayName()}</Link>}
               {createdAt && (
                 <time datetime={createdAt.toISOString()} title={fullDate(createdAt)}>
@@ -257,7 +257,7 @@ export default class GroupPage extends CommunityPage {
             </span>
           </div>
         </div>
-        <p className="CanelaStream-excerpt">{truncate(post.contentPlain() || '', EXCERPT_LENGTH)}</p>
+        <p className="LcoyStream-excerpt">{truncate(post.contentPlain() || '', EXCERPT_LENGTH)}</p>
       </li>
     );
   }

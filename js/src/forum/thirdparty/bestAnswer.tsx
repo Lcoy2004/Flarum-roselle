@@ -1,16 +1,16 @@
 /*
- * fof/best-answer no jeito do discourse-solved.
+ * fof/best-answer，按照 discourse-solved 的方式呈现。
  *
- * - Na barra do post, o "✓ Solução" verde no post aceito; nos outros, quem
- *   pode escolher vê o quadradinho de marcar (o `far-square-check` do
- *   Discourse). O item da extensão no "…" e o rótulo no cabeçalho do post
- *   saem: seriam o mesmo controle duas vezes.
- * - A resposta aceita sobe para logo abaixo do conteúdo do 1º post, no
- *   acordeão do Discourse (cabeçalho verde "SOLUÇÃO", autor e o texto cortado
- *   em seis linhas, com a seta para abrir e a de ir até o post).
- * - Na lista, o ícone do selo vira o quadrado com o certo, em verde (CSS).
+ * - 帖子栏中，被采纳的帖子显示绿色 "✓ 已解决"；其他帖子中，
+ *   有权限的人会看到勾选方块（Discourse 的 `far-square-check`）。
+ *   "…" 中的扩展项和帖子页眉中的标签会被移除：
+ *   否则同一个控件会出现两次。
+ * - 被采纳的答案上移到首帖内容正下方，位于 Discourse 的
+ *   折叠面板中（绿色标题 "解决方案"、作者以及截断为
+ *   六行的文本，带展开箭头和跳转到该帖的箭头）。
+ * - 列表中，徽章图标变成绿色带勾的方块（CSS）。
  *
- * A gravação é a mesma da extensão: a relação `bestAnswerPost` da discussão.
+ * 保存方式与扩展相同：讨论的 `bestAnswerPost` 关系。
  */
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
@@ -34,7 +34,7 @@ import type Mithril from 'mithril';
 import { t } from '../utils/settings';
 import { extModule, thirdParty } from './settings';
 
-/** A resposta aceita da discussão, ou null (a relação vazia devolve `false`). */
+/** 讨论中被采纳的答案，或 null（空关系返回 `false`）。 */
 function acceptedPost(discussion: Discussion | null | undefined): Post | null {
   const d = discussion as any;
 
@@ -49,7 +49,7 @@ function isAccepted(post: Post): boolean {
   return !!accepted && accepted.id() === post.id();
 }
 
-/** As mesmas regras da extensão: nunca o 1º post, nem post oculto, nem visitante. */
+/** 与扩展相同的规则：绝不是首帖，也不含隐藏帖和访客。 */
 function canToggle(post: Post): boolean {
   return (
     !!app.session.user &&
@@ -65,7 +65,7 @@ function save(discussion: Discussion, post: Post, accept: boolean): Promise<void
   return discussion
     .save({ relationships: { bestAnswerPost: accept ? post : ({ data: null } as any) } } as any, { params: { include: 'tags' } } as any)
     .then(() => {
-      // Sem isso a relação antiga continua no modelo e o post segue "aceito".
+      // 否则旧关系会留在模型中，帖子仍显示为 "已采纳"。
       if (!accept && discussion.data.relationships) {
         delete (discussion.data.relationships as any).bestAnswerPost;
         delete (discussion.data.relationships as any).bestAnswerUser;
@@ -77,7 +77,7 @@ function save(discussion: Discussion, post: Post, accept: boolean): Promise<void
     });
 }
 
-/** "Marcada como solução por Fulano há 2 dias", para o title do selo verde. */
+/** "由某人在 2 天前标记为解决方案"，用于绿色徽章的 title。 */
 function acceptedBy(discussion: Discussion): string {
   const d = discussion as any;
   const user = d.bestAnswerUser?.();
@@ -89,8 +89,8 @@ function acceptedBy(discussion: Discussion): string {
 }
 
 export default function installBestAnswer(): void {
-  // "0 melhor resposta" no topo do perfil: o Discourse não mostra contagem
-  // zerada. No beforeMount, para rodar depois do item do próprio fof.
+  // 个人资料顶部的 "0 个最佳答案"：Discourse 不显示为零的计数。
+  // 在 beforeMount 中，以便在 fof 自身的项之后运行。
   app.beforeMount(() => {
     extend(UserCard.prototype, 'infoItems', function (this: any, items: any) {
       const count = Number(this.attrs.user?.attribute?.('bestAnswerCount')) || 0;
@@ -104,7 +104,7 @@ export default function installBestAnswer(): void {
 
     const post: Post = this.attrs.post;
 
-    // O botão "primário" da interface alternativa da extensão: o tema já tem o seu.
+    // 扩展替代界面的 "主" 按钮：主题已经有自己的。
     items.remove('bestAnswer');
 
     if (post.isHidden() || post.number() === 1) return;
@@ -118,10 +118,10 @@ export default function installBestAnswer(): void {
       const title = acceptedBy(discussion);
 
       items.add(
-        'canelaSolved',
+        'lcoySolved',
         toggle ? (
           <Button
-            className="Button Button--flat CanelaPostAction CanelaSolved CanelaSolved--accepted"
+            className="Button Button--flat LcoyPostAction LcoySolved LcoySolved--accepted"
             icon="fas fa-square-check"
             title={`${title}: ${t('thirdparty.solved.unmark')}`}
             aria-pressed="true"
@@ -130,9 +130,9 @@ export default function installBestAnswer(): void {
             {label}
           </Button>
         ) : (
-          <span className="CanelaSolved CanelaSolved--accepted CanelaSolved--static" title={title}>
+          <span className="LcoySolved LcoySolved--accepted LcoySolved--static" title={title}>
             <Icon name="fas fa-square-check" />
-            <span className="CanelaSolved-label">{label}</span>
+            <span className="LcoySolved-label">{label}</span>
           </span>
         ),
         25
@@ -144,9 +144,9 @@ export default function installBestAnswer(): void {
     if (!toggle) return;
 
     items.add(
-      'canelaSolved',
+      'lcoySolved',
       <Button
-        className="Button Button--icon Button--flat CanelaPostAction CanelaSolved"
+        className="Button Button--icon Button--flat LcoyPostAction LcoySolved"
         icon="far fa-square-check"
         title={t('thirdparty.solved.mark')}
         aria-label={t('thirdparty.solved.mark')}
@@ -157,30 +157,30 @@ export default function installBestAnswer(): void {
     );
   });
 
-  // O mesmo controle no "…" seria repetido.
+  // "…" 中的同一个控件会重复。
   extend(PostControls, 'moderationControls', function (items: ItemList<Mithril.Children>) {
     if (!thirdParty.solved()) return;
 
     items.remove('bestAnswer');
   });
 
-  // O Discourse não marca o cabeçalho do post aceito; o selo verde da barra basta.
+  // Discourse 不标记被采纳帖子的页眉；栏中的绿色徽章已足够。
   extend(CommentPost.prototype, 'headerItems', function (items: ItemList<Mithril.Children>) {
     if (!thirdParty.solved()) return;
 
     items.remove('isBestAnswer');
   });
 
-  // A prévia da extensão no rodapé dá lugar ao acordeão dentro do conteúdo,
-  // acima da barra de ações, onde o Discourse o põe.
+  // 扩展在页脚的预览让位给内容中的折叠面板，
+  // 位于操作栏上方，即 Discourse 放置它的位置。
   extend(CommentPost.prototype, 'footerItems', function (items: ItemList<Mithril.Children>) {
     if (!thirdParty.solved()) return;
 
     items.remove('bestAnswerPost');
   });
 
-  // O post guarda a árvore (SubtreeRetainer): abrir o acordeão só redesenha
-  // se o 1º post souber que o estado dele mudou.
+  // 帖子会保留树结构（SubtreeRetainer）：只有首帖知道
+  // 自己的状态发生变化时，展开折叠面板才会重新绘制。
   extend(CommentPost.prototype, 'oninit', function (this: any) {
     if (!thirdParty.solved()) return;
 
@@ -205,26 +205,26 @@ export default function installBestAnswer(): void {
     if (accepted && !accepted.isHidden()) content.push(<SolutionAccordion post={accepted} />);
   });
 
-  // A resposta escolhida, no fluxo: um cartão com borda verde e a faixa
-  // "Solução" no topo — o mesmo desenho do post sinalizado, em verde.
+  // 被选中的答案进入正文流：一张带绿色边框的卡片，
+  // 顶部有 "解决方案" 条 —— 与举报帖相同的外观，只是绿色。
   extend(CommentPost.prototype, 'elementAttrs', function (this: any, attrs: Record<string, any>) {
     if (!thirdParty.solved() || !isAccepted(this.attrs.post)) return;
 
-    attrs.className = classList(attrs.className, 'CanelaPost--solution');
+    attrs.className = classList(attrs.className, 'LcoyPost--solution');
   });
 
   extend(CommentPost.prototype, 'content', function (this: any, content: Mithril.Children[]) {
     if (!thirdParty.solved() || !isAccepted(this.attrs.post)) return;
 
     content.unshift(
-      <div className="CanelaPost-solutionBar">
+      <div className="LcoyPost-solutionBar">
         <Icon name="fas fa-square-check" />
         <span>{t('thirdparty.solved.accepted_bar')}</span>
       </div>
     );
   });
 
-  // O selo da lista: o quadrado com o certo (`square-check`) do Discourse.
+  // 列表中的徽章：Discourse 的带勾方块（`square-check`）。
   const Badge = extModule<any>('fof-best-answer', 'forum/components/BestAnswerBadge');
 
   if (Badge) {
@@ -239,7 +239,7 @@ interface SolutionAccordionAttrs {
   post: Post;
 }
 
-/** Linhas visíveis antes de abrir (`--max-lines-displayed` do Discourse). */
+/** 展开前的可见行数（Discourse 的 `--max-lines-displayed`）。 */
 const MAX_LINES = 6;
 
 interface SolutionState {
@@ -248,11 +248,11 @@ interface SolutionState {
   version: number;
 }
 
-/** O estado do acordeão mora no post aceito, que o 1º post consegue observar. */
+/** 折叠面板的状态存放在被采纳的帖子上，首帖可以观察到它。 */
 function solutionState(post: Post): SolutionState {
   const p = post as any;
 
-  return (p.canelaSolution ??= { expanded: false, overflowing: false, version: 0 });
+  return (p.lcoySolution ??= { expanded: false, overflowing: false, version: 0 });
 }
 
 function setSolutionState(post: Post, changes: Partial<SolutionState>) {
@@ -288,9 +288,9 @@ class SolutionAccordion {
     this.measure(vnode.dom as HTMLElement);
   }
 
-  /** O degradê e a seta só aparecem quando o texto passa das seis linhas. */
+  /** 只有在文本超过六行时才显示渐变和箭头。 */
   measure(dom: HTMLElement) {
-    const content = dom.querySelector<HTMLElement>('.CanelaSolution-content');
+    const content = dom.querySelector<HTMLElement>('.LcoySolution-content');
 
     if (!content || this.expanded) return;
 
@@ -305,32 +305,32 @@ class SolutionAccordion {
     const html = post.contentHtml();
 
     return (
-      <div className="CanelaSolution" style={{ '--canela-solution-lines': MAX_LINES }}>
-        <div className="CanelaSolution-header">
+      <div className="LcoySolution" style={{ '--lcoy-solution-lines': MAX_LINES }}>
+        <div className="LcoySolution-header">
           <Icon name="fas fa-square-check" />
-          <span className="CanelaSolution-title">{t('thirdparty.solved.title')}</span>
+          <span className="LcoySolution-title">{t('thirdparty.solved.title')}</span>
         </div>
         <div
-          className={classList('CanelaSolution-item', {
-            'CanelaSolution-item--expanded': this.expanded,
-            'CanelaSolution-item--overflowing': this.overflowing,
+          className={classList('LcoySolution-item', {
+            'LcoySolution-item--expanded': this.expanded,
+            'LcoySolution-item--overflowing': this.overflowing,
           })}
         >
-          <div className="CanelaSolution-itemHeader">
-            <span className="CanelaSolution-meta">
+          <div className="LcoySolution-itemHeader">
+            <span className="LcoySolution-meta">
               {user ? (
-                <Link href={app.route.user(user)} className="CanelaSolution-user">
+                <Link href={app.route.user(user)} className="LcoySolution-user">
                   <Avatar user={user} />
-                  <span className="CanelaSolution-username">{username(user)}</span>
+                  <span className="LcoySolution-username">{username(user)}</span>
                 </Link>
               ) : (
-                <span className="CanelaSolution-user">{username(user)}</span>
+                <span className="LcoySolution-user">{username(user)}</span>
               )}
             </span>
-            <span className="CanelaSolution-controls">
+            <span className="LcoySolution-controls">
               <Link
                 href={app.route.post(post)}
-                className="Button Button--icon Button--flat CanelaSolution-jump"
+                className="Button Button--icon Button--flat LcoySolution-jump"
                 title={t('thirdparty.solved.jump')}
                 aria-label={t('thirdparty.solved.jump')}
               >
@@ -338,7 +338,7 @@ class SolutionAccordion {
               </Link>
               {(this.overflowing || this.expanded) && (
                 <Button
-                  className="Button Button--icon Button--flat CanelaSolution-toggle"
+                  className="Button Button--icon Button--flat LcoySolution-toggle"
                   icon={this.expanded ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
                   aria-expanded={this.expanded ? 'true' : 'false'}
                   aria-label={t(this.expanded ? 'thirdparty.solved.collapse' : 'thirdparty.solved.expand')}
@@ -348,7 +348,7 @@ class SolutionAccordion {
               )}
             </span>
           </div>
-          {html ? <div className="CanelaSolution-content Post-body">{m.trust(html)}</div> : null}
+          {html ? <div className="LcoySolution-content Post-body">{m.trust(html)}</div> : null}
         </div>
       </div>
     );

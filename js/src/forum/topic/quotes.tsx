@@ -1,13 +1,11 @@
 /*
- * Citações no jeito do Discourse (aside.quote): o mentions grava uma citação
- * como `<blockquote><p><a class="PostMention">Fulano</a> texto…</p>`, e o
- * Discourse mostra em cima da citação um cabeçalho "avatar Fulano:" com a
- * seta para ir ao post citado. O tema monta esse cabeçalho dentro do próprio
- * blockquote, sobre o HTML já renderizado.
+ * Discourse 风格的引用（aside.quote）：mentions 把引用写成
+ * `<blockquote><p><a class="PostMention">某某</a> 文本…</p>`，而 Discourse 会在
+ * 引用上方显示一个“头像 某某：”的头部，带跳转到被引用帖子的箭头。
+ * 主题在 blockquote 内部、基于已渲染的 HTML 构建这个头部。
  *
- * Só acrescenta nós DENTRO dos blocos do post (nunca troca um bloco de
- * lugar): o Mithril guarda os nós de topo do m.trust para removê-los quando
- * o conteúdo muda, e um bloco trocado ficaria para trás.
+ * 只在帖子的块内部添加节点（绝不替换块的位置）：Mithril 会保存 m.trust 的
+ * 顶层节点，以便在内容变化时移除它们，被替换的块会残留下来。
  */
 import app from 'flarum/forum/app';
 import Avatar from 'flarum/common/components/Avatar';
@@ -17,9 +15,9 @@ import type User from 'flarum/common/models/User';
 import { t } from '../utils/settings';
 import { iconMarkup } from '../icons';
 
-const DONE = 'canelaQuote';
+const DONE = 'lcoyQuote';
 
-/** O autor do post citado: pelo post, se já carregou; senão, pelo nome exibido. */
+/** 被引用帖子的作者：帖子已加载时由帖子得出；否则按显示名查找。 */
 function quotedUser(mention: HTMLAnchorElement): User | null {
   const post = app.store.getById<Post>('posts', mention.dataset.id || '');
   const user = post ? post.user() : null;
@@ -36,13 +34,13 @@ function decorateQuote(quote: HTMLElement): void {
 
   if (!first || first.tagName !== 'P') return;
 
-  // A menção tem que abrir o parágrafo: no meio do texto ela é só uma menção.
+  // 提及必须位于段落开头：在文本中间时它只是普通提及。
   const leading = Array.from(first.childNodes).find((node) => node.nodeType !== Node.TEXT_NODE || (node.textContent || '').trim() !== '');
 
   if (!(leading instanceof HTMLAnchorElement) || !leading.classList.contains('PostMention')) return;
 
   const title = document.createElement('div');
-  title.className = 'CanelaQuote-title';
+  title.className = 'LcoyQuote-title';
 
   const user = quotedUser(leading);
 
@@ -52,16 +50,16 @@ function decorateQuote(quote: HTMLElement): void {
     title.appendChild(avatar.firstElementChild || avatar);
   }
 
-  // A própria menção vai para o cabeçalho: continua com a prévia ao passar o
-  // mouse e o clique que leva ao post, que o mentions já ligou nela.
+  // 提及本身移入头部：悬停预览和跳转到帖子的点击都保留——
+  // mentions 已经给它绑定好了。
   const name = document.createElement('span');
-  name.className = 'CanelaQuote-name';
+  name.className = 'LcoyQuote-name';
   name.appendChild(leading);
   name.appendChild(document.createTextNode(':'));
   title.appendChild(name);
 
   const controls = document.createElement('span');
-  controls.className = 'CanelaQuote-controls';
+  controls.className = 'LcoyQuote-controls';
 
   const back = document.createElement('a');
   back.href = leading.href;
@@ -69,30 +67,30 @@ function decorateQuote(quote: HTMLElement): void {
   back.setAttribute('aria-label', back.title);
   back.innerHTML = iconMarkup('fas fa-arrow-up');
   back.addEventListener('click', (event) => {
-    // Deixa o clique com o link da menção, que rola até o post sem recarregar.
+    // 点击交给提及的链接，它会在不刷新页面的情况下滚动到帖子。
     event.preventDefault();
     leading.click();
   });
   controls.appendChild(back);
   title.appendChild(controls);
 
-  // Sobra o espaço que separava a menção do texto.
+  // 剩下的是原先把提及与文本分开的空格。
   const rest = first.firstChild;
   if (rest && rest.nodeType === Node.TEXT_NODE) rest.textContent = (rest.textContent || '').replace(/^\s+/, '');
 
-  quote.classList.add('CanelaQuote');
+  quote.classList.add('LcoyQuote');
   quote.insertBefore(title, first);
 }
 
 export function decorateQuotes(body: HTMLElement, post: Post, replyMarker: string | null): void {
   const html = post.contentHtml() || '';
 
-  // Uma vez por versão do conteúdo: o onupdate roda a cada redesenho do post.
+  // 每个内容版本执行一次：onupdate 在每次帖子重绘时都会运行。
   if ((body as any)[DONE] === html) return;
   (body as any)[DONE] = html;
 
   body.querySelectorAll<HTMLElement>(':scope > blockquote, :scope > * blockquote').forEach((quote) => {
-    if (!quote.classList.contains('CanelaQuote')) decorateQuote(quote);
+    if (!quote.classList.contains('LcoyQuote')) decorateQuote(quote);
   });
 
   if (replyMarker) {
@@ -100,6 +98,6 @@ export function decorateQuotes(body: HTMLElement, post: Post, replyMarker: strin
     const mention =
       first && first.tagName === 'P' ? first.querySelector<HTMLAnchorElement>(`:scope > a.PostMention[data-id="${replyMarker}"]`) : null;
 
-    if (mention && first!.firstElementChild === mention) mention.classList.add('CanelaReplyMarker');
+    if (mention && first!.firstElementChild === mention) mention.classList.add('LcoyReplyMarker');
   }
 }

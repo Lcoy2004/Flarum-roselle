@@ -1,11 +1,10 @@
 /*
- * "Editar marcador", o modal do Discourse (bookmark-reminder-modal): um nome
- * opcional, o "Lembre-me" com os atalhos de horário (mais tarde hoje, amanhã,
- * próxima semana, próximo mês, personalizado ou nenhum) e, no rodapé, Salvar,
- * Cancelar e Excluir.
+ * “编辑书签”，Discourse 的弹窗（bookmark-reminder-modal）：可选的名称、
+ * 带时间快捷项的“提醒我”（今天稍后、明天、下周、下个月、自定义或
+ * 不提醒），以及页脚中的保存、取消和删除。
  *
- * O mesmo modal cria (post ainda não marcado) e edita. Nada é gravado até o
- * Salvar: o Cancelar desfaz tudo, como lá.
+ * 同一个弹窗既用于创建（帖子尚未收藏）也用于编辑。在点击保存之前
+ * 不会写入任何内容：取消会撤销全部更改，与 Discourse 一致。
  */
 import app from 'flarum/forum/app';
 import FormModal, { type IFormModalAttrs } from 'flarum/common/components/FormModal';
@@ -33,7 +32,7 @@ const PRESET_ICONS: Record<ReminderPreset, string> = {
   none: 'fas fa-ban',
 };
 
-/** O mesmo limite da coluna `name` no banco. */
+/** 与数据库中 `name` 列相同的长度限制。 */
 const NAME_MAX_LENGTH = 100;
 
 export default class BookmarkModal extends FormModal<BookmarkModalAttrs> {
@@ -42,7 +41,7 @@ export default class BookmarkModal extends FormModal<BookmarkModalAttrs> {
   customDate!: Stream<string>;
   customTime!: Stream<string>;
 
-  /** O lembrete que já existia: continua valendo se nenhum atalho for escolhido. */
+  /** 已存在的提醒：若未选择任何快捷项，则保持有效。 */
   existingReminder: Date | null = null;
 
   oninit(vnode: Mithril.Vnode<BookmarkModalAttrs, this>) {
@@ -54,14 +53,14 @@ export default class BookmarkModal extends FormModal<BookmarkModalAttrs> {
 
     this.name = Stream(state?.name ?? '');
     this.existingReminder = reminder;
-    // Sem escolha ainda: salvar mantém o lembrete atual (ou nenhum).
+    // 尚未选择：保存时保持当前提醒（或没有提醒）。
     this.preset = null;
     this.customDate = Stream(custom.date);
     this.customTime = Stream(custom.time);
   }
 
   className() {
-    return 'CanelaBookmarkModal Modal--small';
+    return 'LcoyBookmarkModal Modal--small';
   }
 
   title() {
@@ -75,11 +74,11 @@ export default class BookmarkModal extends FormModal<BookmarkModalAttrs> {
       <div className="Modal-body">
         <div className="Form">
           <div className="Form-group">
-            <label className="CanelaBookmarkModal-label" for="canela-bookmark-name">
+            <label className="LcoyBookmarkModal-label" for="lcoy-bookmark-name">
               {t('bookmarks.modal.name_label')}
             </label>
             <input
-              id="canela-bookmark-name"
+              id="lcoy-bookmark-name"
               className="FormControl"
               name="name"
               type="text"
@@ -90,27 +89,27 @@ export default class BookmarkModal extends FormModal<BookmarkModalAttrs> {
           </div>
 
           {this.existingReminder && this.preset === null && (
-            <p className="CanelaBookmarkModal-existing">
+            <p className="LcoyBookmarkModal-existing">
               <Icon name="far fa-clock" />
               <span>{t('bookmarks.modal.existing_reminder', { date: reminderLabel(this.existingReminder) })}</span>
             </p>
           )}
 
-          <fieldset className="Form-group CanelaBookmarkModal-reminder">
-            <legend className="CanelaBookmarkModal-label">{t('bookmarks.modal.reminder_label')}</legend>
-            <div className="CanelaBookmarkModal-presets" role="radiogroup">
+          <fieldset className="Form-group LcoyBookmarkModal-reminder">
+            <legend className="LcoyBookmarkModal-label">{t('bookmarks.modal.reminder_label')}</legend>
+            <div className="LcoyBookmarkModal-presets" role="radiogroup">
               {[...availablePresets(), 'custom' as const, 'none' as const].map((preset) => this.presetButton(preset))}
             </div>
 
             {this.preset === 'custom' && (
-              <div className="CanelaBookmarkModal-custom">
+              <div className="LcoyBookmarkModal-custom">
                 <input className="FormControl" type="date" aria-label={t('bookmarks.modal.custom_date')} bidi={this.customDate} />
                 <input className="FormControl" type="time" aria-label={t('bookmarks.modal.custom_time')} bidi={this.customTime} />
               </div>
             )}
           </fieldset>
 
-          <div className="Form-group CanelaBookmarkModal-footer">
+          <div className="Form-group LcoyBookmarkModal-footer">
             <Button className="Button Button--primary" type="submit" loading={this.loading}>
               {t('bookmarks.modal.save')}
             </Button>
@@ -119,7 +118,7 @@ export default class BookmarkModal extends FormModal<BookmarkModalAttrs> {
             </Button>
             {isEditing && (
               <Button
-                className="Button Button--flat CanelaBookmarkModal-delete"
+                className="Button Button--flat LcoyBookmarkModal-delete"
                 icon="far fa-trash-alt"
                 onclick={() => this.remove()}
                 disabled={this.loading}
@@ -142,19 +141,19 @@ export default class BookmarkModal extends FormModal<BookmarkModalAttrs> {
         type="button"
         role="radio"
         aria-checked={selected ? 'true' : 'false'}
-        className={classList('CanelaBookmarkModal-preset', { 'is-selected': selected })}
+        className={classList('LcoyBookmarkModal-preset', { 'is-selected': selected })}
         onclick={() => (this.preset = selected ? null : preset)}
       >
-        <Icon name={PRESET_ICONS[preset]} className="CanelaBookmarkModal-presetIcon" />
-        <span className="CanelaBookmarkModal-presetLabel">{t(`bookmarks.presets.${preset}`)}</span>
-        {date && <span className="CanelaBookmarkModal-presetHint">{presetHint(date)}</span>}
+        <Icon name={PRESET_ICONS[preset]} className="LcoyBookmarkModal-presetIcon" />
+        <span className="LcoyBookmarkModal-presetLabel">{t(`bookmarks.presets.${preset}`)}</span>
+        {date && <span className="LcoyBookmarkModal-presetHint">{presetHint(date)}</span>}
       </button>
     );
   }
 
   /**
-   * O lembrete a gravar: `undefined` mantém o atual, `null` tira, uma data
-   * troca. `false` quando o horário personalizado é inválido.
+   * 要写入的提醒：`undefined` 保持现状，`null` 移除，日期则替换。
+   * 自定义时间无效时返回 `false`。
    */
   chosenReminder(): Date | null | undefined | false {
     switch (this.preset) {
@@ -193,8 +192,8 @@ export default class BookmarkModal extends FormModal<BookmarkModalAttrs> {
     (bookmark ? updateBookmark(post, bookmark, changes) : createBookmark(post, changes))
       .then(() => this.hide())
       .catch(() => {
-        // O erro da API já aparece no alerta global; o modal fica aberto
-        // para tentar de novo.
+        // API 错误已显示在全局提示中；弹窗保持打开
+        // 以便重试。
         this.loading = false;
         m.redraw();
       });

@@ -11,12 +11,11 @@
  */
 
 /*
- * Recursos "extras" do Discourse: página de busca com filtros avançados,
- * seleção em massa, "Melhores" por período, tamanho do texto, imprimir
- * tópico e histórico de edições.
+ * Discourse 的 "额外" 功能：带高级过滤器的搜索页、
+ * 批量选择、按时间段查看 "最佳"、文字大小、打印主题。
  *
- * Cada um liga e desliga no admin (`canela.*_enabled`, padrão ligado).
- * Desligado, o fórum não mostra nada dele e as rotas respondem 404.
+ * 每一项都在管理员处独立开关（`lcoy.*_enabled`，默认开启）。
+ * 关闭后，论坛不显示其任何内容，路由返回 404。
  */
 
 use Flarum\Api\Resource\DiscussionResource;
@@ -24,15 +23,9 @@ use Flarum\Api\Resource\PostResource;
 use Flarum\Api\Sort\SortColumn;
 use Flarum\Discussion\Search\DiscussionSearcher;
 use Flarum\Extend;
-use Flarum\Post\Event\Revised;
 use Flarum\Post\Filter\PostSearcher;
-use Flarum\Post\Post;
 use Flarum\Search\Database\DatabaseSearchDriver;
 use Lcoy\Roselle\Extras\Extras;
-use Lcoy\Roselle\Extras\History\ListRevisionsController;
-use Lcoy\Roselle\Extras\History\PostRevision;
-use Lcoy\Roselle\Extras\History\PostRevisionFields;
-use Lcoy\Roselle\Extras\History\RecordRevision;
 use Lcoy\Roselle\Extras\Search\BookmarkedFilter;
 use Lcoy\Roselle\Extras\Search\DiscussionSearchMutator;
 use Lcoy\Roselle\Extras\Search\LikedFilter;
@@ -45,15 +38,14 @@ use Lcoy\Roselle\Extras\Search\SortsByLikes;
 $settings = new Extend\Settings();
 
 /*
- * chave => [atributo no fórum, padrão, conversão].
+ * 键 => [论坛中的属性, 默认值, 转换]。
  */
 foreach ([
-    Extras::SEARCH_PAGE => ['canelaSearchPageEnabled', true, 'boolval'],
-    Extras::BULK_SELECT => ['canelaBulkSelectEnabled', true, 'boolval'],
-    Extras::TOP_PERIODS => ['canelaTopPeriodsEnabled', true, 'boolval'],
-    Extras::TEXT_SIZE => ['canelaTextSizeEnabled', true, 'boolval'],
-    Extras::PRINT_TOPIC => ['canelaPrintTopicEnabled', true, 'boolval'],
-    Extras::POST_HISTORY => ['canelaPostHistoryEnabled', true, 'boolval'],
+    Extras::SEARCH_PAGE => ['lcoySearchPageEnabled', true, 'boolval'],
+    Extras::BULK_SELECT => ['lcoyBulkSelectEnabled', true, 'boolval'],
+    Extras::TOP_PERIODS => ['lcoyTopPeriodsEnabled', true, 'boolval'],
+    Extras::TEXT_SIZE => ['lcoyTextSizeEnabled', true, 'boolval'],
+    Extras::PRINT_TOPIC => ['lcoyPrintTopicEnabled', true, 'boolval'],
 ] as $key => [$attributeName, $default, $cast]) {
     $settings->default($key, $default)->serializeToForum($attributeName, $key, $cast);
 }
@@ -61,20 +53,20 @@ foreach ([
 return [
     $settings,
 
-    // ── Página de busca ──────────────────────────────────────────────────────
+    // ── 搜索页 ───────────────────────────────────────────────────────────────
     (new Extend\Frontend('forum'))
-        ->route('/search', 'canela.search', SearchPageContent::class),
+        ->route('/search', 'lcoy.search', SearchPageContent::class),
 
-    // `min-posts:` e `in:title` valem para qualquer busca de tópicos (o modal
-    // do core também os entende), não só para a página. "Marcados por mim" lê a
-    // tabela do recurso de marcadores e não acha nada se ela não existir.
+    // `min-posts:` 和 `in:title` 适用于任何主题搜索（核心的弹窗
+    // 也支持），而不只是搜索页。"我标记的" 会读取
+    // 书签功能的数据表，若该表不存在则查不到任何内容。
     (new Extend\SearchDriver(DatabaseSearchDriver::class))
         ->addFilter(DiscussionSearcher::class, MinPostsFilter::class)
         ->addFilter(DiscussionSearcher::class, BookmarkedFilter::class)
         ->addFilter(PostSearcher::class, PostBookmarkedFilter::class)
         ->addMutator(DiscussionSearcher::class, DiscussionSearchMutator::class),
 
-    // "Curtidos por mim" e "mais curtidos" dependem da tabela do flarum/likes.
+    // "我点赞的" 和 "最多点赞" 依赖 flarum/likes 的数据表。
     (new Extend\Conditional())
         ->whenExtensionEnabled('flarum-likes', fn () => [
             (new Extend\SearchDriver(DatabaseSearchDriver::class))
@@ -87,17 +79,4 @@ return [
             (new Extend\ApiResource(PostResource::class))
                 ->sorts(fn () => [SortColumn::make(SortsByLikes::SORT)]),
         ]),
-
-    // ── Histórico de edições ─────────────────────────────────────────────────
-    (new Extend\Model(Post::class))
-        ->hasMany('canelaRevisions', PostRevision::class, 'post_id'),
-
-    (new Extend\ApiResource(PostResource::class))
-        ->fields(PostRevisionFields::class),
-
-    (new Extend\Event())
-        ->listen(Revised::class, RecordRevision::class),
-
-    (new Extend\Routes('api'))
-        ->get('/canela/posts/{id}/revisions', 'canela.posts.revisions', ListRevisionsController::class),
 ];

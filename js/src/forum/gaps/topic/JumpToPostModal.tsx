@@ -1,7 +1,7 @@
 /*
- * "Pular para…" do Discourse (tecla #): o número da postagem. O core não tem
- * a janela; a linha do tempo só deixa arrastar. (A opção por data do
- * Discourse fica de fora: a API do Flarum não acha um post pela data.)
+ * Discourse 的“跳转到…”（按键 #）：输入帖子编号。核心没有这个
+ * 窗口；时间线只能拖动。（Discourse 的按日期跳转选项不在其中：
+ * Flarum 的 API 无法按日期查找帖子。）
  */
 import { type IInternalModalAttrs } from 'flarum/common/components/Modal';
 import FormModal from 'flarum/common/components/FormModal';
@@ -19,7 +19,7 @@ export default class JumpToPostModal extends FormModal<JumpToPostModalAttrs> {
   number = Stream('');
 
   className() {
-    return 'CanelaJumpModal Modal--small';
+    return 'LcoyJumpModal Modal--small';
   }
 
   title() {
@@ -31,19 +31,11 @@ export default class JumpToPostModal extends FormModal<JumpToPostModalAttrs> {
 
     return (
       <div className="Modal-body">
-        <div className="Form-group CanelaJumpModal-number">
-          <label for="canela-jump-number">{t('gaps.jump.post_label')}</label>
-          <div className="CanelaJumpModal-row">
-            <input
-              id="canela-jump-number"
-              className="FormControl"
-              type="number"
-              min="1"
-              max={count || undefined}
-              bidi={this.number}
-              placeholder="#"
-            />
-            <span className="CanelaJumpModal-of">{t('gaps.jump.of', { count })}</span>
+        <div className="Form-group LcoyJumpModal-number">
+          <label for="lcoy-jump-number">{t('gaps.jump.post_label')}</label>
+          <div className="LcoyJumpModal-row">
+            <input id="lcoy-jump-number" className="FormControl" type="number" min="1" max={count || undefined} bidi={this.number} placeholder="#" />
+            <span className="LcoyJumpModal-of">{t('gaps.jump.of', { count })}</span>
           </div>
         </div>
         <div className="Form-group">

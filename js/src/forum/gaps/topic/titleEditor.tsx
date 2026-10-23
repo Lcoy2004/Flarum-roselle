@@ -1,12 +1,11 @@
 /*
- * Editar o título no próprio cabeçalho do tópico, como o Discourse: o lápis
- * ao lado do título (para quem pode renomear) troca o título por um campo,
- * com o botão das categorias/etiquetas ao lado e "✓"/"✕" para salvar ou
- * desistir. Enter salva, Esc desiste.
+ * 在主题头部直接编辑标题，与 Discourse 一致：标题旁的铅笔
+ *（有重命名权限的人可见）把标题换成输入框，旁边是分类/标签按钮，
+ * 以及保存或放弃的“✓”/“✕”。Enter 保存，Esc 放弃。
  *
- * O core só renomeia por uma janela (RenameDiscussionModal) e muda as tags
- * por outra; aqui o campo é do tema, e as tags continuam na janela do
- * flarum/tags, aberta pelo mesmo item que o menu do tópico usa.
+ * 核心只能通过窗口重命名（RenameDiscussionModal），并通过另一个窗口修改
+ * 标签；这里的输入框属于主题，标签仍通过 flarum/tags 的窗口修改，
+ * 由主题菜单所用的同一个条目打开。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -28,7 +27,7 @@ interface EditState {
 
 let editing: EditState | null = null;
 
-/** O item "Editar etiquetas" que o flarum/tags põe nos controles de moderação. */
+/** flarum/tags 放在管理控制项中的“编辑标签”条目。 */
 function tagsControl(discussion: Discussion): any {
   const controls = DiscussionControls.moderationControls(discussion);
 
@@ -36,7 +35,7 @@ function tagsControl(discussion: Discussion): any {
 }
 
 function start(discussion: Discussion): void {
-  // O título cru do modelo: title() pode vir de uma tradução automática da extensão de idioma.
+  // 模型的原始标题：title() 可能来自语言扩展的自动翻译。
   editing = { id: String(discussion.id()), title: discussion.attribute<string>('title'), saving: false };
   m.redraw();
 }
@@ -51,7 +50,7 @@ function save(discussion: Discussion): void {
 
   const title = editing.title.trim();
 
-  // Título vazio ou igual: nada a salvar, só fecha.
+  // 标题为空或未变：无需保存，直接关闭。
   if (!title || title === discussion.attribute<string>('title')) {
     cancel();
     return;
@@ -64,7 +63,7 @@ function save(discussion: Discussion): void {
     .then(() => {
       editing = null;
 
-      // O post de evento "renomeou o tópico" entra no stream, como no modal do core.
+      // “重命名了主题”的事件帖子进入 stream，与核心的弹窗一致。
       const stream = app.current.get('stream');
       if (stream && typeof stream.update === 'function') stream.update();
     })
@@ -80,14 +79,14 @@ function editorView(discussion: Discussion): Mithril.Children {
 
   return (
     <form
-      className="CanelaTitleEditor"
+      className="LcoyTitleEditor"
       onsubmit={(event: SubmitEvent) => {
         event.preventDefault();
         save(discussion);
       }}
     >
       <input
-        className="FormControl CanelaTitleEditor-input"
+        className="FormControl LcoyTitleEditor-input"
         value={state.title}
         disabled={state.saving}
         aria-label={t('gaps.title_editor.label')}
@@ -104,10 +103,10 @@ function editorView(discussion: Discussion): Mithril.Children {
           input.select();
         }}
       />
-      <div className="CanelaTitleEditor-actions">
+      <div className="LcoyTitleEditor-actions">
         {tags && (
           <Button
-            className="Button CanelaTitleEditor-tags"
+            className="Button LcoyTitleEditor-tags"
             icon="fas fa-tag"
             type="button"
             disabled={state.saving}
@@ -117,7 +116,7 @@ function editorView(discussion: Discussion): Mithril.Children {
           </Button>
         )}
         <Button
-          className="Button Button--primary Button--icon CanelaTitleEditor-save"
+          className="Button Button--primary Button--icon LcoyTitleEditor-save"
           icon="fas fa-check"
           type="submit"
           loading={state.saving}
@@ -125,7 +124,7 @@ function editorView(discussion: Discussion): Mithril.Children {
           title={t('gaps.title_editor.save')}
         />
         <Button
-          className="Button Button--icon CanelaTitleEditor-cancel"
+          className="Button Button--icon LcoyTitleEditor-cancel"
           icon="fas fa-xmark"
           type="button"
           disabled={state.saving}
@@ -144,15 +143,15 @@ export default function installTitleEditor(): void {
 
     if (!gaps.titleEditor() || !discussion || !items.has('title')) return;
 
-    // Outro tópico aberto enquanto se editava: a edição antiga não vale aqui.
+    // 编辑期间打开了另一个主题：旧的编辑在这里无效。
     if (editing && editing.id !== String(discussion.id())) editing = null;
 
     if (editing) {
       items.setContent('title', editorView(discussion));
 
-      // Enquanto se edita, a linha de categoria e etiquetas dá lugar ao botão
-      // delas, como no Discourse.
-      if (items.has('canelaBadges')) items.remove('canelaBadges');
+      // 编辑时，分类和标签那一行让位给它们的按钮，
+      // 与 Discourse 一致。
+      if (items.has('lcoyBadges')) items.remove('lcoyBadges');
 
       return;
     }
@@ -163,10 +162,10 @@ export default function installTitleEditor(): void {
 
     items.setContent(
       'title',
-      <div className="CanelaTitleEditor-display">
+      <div className="LcoyTitleEditor-display">
         {title}
         <Button
-          className="Button Button--icon Button--link CanelaTitleEditor-edit"
+          className="Button Button--icon Button--link LcoyTitleEditor-edit"
           icon="fas fa-pencil"
           aria-label={t('gaps.title_editor.edit')}
           title={t('gaps.title_editor.edit')}

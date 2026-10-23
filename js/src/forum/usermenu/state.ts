@@ -1,8 +1,7 @@
 /*
- * Estado do menu do usuário: aberto ou fechado, a aba ativa e a rota em que
- * ele abriu. Fica fora dos componentes porque o botão do avatar, o painel e
- * os ouvintes globais (Esc, clique fora) precisam ler e mudar o mesmo valor —
- * e porque o cabeçalho pode ser redesenhado do zero ao trocar de página.
+ * 用户菜单的状态：打开或关闭、当前标签页以及打开时所处的路由。
+ * 放在组件之外，因为头像按钮、面板和全局监听器（Esc、点击外部）
+ * 需要读写同一个值——也因为切换页面时头部可能被从头重绘。
  */
 import app from 'flarum/forum/app';
 
@@ -12,20 +11,20 @@ class UserMenuState {
   open = false;
   tab: string = DEFAULT_TAB;
 
-  /** A rota de quando abriu: ao navegar, o menu fecha, como o do Discourse. */
+  /** 打开时的路由：导航时菜单关闭，与 Discourse 一致。 */
   route: string | null = null;
 
-  /** Devolver o foco ao avatar só quando quem fechou foi o teclado. */
+  /** 仅在关闭者是键盘时才把焦点还给头像。 */
   restoreFocus = false;
 
   show(): void {
     this.open = true;
-    // O Discourse sempre reabre em "Todas as notificações".
+    // Discourse 总是在“所有通知”中重新打开。
     this.tab = DEFAULT_TAB;
     this.route = m.route.get();
 
-    // Como o NotificationsDropdown do core: carregar a lista zera o contador
-    // de novas (o número do avatar). Um erro já foi mostrado pelo pedido.
+    // 与核心的 NotificationsDropdown 一致：加载列表会清零新通知计数
+    //（头像上的数字）。请求已经显示过错误。
     Promise.resolve(app.notifications.load()).catch(() => {});
   }
 

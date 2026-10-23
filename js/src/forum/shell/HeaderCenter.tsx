@@ -1,8 +1,8 @@
 /*
- * O meio do cabeçalho. Como no Discourse, ao rolar um tópico para além do
- * título, a busca dá lugar ao título do tópico com a categoria e as
- * etiquetas embaixo (`.header-title.topic` do Discourse); clicar no título
- * volta ao topo. Fora disso, é a busca.
+ * 页头中部。与 Discourse 一样，在主题中向下滚动超过
+ * 标题后，搜索会变成主题标题，下方带分类和
+ * 标签（Discourse 的 `.header-title.topic`）；点击标题
+ * 会回到顶部。除此之外显示搜索。
  */
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
@@ -16,12 +16,22 @@ import { discussionBadges } from '../utils/tags';
 
 let showingTopic = false;
 let frame = 0;
+let lastCheck = 0;
+let trailing: number | undefined;
+
+/**
+ * 页头只需要知道主题标题是否已经滚出屏幕；每帧测量
+ * 会迫使滚动过程中进行布局计算。每 80ms 检查一次
+ * 足以完成切换，而 timeout 保证滚动停止后
+ * 再做最后一次检查（位置只在移动过程中变化）。
+ */
+const CHECK_EVERY_MS = 80;
 
 function currentDiscussion(): Discussion | null {
   return app.current.matches(DiscussionPage) ? (app.current.get('discussion') as Discussion | null) : null;
 }
 
-/** O título do tópico já saiu da tela por baixo do cabeçalho? */
+/** 主题标题是否已从页头下方滚出屏幕？ */
 function titleScrolledAway(): boolean {
   const title = document.querySelector('.DiscussionHero-title');
   const header = document.getElementById('header');
@@ -33,6 +43,7 @@ function titleScrolledAway(): boolean {
 
 function update() {
   frame = 0;
+  lastCheck = performance.now();
 
   const next = !!currentDiscussion() && titleScrolledAway();
 
@@ -43,7 +54,18 @@ function update() {
 }
 
 function schedule() {
-  if (!frame) frame = requestAnimationFrame(update);
+  if (frame) return;
+
+  const wait = lastCheck + CHECK_EVERY_MS - performance.now();
+
+  if (wait > 0) {
+    window.clearTimeout(trailing);
+    trailing = window.setTimeout(schedule, wait);
+
+    return;
+  }
+
+  frame = requestAnimationFrame(update);
 }
 
 export function watchHeaderTopic() {
@@ -55,12 +77,12 @@ export default class HeaderCenter extends Component {
   view(): Mithril.Children {
     const discussion = currentDiscussion();
 
-    // Ao trocar de página, o estado é refeito antes de desenhar.
+    // 切换页面时，状态在绘制前重置。
     if (!discussion && showingTopic) showingTopic = false;
 
     if (discussion && showingTopic) return this.topic(discussion);
 
-    return forumBool('canelaHeaderSearch', true) ? <HeaderSearch state={app.search.state} /> : null;
+    return forumBool('lcoyHeaderSearch', true) ? <HeaderSearch state={app.search.state} /> : null;
   }
 
   onupdate() {
@@ -71,9 +93,9 @@ export default class HeaderCenter extends Component {
     const badges = discussion.badges().toArray();
 
     return (
-      <div className="CanelaHeaderTopic">
+      <div className="LcoyHeaderTopic">
         <a
-          className="CanelaHeaderTopic-title"
+          className="LcoyHeaderTopic-title"
           href={app.route.discussion(discussion)}
           onclick={(event: MouseEvent) => {
             if (event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) return;
@@ -82,10 +104,10 @@ export default class HeaderCenter extends Component {
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         >
-          {badges.length > 0 && <span className="CanelaHeaderTopic-status">{badges}</span>}
-          <span className="CanelaHeaderTopic-text">{discussion.title()}</span>
+          {badges.length > 0 && <span className="LcoyHeaderTopic-status">{badges}</span>}
+          <span className="LcoyHeaderTopic-text">{discussion.title()}</span>
         </a>
-        <div className="CanelaHeaderTopic-badges">{discussionBadges(discussion)}</div>
+        <div className="LcoyHeaderTopic-badges">{discussionBadges(discussion)}</div>
       </div>
     );
   }

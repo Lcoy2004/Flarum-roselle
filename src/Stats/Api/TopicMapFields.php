@@ -22,15 +22,14 @@ use Flarum\Extension\ExtensionManager;
 use Illuminate\Database\ConnectionInterface;
 
 /**
- * O número do mapa do tópico que o Flarum não guarda: quantas curtidas o
- * tópico tem.
+ * Flarum 未保存的主题地图数字：主题获得了多少点赞。
  *
- * A contagem de participantes é a `participantCount` do core (coluna
- * `discussions.participant_count`, atualizada pelo DiscussionMetadataUpdater):
- * não é preciso recalculá-la aqui.
+ * 参与者数量使用核心的 `participantCount`（列
+ * `discussions.participant_count`，由 DiscussionMetadataUpdater 更新）：
+ * 这里无需重新计算。
  *
- * Só na página do tópico (`showing`): na lista, seria uma consulta por linha,
- * e a lista não mostra esse número.
+ * 仅在主题页（`showing`）中提供：在列表中会变成每行一次查询，
+ * 而列表并不显示这个数字。
  */
 final class TopicMapFields
 {
@@ -45,7 +44,7 @@ final class TopicMapFields
         $showing = static fn (Discussion $discussion, Context $context): bool => $context->showing(DiscussionResource::class);
 
         return [
-            Schema\Integer::make('canelaLikeCount')
+            Schema\Integer::make('lcoyLikeCount')
                 ->visible(fn (Discussion $discussion, Context $context): bool => $showing($discussion, $context) && $this->extensions->isEnabled('flarum-likes'))
                 ->get(fn (Discussion $discussion): int => (int) $this->visibleComments($discussion)
                     ->join('post_likes', 'post_likes.post_id', '=', 'posts.id')
@@ -53,7 +52,7 @@ final class TopicMapFields
         ];
     }
 
-    /** Os comentários que qualquer leitor do tópico vê: o mapa é igual para todos. */
+    /** 主题的任何阅读者都能看到的评论：地图对所有人一致。 */
     private function visibleComments(Discussion $discussion)
     {
         return $this->db->table('posts')

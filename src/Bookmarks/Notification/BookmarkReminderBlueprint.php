@@ -22,16 +22,14 @@ use Flarum\User\User;
 use Lcoy\Roselle\Bookmarks\Bookmark;
 
 /**
- * "Lembrete do marcador": o alerta que o comando agendado manda quando o
- * horário escolhido chega.
+ * "书签提醒"：定时命令在所选时间到达时发出的通知。
  *
- * O assunto é o post, e não o marcador: a notificação leva até ele, e o
- * NotificationResource do core já sabe serializar posts (com o tópico). O
- * nome do marcador vai nos dados, para o alerta mostrá-lo como no Discourse.
+ * 主题对象是帖子而非书签：通知会引导到该帖子，而核心的
+ * NotificationResource 已能序列化帖子（含其主题）。书签名称放在数据中，
+ * 以便通知像 Discourse 那样展示它。
  *
- * O horário do lembrete também entra nos dados de propósito: o core reconhece
- * uma notificação "igual" pelos dados, e sem ele um segundo lembrete no mesmo
- * post só reativaria o primeiro, sem alertar de novo.
+ * 提醒时间也被有意放进数据：核心通过数据判断通知是否"相同"，若没有它，
+ * 同一帖子上的第二个提醒只会重新激活第一个，而不会再次提醒。
  */
 final class BookmarkReminderBlueprint implements BlueprintInterface, AlertableInterface
 {
@@ -47,7 +45,7 @@ final class BookmarkReminderBlueprint implements BlueprintInterface, AlertableIn
         return $this->post;
     }
 
-    /** Ninguém manda o lembrete: é o próprio usuário, no passado. */
+    /** 提醒没有发送者：就是用户自己在过去设定的那次。 */
     #[\Override]
     public function getFromUser(): ?User
     {
@@ -67,7 +65,7 @@ final class BookmarkReminderBlueprint implements BlueprintInterface, AlertableIn
     #[\Override]
     public static function getType(): string
     {
-        return 'canelaBookmarkReminder';
+        return 'lcoyBookmarkReminder';
     }
 
     #[\Override]

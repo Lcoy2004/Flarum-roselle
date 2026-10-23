@@ -15,11 +15,11 @@ use Lcoy\Roselle\Stats\VisitRecorder;
 use Throwable;
 
 /**
- * Conta o dia de visita de quem entrou na conta.
+ * 为已登录用户记录访问日期。
  *
- * Nas duas pilhas, fórum e API: a página do fórum só é carregada uma vez, e
- * quem deixa a aba aberta de um dia para o outro continua navegando só pela
- * API — sem ela, o segundo dia não contaria.
+ * 在论坛和 API 两条链路上都生效：论坛页面只加载一次，而让选项卡隔夜
+ * 开着的人之后只通过 API 浏览——若没有这条中间件，第二天就不会
+ * 被记录。
  */
 final class RecordVisitMiddleware implements MiddlewareInterface
 {
@@ -39,8 +39,8 @@ final class RecordVisitMiddleware implements MiddlewareInterface
             try {
                 $this->visits->touch($actor, (new Visitor($request))->isMobile());
             } catch (Throwable $error) {
-                // Uma estatística que falha não pode derrubar a página.
-                $this->logger->warning('[canela] visita não registrada: '.$error->getMessage());
+                // 统计失败不应让页面崩溃。
+                $this->logger->warning('[lcoy] 访问记录未写入: '.$error->getMessage());
             }
         }
 

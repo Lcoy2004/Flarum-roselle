@@ -20,14 +20,13 @@ use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\Tags\Search\Filter\TagFilter;
 
 /**
- * Fixados no topo da página inicial e da página da tag, em ordem de criação.
+ * 把置顶主题固定在首页和标签页顶部，并按创建时间排序。
  *
- * O flarum/sticky só fixa quando a ordenação é a padrão (sem `sort` na
- * requisição), mas a aba "Recentes" do tema pede `-lastPostedAt` explícito:
- * os fixados se perdiam no meio da lista. Aqui, na lista sem busca, sem
- * filtro (ou só com a tag) e ordenada por atividade, os fixados sobem, e
- * entre eles vale a ordem em que foram criados (o primeiro fixado criado
- * fica em cima), em vez da última atividade.
+ * flarum/sticky 只在默认排序时（请求中没有 `sort`）才固定，而主题的
+ * "最新"选项卡会显式请求 `-lastPostedAt`：置顶主题因此淹没在列表中间。
+ * 这里在无搜索、无过滤器（或仅有标签）且按活动排序的列表中，让置顶主题
+ * 上浮；它们之间按创建顺序排列（最早创建的置顶在最上方），而不是按最后
+ * 活动时间。
  */
 final class PinStickiedToTop
 {
@@ -49,13 +48,13 @@ final class PinStickiedToTop
         }
 
         if (! $onTag) {
-            // Na página inicial, respeita o "não fixar aqui" do flarum/sticky.
+            // 在首页，遵循 flarum/sticky 的"不在此处固定"设置。
             if (! $this->settings->get('flarum-sticky.pin_sticky_on_all_discussions', true)) {
                 return;
             }
 
-            // Na ordenação padrão com "só os não lidos", o próprio flarum/sticky
-            // monta uma união e reordena: mexer nas ordens aqui a quebraria.
+            // 在"仅未读"的默认排序下，flarum/sticky 自己会构建
+            // 一个联合并重新排序：在此处改动排序会破坏它。
             if ($criteria->sortIsDefault && $this->settings->get('flarum-sticky.only_sticky_unread_discussions')) {
                 return;
             }
@@ -68,16 +67,16 @@ final class PinStickiedToTop
             static fn (array $order): bool => ($order['column'] ?? null) !== 'is_sticky'
         ));
 
-        // Colunas sem qualificar o nome da tabela: em Flarum 2 o SELECT usa
-        // `flarum_discussions` (com prefixo, sem alias `discussions`), então nem
-        // `discussions.is_sticky` nem o nome de modelo devolvido por
-        // qualifyColumn() casam com o FROM. Esta consulta só tem o left join de
-        // `flarum_discussion_sticky_tag` (que não tem essas colunas), então não há
-        // ambiguidade — é o mesmo estilo de flarum/sticky e huseyinfiliz/stickiest.
+        // 列名不带表名前缀：在 Flarum 2 中 SELECT 使用
+        // `flarum_discussions`（带前缀，没有 `discussions` 别名），因此
+        // `discussions.is_sticky` 和 qualifyColumn() 返回的模型名都无法
+        // 匹配 FROM。此查询只有 `flarum_discussion_sticky_tag` 的 left join
+        // （其中没有这些列），所以不存在歧义——这与 flarum/sticky 和
+        // huseyinfiliz/stickiest 的风格一致。
         $query->orders = [
             ['column' => 'is_sticky', 'direction' => 'desc'],
-            // Só os fixados ganham a data de criação; os demais empatam (NULL)
-            // e seguem a ordenação pedida.
+            // 只有置顶主题才带上创建时间；其余为 NULL 平局，
+            // 继续沿用请求的排序。
             ['type' => 'Raw', 'sql' => 'CASE WHEN is_sticky = 1 THEN created_at END ASC'],
             ...$orders,
         ];

@@ -1,7 +1,7 @@
 /*
- * Cards dos recursos "extras": página de busca (Editor e busca), "Melhores"
- * por período (Lista), tamanho do texto (Aparência), imprimir (Tópico),
- * seleção em massa e histórico de edições (Moderação).
+ * “附加”功能卡片：搜索页（编辑器与搜索）、“最佳”按时段
+ * （列表）、文字大小（外观）、打印（主题）、
+ * 批量选择（审核）。
  */
 import { AdminNotice } from '../components/AdminCard';
 import { trans } from '../util';
@@ -12,104 +12,79 @@ const KEY = 'lcoy-roselle.admin.settings.extras';
 const help = (name: string, fallback: string) => () => trans(`${KEY}.${name}_help`, fallback);
 
 const cards: CardDef[] = [
-  // ── Editor e busca ─────────────────────────────────────────────────────────
+  // ── 编辑器与搜索 ─────────────────────────────────────────────────────────
   {
     id: 'search-page',
     group: 'composer',
     icon: 'fas fa-magnifying-glass-plus',
-    title: () => trans(`${KEY}.search_title`, 'Página de busca'),
+    title: () => trans(`${KEY}.search_title`, '搜索页'),
     description: help(
       'search_page_enabled',
-      'A página /search do Discourse: abas de discussões, postagens, tags e usuários, filtros avançados (autor, tag primária, tags, só no título, curtidos, status, datas, mínimo de postagens) e ordenação. O modal de busca ganha o link "Busca avançada".'
+      'Discourse 的 /search 页面：讨论、帖子、标签和用户等标签页，高级筛选（作者、主标签、标签、仅标题、已赞、状态、日期、最少帖子数）以及排序。搜索弹窗中会多出一个「高级搜索」链接。'
     ),
-    keywords: 'busca pesquisa search página page avançada advanced filtros filters gambits ordenar sort resultados results',
-    master: 'canela.search_page_enabled',
+    keywords: '搜索 查找 search 页面 page 高级 advanced 筛选 filters gambits 排序 sort 结果 results',
+    master: 'lcoy.search_page_enabled',
     body: () => (
       <AdminNotice>
         {trans(
           `${KEY}.search_notice`,
-          'Os filtros também viram atalhos que se digitam na busca: em:título, em:curtidos, em:marcadores e mín-postagens:5, ao lado dos do Flarum (autor:, tag:, é:trancada…).'
+          '这些筛选项也会成为可在搜索框中直接输入的快捷方式：in:title、in:likes、in:bookmarks 和 min-posts:5，与 Flarum 自带的（author:、tag:、is:locked…）并列。'
         )}
       </AdminNotice>
     ),
   },
 
-  // ── Moderação ──────────────────────────────────────────────────────────────
+  // ── 审核 ──────────────────────────────────────────────────────────────
   {
     id: 'bulk-select',
     group: 'moderation',
     icon: 'fas fa-list-check',
-    title: () => trans(`${KEY}.bulk_title`, 'Seleção em massa'),
+    title: () => trans(`${KEY}.bulk_title`, '批量选择'),
     description: help(
       'bulk_select_enabled',
-      'Um botão na barra da lista liga caixas de seleção em cada discussão e uma barra de ações: marcar como lida, fixar, trancar, alterar tags, ocultar e excluir. Só aparece para quem pode moderar alguma discussão da lista, e cada ação só vale onde a pessoa tem permissão.'
+      '列表工具栏中的一个按钮会打开每个讨论上的复选框和一个操作栏：标记为已读、置顶、关闭、更改标签、隐藏和删除。该按钮只会对能管理列表中某些讨论的人显示，且每个操作只在其拥有权限的范围内生效。'
     ),
-    keywords: 'seleção massa bulk selecionar select moderação moderation fixar trancar etiquetas excluir ocultar lote',
-    master: 'canela.bulk_select_enabled',
+    keywords: '选择 批量 selection bulk 多选 select 审核 moderation 置顶 关闭 标签 删除 隐藏 批处理',
+    master: 'lcoy.bulk_select_enabled',
   },
 
-  // ── Lista de tópicos ───────────────────────────────────────────────────────
+  // ── 讨论列表 ───────────────────────────────────────────────────────
   {
     id: 'top-periods',
     group: 'list',
     icon: 'fas fa-trophy',
-    title: () => trans(`${KEY}.top_periods_title`, 'Melhores por período'),
-    description: help(
-      'top_periods_enabled',
-      'Na aba Melhores aparece "Todo o período / Ano / Trimestre / Mês / Semana / Hoje", que limita a lista às discussões criadas no intervalo.'
-    ),
-    keywords: 'melhores top período period ano mês semana dia trimestre ranking',
-    master: 'canela.top_periods_enabled',
+    title: () => trans(`${KEY}.top_periods_title`, '按时段排行'),
+    description: help('top_periods_enabled', '「最佳」标签页显示「全部时间 / 年 / 季度 / 月 / 周 / 今天」，把列表限制在该时段内创建的讨论。'),
+    keywords: '最佳 排行 top 时段 period 年 月 周 日 季度 排名',
+    master: 'lcoy.top_periods_enabled',
   },
 
-  // ── Aparência ──────────────────────────────────────────────────────────────
+  // ── 外观 ──────────────────────────────────────────────────────────────
   {
     id: 'text-size',
     group: 'appearance',
     icon: 'fas fa-text-height',
-    title: () => trans(`${KEY}.text_size_title`, 'Tamanho do texto'),
+    title: () => trans(`${KEY}.text_size_title`, '文字大小'),
     description: help(
       'text_size_enabled',
-      'Em Configurações, cada pessoa escolhe Menor, Normal, Maior ou Máximo. A escolha vale para o aparelho (fica no navegador), como no Discourse.'
+      '在「设置」中，每个人可以选择较小、正常、较大或最大。与 Discourse 一样，该选择只对当前设备生效（保存在浏览器中）。'
     ),
-    keywords: 'tamanho texto fonte letra text size font acessibilidade accessibility zoom maior menor',
-    master: 'canela.text_size_enabled',
+    keywords: '大小 文字 字体 字号 text size font 无障碍 accessibility 缩放 较大 较小',
+    master: 'lcoy.text_size_enabled',
   },
 
-  // ── Tópico ─────────────────────────────────────────────────────────────────
+  // ── 主题 ─────────────────────────────────────────────────────────────────
   {
     id: 'print',
     group: 'topic',
     icon: 'fas fa-print',
-    title: () => trans(`${KEY}.print_title`, 'Imprimir discussão'),
+    title: () => trans(`${KEY}.print_title`, '打印讨论'),
     description: help(
       'print_topic_enabled',
-      'Carrega todas as postagens numa visão limpa (sem barra lateral, cabeçalho nem linha do tempo) e abre a impressão do navegador, que também salva em PDF.'
+      '将全部帖子加载到一个简洁的视图中（不含侧栏、页头和时间线），并打开浏览器的打印对话框，也可用于另存为 PDF。'
     ),
-    keywords: 'imprimir print impressão pdf papel tópico',
-    master: 'canela.print_topic_enabled',
-  },
-
-  // ── Moderação ──────────────────────────────────────────────────────────────
-  {
-    id: 'post-history',
-    group: 'moderation',
-    icon: 'fas fa-clock-rotate-left',
-    title: () => trans(`${KEY}.history_title`, 'Histórico de edições'),
-    description: help(
-      'post_history_enabled',
-      'Cada edição guarda o texto anterior. O "Editado" do post vira um lápis com o número de revisões, que abre a comparação entre as versões (no texto ou lado a lado).'
-    ),
-    keywords: 'histórico edições revisões history revisions editado edited diff versões comparar lápis',
-    master: 'canela.post_history_enabled',
-    body: () => (
-      <AdminNotice>
-        {trans(
-          `${KEY}.history_notice`,
-          'Só as edições feitas com o recurso ligado entram no histórico. Desligado, nada novo é guardado e o histórico some do fórum, o que já foi guardado fica no banco. O texto das versões de um post oculto só aparece para quem pode editá-lo.'
-        )}
-      </AdminNotice>
-    ),
+    keywords: '打印 print 印刷 pdf 纸张 主题',
+    master: 'lcoy.print_topic_enabled',
   },
 ];
 

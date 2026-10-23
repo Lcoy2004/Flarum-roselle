@@ -23,15 +23,14 @@ use Illuminate\Support\Collection;
 use Lcoy\Roselle\Gaps\GapsSettings;
 
 /**
- * Os dados da página 404 do Discourse ("Oops! Essa página não existe ou é
- * privada."): logo, cor, os tópicos populares e os recentes.
+ * Discourse 的 404 页面数据（"糟糕！该页面不存在或为私密。"）：
+ * logo、颜色、热门主题和最新主题。
  *
- * A página de erro é desenhada sem a requisição (o ViewFormatter do core
- * não a repassa), então os tópicos são os que um visitante veria — o que
- * também evita mostrar, numa página de erro, algo restrito.
+ * 错误页面在没有请求上下文的情况下渲染（核心的 ViewFormatter 不会
+ * 传递它），因此这里取的是访客能看到的主题——这也避免在错误页面上
+ * 显示受限内容。
  *
- * Qualquer falha aqui volta para a página do core: a página de erro não
- * pode, ela mesma, dar erro.
+ * 这里的任何失败都会退回核心页面：错误页面本身不能再出错。
  */
 final class NotFoundPage
 {

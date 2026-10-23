@@ -1,17 +1,17 @@
 // =====================================================================
-// Barra de navegação da lista (o `.list-controls` do Horizon): dropdowns de
-// categoria/etiqueta, abas sublinhadas, botões redondos e "Novo tópico".
-// Medidas do CSS computado do meta.discourse.org: 16px de padding em cima,
-// controles de 38px e 12px até o cabeçalho da lista. No Meta a barra rola
-// junto com a página; grudar no topo (como no Horizon puro) é opção.
+// 列表导航栏（Horizon 的 `.list-controls`）：分类/标签
+// 下拉菜单、带下划线的标签页、圆形按钮和"新话题"。
+// 数值取自 meta.discourse.org 的计算样式：上方 16px 内边距，
+// 控件 38px，到列表头部 12px。在 Meta 上该栏随页面
+// 滚动；固定在顶部（如纯 Horizon 中）是可选项。
 // =====================================================================
 
-@canela-nav-height: 38px;
+@lcoy-nav-height: 38px;
 
-.CanelaNav {
-  // Fica no alto do cartão (o .Page-container tem 16px de padding): as
-  // margens negativas esticam o fundo até a borda, para que a lista não
-  // apareça pelas laterais quando a barra gruda.
+.LcoyNav {
+  // 位于卡片顶部（.Page-container 有 16px 内边距）：负外边距
+  // 将背景拉伸到边缘，使栏吸附时列表不会从
+  // 两侧露出。
   position: relative;
   z-index: 4;
   display: flex;
@@ -20,142 +20,142 @@
   gap: 12px 16px;
   margin: -16px -16px 0;
   padding: 16px 16px 12px;
-  background: var(--cn-surface);
-  border-radius: var(--cn-radius-large) var(--cn-radius-large) 0 0;
-  // Sem a sombra do `.list-controls` do Horizon sob a barra: o usuário
-  // prefere a barra limpa, separada só pelo cabeçalho das colunas.
-  // Em rem, como a lista: o body do tema é 15px e o Discourse mede em 16px.
+  background: var(--lcoy-surface);
+  border-radius: var(--lcoy-radius-large) var(--lcoy-radius-large) 0 0;
+  // 没有 Horizon 的 `.list-controls` 在栏下的阴影：用户
+  // 更喜欢干净的栏，仅由列标题分隔。
+  // 使用 rem，与列表一致：主题的 body 是 15px，而 Discourse 以 16px 计量。
   font-size: 1rem;
 
   &--sticky {
     position: sticky;
-    top: var(--cn-header-height, 52px);
+    top: var(--lcoy-header-height, 52px);
   }
 }
 
-.CanelaNav-start,
-.CanelaNav-end {
+.LcoyNav-start,
+.LcoyNav-end {
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
 }
-.CanelaNav-start {
+.LcoyNav-start {
   flex: 1 1 auto;
   flex-wrap: wrap;
   column-gap: 20px;
 }
-.CanelaNav-end {
+.LcoyNav-end {
   flex: 0 0 auto;
 }
 
 // ---------------------------------------------------------------------
-// Dropdowns "categorias ›" / "subcategorias ›" / "etiquetas ›": o
-// `category-drop`/`tag-drop` do Discourse sobre o SelectKit do composer.
-// Medidas do select-kit aberto no meta.discourse.org.
+// "分类 ›" / "子分类 ›" / "标签 ›" 下拉菜单：Discourse 的
+// `category-drop`/`tag-drop`，基于编辑器的 SelectKit。
+// 打开状态的 select-kit 尺寸取自 meta.discourse.org。
 // ---------------------------------------------------------------------
-.CanelaNav-dropdowns {
+.LcoyNav-dropdowns {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.CanelaNav .CanelaNav-drop {
+.LcoyNav .LcoyNav-drop {
   flex: none;
 
-  // `.list-controls .combo-box .combo-box-header`: 38px, padding 8px, borda
-  // primary-300, raio 8, peso 500; a seta `angle-right` vira `angle-down`.
-  .CanelaSelectKit-header {
+  // `.list-controls .combo-box .combo-box-header`：38px，内边距 8px，边框
+  // primary-300，圆角 8，字重 500；箭头 `angle-right` 变为 `angle-down`。
+  .LcoySelectKit-header {
     gap: 0;
     width: auto;
-    height: @canela-nav-height;
+    height: @lcoy-nav-height;
     min-height: 0;
     box-sizing: border-box;
     padding: 8px;
-    border: 1px solid var(--cn-primary-300);
-    border-radius: var(--cn-radius);
-    background: var(--cn-surface);
-    color: var(--cn-primary);
+    border: 1px solid var(--lcoy-primary-300);
+    border-radius: var(--lcoy-radius);
+    background: var(--lcoy-surface);
+    color: var(--lcoy-primary);
     font-size: 1rem;
     font-weight: 500;
     line-height: 1.25;
     white-space: nowrap;
     transition: none;
 
-    // Como no Meta: o hover só troca o fundo (primary-100); o foco do
-    // teclado acende a borda, sem anel em volta.
+    // 与 Meta 一致：悬停只切换背景（primary-100）；键盘焦点
+    // 点亮边框，周围无环。
     &:hover {
-      background: var(--cn-primary-100);
+      background: var(--lcoy-primary-100);
     }
 
     &:focus-visible {
       outline: 0;
-      border-color: var(--cn-accent);
+      border-color: var(--lcoy-accent);
       box-shadow: none;
     }
   }
 
-  // Aberto: fundo primary-100 (`:hover` do uc-modernize), borda igual.
-  &.is-expanded > .CanelaSelectKit-header {
-    background: var(--cn-primary-100);
+  // 展开时：背景 primary-100（uc-modernize 的 `:hover`），边框相同。
+  &.is-expanded > .LcoySelectKit-header {
+    background: var(--lcoy-primary-100);
     outline: 0;
   }
 
-  .CanelaSelectKit-headerContent {
+  .LcoySelectKit-headerContent {
     flex: 0 1 auto;
     max-width: 220px;
   }
 
-  .CanelaSelectKit-caret {
+  .LcoySelectKit-caret {
     box-sizing: content-box;
     width: 16px;
     margin-left: 0;
     padding-left: 5px;
     font-size: 0.9em;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
     text-align: center;
   }
 
-  // Filtro ativo: a borda acende; a etiqueta escolhida fica na cor também.
-  &.has-selection > .CanelaSelectKit-header {
-    border-color: var(--cn-accent);
+  // 激活的筛选：边框点亮；所选标签同样使用该颜色。
+  &.has-selection > .LcoySelectKit-header {
+    border-color: var(--lcoy-accent);
   }
-  &.CanelaNav-drop--tags.has-selection > .CanelaSelectKit-header {
-    color: var(--cn-hover-accent-text);
+  &.LcoyNav-drop--tags.has-selection > .LcoySelectKit-header {
+    color: var(--lcoy-hover-accent-text);
   }
 
-  // O corpo: 3px abaixo do botão, `width: max-content` até 600px, borda
-  // primary-low, raio 8 e `--shadow-dropdown`.
-  .CanelaSelectKit-body {
+  // 主体：按钮下方 3px，`width: max-content` 最大 600px，边框
+  // primary-low，圆角 8 和 `--shadow-dropdown`。
+  .LcoySelectKit-body {
     top: ~"calc(100% + 3px)";
     width: max-content;
     min-width: 100%;
     max-width: 600px;
-    border: 1px solid var(--cn-primary-low);
-    border-radius: var(--cn-radius);
+    border: 1px solid var(--lcoy-primary-low);
+    border-radius: var(--lcoy-radius);
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     font-size: 1rem;
     font-weight: normal;
   }
 
-  .CanelaSelectKit-filter {
+  .LcoySelectKit-filter {
     padding: 4px 8px;
   }
 
-  .CanelaSelectKit-filterInput {
+  .LcoySelectKit-filterInput {
     height: 30px;
     font-size: 1rem;
   }
 
-  .CanelaSelectKit-filterIcon {
+  .LcoySelectKit-filterIcon {
     margin-left: 4px;
     font-size: 15px;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
   }
 
-  // A lista: 40vh no máximo, sem linha sob a busca, e a barra de rolagem
-  // cinza de 10px com raio 5 do select-kit.
-  .CanelaSelectKit-collection {
+  // 列表：最高 40vh，搜索下方无分隔线，以及 select-kit 的
+  // 10px 灰色滚动条，圆角 5。
+  .LcoySelectKit-collection {
     max-height: 40vh;
     border-top: 0;
     scrollbar-width: auto;
@@ -168,7 +168,7 @@
 
     &::-webkit-scrollbar-thumb {
       border-radius: 5px;
-      background: var(--cn-primary-medium);
+      background: var(--lcoy-primary-medium);
       cursor: pointer;
     }
 
@@ -177,45 +177,45 @@
     }
   }
 
-  &.is-above .CanelaSelectKit-collection {
+  &.is-above .LcoySelectKit-collection {
     border-bottom: 0;
   }
 
-  // `.select-kit-row`: 8px, texto primary-high; destaque e escolhido com o
-  // lilás de --d-hover/--d-selected (a cor de destaque a 15%).
-  .CanelaSelectKit-row {
+  // `.select-kit-row`：8px，文字 primary-high；悬停项和选中项使用
+  // --d-hover/--d-selected 的淡紫色（高亮色 15%）。
+  .LcoySelectKit-row {
     padding: 8px;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
     line-height: 1.4;
 
     &.is-highlighted,
     &.is-selected {
-      background: ~"oklch(from var(--cn-accent) l c h / 0.15)";
+      background: ~"oklch(from var(--lcoy-accent) l c h / 0.15)";
     }
   }
 
-  .CanelaSelectKit-empty {
+  .LcoySelectKit-empty {
     padding: 8px;
   }
 }
 
-[data-theme^=dark] .CanelaNav::before {
-  background: linear-gradient(~"oklch(from var(--cn-accent) l c h / 0.05)", transparent);
+[data-theme^=dark] .LcoyNav::before {
+  background: linear-gradient(~"oklch(from var(--lcoy-accent) l c h / 0.05)", transparent);
 }
 
-[data-theme^=dark] .CanelaNav .CanelaNav-drop .CanelaSelectKit-body {
+[data-theme^=dark] .LcoyNav .LcoyNav-drop .LcoySelectKit-body {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.25);
 }
 
-// O badge no cabeçalho e nas linhas: ícone 0.74em, 0.33em até o nome.
-.CanelaNav-dropBadge,
-.CanelaNav-dropStatus {
+// 头部和行中的徽章：图标 0.74em，到名称 0.33em。
+.LcoyNav-dropBadge,
+.LcoyNav-dropStatus {
   display: inline-flex;
   align-items: center;
   gap: 0.33em;
   min-width: 0;
 
-  .CanelaCategorySymbol {
+  .LcoyCategorySymbol {
     width: auto;
     height: auto;
 
@@ -224,71 +224,71 @@
     }
   }
 }
-.CanelaNav-dropBadge // O ícone da etiqueta do Flarum nas linhas/cabeçalho de "etiquetas".
-.CanelaNav-dropTagIcon {
+.LcoyNav-dropBadge // "标签"行/头部中 Flarum 标签的图标。
+.LcoyNav-dropTagIcon {
   display: inline-flex;
   align-self: center;
   font-size: 0.74em;
-  color: var(--tag-color, var(--cn-primary-medium));
+  color: var(--tag-color, var(--lcoy-primary-medium));
 }
-.CanelaNav-dropName {
+.LcoyNav-dropName {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.CanelaNav-drop:not(.CanelaNav-drop--tags).has-selection .CanelaNav-dropBadge {
-  color: var(--cn-primary-high);
+.LcoyNav-drop:not(.LcoyNav-drop--tags).has-selection .LcoyNav-dropBadge {
+  color: var(--lcoy-primary-high);
 }
 
-.CanelaNav-dropRow {
+.LcoyNav-dropRow {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   min-width: 0;
 }
-.CanelaNav-dropStatus {
+.LcoyNav-dropStatus {
   align-items: baseline;
   max-width: 100%;
 
-  .CanelaCategorySymbol {
+  .LcoyCategorySymbol {
     align-self: center;
   }
 }
-.CanelaNav-dropName {
+.LcoyNav-dropName {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-// "× 264": --font-down-1, primary-medium, 0.5em do nome.
-.CanelaNav-dropCount {
+// "× 264"：--font-down-1，primary-medium，距名称 0.5em。
+.LcoyNav-dropCount {
   margin-left: 0.17em;
-  font-size: var(--cn-font-down-1);
-  color: var(--cn-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-medium);
   white-space: nowrap;
 }
-.CanelaNav-dropDesc {
+.LcoyNav-dropDesc {
   margin-top: 2px;
-  font-size: var(--cn-font-down-1);
-  color: var(--cn-primary-medium);
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-medium);
   white-space: normal;
 }
-// "remover filtro", "nenhuma subcategoria", "sem etiquetas".
-.CanelaNav-dropSpecial {
-  color: var(--cn-hover-accent-text);
+// "移除筛选"、"无子分类"、"无标签"。
+.LcoyNav-dropSpecial {
+  color: var(--lcoy-hover-accent-text);
   font-weight: 700;
 }
 // `.filter-for-more`
-.CanelaNav-dropMore {
+.LcoyNav-dropMore {
   box-sizing: border-box;
   width: 100%;
   padding: 0.5em 1em;
-  font-size: var(--cn-font-down-1);
-  color: var(--cn-primary-low-mid);
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-primary-low-mid);
 }
 
 // ---------------------------------------------------------------------
-// Abas
+// 标签页
 // ---------------------------------------------------------------------
-.CanelaNav-tabs {
+.LcoyNav-tabs {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -298,24 +298,24 @@
   list-style: none;
 }
 
-// `.nav-pills > li > a`: 0 0.65em, line-height 16px, sublinhado de 0.125em.
-.CanelaNav-tab > a,
-.CanelaNav-moreButton.Button {
+// `.nav-pills > li > a`：0 0.65em，行高 16px，下划线 0.125em。
+.LcoyNav-tab > a,
+.LcoyNav-moreButton.Button {
   position: relative;
   display: inline-flex;
   align-items: center;
-  height: @canela-nav-height;
+  height: @lcoy-nav-height;
   padding: 0 0.65em;
-  border-radius: var(--cn-radius);
+  border-radius: var(--lcoy-radius);
   background: transparent;
-  color: var(--cn-primary);
-  font-size: var(--cn-font-0);
+  color: var(--lcoy-primary);
+  font-size: var(--lcoy-font-0);
   font-weight: normal;
   line-height: 1;
   text-decoration: none;
   white-space: nowrap;
-  // `.nav-pills > li > a { transition: var(--d-button-transition) }`, que é
-  // `none` no Meta; só o ícone tem `color .2s`.
+  // `.nav-pills > li > a { transition: var(--d-button-transition) }`，它在 Meta 上是
+  // `none`；只有图标有 `color .2s`。
   transition: none;
 
   .icon,
@@ -334,36 +334,36 @@
     background: transparent;
   }
 
-  // A cor de destaque em texto: no escuro, o tom claro dela (o tertiary
-  // do esquema escuro do Meta, #a99af0 para o #7b5fe2), senão o vermelho/
-  // azul cru sobre o cinza-escuro não chega ao contraste mínimo.
+  // 文字中的高亮色：深色模式下使用其浅色调（Meta 深色方案的
+  // tertiary，#7b5fe2 对应 #a99af0），否则原始的红/
+  // 蓝在深灰上达不到最低对比度。
   &:hover,
   &:focus-visible {
     background: transparent;
-    color: var(--cn-hover-accent-text);
+    color: var(--lcoy-hover-accent-text);
     text-decoration: none;
 
     &::after {
-      background: var(--cn-hover-accent-text);
+      background: var(--lcoy-hover-accent-text);
     }
   }
 }
 
-.CanelaNav-tab.active > a,
-.CanelaNav-more.active .CanelaNav-moreButton {
-  color: var(--cn-hover-accent-text);
+.LcoyNav-tab.active > a,
+.LcoyNav-more.active .LcoyNav-moreButton {
+  color: var(--lcoy-hover-accent-text);
 
   &::after {
-    background: var(--cn-hover-accent-text);
+    background: var(--lcoy-hover-accent-text);
   }
 }
 
-.CanelaNav-more .Dropdown-menu {
+.LcoyNav-more .Dropdown-menu {
   min-width: 180px;
 }
 
-.CanelaNav-view,
-.CanelaNav-actions {
+.LcoyNav-view,
+.LcoyNav-actions {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -372,33 +372,33 @@
   list-style: none;
 }
 
-// No celular as abas viram um seletor; no tablet+ ele some.
-.CanelaNav-select {
+// 手机端标签页变为选择器；平板及以上则隐藏。
+.LcoyNav-select {
   display: none;
 }
 
 // ---------------------------------------------------------------------
-// Ações (botões redondos) e "Novo tópico"
+// 操作（圆形按钮）与"新话题"
 // ---------------------------------------------------------------------
-.CanelaNav-actions .Button--icon,
-.CanelaNav-actions .Search-input {
+.LcoyNav-actions .Button--icon,
+.LcoyNav-actions .Search-input {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: @canela-nav-height;
-  height: @canela-nav-height;
+  width: @lcoy-nav-height;
+  height: @lcoy-nav-height;
   padding: 0;
-  border: 1px solid var(--cn-primary-300);
+  border: 1px solid var(--lcoy-primary-300);
   border-radius: 50%;
-  background: var(--cn-surface);
-  color: var(--cn-primary);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
   transition: none;
 
   &:hover,
   &:focus-visible {
-    border-color: var(--cn-accent);
-    background: var(--cn-surface);
-    color: var(--cn-accent);
+    border-color: var(--lcoy-accent);
+    background: var(--lcoy-surface);
+    color: var(--lcoy-accent);
   }
 
   .Button-icon {
@@ -406,14 +406,14 @@
   }
 }
 
-.CanelaNav .CanelaNav-newTopic {
+.LcoyNav .LcoyNav-newTopic {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: @canela-nav-height;
+  height: @lcoy-nav-height;
   padding: 0 14px;
-  border-radius: var(--cn-radius-pill);
-  font-size: var(--cn-font-0);
+  border-radius: var(--lcoy-radius-pill);
+  font-size: var(--lcoy-font-0);
   font-weight: normal;
   white-space: nowrap;
   transition: none;
@@ -424,57 +424,57 @@
 
   &:focus-visible {
     box-shadow: none;
-    background: var(--cn-primary-200);
+    background: var(--lcoy-primary-200);
   }
 }
 
 // ---------------------------------------------------------------------
-// Celular (print mob-a): "Recentes ⇅" + botões só com ícone
+// 手机端（印刷稿 mob-a）："最新 ⇅" + 仅图标的按钮
 // ---------------------------------------------------------------------
 @media @phone {
-  // O core deixa 15px acima do conteúdo no celular; a barra é o topo do
-  // cartão (no Meta, a 0px dele).
-  .Canela .Page-content:has(.CanelaNav) {
+  // 核心在手机端上方留 15px；该栏是卡片的
+  // 顶部（在 Meta 上为其 0px 处）。
+  .Lcoy .Page-content:has(.LcoyNav) {
     margin-top: 0;
   }
 
-  .CanelaNav {
+  .LcoyNav {
     flex-wrap: nowrap;
     padding-bottom: 12px;
   }
 
-  .CanelaNav-dropdowns,
-  .CanelaNav-tabs {
+  .LcoyNav-dropdowns,
+  .LcoyNav-tabs {
     display: none;
   }
 
-  .CanelaNav-select {
+  .LcoyNav-select {
     display: block;
     min-width: 0;
   }
 
-  .CanelaNav-selectButton.Button {
+  .LcoyNav-selectButton.Button {
     padding: 0;
     background: transparent;
-    font-size: var(--cn-font-up-1);
+    font-size: var(--lcoy-font-up-1);
     font-weight: 700;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
 
     &:hover,
     &:focus-visible {
       background: transparent;
-      color: var(--cn-primary);
+      color: var(--lcoy-primary);
     }
 
-    // `.list-control-toggle-link-trigger .d-icon`: --font-down-2, 0.5em de folga.
+    // `.list-control-toggle-link-trigger .d-icon`：--font-down-2，间距 0.5em。
     .Button-caret {
       margin-left: 0.5em;
-      font-size: var(--cn-font-down-2);
+      font-size: var(--lcoy-font-down-2);
     }
   }
 
-  .CanelaNav .CanelaNav-newTopic {
-    width: @canela-nav-height;
+  .LcoyNav .LcoyNav-newTopic {
+    width: @lcoy-nav-height;
     padding: 0;
     justify-content: center;
     border-radius: 12px;

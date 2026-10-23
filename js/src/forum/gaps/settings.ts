@@ -1,36 +1,35 @@
 /*
- * As chaves liga/desliga dos recursos do Discourse que faltavam (gaps).
+ * 主题中缺失的 Discourse 功能（gaps）的开关。
  *
- * Lidas na hora de usar, e não no initializer: lá o fórum ainda não carregou
- * as configurações. Os recursos com backend (extend/gaps.php) só aparecem
- * quando o servidor diz que o backend está carregado (`canelaGapsBackend`):
- * sem ele, a interface chamaria rotas que não existem.
+ * 在使用时读取，而不是在 initializer 中：那时论坛还没加载配置。
+ * 带后端的功能（extend/gaps.php）仅在服务器表示后端已加载
+ * （`lcoyGapsBackend`）时出现：否则界面会调用不存在的路由。
  */
 import app from 'flarum/forum/app';
 
 import { forumBool } from '../utils/settings';
 
 export const gaps = {
-  postShortcuts: () => forumBool('canelaPostShortcuts', true) && forumBool('canelaKeyboardShortcuts', true),
-  codeButtons: () => forumBool('canelaCodeButtons', true),
-  headingAnchors: () => forumBool('canelaHeadingAnchors', true),
-  spoilerBlur: () => forumBool('canelaSpoilerBlur', true),
-  mentionCards: () => forumBool('canelaMentionCards', true) && forumBool('canelaUserCard', true),
-  readState: () => forumBool('canelaPostReadState', true),
-  timelineBack: () => forumBool('canelaTimelineBack', true) && forumBool('canelaTopicTimeline', true),
-  titleEditor: () => forumBool('canelaInlineTitleEditor', true),
-  shareModal: () => forumBool('canelaShareModal', true),
-  lastVisit: () => forumBool('canelaListLastVisit', true),
-  dismiss: () => forumBool('canelaListDismiss', true),
-  tableExpand: () => forumBool('canelaTableExpand', true),
+  postShortcuts: () => forumBool('lcoyPostShortcuts', true) && forumBool('lcoyKeyboardShortcuts', true),
+  codeButtons: () => forumBool('lcoyCodeButtons', true),
+  headingAnchors: () => forumBool('lcoyHeadingAnchors', true),
+  spoilerBlur: () => forumBool('lcoySpoilerBlur', true),
+  mentionCards: () => forumBool('lcoyMentionCards', true) && forumBool('lcoyUserCard', true),
+  readState: () => forumBool('lcoyPostReadState', true),
+  timelineBack: () => forumBool('lcoyTimelineBack', true) && forumBool('lcoyTopicTimeline', true),
+  titleEditor: () => forumBool('lcoyInlineTitleEditor', true),
+  shareModal: () => forumBool('lcoyShareModal', true),
+  lastVisit: () => forumBool('lcoyListLastVisit', true),
+  dismiss: () => forumBool('lcoyListDismiss', true),
+  tableExpand: () => forumBool('lcoyTableExpand', true),
 };
 
-/** Os recursos com backend: só com o extend/gaps.php carregado. */
+/** 带后端的功能：仅在 extend/gaps.php 已加载时可用。 */
 export function gapsBackend(): boolean {
-  return forumBool('canelaGapsBackend', false);
+  return forumBool('lcoyGapsBackend', false);
 }
 
-/** O texto de uma configuração de texto livre, já sem espaços nas pontas. */
+/** 自由文本配置的文本，已去掉两端空白。 */
 export function forumString(attribute: string): string {
   const value = app.forum.attribute<unknown>(attribute);
 

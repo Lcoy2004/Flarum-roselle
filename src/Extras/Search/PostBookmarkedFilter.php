@@ -19,8 +19,8 @@ use Flarum\Search\Filter\FilterInterface;
 use Flarum\Search\SearchState;
 
 /**
- * `filter[canelaBookmarked]` na busca de postagens: as postagens que eu
- * marquei. A regra é a de BookmarkedFilter, só que medida pela postagem.
+ * 帖子搜索中的 `filter[lcoyBookmarked]`：我标记过的帖子。规则与
+ * BookmarkedFilter 相同，只是以帖子为维度。
  *
  * @implements FilterInterface<DatabaseSearchState>
  */

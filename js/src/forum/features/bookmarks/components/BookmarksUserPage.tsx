@@ -1,12 +1,11 @@
 /*
- * A aba "Marcadores" do perfil (`/u/:username/bookmarks`), como a lista de
- * marcadores do Discourse: busca no topo e, por marcador, o tópico (com
- * categoria e etiquetas), o nome e o lembrete, o trecho do post, quando foi
- * marcado e o menu "…" com Editar, Tirar lembrete e Excluir.
+ * 个人资料页的“书签”标签（`/u/:username/bookmarks`），类似 Discourse
+ * 的书签列表：顶部搜索，每项显示主题（含分类与标签）、书签名称与
+ * 提醒、帖子摘录、收藏时间，以及包含“编辑”“移除提醒”“删除”的
+ * “…”菜单。
  *
- * Marcadores são pessoais: a aba só aparece no próprio perfil, e no perfil de
- * outra pessoa a página só avisa — a API, de qualquer forma, só devolve os
- * marcadores de quem pede.
+ * 书签属于个人内容：该标签仅在本人资料页显示，在他人资料页上
+ * 页面只给出提示——无论如何，API 也只会返回请求者自己的书签。
  */
 import app from 'flarum/forum/app';
 import UserPage, { type IUserPageAttrs } from 'flarum/forum/components/UserPage';
@@ -35,15 +34,15 @@ const SEARCH_DELAY_MS = 300;
 
 export default class BookmarksUserPage<Attrs extends IUserPageAttrs = IUserPageAttrs> extends UserPage<Attrs> {
   bookmarks: Bookmark[] = [];
-  // Começa carregando: o primeiro desenho vem antes do pedido, e "nenhum
-  // marcador" piscaria antes da lista.
+  // 初始即为加载中：首次渲染发生在请求之前，否则“没有
+  // 书签”会在列表出现前闪烁。
   loading = true;
   moreResults = false;
   query = '';
 
   private loadedFor: User | null = null;
   private searchTimer: ReturnType<typeof setTimeout> | undefined;
-  /** Cada busca invalida as respostas das anteriores que ainda estão a caminho. */
+  /** 每次搜索都会使仍在途中的旧响应失效。 */
   private requestId = 0;
 
   oninit(vnode: Mithril.Vnode<Attrs, this>) {
@@ -61,7 +60,7 @@ export default class BookmarksUserPage<Attrs extends IUserPageAttrs = IUserPageA
   show(user: User): void {
     super.show(user);
 
-    // `show()` roda de novo quando o perfil completo chega.
+    // 完整资料到达时会再次执行 `show()`。
     if (this.loadedFor === user || !this.isOwnProfile()) return;
 
     this.loadedFor = user;
@@ -74,12 +73,12 @@ export default class BookmarksUserPage<Attrs extends IUserPageAttrs = IUserPageA
 
   content(): Mithril.Children {
     if (!bookmarksEnabled() || !this.isOwnProfile()) {
-      return <p className="CanelaBookmarks-private">{t('bookmarks.page.private')}</p>;
+      return <p className="LcoyBookmarks-private">{t('bookmarks.page.private')}</p>;
     }
 
     return (
-      <div className="CanelaBookmarks">
-        <div className="CanelaBookmarks-toolbar">{this.toolbarItems().toArray()}</div>
+      <div className="LcoyBookmarks">
+        <div className="LcoyBookmarks-toolbar">{this.toolbarItems().toArray()}</div>
         {this.listView()}
       </div>
     );
@@ -90,8 +89,8 @@ export default class BookmarksUserPage<Attrs extends IUserPageAttrs = IUserPageA
 
     items.add(
       'search',
-      <div className="CanelaBookmarks-search">
-        <Icon name="fas fa-search" className="CanelaBookmarks-searchIcon" />
+      <div className="LcoyBookmarks-search">
+        <Icon name="fas fa-search" className="LcoyBookmarks-searchIcon" />
         <input
           className="FormControl"
           type="search"
@@ -114,30 +113,30 @@ export default class BookmarksUserPage<Attrs extends IUserPageAttrs = IUserPageA
 
     if (!bookmarks.length) {
       return (
-        <div className="CanelaBookmarks-empty">
-          <Icon name="far fa-bookmark" className="CanelaBookmarks-emptyIcon" />
+        <div className="LcoyBookmarks-empty">
+          <Icon name="far fa-bookmark" className="LcoyBookmarks-emptyIcon" />
           <p>{this.query ? t('bookmarks.page.no_results', { query: this.query }) : t('bookmarks.page.empty')}</p>
-          {!this.query && <p className="CanelaBookmarks-emptyHelp">{t('bookmarks.page.empty_help')}</p>}
+          {!this.query && <p className="LcoyBookmarks-emptyHelp">{t('bookmarks.page.empty_help')}</p>}
         </div>
       );
     }
 
     return (
-      <div className="CanelaBookmarkList" role="table" aria-label={t('bookmarks.page.title')}>
-        <div className="CanelaBookmarkList-head" role="row">
-          <span className="CanelaBookmarkList-headTopic" role="columnheader">
+      <div className="LcoyBookmarkList" role="table" aria-label={t('bookmarks.page.title')}>
+        <div className="LcoyBookmarkList-head" role="row">
+          <span className="LcoyBookmarkList-headTopic" role="columnheader">
             {t('bookmarks.page.column_topic')}
           </span>
-          <span className="CanelaBookmarkList-headDate" role="columnheader">
+          <span className="LcoyBookmarkList-headDate" role="columnheader">
             {t('bookmarks.page.column_date')}
           </span>
-          <span className="CanelaBookmarkList-headActions" role="columnheader" />
+          <span className="LcoyBookmarkList-headActions" role="columnheader" />
         </div>
-        <ul className="CanelaBookmarkList-items" role="rowgroup">
+        <ul className="LcoyBookmarkList-items" role="rowgroup">
           {bookmarks.map((bookmark) => this.item(bookmark))}
         </ul>
         {this.moreResults && (
-          <div className="CanelaBookmarkList-more">
+          <div className="LcoyBookmarkList-more">
             <Button className="Button" loading={this.loading} onclick={() => this.loadMore()}>
               {t('bookmarks.page.load_more')}
             </Button>
@@ -151,7 +150,7 @@ export default class BookmarksUserPage<Attrs extends IUserPageAttrs = IUserPageA
     const post = bookmark.post() || null;
     const discussion = post ? post.discussion() : null;
 
-    // Excluído pelo modal "Editar marcador" (que não conhece esta lista).
+    // 被“编辑书签”弹窗删除（该弹窗不认识此列表）。
     if (!bookmark.exists || !post || !discussion) return null;
 
     const createdAt = bookmark.createdAt();
@@ -160,28 +159,28 @@ export default class BookmarksUserPage<Attrs extends IUserPageAttrs = IUserPageA
     const excerpt = post.contentPlain();
 
     return (
-      <li className="CanelaBookmarkList-item" role="row" key={bookmark.id()}>
-        <div className="CanelaBookmarkList-main" role="cell">
-          <Avatar user={post.user() || null} className="CanelaBookmarkList-avatar" />
-          <div className="CanelaBookmarkList-body">
-            <Link className="CanelaBookmarkList-title" href={app.route.post(post)}>
-              <Icon name="fas fa-bookmark" className="CanelaBookmarkList-titleIcon" />
+      <li className="LcoyBookmarkList-item" role="row" key={bookmark.id()}>
+        <div className="LcoyBookmarkList-main" role="cell">
+          <Avatar user={post.user() || null} className="LcoyBookmarkList-avatar" />
+          <div className="LcoyBookmarkList-body">
+            <Link className="LcoyBookmarkList-title" href={app.route.post(post)}>
+              <Icon name="fas fa-bookmark" className="LcoyBookmarkList-titleIcon" />
               {discussion.title()}
             </Link>
 
-            {isTagsEnabled() && <div className="CanelaBookmarkList-badges">{discussionBadges(discussion)}</div>}
+            {isTagsEnabled() && <div className="LcoyBookmarkList-badges">{discussionBadges(discussion)}</div>}
 
             {(bookmark.name() || reminderAt) && (
-              <div className="CanelaBookmarkList-meta">
+              <div className="LcoyBookmarkList-meta">
                 {bookmark.name() && (
-                  <span className="CanelaBookmarkList-metaItem CanelaBookmarkList-name">
+                  <span className="LcoyBookmarkList-metaItem LcoyBookmarkList-name">
                     <Icon name="fas fa-tag" />
                     <span>{bookmark.name()}</span>
                   </span>
                 )}
                 {reminderAt && (
                   <span
-                    className={classList('CanelaBookmarkList-metaItem CanelaBookmarkList-reminder', { 'is-expired': expired })}
+                    className={classList('LcoyBookmarkList-metaItem LcoyBookmarkList-reminder', { 'is-expired': expired })}
                     title={fullDate(reminderAt)}
                   >
                     <Icon name="far fa-clock" />
@@ -191,11 +190,11 @@ export default class BookmarksUserPage<Attrs extends IUserPageAttrs = IUserPageA
               </div>
             )}
 
-            {excerpt && <p className="CanelaBookmarkList-excerpt">{truncate(excerpt, 220)}</p>}
+            {excerpt && <p className="LcoyBookmarkList-excerpt">{truncate(excerpt, 220)}</p>}
           </div>
         </div>
 
-        <div className="CanelaBookmarkList-date" role="cell">
+        <div className="LcoyBookmarkList-date" role="cell">
           {createdAt && (
             <time datetime={createdAt.toISOString()} title={fullDate(createdAt)}>
               {shortAge(createdAt)}
@@ -203,9 +202,9 @@ export default class BookmarksUserPage<Attrs extends IUserPageAttrs = IUserPageA
           )}
         </div>
 
-        <div className="CanelaBookmarkList-actions" role="cell">
+        <div className="LcoyBookmarkList-actions" role="cell">
           <Dropdown
-            className="CanelaBookmarkList-menu"
+            className="LcoyBookmarkList-menu"
             buttonClassName="Button Button--icon Button--flat"
             menuClassName="Dropdown-menu--right"
             icon="fas fa-ellipsis-h"
@@ -243,7 +242,7 @@ export default class BookmarksUserPage<Attrs extends IUserPageAttrs = IUserPageA
 
     items.add(
       'delete',
-      <Button icon="far fa-trash-alt" className="CanelaBookmarkList-delete" onclick={() => this.remove(bookmark, post)}>
+      <Button icon="far fa-trash-alt" className="LcoyBookmarkList-delete" onclick={() => this.remove(bookmark, post)}>
         {t('bookmarks.page.delete')}
       </Button>,
       -100
@@ -272,7 +271,7 @@ export default class BookmarksUserPage<Attrs extends IUserPageAttrs = IUserPageA
     const requestId = ++this.requestId;
     const include = ['post', 'post.discussion', 'post.user'];
 
-    // As etiquetas só existem com o flarum/tags: pedi-las sem ele derruba o pedido inteiro.
+    // 标签仅在使用 flarum/tags 时存在：没有它却请求标签会导致整个请求失败。
     if (isTagsEnabled()) include.push('post.discussion.tags');
 
     this.loading = true;
@@ -300,8 +299,8 @@ export default class BookmarksUserPage<Attrs extends IUserPageAttrs = IUserPageA
   }
 
   remove(bookmark: Bookmark, post: Post): void {
-    // Com lembrete marcado, apagar perde também o lembrete: o Discourse pede
-    // confirmação nesse caso, e só nele.
+    // 若设置了待发送的提醒，删除书签也会丢失该提醒：Discourse 在此情况下
+    // 会请求确认，且仅在这种情况下。
     if (bookmark.hasPendingReminder() && !window.confirm(t('bookmarks.page.delete_confirm'))) return;
 
     bookmark

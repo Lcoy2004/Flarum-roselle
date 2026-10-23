@@ -1,6 +1,6 @@
 /*
- * O estado de uma tabela de usuários (diretório /u ou membros de um grupo):
- * filtros, as páginas já carregadas e o "carregar mais".
+ * 用户表格（/u 目录或用户组成员）的状态：筛选条件、
+ * 已加载的页面以及“加载更多”。
  */
 import type User from 'flarum/common/models/User';
 
@@ -19,14 +19,14 @@ export default class DirectoryState {
   loading = false;
   failed = false;
 
-  /** Respostas que chegam fora de ordem (busca digitada rápido) são descartadas. */
+  /** 乱序到达的响应（快速输入搜索）会被丢弃。 */
   private requestId = 0;
 
   constructor(params: DirectoryParams) {
     this.params = { ...params };
   }
 
-  /** Troca filtros e recomeça da primeira página. */
+  /** 切换筛选条件并从第一页重新开始。 */
   refresh(changes: Partial<DirectoryParams> = {}): Promise<void> {
     this.params = { ...this.params, ...changes, page: 1 };
     this.rows = [];
@@ -43,7 +43,7 @@ export default class DirectoryState {
     return this.load();
   }
 
-  /** Clicar na coluna já ordenada inverte o sentido; numa nova, começa do maior. */
+  /** 点击已排序的列会反转方向；点击新列时从最大值开始。 */
   sortBy(column: string): Promise<void> {
     const same = this.currentOrder() === column;
     const dir: 'asc' | 'desc' = same ? (this.params.dir === 'asc' ? 'desc' : 'asc') : column === 'username' ? 'asc' : 'desc';
@@ -78,8 +78,8 @@ export default class DirectoryState {
         this.total = payload.meta.total;
         this.hasMore = payload.meta.hasMore;
 
-        // O servidor devolve a ordenação que valeu (um parâmetro inválido cai
-        // no padrão): o cabeçalho marca a coluna certa.
+        // 服务端返回实际生效的排序（无效参数会回落到
+        // 默认值）：表头据此标记正确的列。
         this.params = { ...this.params, order: payload.meta.order, dir: payload.meta.dir, period: payload.meta.period };
       })
       .catch(() => {

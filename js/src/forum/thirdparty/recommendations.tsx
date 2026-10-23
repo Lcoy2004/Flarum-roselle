@@ -10,7 +10,7 @@
  * 作者和计数在下）。扩展的小组件被拦下（WidgetManager::get 里过滤掉），主题的分区
  * 接手，两者不会同时出现。
  *
- * 两种情况主题不接管：主题的侧栏关掉时（canela.sidebar_enabled），小组件回到内容区；
+ * 两种情况主题不接管：主题的侧栏关掉时（lcoy.sidebar_enabled），小组件回到内容区；
  * 后台在 FoF 的布局编辑器里关掉这个小组件时，两边都不显示。
  *
  * 数据来自扩展：首页 payload 里的 `lcoy-recommendations-data` 命中就零请求（缓存
@@ -28,7 +28,7 @@ import humanTime from 'flarum/common/utils/humanTime';
 import type ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 
-import CanelaSidebar from '../components/CanelaSidebar';
+import LcoySidebar from '../components/LcoySidebar';
 import SidebarSection from '../components/SidebarSection';
 import { t } from '../utils/settings';
 import { thirdParty } from './settings';
@@ -108,7 +108,7 @@ function takeOver(): boolean {
   return thirdParty.recommendationsSidebar() && !(config.disabled ?? []).includes(WIDGET_ID);
 }
 
-const GROUP_STORAGE = 'canela.recommendationsGroup';
+const GROUP_STORAGE = 'lcoy.recommendationsGroup';
 
 /** 读者选的标签页留在浏览器里，跟「折叠了哪个分区」一样。 */
 function readGroup(): Group {
@@ -140,14 +140,14 @@ function stat(group: Group, item: Recommendation): Mithril.Children {
 
   if (group === 'recommended')
     return (
-      <span className="CanelaSidebar-recommendationStat">
+      <span className="LcoySidebar-recommendationStat">
         <Icon name="far fa-comment" />
         {abbreviateNumber(item.commentCount)}
       </span>
     );
 
   return (
-    <span className="CanelaSidebar-recommendationStat">
+    <span className="LcoySidebar-recommendationStat">
       <Icon name="far fa-clock" />
       {humanTime(new Date(item.createdAt))}
     </span>
@@ -159,16 +159,16 @@ function itemRow(group: Group, item: Recommendation): Mithril.Children {
   const avatar = user?.avatarUrl ?? null;
 
   return (
-    <li className="CanelaSidebar-recommendation">
-      <Link className="CanelaSidebar-recommendationLink" href={app.route('discussion', { id: item.id, slug: item.slug })} title={item.title}>
-        <span className="CanelaSidebar-recommendationTitle">{item.title}</span>
-        <span className="CanelaSidebar-recommendationMeta">
+    <li className="LcoySidebar-recommendation">
+      <Link className="LcoySidebar-recommendationLink" href={app.route('discussion', { id: item.id, slug: item.slug })} title={item.title}>
+        <span className="LcoySidebar-recommendationTitle">{item.title}</span>
+        <span className="LcoySidebar-recommendationMeta">
           {avatar ? (
-            <img className="CanelaSidebar-recommendationAvatar" src={avatar} alt="" loading="lazy" />
+            <img className="LcoySidebar-recommendationAvatar" src={avatar} alt="" loading="lazy" />
           ) : (
-            <span className="CanelaSidebar-recommendationAvatar CanelaSidebar-recommendationAvatar--empty" />
+            <span className="LcoySidebar-recommendationAvatar LcoySidebar-recommendationAvatar--empty" />
           )}
-          {user && <span className="CanelaSidebar-recommendationUser">{user.displayName}</span>}
+          {user && <span className="LcoySidebar-recommendationUser">{user.displayName}</span>}
           {stat(group, item)}
         </span>
       </Link>
@@ -226,8 +226,8 @@ class RecommendationsSection extends Component {
 
       return (
         <SidebarSection name="recommendations" title={t('sidebar.recommendations')}>
-          <li className="CanelaSidebar-recommendation">
-            <p className="CanelaSidebar-recommendationNote">{app.translator.trans('lcoy-recommendations.forum.widget.load_error')}</p>
+          <li className="LcoySidebar-recommendation">
+            <p className="LcoySidebar-recommendationNote">{app.translator.trans('lcoy-recommendations.forum.widget.load_error')}</p>
           </li>
         </SidebarSection>
       );
@@ -242,13 +242,13 @@ class RecommendationsSection extends Component {
 
     return (
       <SidebarSection name="recommendations" title={t('sidebar.recommendations')}>
-        <li className="CanelaSidebar-recommendations">
-          <div className="CanelaSidebar-recommendationTabs" role="tablist">
+        <li className="LcoySidebar-recommendations">
+          <div className="LcoySidebar-recommendationTabs" role="tablist">
             {tabs.map((group) => (
               <button
                 type="button"
                 role="tab"
-                className={classList('CanelaSidebar-recommendationTab', { active: active === group })}
+                className={classList('LcoySidebar-recommendationTab', { active: active === group })}
                 aria-selected={active === group ? 'true' : 'false'}
                 onclick={() => this.select(group)}
               >
@@ -256,12 +256,12 @@ class RecommendationsSection extends Component {
               </button>
             ))}
           </div>
-          <ul className="CanelaSidebar-recommendationList">
+          <ul className="LcoySidebar-recommendationList">
             {items.length ? (
               items.map((item) => itemRow(active, item))
             ) : (
-              <li className="CanelaSidebar-recommendation">
-                <p className="CanelaSidebar-recommendationNote">{app.translator.trans('lcoy-recommendations.forum.widget.empty')}</p>
+              <li className="LcoySidebar-recommendation">
+                <p className="LcoySidebar-recommendationNote">{app.translator.trans('lcoy-recommendations.forum.widget.empty')}</p>
               </li>
             )}
           </ul>
@@ -289,7 +289,7 @@ export default function installRecommendations(): void {
     if (index !== -1) widgets.splice(index, 1);
   });
 
-  extend(CanelaSidebar.prototype, 'sectionItems', function (this: CanelaSidebar, items: ItemList<Mithril.Children>) {
+  extend(LcoySidebar.prototype, 'sectionItems', function (this: LcoySidebar, items: ItemList<Mithril.Children>) {
     if (!takeOver()) return;
 
     // 紧跟在社区分区（90）后面：侧栏自己要滚动，分类和标签合起来一千多像素，

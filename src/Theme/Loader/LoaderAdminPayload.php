@@ -17,14 +17,14 @@ namespace Lcoy\Roselle\Theme\Loader;
 use Flarum\Frontend\Document;
 
 /**
- * Os SVGs prontos vão para o payload do admin, para a prévia dos estilos no
- * card: assim eles têm uma fonte só (LoaderPresets), sem cópia no JS. No
- * fórum eles não entram no payload; lá o escolhido já está na folha de CSS.
+ * 现成的 SVG 会放入后台 payload，用于卡片中的样式预览：这样它们只有
+ * 一个来源（LoaderPresets），JS 中无需复制。在论坛中它们不会进入 payload；
+ * 那里所选用的 SVG 已在 CSS 中。
  */
 final class LoaderAdminPayload
 {
     public function __invoke(Document $document): void
     {
-        $document->payload['canelaLoaderPresets'] = LoaderPresets::SVG;
+        $document->payload['lcoyLoaderPresets'] = LoaderPresets::SVG;
     }
 }

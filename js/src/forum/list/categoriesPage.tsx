@@ -1,14 +1,14 @@
 /*
- * A página de categorias no estilo do Discourse: a barra de navegação no
- * topo, as categorias em caixas (ou em tabela, conforme o admin) e, abaixo,
- * as etiquetas com a contagem de tópicos.
+ * Discourse 风格的分类页面：顶部是导航栏，
+ * 分类以方框（或表格，取决于管理员设置）显示，下方是
+ * 带主题计数的标签。
  *
- * Com os endereços do Discourse ligados, /categories é essa página e /tags
- * vira a página de etiquetas do Discourse ("Etiquetas", "Ordenar por
- * contagem/nome" e a lista). Sem eles, /tags faz as duas vezes.
+ * 启用 Discourse 地址后，/categories 就是这个页面，/tags
+ * 变成 Discourse 的标签页（"标签"、"按
+ * 计数/名称排序" 以及列表）。未启用时，/tags 兼任两者。
  *
- * O TagsPage é do flarum/tags; ele é buscado no registro de módulos só se a
- * extensão estiver ativa, para o tema não depender dela.
+ * TagsPage 来自 flarum/tags；仅当该扩展启用时才从模块注册表中
+ * 获取，以免主题依赖它。
  */
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
@@ -19,47 +19,47 @@ import type Discussion from 'flarum/common/models/Discussion';
 import type Mithril from 'mithril';
 
 import { t } from '../utils/settings';
-import { categoryBadge, categorySymbol, isTagsEnabled, separateTagsPage, sortTags, tagSymbol, tagUrl, type CanelaTag } from '../utils/tags';
+import { categoryBadge, categorySymbol, isTagsEnabled, separateTagsPage, sortTags, tagSymbol, tagUrl, type LcoyTag } from '../utils/tags';
 import { shortAge, fullDate } from '../utils/dates';
 import ListNavigation from './ListNavigation';
 
 type Layout = 'boxes' | 'list';
 
 function layout(): Layout {
-  return app.forum.attribute<string>('canelaCategoriesLayout') === 'list' ? 'list' : 'boxes';
+  return app.forum.attribute<string>('lcoyCategoriesLayout') === 'list' ? 'list' : 'boxes';
 }
 
-function childrenOf(tag: CanelaTag): CanelaTag[] {
+function childrenOf(tag: LcoyTag): LcoyTag[] {
   const children = tag.children();
 
   return Array.isArray(children) ? sortTags(children.filter(Boolean)) : [];
 }
 
-function colorStyle(tag: CanelaTag): Record<string, string> | undefined {
+function colorStyle(tag: LcoyTag): Record<string, string> | undefined {
   const color = tag.color();
 
   return color ? { '--category-color': color } : undefined;
 }
 
-function boxesView(categories: CanelaTag[]): Mithril.Children {
+function boxesView(categories: LcoyTag[]): Mithril.Children {
   return (
-    <ul className="CanelaCategoryBoxes">
+    <ul className="LcoyCategoryBoxes">
       {categories.map((tag) => {
         const children = childrenOf(tag);
 
         return (
-          <li className="CanelaCategoryBox" style={colorStyle(tag)}>
-            <h3 className="CanelaCategoryBox-title">
-              {/* O link do título se estica sobre a caixa inteira (::after);
-                  os links das filhas ficam por cima dele. */}
-              <Link className="CanelaCategoryBox-link" href={tagUrl(tag)}>
+          <li className="LcoyCategoryBox" style={colorStyle(tag)}>
+            <h3 className="LcoyCategoryBox-title">
+              {/* 标题链接会通过 ::after 延伸到整个方框；
+                  子标签的链接位于其上方。 */}
+              <Link className="LcoyCategoryBox-link" href={tagUrl(tag)}>
                 {categorySymbol(tag)}
-                <span className="CanelaCategoryBox-name">{tag.name()}</span>
+                <span className="LcoyCategoryBox-name">{tag.name()}</span>
               </Link>
             </h3>
-            {tag.description() && <p className="CanelaCategoryBox-description">{tag.description()}</p>}
+            {tag.description() && <p className="LcoyCategoryBox-description">{tag.description()}</p>}
             {children.length > 0 && (
-              <ul className="CanelaCategoryBox-children">
+              <ul className="LcoyCategoryBox-children">
                 {children.map((child) => (
                   <li>{categoryBadge(child)}</li>
                 ))}
@@ -72,20 +72,20 @@ function boxesView(categories: CanelaTag[]): Mithril.Children {
   );
 }
 
-const skeletonLine = (width: string) => <span className="CanelaSkeleton CanelaSkeleton--line" style={{ width }} />;
+const skeletonLine = (width: string) => <span className="LcoySkeleton LcoySkeleton--line" style={{ width }} />;
 
-/** As caixas carregando: nome, descrição de duas linhas e a fileira das filhas. */
+/** 加载中的方框：名称、两行描述以及子标签一排。 */
 function boxesSkeleton(): Mithril.Children {
   return (
-    <ul className="CanelaCategoryBoxes CanelaCategoryBoxes--loading" aria-busy="true">
+    <ul className="LcoyCategoryBoxes LcoyCategoryBoxes--loading" aria-busy="true">
       {['48%', '36%', '56%', '42%', '30%', '52%'].map((width) => (
-        <li className="CanelaCategoryBox">
-          <h3 className="CanelaCategoryBox-title">{skeletonLine(width)}</h3>
-          <p className="CanelaCategoryBox-description">
+        <li className="LcoyCategoryBox">
+          <h3 className="LcoyCategoryBox-title">{skeletonLine(width)}</h3>
+          <p className="LcoyCategoryBox-description">
             {skeletonLine('92%')}
             {skeletonLine('60%')}
           </p>
-          <ul className="CanelaCategoryBox-children">
+          <ul className="LcoyCategoryBox-children">
             {['4.5em', '6em', '5em'].map((child) => (
               <li>{skeletonLine(child)}</li>
             ))}
@@ -96,29 +96,29 @@ function boxesSkeleton(): Mithril.Children {
   );
 }
 
-/** A tabela carregando: o cabeçalho de verdade e linhas com barras. */
+/** 加载中的表格：真实的表头以及带占位条的行。 */
 function listSkeleton(): Mithril.Children {
   return (
-    <table className="CanelaCategoryTable CanelaCategoryTable--loading" aria-busy="true">
+    <table className="LcoyCategoryTable LcoyCategoryTable--loading" aria-busy="true">
       <thead>
         <tr>
-          <th className="CanelaCategoryTable-category">{t('categories.category')}</th>
-          <th className="CanelaCategoryTable-topics">{t('categories.topics')}</th>
-          <th className="CanelaCategoryTable-latest">{t('categories.latest')}</th>
+          <th className="LcoyCategoryTable-category">{t('categories.category')}</th>
+          <th className="LcoyCategoryTable-topics">{t('categories.topics')}</th>
+          <th className="LcoyCategoryTable-latest">{t('categories.latest')}</th>
         </tr>
       </thead>
       <tbody>
         {['30%', '22%', '36%', '26%', '18%'].map((width) => (
           <tr>
-            <td className="CanelaCategoryTable-category">
-              <h3 className="CanelaCategoryTable-name">{skeletonLine(width)}</h3>
-              <p className="CanelaCategoryTable-description">{skeletonLine('70%')}</p>
+            <td className="LcoyCategoryTable-category">
+              <h3 className="LcoyCategoryTable-name">{skeletonLine(width)}</h3>
+              <p className="LcoyCategoryTable-description">{skeletonLine('70%')}</p>
             </td>
-            <td className="CanelaCategoryTable-topics">
-              <span className="CanelaSkeleton CanelaSkeleton--word" style={{ width: '1.5em' }} />
+            <td className="LcoyCategoryTable-topics">
+              <span className="LcoySkeleton LcoySkeleton--word" style={{ width: '1.5em' }} />
             </td>
-            <td className="CanelaCategoryTable-latest">
-              <div className="CanelaCategoryTable-latestInner">{skeletonLine('80%')}</div>
+            <td className="LcoyCategoryTable-latest">
+              <div className="LcoyCategoryTable-latestInner">{skeletonLine('80%')}</div>
             </td>
           </tr>
         ))}
@@ -127,20 +127,20 @@ function listSkeleton(): Mithril.Children {
   );
 }
 
-function latestView(tag: CanelaTag): Mithril.Children {
+function latestView(tag: LcoyTag): Mithril.Children {
   const discussion = tag.lastPostedDiscussion() as Discussion | null | false | undefined;
 
-  if (!discussion) return <span className="CanelaCategoryTable-none">-</span>;
+  if (!discussion) return <span className="LcoyCategoryTable-none">-</span>;
 
   const date = discussion.lastPostedAt();
 
   return (
-    <div className="CanelaCategoryTable-latestInner">
-      <Link className="CanelaCategoryTable-latestTitle" href={app.route.discussion(discussion, discussion.lastPostNumber() ?? undefined)}>
+    <div className="LcoyCategoryTable-latestInner">
+      <Link className="LcoyCategoryTable-latestTitle" href={app.route.discussion(discussion, discussion.lastPostNumber() ?? undefined)}>
         {discussion.title()}
       </Link>
       {date && (
-        <span className="CanelaCategoryTable-latestAge" title={fullDate(date)}>
+        <span className="LcoyCategoryTable-latestAge" title={fullDate(date)}>
           {shortAge(date)}
         </span>
       )}
@@ -148,14 +148,14 @@ function latestView(tag: CanelaTag): Mithril.Children {
   );
 }
 
-function listView(categories: CanelaTag[]): Mithril.Children {
+function listView(categories: LcoyTag[]): Mithril.Children {
   return (
-    <table className="CanelaCategoryTable">
+    <table className="LcoyCategoryTable">
       <thead>
         <tr>
-          <th className="CanelaCategoryTable-category">{t('categories.category')}</th>
-          <th className="CanelaCategoryTable-topics">{t('categories.topics')}</th>
-          <th className="CanelaCategoryTable-latest">{t('categories.latest')}</th>
+          <th className="LcoyCategoryTable-category">{t('categories.category')}</th>
+          <th className="LcoyCategoryTable-topics">{t('categories.topics')}</th>
+          <th className="LcoyCategoryTable-latest">{t('categories.latest')}</th>
         </tr>
       </thead>
       <tbody>
@@ -164,18 +164,18 @@ function listView(categories: CanelaTag[]): Mithril.Children {
 
           return (
             <tr style={colorStyle(tag)}>
-              <td className="CanelaCategoryTable-category">
-                <h3 className="CanelaCategoryTable-name">
+              <td className="LcoyCategoryTable-category">
+                <h3 className="LcoyCategoryTable-name">
                   <Link href={tagUrl(tag)}>
                     {categorySymbol(tag)}
                     <span>{tag.name()}</span>
                   </Link>
                 </h3>
-                {tag.description() && <p className="CanelaCategoryTable-description">{tag.description()}</p>}
-                {children.length > 0 && <div className="CanelaCategoryTable-children">{children.map((child) => categoryBadge(child))}</div>}
+                {tag.description() && <p className="LcoyCategoryTable-description">{tag.description()}</p>}
+                {children.length > 0 && <div className="LcoyCategoryTable-children">{children.map((child) => categoryBadge(child))}</div>}
               </td>
-              <td className="CanelaCategoryTable-topics">{tag.discussionCount()}</td>
-              <td className="CanelaCategoryTable-latest">{latestView(tag)}</td>
+              <td className="LcoyCategoryTable-topics">{tag.discussionCount()}</td>
+              <td className="LcoyCategoryTable-latest">{latestView(tag)}</td>
             </tr>
           );
         })}
@@ -184,15 +184,15 @@ function listView(categories: CanelaTag[]): Mithril.Children {
   );
 }
 
-function tagsView(labels: CanelaTag[], title = t('categories.tags_title')): Mithril.Children {
+function tagsView(labels: LcoyTag[], title = t('categories.tags_title')): Mithril.Children {
   return (
-    <section className="CanelaTagCloud">
-      <h2 className="CanelaTagCloud-title">{title}</h2>
-      <ul className="CanelaTagCloud-list">
+    <section className="LcoyTagCloud">
+      <h2 className="LcoyTagCloud-title">{title}</h2>
+      <ul className="LcoyTagCloud-list">
         {labels.map((tag) => (
-          <li className="CanelaTagCloud-item">
+          <li className="LcoyTagCloud-item">
             <Link
-              className="CanelaTagCloud-tag"
+              className="LcoyTagCloud-tag"
               href={tagUrl(tag)}
               title={tag.description() || undefined}
               style={tag.color() ? { '--tag-color': tag.color() } : undefined}
@@ -200,7 +200,7 @@ function tagsView(labels: CanelaTag[], title = t('categories.tags_title')): Mith
               {tagSymbol(tag)}
               <span>{tag.name()}</span>
             </Link>
-            <span className="CanelaTagCloud-count">x {tag.discussionCount()}</span>
+            <span className="LcoyTagCloud-count">x {tag.discussionCount()}</span>
           </li>
         ))}
       </ul>
@@ -208,14 +208,14 @@ function tagsView(labels: CanelaTag[], title = t('categories.tags_title')): Mith
   );
 }
 
-/** A ordenação da página de etiquetas; dura a sessão, como no Discourse. */
+/** 标签页的排序方式；与 Discourse 相同，仅在本次会话中保持。 */
 let tagSort: 'count' | 'name' = 'count';
 
 function sortLink(key: 'count' | 'name', label: string): Mithril.Children {
   return (
     <a
       href="#"
-      className={classList('CanelaTagsPage-sort', { active: tagSort === key })}
+      className={classList('LcoyTagsPage-sort', { active: tagSort === key })}
       aria-pressed={tagSort === key ? 'true' : 'false'}
       onclick={(event: MouseEvent) => {
         event.preventDefault();
@@ -227,18 +227,18 @@ function sortLink(key: 'count' | 'name', label: string): Mithril.Children {
   );
 }
 
-/** A página /tags do Discourse (`.tags-index`). */
-function tagsPageView(labels: CanelaTag[]): Mithril.Children {
+/** Discourse 的 /tags 页面（`.tags-index`）。 */
+function tagsPageView(labels: LcoyTag[]): Mithril.Children {
   const sorted = tagSort === 'name' ? labels.slice().sort((a, b) => a.name().localeCompare(b.name(), undefined, { sensitivity: 'base' })) : labels;
 
   return (
-    <div className="CanelaTagsPage">
-      <h2 className="CanelaTagsPage-title">{t('categories.tags_title')}</h2>
-      <div className="CanelaTagsPage-sortOptions">
+    <div className="LcoyTagsPage">
+      <h2 className="LcoyTagsPage-title">{t('categories.tags_title')}</h2>
+      <div className="LcoyTagsPage-sortOptions">
         {t('categories.tags_sort_by')} {sortLink('count', t('categories.tags_sort_count'))} {sortLink('name', t('categories.tags_sort_name'))}
       </div>
-      <hr className="CanelaTagsPage-rule" />
-      {sorted.length ? tagsView(sorted, t('categories.tags_all')) : <p className="CanelaTagsPage-empty">{t('categories.tags_none')}</p>}
+      <hr className="LcoyTagsPage-rule" />
+      {sorted.length ? tagsView(sorted, t('categories.tags_all')) : <p className="LcoyTagsPage-empty">{t('categories.tags_none')}</p>}
     </div>
   );
 }
@@ -254,8 +254,8 @@ export default function installCategoriesPage(): void {
 
   if (!TagsPage) return;
 
-  // O WelcomeHero repetido em cima das categorias só empurraria a grade para
-  // baixo; a aba "Categorias" ativa na barra já diz onde o leitor está.
+  // 在分类上方重复的 WelcomeHero 只会把网格向下推；
+  // 导航栏中激活的 "分类" 标签已经表明读者所在的位置。
   override(TagsPage.prototype, 'hero', function () {
     return null;
   });
@@ -263,21 +263,21 @@ export default function installCategoriesPage(): void {
   extend(TagsPage.prototype, 'contentItems', function (this: any, items: ItemList<Mithril.Children>) {
     const tagsPage = onTagsPage();
 
-    // A página de etiquetas do Discourse não tem a barra de navegação.
-    if (!tagsPage) items.add('canelaNav', <ListNavigation />, 200);
+    // Discourse 的标签页没有导航栏。
+    if (!tagsPage) items.add('lcoyNav', <ListNavigation />, 200);
 
     if (this.loading) {
-      // No lugar do spinner, as caixas (ou a tabela) das categorias com as
-      // classes das reais: elas chegam onde o esqueleto estava.
+      // 取代加载动画，使用分类的方框（或表格）并带上
+      // 真实元素的类名：它们会出现在骨架屏所在的位置。
       if (!tagsPage) {
         items.remove('loading');
-        items.add('canelaCategories', layout() === 'list' ? listSkeleton() : boxesSkeleton(), 100);
+        items.add('lcoyCategories', layout() === 'list' ? listSkeleton() : boxesSkeleton(), 100);
       }
 
       return;
     }
 
-    const tags: CanelaTag[] = this.tags || [];
+    const tags: LcoyTag[] = this.tags || [];
     const categories = sortTags(tags.filter((tag) => tag.position() !== null && !tag.isChild()));
     const labels = tags.filter((tag) => tag.position() === null).sort((a, b) => b.discussionCount() - a.discussionCount());
 
@@ -285,17 +285,17 @@ export default function installCategoriesPage(): void {
     items.remove('cloud');
 
     if (tagsPage) {
-      items.add('canelaTagsPage', tagsPageView(labels), 100);
+      items.add('lcoyTagsPage', tagsPageView(labels), 100);
 
       return;
     }
 
     if (categories.length) {
-      items.add('canelaCategories', layout() === 'list' ? listView(categories) : boxesView(categories), 100);
+      items.add('lcoyCategories', layout() === 'list' ? listView(categories) : boxesView(categories), 100);
     }
 
     if (labels.length) {
-      items.add('canelaTags', tagsView(labels), 10);
+      items.add('lcoyTags', tagsView(labels), 10);
     }
   });
 }

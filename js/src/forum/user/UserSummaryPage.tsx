@@ -1,16 +1,14 @@
 /*
- * A aba "Resumo" do perfil do Discourse: os números em linha ("1,9k dias
- * acessados"), e em duas colunas as melhores respostas e os melhores tópicos
- * da pessoa — cada item com a data e as curtidas em cima e o título embaixo.
+ * Discourse 资料的“摘要”标签页：一行数字（“访问 1.9k 天”），
+ * 以及两栏中的最佳回复和最佳主题——每项上方是日期和点赞数，
+ * 下方是标题。
  *
- * O Flarum não guarda tempo de leitura nem dias visitados, então os números
- * ficam com o que existe: dias de casa, curtidas dadas (com o flarum/likes;
- * a contagem vem do `meta.page.total` da busca de posts curtidos), tópicos e
- * postagens criados.
+ * Flarum 不保存阅读时长和访问天数，因此数字只能用现有的数据：注册天数、
+ * 给出的点赞（启用 flarum/likes 时；计数来自已点赞帖子搜索的
+ * `meta.page.total`）、创建的主题和帖子。
  *
- * "Melhores" segue o Discourse — mais curtidas primeiro — dentro de uma
- * amostra recente (as últimas postagens, os tópicos mais respondidos): a API
- * do Flarum não ordena por curtidas.
+ * “最佳”遵循 Discourse——点赞最多者优先——但只在一个近期样本内
+ *（最新帖子、回复最多的主题）：Flarum 的 API 不按点赞排序。
  */
 import app from 'flarum/forum/app';
 import UserPage, { type IUserPageAttrs } from 'flarum/forum/components/UserPage';
@@ -28,19 +26,17 @@ import type Mithril from 'mithril';
 import { fullDate, shortDate } from '../utils/dates';
 import { isExtensionEnabled, t } from '../utils/settings';
 import { formatReadTime, userActivity } from '../features/stats/activity';
-import { formatViews } from '../utils/views';
 
-/** Quantos itens em cada coluna, como no Discourse. */
+/** 每栏显示多少项，与 Discourse 一致。 */
 const LIST_LIMIT = 6;
-/** Amostras de onde saem os "melhores". */
+/** 生成“最佳”的样本。 */
 const REPLY_SAMPLE = 50;
 const TOPIC_SAMPLE = 20;
 
-// Só os campos que as listas desenham (JSON:API "sparse fieldsets"): sem o
-// HTML e o texto de cada post, a amostra (e o pré-carregamento do Resumo, que
-// espelha estes pedidos em src/Preload/PreloadContent.php) cai para ~1/4. Os
-// modelos parciais no store não atrapalham: o fluxo do tópico recarrega o post
-// sem `canEdit`, e as outras telas pedem os seus.
+// 只取列表绘制所需的字段（JSON:API "sparse fieldsets"）：去掉每篇帖子的
+// HTML 和文本后，样本（以及摘要的预加载——它在 src/Preload/PreloadContent.php
+// 中镜像这些请求）降到约 1/4。store 中的部分模型没有影响：主题的流程会
+// 重新加载帖子（不带 `canEdit`），其他页面则请求各自所需。
 const TOPIC_FIELDS = { discussions: 'title,slug,commentCount,createdAt,firstPost', posts: 'likesCount' };
 const REPLY_FIELDS = { posts: 'number,createdAt,likesCount,discussion', discussions: 'title,slug' };
 const DAY = 24 * 60 * 60 * 1000;
@@ -70,34 +66,21 @@ interface SummaryCategory {
   replies: number;
 }
 
-interface SummaryLink {
-  url: string;
-  title: string | null;
-  domain: string;
-  clicks: number;
-  postNumber: number;
-  discussionId: string;
-  discussionSlug: string;
-  discussionTitle: string;
-}
-
 interface SummaryExtra {
   mostRepliedTo: SummaryUser[] | null;
   mostLikedBy: SummaryUser[] | null;
   mostLiked: SummaryUser[] | null;
   topCategories: SummaryCategory[] | null;
-  /** Recurso `links`: null com ele desligado. */
-  topLinks?: SummaryLink[] | null;
 }
 
 export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAttrs> extends UserPage<Attrs> {
   topics: Discussion[] | null = null;
   replies: Post[] | null = null;
   likesGiven: number | null = null;
-  /** As listas do backend do resumo (recurso `usersummary`); null sem ele. */
+  /** 摘要后端（资源 `usersummary`）的列表；没有它时为 null。 */
   extra: SummaryExtra | null = null;
 
-  /** O usuário cujos dados já foram pedidos: `show()` roda de novo quando o perfil completo chega. */
+  /** 数据已被请求过的用户：完整资料到达时 `show()` 会再次运行。 */
   private loadedFor: User | null = null;
 
   oninit(vnode: Mithril.Vnode<Attrs, this>) {
@@ -120,7 +103,7 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
   }
 
   load(user: User): void {
-    // Erros aqui não merecem alerta: a seção fica vazia e o resto do perfil segue.
+    // 这里的错误不需要提示：该区域留空，资料页其余部分照常。
     const quiet = { errorHandler: () => {} };
     const byLikes = (a: Post | null, b: Post | null) => (likesOf(b) ?? 0) - (likesOf(a) ?? 0);
 
@@ -138,7 +121,7 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
         quiet
       )
       .then((topics) => {
-        // A ordem da API (mais respondidos) desempata; o sort é estável.
+        // API 的顺序（回复最多）用于打破平局；排序是稳定的。
         const list = topics.slice();
         if (this.likesEnabled()) list.sort((a, b) => byLikes(a.firstPost() || null, b.firstPost() || null));
         this.topics = list.slice(0, LIST_LIMIT);
@@ -160,7 +143,7 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
         quiet
       )
       .then((posts) => {
-        // Respostas são as postagens que não abrem o tópico.
+        // 回复即不开启主题的帖子。
         const replies = posts.filter((post) => post.discussion() && (post.number() || 0) > 1);
         if (this.likesEnabled()) replies.sort(byLikes);
         this.replies = replies.slice(0, LIST_LIMIT);
@@ -168,12 +151,12 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
       .catch(() => (this.replies = []))
       .finally(() => m.redraw());
 
-    // "Mais respondidos(as)", "Mais curtido por", "Com mais curtidas",
-    // "Melhores tags": sem o recurso no servidor a rota não existe e as
-    // seções simplesmente não aparecem.
+    // “回复最多”、“被谁点赞最多”、“点赞最多”、
+    // “最佳标签”：服务器上没有该功能时路由不存在，
+    // 这些区域就直接不出现。
     this.extra = null;
     app
-      .request<SummaryExtra>({ method: 'GET', url: `${app.forum.attribute('apiUrl')}/canela-user-summary/${user.id()}`, ...quiet })
+      .request<SummaryExtra>({ method: 'GET', url: `${app.forum.attribute('apiUrl')}/lcoy-user-summary/${user.id()}`, ...quiet })
       .then((extra) => {
         if (this.loadedFor === user && extra && typeof extra === 'object') this.extra = extra;
       })
@@ -193,7 +176,7 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
   }
 
   content(): Mithril.Children {
-    return <div className="CanelaUserSummary">{this.sectionItems().toArray()}</div>;
+    return <div className="LcoyUserSummary">{this.sectionItems().toArray()}</div>;
   }
 
   sectionItems(): ItemList<Mithril.Children> {
@@ -202,30 +185,30 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
 
     items.add(
       'stats',
-      <section className="CanelaUserSummary-section CanelaUserSummary-stats">
-        <h3 className="CanelaUserSummary-heading">{t('user.summary.stats_heading')}</h3>
-        <ul className="CanelaUserSummary-statList">{this.statItems().toArray()}</ul>
+      <section className="LcoyUserSummary-section LcoyUserSummary-stats">
+        <h3 className="LcoyUserSummary-heading">{t('user.summary.stats_heading')}</h3>
+        <ul className="LcoyUserSummary-statList">{this.statItems().toArray()}</ul>
       </section>,
       100
     );
 
     items.add(
       'columns',
-      <div className="CanelaUserSummary-columns">
-        <section className="CanelaUserSummary-section CanelaUserSummary-replies">
-          <h3 className="CanelaUserSummary-heading">{t('user.summary.top_replies_heading')}</h3>
+      <div className="LcoyUserSummary-columns">
+        <section className="LcoyUserSummary-section LcoyUserSummary-replies">
+          <h3 className="LcoyUserSummary-heading">{t('user.summary.top_replies_heading')}</h3>
           {this.list(this.replies, (post) => this.replyItem(post), t('user.summary.no_replies'))}
           {!!this.replies?.length && (
-            <Link className="CanelaUserSummary-more" href={app.route('user.posts', { username: user.slug() })}>
+            <Link className="LcoyUserSummary-more" href={app.route('user.posts', { username: user.slug() })}>
               {t('user.summary.more_replies')}
             </Link>
           )}
         </section>
-        <section className="CanelaUserSummary-section CanelaUserSummary-topics">
-          <h3 className="CanelaUserSummary-heading">{t('user.summary.top_topics_heading')}</h3>
+        <section className="LcoyUserSummary-section LcoyUserSummary-topics">
+          <h3 className="LcoyUserSummary-heading">{t('user.summary.top_topics_heading')}</h3>
           {this.list(this.topics, (discussion) => this.topicItem(discussion), t('user.summary.no_topics'))}
           {!!this.topics?.length && (
-            <Link className="CanelaUserSummary-more" href={app.route('user.discussions', { username: user.slug() })}>
+            <Link className="LcoyUserSummary-more" href={app.route('user.discussions', { username: user.slug() })}>
               {t('user.summary.more_topics')}
             </Link>
           )}
@@ -237,13 +220,11 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
     const extra = this.extra;
 
     if (extra) {
-      // Os pares de seções sempre lado a lado, como no Discourse: uma seção sem
-      // dados mostra o título e "nada ainda", em vez de sumir e deixar a outra
-      // sozinha numa linha.
+      // 各对区域始终并排，与 Discourse 一致：没有数据的区域显示标题和
+      // “暂无内容”，而不是消失，让另一个单独占一行。
       items.add(
         'mostRepliedTo',
-        <div className="CanelaUserSummary-columns">
-          {this.linksSection(extra.topLinks || [])}
+        <div className="LcoyUserSummary-columns">
           {this.userSection(
             'most-replied-to',
             t('user.summary.most_replied_to'),
@@ -257,7 +238,7 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
 
       items.add(
         'likes',
-        <div className="CanelaUserSummary-columns">
+        <div className="LcoyUserSummary-columns">
           {this.userSection('most-liked-by', t('user.summary.most_liked_by'), extra.mostLikedBy || [], 'fas fa-heart', t('user.summary.empty_likes'))}
           {this.userSection('most-liked', t('user.summary.most_liked'), extra.mostLiked || [], 'fas fa-heart', t('user.summary.empty_likes'))}
         </div>,
@@ -270,24 +251,24 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
     return items;
   }
 
-  /** `.summary-user-list`: avatar, nome de usuário e nome, e a contagem embaixo. */
+  /** `.summary-user-list`：头像、用户名和姓名，以及下方的计数。 */
   userSection(name: string, heading: string, users: SummaryUser[], icon: string, emptyText = ''): Mithril.Children {
     if (!users.length) {
       return (
-        <section className={`CanelaUserSummary-section CanelaUserSummary-${name}`}>
-          <h3 className="CanelaUserSummary-heading">{heading}</h3>
-          <p className="CanelaUserSummary-empty">{emptyText}</p>
+        <section className={`LcoyUserSummary-section LcoyUserSummary-${name}`}>
+          <h3 className="LcoyUserSummary-heading">{heading}</h3>
+          <p className="LcoyUserSummary-empty">{emptyText}</p>
         </section>
       );
     }
 
     return (
-      <section className={`CanelaUserSummary-section CanelaUserSummary-${name}`}>
-        <h3 className="CanelaUserSummary-heading">{heading}</h3>
-        <ul className="CanelaSummaryUsers">
+      <section className={`LcoyUserSummary-section LcoyUserSummary-${name}`}>
+        <h3 className="LcoyUserSummary-heading">{heading}</h3>
+        <ul className="LcoySummaryUsers">
           {users.map((user) => (
-            <li className="CanelaSummaryUsers-item" key={user.id}>
-              <Link className="CanelaSummaryUsers-avatar" href={app.route('user', { username: user.username })} tabindex="-1" aria-hidden="true">
+            <li className="LcoySummaryUsers-item" key={user.id}>
+              <Link className="LcoySummaryUsers-avatar" href={app.route('user', { username: user.username })} tabindex="-1" aria-hidden="true">
                 {user.avatarUrl ? (
                   <img className="Avatar" src={user.avatarUrl} alt="" loading="lazy" />
                 ) : (
@@ -296,16 +277,14 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
                   </span>
                 )}
               </Link>
-              <div className="CanelaSummaryUsers-details">
-                <div className="CanelaSummaryUsers-names">
-                  <Link className="CanelaSummaryUsers-username" href={app.route('user', { username: user.username })}>
+              <div className="LcoySummaryUsers-details">
+                <div className="LcoySummaryUsers-names">
+                  <Link className="LcoySummaryUsers-username" href={app.route('user', { username: user.username })}>
                     {user.username}
                   </Link>
-                  {user.displayName && user.displayName !== user.username ? (
-                    <span className="CanelaSummaryUsers-name">{user.displayName}</span>
-                  ) : null}
+                  {user.displayName && user.displayName !== user.username ? <span className="LcoySummaryUsers-name">{user.displayName}</span> : null}
                 </div>
-                <span className="CanelaSummaryUsers-count" title={formatNumber(user.count)}>
+                <span className="LcoySummaryUsers-count" title={formatNumber(user.count)}>
                   <Icon name={icon} /> {abbreviateNumber(user.count)}
                 </span>
               </div>
@@ -316,70 +295,30 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
     );
   }
 
-  /** `.top-links`: os cliques, o link (título ou endereço) e o tópico onde ele está. */
-  linksSection(links: SummaryLink[]): Mithril.Children {
-    if (!links.length) {
-      return (
-        <section className="CanelaUserSummary-section CanelaUserSummary-topLinks">
-          <h3 className="CanelaUserSummary-heading">{t('user.summary.top_links')}</h3>
-          <p className="CanelaUserSummary-empty">{t('user.summary.empty_links')}</p>
-        </section>
-      );
-    }
-
-    return (
-      <section className="CanelaUserSummary-section CanelaUserSummary-topLinks">
-        <h3 className="CanelaUserSummary-heading">{t('user.summary.top_links')}</h3>
-        <ul className="CanelaSummaryList CanelaSummaryLinks">
-          {links.map((link) => (
-            <li className="CanelaSummaryList-item CanelaSummaryLinks-item" key={link.url}>
-              <span className="CanelaSummaryLinks-clicks badge clicks" title={t('links.clicks', { count: link.clicks })}>
-                {formatViews(link.clicks)}
-              </span>{' '}
-              <a className="CanelaSummaryLinks-link" href={link.url} target="_blank" rel="noopener nofollow ugc" title={link.url}>
-                {link.title || link.url.replace(/^https?:\/\//, '')}
-              </a>
-              <br />
-              <Link
-                className="CanelaSummaryList-title CanelaSummaryLinks-topic"
-                href={app.route('discussion.near', {
-                  id: link.discussionSlug ? `${link.discussionId}-${link.discussionSlug}` : link.discussionId,
-                  near: link.postNumber,
-                })}
-              >
-                {link.discussionTitle}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-    );
-  }
-
-  /** `.top-categories-section`: a categoria, os tópicos e as respostas. */
+  /** `.top-categories-section`：分类、主题和回复。 */
   categoriesSection(categories: SummaryCategory[]): Mithril.Children {
     return (
-      <section className="CanelaUserSummary-section CanelaUserSummary-topCategories">
-        <h3 className="CanelaUserSummary-heading">{t('user.summary.top_categories')}</h3>
-        <table className="CanelaSummaryCategories">
+      <section className="LcoyUserSummary-section LcoyUserSummary-topCategories">
+        <h3 className="LcoyUserSummary-heading">{t('user.summary.top_categories')}</h3>
+        <table className="LcoySummaryCategories">
           <thead>
             <tr>
               <th />
-              <th className="CanelaSummaryCategories-count">{t('user.summary.topics')}</th>
-              <th className="CanelaSummaryCategories-count">{t('user.summary.replies_column')}</th>
+              <th className="LcoySummaryCategories-count">{t('user.summary.topics')}</th>
+              <th className="LcoySummaryCategories-count">{t('user.summary.replies_column')}</th>
             </tr>
           </thead>
           <tbody>
             {categories.map((category) => (
               <tr key={category.id}>
                 <td>
-                  <Link className="CanelaSummaryCategories-badge" href={app.route('tag', { tags: category.slug })}>
-                    <span className="CanelaSummaryCategories-swatch" style={{ background: category.color || 'var(--cn-primary-medium)' }} />
+                  <Link className="LcoySummaryCategories-badge" href={app.route('tag', { tags: category.slug })}>
+                    <span className="LcoySummaryCategories-swatch" style={{ background: category.color || 'var(--lcoy-primary-medium)' }} />
                     <span>{category.name}</span>
                   </Link>
                 </td>
-                <td className="CanelaSummaryCategories-count">{formatNumber(category.topics)}</td>
-                <td className="CanelaSummaryCategories-count">{formatNumber(category.replies)}</td>
+                <td className="LcoySummaryCategories-count">{formatNumber(category.topics)}</td>
+                <td className="LcoySummaryCategories-count">{formatNumber(category.replies)}</td>
               </tr>
             ))}
           </tbody>
@@ -392,9 +331,9 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
     const items = new ItemList<Mithril.Children>();
     const user = this.user!;
 
-    // Com o recurso de estatísticas, os números do Discourse na mesma ordem:
-    // dias acessados, tempo de leitura, postagens lidas,
-    // curtidas dadas e recebidas, tópicos e postagens criados, soluções.
+    // 有统计功能时，按 Discourse 的同一顺序显示数字：
+    // 访问天数、阅读时长、已读帖子、
+    // 给出和收到的点赞、创建的主题和帖子、解决方案。
     const activity = userActivity(user);
 
     if (activity && activity.daysVisited !== null) {
@@ -411,7 +350,7 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
       items.add('timeRead', this.statText(formatReadTime(activity.timeRead), t('user.summary.time_read')), 98);
     }
 
-    // "Tempo de leitura recente" (60 dias), só quando há algum, como no Discourse.
+    // “近期阅读时长”（60 天），仅在存在时显示，与 Discourse 一致。
     if (activity && activity.recentTimeRead) {
       items.add('recentTimeRead', this.statText(formatReadTime(activity.recentTimeRead), t('user.summary.recent_time_read')), 97);
     }
@@ -442,22 +381,22 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
     return items;
   }
 
-  /** "7 meses tempo de leitura": o valor já formatado. */
+  /** “阅读 7 个月”：已格式化的值。 */
   statText(value: string, label: string): Mithril.Children {
     return (
-      <li className="CanelaUserSummary-stat">
-        <span className="CanelaUserSummary-stat-value">{value}</span> <span className="CanelaUserSummary-stat-label">{label}</span>
+      <li className="LcoyUserSummary-stat">
+        <span className="LcoyUserSummary-stat-value">{value}</span> <span className="LcoyUserSummary-stat-label">{label}</span>
       </li>
     );
   }
 
-  /** "1,9k dias acessados": o número abreviado, com o exato no title. */
+  /** “访问 1.9k 天”：缩写数字，完整值放在 title 中。 */
   stat(value: number, label: string, title?: string, icon?: string): Mithril.Children {
     return (
-      <li className="CanelaUserSummary-stat" title={title || formatNumber(value)}>
-        <span className="CanelaUserSummary-stat-value">{abbreviateNumber(value)}</span>{' '}
-        <span className="CanelaUserSummary-stat-label">
-          {icon && [<Icon name={icon} className="CanelaUserSummary-stat-icon" />, ' ']}
+      <li className="LcoyUserSummary-stat" title={title || formatNumber(value)}>
+        <span className="LcoyUserSummary-stat-value">{abbreviateNumber(value)}</span>{' '}
+        <span className="LcoyUserSummary-stat-label">
+          {icon && [<Icon name={icon} className="LcoyUserSummary-stat-icon" />, ' ']}
           {label}
         </span>
       </li>
@@ -465,27 +404,27 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
   }
 
   list<T>(models: T[] | null, render: (model: T) => Mithril.Children, emptyText: string): Mithril.Children {
-    // Carregando: linhas no formato dos itens (data em cima, título embaixo), para a coluna não saltar quando chegarem.
+    // 加载中：按条目格式（上方日期、下方标题）显示行，避免列在数据到达时跳动。
     if (models === null) {
       return (
-        <ul className="CanelaSummaryList CanelaSummaryList--loading" aria-busy="true">
+        <ul className="LcoySummaryList LcoySummaryList--loading" aria-busy="true">
           {['62%', '78%', '54%'].map((width) => (
-            <li className="CanelaSummaryList-item">
-              <span className="CanelaSkeleton CanelaSummaryList-fake" style={{ width: '6em' }} />
+            <li className="LcoySummaryList-item">
+              <span className="LcoySkeleton LcoySummaryList-fake" style={{ width: '6em' }} />
               <br />
-              <span className="CanelaSkeleton CanelaSummaryList-fake" style={{ width }} />
+              <span className="LcoySkeleton LcoySummaryList-fake" style={{ width }} />
             </li>
           ))}
         </ul>
       );
     }
 
-    if (!models.length) return <p className="CanelaUserSummary-empty">{emptyText}</p>;
+    if (!models.length) return <p className="LcoyUserSummary-empty">{emptyText}</p>;
 
-    return <ul className="CanelaSummaryList">{models.map((model) => render(model))}</ul>;
+    return <ul className="LcoySummaryList">{models.map((model) => render(model))}</ul>;
   }
 
-  /** "abr 2022 · ♡ 15" em cima, o título do tópico embaixo. */
+  /** 上方“2022年4月 · ♡ 15”，下方主题标题。 */
   meta(date: Date | undefined | null, likes: number | null, replies?: number): Mithril.Children {
     const parts: Mithril.Children[] = [];
 
@@ -499,19 +438,19 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
 
     if (likes !== null) {
       parts.push(
-        <span className="CanelaSummaryList-likes">
+        <span className="LcoySummaryList-likes">
           <Icon name="far fa-heart" /> {formatNumber(likes)}
         </span>
       );
     } else if (replies !== undefined) {
       parts.push(
-        <span className="CanelaSummaryList-replies" title={t('user.summary.replies', { count: replies })}>
+        <span className="LcoySummaryList-replies" title={t('user.summary.replies', { count: replies })}>
           <Icon name="fas fa-reply" /> {formatNumber(replies)}
         </span>
       );
     }
 
-    return <span className="CanelaSummaryList-meta">{parts.map((part, index) => [index > 0 ? ' · ' : null, part])}</span>;
+    return <span className="LcoySummaryList-meta">{parts.map((part, index) => [index > 0 ? ' · ' : null, part])}</span>;
   }
 
   topicItem(discussion: Discussion): Mithril.Children {
@@ -519,10 +458,10 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
     const likes = this.likesEnabled() ? likesOf(discussion.firstPost() || null) : null;
 
     return (
-      <li className="CanelaSummaryList-item" key={discussion.id()}>
+      <li className="LcoySummaryList-item" key={discussion.id()}>
         {this.meta(discussion.createdAt(), likes, replies)}
         <br />
-        <Link className="CanelaSummaryList-title" href={app.route.discussion(discussion)}>
+        <Link className="LcoySummaryList-title" href={app.route.discussion(discussion)}>
           {discussion.title()}
         </Link>
       </li>
@@ -533,10 +472,10 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
     const discussion = post.discussion() as Discussion;
 
     return (
-      <li className="CanelaSummaryList-item" key={post.id()}>
+      <li className="LcoySummaryList-item" key={post.id()}>
         {this.meta(post.createdAt(), this.likesEnabled() ? likesOf(post) : null)}
         <br />
-        <Link className="CanelaSummaryList-title" href={app.route.post(post)}>
+        <Link className="LcoySummaryList-title" href={app.route.post(post)}>
           {discussion.title()}
         </Link>
       </li>

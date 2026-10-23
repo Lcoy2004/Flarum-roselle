@@ -1,10 +1,9 @@
 /*
- * As duas rotas próprias das estatísticas, por `fetch` e não por `app.request`.
+ * 统计专用的两个路由，通过 `fetch` 而非 `app.request` 调用。
  *
- * O `app.request` fecha o alerta de erro que estiver na tela a cada chamada;
- * estas rodam sozinhas, em segundo plano, e não podem sumir com um aviso que a
- * pessoa ainda está lendo. O `fetch` também aceita `keepalive`, o que deixa o
- * último envio de tempo de leitura sair mesmo quando a aba está fechando.
+ * 每次调用 `app.request` 都会关闭当前屏幕上的错误提示；这些请求在
+ * 后台自行运行，不能清除用户仍在阅读的提示。`fetch` 还支持
+ * `keepalive`，使最后一次阅读时长上报在标签页关闭时仍能发出。
  */
 import app from 'flarum/forum/app';
 
@@ -22,14 +21,14 @@ export interface TopicCountsResponse {
   limit: number;
 }
 
-/** Sem `tag`, conta o fórum todo; com ela, só a tag e as filhas. */
+/** 无 `tag` 时统计整个论坛；有 `tag` 时仅统计该标签及其子标签。 */
 export async function fetchTopicCounts(tag?: string): Promise<TopicCountsResponse | null> {
-  // Na primeira carga de uma tag, a contagem já veio no HTML.
-  const preloaded = takePreloaded<TopicCountsResponse>('canela-counts', tag ? { tag } : {});
+  // 首次加载某个标签时，计数已随 HTML 下发。
+  const preloaded = takePreloaded<TopicCountsResponse>('lcoy-counts', tag ? { tag } : {});
   if (preloaded) return preloaded;
 
   try {
-    const response = await fetch(apiUrl('canela-counts' + (tag ? `?tag=${encodeURIComponent(tag)}` : '')), {
+    const response = await fetch(apiUrl('lcoy-counts' + (tag ? `?tag=${encodeURIComponent(tag)}` : '')), {
       credentials: 'same-origin',
       headers: { Accept: 'application/json' },
     });
@@ -47,7 +46,7 @@ export interface ReadTimePayload {
 }
 
 export function sendReadTime(payload: ReadTimePayload): void {
-  fetch(apiUrl('canela-read-time'), {
+  fetch(apiUrl('lcoy-read-time'), {
     method: 'POST',
     credentials: 'same-origin',
     keepalive: true,
@@ -57,6 +56,6 @@ export function sendReadTime(payload: ReadTimePayload): void {
     },
     body: JSON.stringify(payload),
   }).catch(() => {
-    // Sem rede, o tempo desse intervalo se perde — nada que mereça um aviso.
+    // 无网络时该时间段的时长会丢失——不值得为此提示。
   });
 }

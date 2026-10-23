@@ -1,14 +1,14 @@
 /*
- * fof/links na barra lateral, como as seções personalizadas do Discourse.
+ * fof/links 放在侧边栏，就像 Discourse 的自定义区块。
  *
- * O Horizon não tem links no cabeçalho: tudo o que o admin acrescenta mora
- * na barra. Então:
- * - os links soltos (e os filhos deles) entram na seção de links que o tema
- *   já tem (`canelaCustom`, a dos "Rótulo | endereço | ícone" do admin) — uma
- *   seção só, e não duas com o mesmo papel;
- * - cada rótulo da extensão com filhos vira uma seção própria, com o rótulo
- *   como título;
- * - o cabeçalho perde os itens da extensão.
+ * Horizon 的页眉中没有链接：管理员添加的一切都放在
+ * 侧边栏。因此：
+ * - 独立链接（及其子链接）进入主题已有的链接区块
+ *   （`lcoyCustom`，即管理员的 "标签 | 地址 | 图标"）—— 只有
+ *   一个区块，而不是两个相同作用的区块；
+ * - 扩展中带子项的每个标签变成独立区块，标签
+ *   作为标题；
+ * - 页眉移除该扩展的项。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -18,7 +18,7 @@ import listItems from 'flarum/common/helpers/listItems';
 import ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 
-import CanelaSidebar from '../components/CanelaSidebar';
+import LcoySidebar from '../components/LcoySidebar';
 import SidebarSection from '../components/SidebarSection';
 import { customLinks } from '../gaps/sidebar';
 import { forumString } from '../gaps/settings';
@@ -43,10 +43,10 @@ function isLabel(link: LinkModel): boolean {
   return !link.url();
 }
 
-/** O item da própria extensão (ativo, nova aba, rel=me); sem ele, um LinkButton simples. */
+/** 扩展自己的项（激活、新标签页、rel=me）；没有它时，使用简单的 LinkButton。 */
 function entry(link: LinkModel, child = false): Mithril.Children {
   const LinkItem = extModule<any>('fof-links', 'forum/components/LinkItem');
-  const className = child ? 'CanelaSidebar-childLink' : undefined;
+  const className = child ? 'LcoySidebar-childLink' : undefined;
 
   if (LinkItem) return m(LinkItem, { link, inDropdown: true, className });
 
@@ -63,7 +63,7 @@ function entry(link: LinkModel, child = false): Mithril.Children {
   );
 }
 
-/** Os links do admin do tema (a configuração em texto), no mesmo formato da seção do gaps. */
+/** 主题管理员设置的链接（文本配置），使用与 gaps 区块相同的格式。 */
 function themeLink(href: string, icon: string, label: string): Mithril.Children {
   let foreign = false;
 
@@ -89,7 +89,7 @@ export default function installLinks(): void {
       .forEach((key) => items.remove(key));
   });
 
-  extend(CanelaSidebar.prototype, 'sectionItems', function (items: ItemList<Mithril.Children>) {
+  extend(LcoySidebar.prototype, 'sectionItems', function (items: ItemList<Mithril.Children>) {
     if (!thirdParty.linksSidebar()) return;
 
     const roots = sorted(allLinks().filter((link) => !link.isChild?.()));
@@ -99,7 +99,7 @@ export default function installLinks(): void {
     const loose = new ItemList<Mithril.Children>();
     let priority = 100;
 
-    // Primeiro os do admin do tema, na ordem dele; depois os da extensão.
+    // 先是主题管理员设置的，按他的顺序；然后是扩展的。
     customLinks().forEach((link, index) => loose.add(`custom${index}`, themeLink(link.href, link.icon, link.label), priority--));
 
     roots.forEach((root, index) => {
@@ -111,7 +111,7 @@ export default function installLinks(): void {
         const list = new ItemList<Mithril.Children>();
         children.forEach((child, i) => list.add(`fofLink${child.id()}`, entry(child), 100 - i));
 
-        // Logo depois da seção de links do tema (85), na ordem do admin.
+        // 紧接主题的链接区块（85）之后，按管理员的顺序。
         items.add(
           `fofLinks${root.id()}`,
           <SidebarSection name={`fofLinks${root.id()}`} title={root.title()}>
@@ -129,12 +129,12 @@ export default function installLinks(): void {
 
     if (loose.isEmpty()) return;
 
-    // A seção do gaps é refeita com os links dos dois lados.
-    if (items.has('canelaCustom')) items.remove('canelaCustom');
+    // gaps 的区块会用双方的链接重新构建。
+    if (items.has('lcoyCustom')) items.remove('lcoyCustom');
 
     items.add(
-      'canelaCustom',
-      <SidebarSection name="custom" title={forumString('canelaSidebarCustomTitle') || t('gaps.sidebar.custom_title')}>
+      'lcoyCustom',
+      <SidebarSection name="custom" title={forumString('lcoySidebarCustomTitle') || t('gaps.sidebar.custom_title')}>
         {listItems(loose.toArray())}
       </SidebarSection>,
       85

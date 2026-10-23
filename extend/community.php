@@ -13,8 +13,8 @@ declare(strict_types=1);
  */
 
 /*
- * Páginas de comunidade do Discourse: Sobre (/about), Usuários (/u) e
- * Grupos (/g e /g/:nome).
+ * Discourse 的社区页面：关于（/about）、用户（/u）和
+ * 群组（/g 与 /g/:名称）。
  */
 
 use Flarum\Api\Context;
@@ -38,74 +38,74 @@ use Lcoy\Roselle\Community\Http\LegalPageRedirect;
 use Lcoy\Roselle\Community\LegalPages;
 
 /*
- * Nada de variáveis soltas aqui: o extend.php principal faz `require` deste
- * arquivo no próprio escopo, e um `$settings` daqui sobrescreveria o dele.
+ * 这里不要留下散落的变量：主 extend.php 会在自身作用域内 `require` 这个
+ * 文件，这里的 `$settings` 会覆盖它的。
  */
 return [
-    // O texto "sobre", o contato e as opções da página não vão no payload do
-    // fórum: só a página "Sobre" os usa, e ela os recebe do próprio endpoint.
+    // "关于" 文本、联系方式与页面选项都不进入论坛 payload：
+    // 只有 "关于" 页面用到它们，且由该页面自己的端点提供。
     (new Extend\Settings())
         ->default(Community::ABOUT_ENABLED, true)
-        ->serializeToForum('canelaAboutEnabled', Community::ABOUT_ENABLED, 'boolval')
+        ->serializeToForum('lcoyAboutEnabled', Community::ABOUT_ENABLED, 'boolval')
         ->default(Community::ABOUT_TEXT, '')
         ->default(Community::ABOUT_CONTACT_EMAIL, '')
         ->default(Community::ABOUT_CONTACT_URL, '')
         ->default(Community::ABOUT_SHOW_STAFF, true)
         ->default(Community::ABOUT_SHOW_STATS, true)
-        // Diretrizes, Termos e Privacidade (as abas do Sobre do Discourse).
+        // 社区准则、条款与隐私（Discourse 关于页的标签）。
         ->default(Community::GUIDELINES_ENABLED, true)
-        ->serializeToForum('canelaGuidelinesEnabled', Community::GUIDELINES_ENABLED, 'boolval')
+        ->serializeToForum('lcoyGuidelinesEnabled', Community::GUIDELINES_ENABLED, 'boolval')
         ->default(Community::GUIDELINES_TEXT, '')
         ->default(Community::ABOUT_PAGES, '[]')
         ->default(Community::TOS_URL, '')
         ->default(Community::PRIVACY_URL, '')
         ->default(Community::DIRECTORY_GUESTS, false)
         ->default(Community::GROUPS_ENABLED, true)
-        ->serializeToForum('canelaGroupsEnabled', Community::GROUPS_ENABLED, 'boolval')
+        ->serializeToForum('lcoyGroupsEnabled', Community::GROUPS_ENABLED, 'boolval')
         ->default(Community::GROUPS_ACTIVITY, true)
-        ->serializeToForum('canelaGroupsActivity', Community::GROUPS_ACTIVITY, 'boolval')
+        ->serializeToForum('lcoyGroupsActivity', Community::GROUPS_ACTIVITY, 'boolval')
         ->default(Community::GROUPS_PROFILE_LINKS, true)
-        ->serializeToForum('canelaGroupsProfileLinks', Community::GROUPS_PROFILE_LINKS, 'boolval'),
+        ->serializeToForum('lcoyGroupsProfileLinks', Community::GROUPS_PROFILE_LINKS, 'boolval'),
 
     (new Extend\Routes('api'))
-        ->get('/canela-about', 'canela.about', ShowAboutController::class)
-        ->get('/canela-guidelines', 'canela.guidelines', ShowGuidelinesController::class)
-        ->post('/canela-guidelines/page', 'canela.guidelines.page', CreateGuidelinesPageController::class)
-        ->get('/canela-about-pages/{id:\d+}', 'canela.about_pages.show', ShowAboutPageController::class)
-        ->get('/canela-directory', 'canela.directory', ListDirectoryController::class)
-        ->get('/canela-groups/{id:\d+}/activity', 'canela.groups.activity', ListGroupActivityController::class),
+        ->get('/lcoy-about', 'lcoy.about', ShowAboutController::class)
+        ->get('/lcoy-guidelines', 'lcoy.guidelines', ShowGuidelinesController::class)
+        ->post('/lcoy-guidelines/page', 'lcoy.guidelines.page', CreateGuidelinesPageController::class)
+        ->get('/lcoy-about-pages/{id:\d+}', 'lcoy.about_pages.show', ShowAboutPageController::class)
+        ->get('/lcoy-directory', 'lcoy.directory', ListDirectoryController::class)
+        ->get('/lcoy-groups/{id:\d+}/activity', 'lcoy.groups.activity', ListGroupActivityController::class),
 
     (new Extend\Frontend('forum'))
-        ->route('/about', 'canela.about', CommunityPage::for(Community::ABOUT_ENABLED, 'about.title'))
-        ->route('/guidelines', 'canela.guidelines', CommunityPage::for(Community::GUIDELINES_ENABLED, 'guidelines.title'))
-        ->route('/faq', 'canela.faq', CommunityPage::for(Community::GUIDELINES_ENABLED, 'guidelines.title'))
-        // As abas extras da área Sobre (páginas do fof/pages escolhidas no admin),
-        // com o id na frente como o /d/{id} do core. Não colide com o /p/{id} e o
-        // /pages/home do fof/pages.
-        ->route('/about/{page:\d+(?:-[^/]*)?}', 'canela.about_page', AboutPageContent::class)
-        ->route('/g', 'canela.groups', CommunityPage::for(Community::GROUPS_ENABLED, 'groups.title'))
-        ->route('/g/{name}', 'canela.group', CommunityPage::for(Community::GROUPS_ENABLED, 'groups.title')),
+        ->route('/about', 'lcoy.about', CommunityPage::for(Community::ABOUT_ENABLED, 'about.title'))
+        ->route('/guidelines', 'lcoy.guidelines', CommunityPage::for(Community::GUIDELINES_ENABLED, 'guidelines.title'))
+        ->route('/faq', 'lcoy.faq', CommunityPage::for(Community::GUIDELINES_ENABLED, 'guidelines.title'))
+        // 关于区域的额外标签（管理员选择的 fof/pages 页面），
+        // id 放在前面，与核心的 /d/{id} 相同。不与 fof/pages 的 /p/{id} 和
+        // /pages/home 冲突。
+        ->route('/about/{page:\d+(?:-[^/]*)?}', 'lcoy.about_page', AboutPageContent::class)
+        ->route('/g', 'lcoy.groups', CommunityPage::for(Community::GROUPS_ENABLED, 'groups.title'))
+        ->route('/g/{name}', 'lcoy.group', CommunityPage::for(Community::GROUPS_ENABLED, 'groups.title')),
 
-    // /tos e /privacy levam ao endereço da política (fof/terms ou admin).
+    // /tos 和 /privacy 指向政策地址（fof/terms 或管理员）。
     (new Extend\Routes('forum'))
-        ->get('/{page:tos|privacy}', 'canela.legal', LegalPageRedirect::class),
+        ->get('/{page:tos|privacy}', 'lcoy.legal', LegalPageRedirect::class),
 
-    // Se o ator pode ver os membros dos grupos — o fórum usa
-    // para esconder a lista em vez de levar a um 403.
+    // 当前操作者能否查看群组成员 —— 论坛借此隐藏列表，
+    // 而不是让用户撞上 403。
     (new Extend\ApiResource(ForumResource::class))
         ->fields(fn () => [
-            Schema\Boolean::make('canelaCanViewDirectory')
+            Schema\Boolean::make('lcoyCanViewDirectory')
                 ->get(fn (object $model, Context $context) => resolve(Community::class)->canListUsers($context->getActor())),
-            // As abas de Termos/Privacidade (e outras políticas) com endereço.
-            Schema\Arr::make('canelaLegalPages')
+            // 带地址的条款/隐私（以及其他政策）标签。
+            Schema\Arr::make('lcoyLegalPages')
                 ->get(fn () => resolve(LegalPages::class)->all()),
-            // As abas extras da área Sobre que o ator pode ver (vazio sem o fof/pages).
-            Schema\Arr::make('canelaAboutPages')
+            // 当前操作者可见的关于区域额外标签（没有 fof/pages 时为空）。
+            Schema\Arr::make('lcoyAboutPages')
                 ->get(fn (object $model, Context $context) => resolve(AboutPages::class)->forForum($context->getActor())),
         ]),
 
-    // A lista de abas extras chega do admin como JSON: guarda só ids inteiros
-    // e únicos (até AboutPages::MAX), rótulos curtos e ícones válidos.
+    // 额外标签列表由管理员以 JSON 传入：只保存整数且唯一的 id
+    // （不超过 AboutPages::MAX）、简短标签和有效图标。
     (new Extend\Event())
         ->listen(Saving::class, static function (Saving $event): void {
             if (array_key_exists(Community::ABOUT_PAGES, $event->settings)) {

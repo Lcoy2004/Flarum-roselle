@@ -27,14 +27,13 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Lcoy\Roselle\Community\Community;
 
 /**
- * GET /api/canela-groups/{id}/activity?page= — as postagens recentes dos
- * membros de um grupo (a aba "Atividade" do Discourse).
+ * GET /api/lcoy-groups/{id}/activity?page= ——某组成员的近期帖子
+ * （Discourse 的"活动"选项卡）。
  *
- * Devolve só os ids, já filtrados pela visibilidade do ator: o fórum busca as
- * postagens em /api/posts?filter[id]=…, que serializa cada uma com tudo o que
- * as extensões acrescentam (curtidas, menções) e checa a visibilidade de novo.
- * Filtrar por autor direto no /api/posts exigiria pôr na URL o nome de cada
- * membro do grupo.
+ * 只返回 id，且已按操作者的可见性过滤：论坛随后通过
+ * /api/posts?filter[id]=… 获取帖子，该端点会连同扩展添加的所有内容
+ * （点赞、提及）一起序列化，并再次检查可见性。
+ * 直接在 /api/posts 上按作者过滤，就得把组内每个成员的名字都放进 URL。
  */
 final class ListGroupActivityController implements RequestHandlerInterface
 {

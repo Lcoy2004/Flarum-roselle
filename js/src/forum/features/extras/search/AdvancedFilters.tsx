@@ -1,12 +1,10 @@
 /*
- * "Filtros avançados" da página de busca do Discourse: postado por, na
- * categoria, com etiquetas, onde (só no título, meus, curtidos, não lidos),
- * status, datas e mínimo de postagens.
+ * Discourse 搜索页面的“高级筛选”：发布者、分类、标签、范围（仅标题、
+ * 我的、已点赞、未读）、状态、日期以及最少帖子数。
  *
- * Cada controle altera a consulta (SearchQuery) e devolve a nova pelo
- * `onchange`; quem monta a página reescreve o campo de busca com os gambits
- * correspondentes — o mesmo vai-e-vem do Discourse. A busca só roda ao
- * clicar em "Pesquisar".
+ * 每个控件都会修改查询（SearchQuery），并通过 `onchange` 返回新查询；
+ * 页面负责用对应的 gambits 重写搜索框——与 Discourse 相同的双向
+ * 同步。搜索仅在点击“搜索”时执行。
  */
 import app from 'flarum/forum/app';
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
@@ -16,34 +14,34 @@ import type User from 'flarum/common/models/User';
 import type Mithril from 'mithril';
 
 import { forumBool, isExtensionEnabled, t } from '../../../utils/settings';
-import { isTagsEnabled, primaryTags, secondaryTags, sortTags, type CanelaTag } from '../../../utils/tags';
+import { isTagsEnabled, primaryTags, secondaryTags, sortTags, type LcoyTag } from '../../../utils/tags';
 import type { SearchQuery, SearchStatus } from './query';
 
 export interface AdvancedFiltersAttrs extends ComponentAttrs {
   query: SearchQuery;
   onchange: (query: SearchQuery) => void;
-  /** Na aba de postagens só parte dos filtros vale; o resto fica apagado. */
+  /** 帖子标签下仅部分筛选有效；其余会置灰。 */
   postsOnly: boolean;
 }
 
 const AUTHOR_LOOKUP_DELAY_MS = 250;
 
 export default class AdvancedFilters extends Component<AdvancedFiltersAttrs> {
-  /** Sugestões do campo de autor (datalist nativo: teclado e leitor de tela de graça). */
+  /** 作者字段的建议（原生 datalist：免费获得键盘和读屏支持）。 */
   authorSuggestions: User[] = [];
   authorTimer: ReturnType<typeof setTimeout> | undefined;
-  listId = `CanelaSearch-authors-${Math.random().toString(36).slice(2, 8)}`;
+  listId = `LcoySearch-authors-${Math.random().toString(36).slice(2, 8)}`;
 
   view(): Mithril.Children {
     const { query, postsOnly } = this.attrs;
     const me = app.session.user;
 
     return (
-      <div className="CanelaSearchFilters">
-        <div className="CanelaSearchFilters-grid">
+      <div className="LcoySearchFilters">
+        <div className="LcoySearchFilters-grid">
           {this.field(
             t('extras.search.filter_author'),
-            <div className="CanelaSearchFilters-author">
+            <div className="LcoySearchFilters-author">
               <input
                 className="FormControl"
                 type="text"
@@ -79,7 +77,7 @@ export default class AdvancedFilters extends Component<AdvancedFiltersAttrs> {
 
           {this.field(
             t('extras.search.filter_where'),
-            <div className="CanelaSearchFilters-checks">
+            <div className="LcoySearchFilters-checks">
               {this.check(t('extras.search.filter_in_title'), query.inTitle, (value) => this.set({ inTitle: value }), postsOnly)}
               {me &&
                 this.check(t('extras.search.filter_mine'), query.author === me.username(), (value) =>
@@ -89,7 +87,7 @@ export default class AdvancedFilters extends Component<AdvancedFiltersAttrs> {
                 isExtensionEnabled('flarum-likes') &&
                 this.check(t('extras.search.filter_liked'), query.liked, (value) => this.set({ liked: value }))}
               {me &&
-                forumBool('canelaBookmarksEnabled', false) &&
+                forumBool('lcoyBookmarksEnabled', false) &&
                 this.check(t('extras.search.filter_bookmarked'), query.bookmarked, (value) => this.set({ bookmarked: value }))}
               {me && this.check(t('extras.search.filter_unread'), query.unread, (value) => this.set({ unread: value }), postsOnly)}
             </div>
@@ -112,7 +110,7 @@ export default class AdvancedFilters extends Component<AdvancedFiltersAttrs> {
 
           {this.field(
             t('extras.search.filter_posted'),
-            <div className="CanelaSearchFilters-dates">
+            <div className="LcoySearchFilters-dates">
               <label>
                 <span>{t('extras.search.filter_after')}</span>
                 <input
@@ -139,7 +137,7 @@ export default class AdvancedFilters extends Component<AdvancedFiltersAttrs> {
           {this.field(
             t('extras.search.filter_min_posts'),
             <input
-              className="FormControl CanelaSearchFilters-number"
+              className="FormControl LcoySearchFilters-number"
               type="number"
               min="1"
               step="1"
@@ -152,7 +150,7 @@ export default class AdvancedFilters extends Component<AdvancedFiltersAttrs> {
         </div>
 
         {postsOnly && (
-          <p className="CanelaSearchFilters-note">
+          <p className="LcoySearchFilters-note">
             <Icon name="fas fa-circle-info" />
             {t('extras.search.posts_filters_note')}
           </p>
@@ -163,8 +161,8 @@ export default class AdvancedFilters extends Component<AdvancedFiltersAttrs> {
 
   field(label: string, control: Mithril.Children): Mithril.Children {
     return (
-      <div className="CanelaSearchFilters-field">
-        <div className="CanelaSearchFilters-label">{label}</div>
+      <div className="LcoySearchFilters-field">
+        <div className="LcoySearchFilters-label">{label}</div>
         {control}
       </div>
     );
@@ -172,7 +170,7 @@ export default class AdvancedFilters extends Component<AdvancedFiltersAttrs> {
 
   check(label: string, checked: boolean, onchange: (value: boolean) => void, disabled = false): Mithril.Children {
     return (
-      <label className={`CanelaSearchFilters-check${disabled ? ' is-disabled' : ''}`}>
+      <label className={`LcoySearchFilters-check${disabled ? ' is-disabled' : ''}`}>
         <input
           type="checkbox"
           checked={checked}
@@ -194,10 +192,10 @@ export default class AdvancedFilters extends Component<AdvancedFiltersAttrs> {
     for (const tag of primaryTags()) {
       options.push(<option value={tag.slug()}>{tag.name()}</option>);
 
-      const children = sortTags(((tag.children() || []) as CanelaTag[]).filter(Boolean));
+      const children = sortTags(((tag.children() || []) as LcoyTag[]).filter(Boolean));
 
       for (const child of children) {
-        // Recuo com espaços fixos: <option> não aceita estilo de margem.
+        // 固定空格缩进：<option> 不接受 margin 样式。
         options.push(<option value={child.slug()}>{`   ${child.name()}`}</option>);
       }
     }
@@ -215,12 +213,12 @@ export default class AdvancedFilters extends Component<AdvancedFiltersAttrs> {
         ?.name() || slug;
 
     return (
-      <div className="CanelaSearchFilters-tags">
+      <div className="LcoySearchFilters-tags">
         {chosen.map((slug) => (
-          <span className="CanelaSearchFilters-chip">
+          <span className="LcoySearchFilters-chip">
             {nameOf(slug)}
             <Button
-              className="Button Button--icon Button--link CanelaSearchFilters-chipRemove"
+              className="Button Button--icon Button--link LcoySearchFilters-chipRemove"
               icon="fas fa-times"
               aria-label={t('extras.search.filter_tag_remove', { name: nameOf(slug) })}
               onclick={() => this.set({ tags: chosen.filter((item) => item !== slug) })}
@@ -229,7 +227,7 @@ export default class AdvancedFilters extends Component<AdvancedFiltersAttrs> {
         ))}
         {available.length > 0 && (
           <select
-            className="FormControl CanelaSearchFilters-tagAdd"
+            className="FormControl LcoySearchFilters-tagAdd"
             value=""
             aria-label={t('extras.search.filter_tags')}
             onchange={(event: Event) => {
@@ -266,8 +264,8 @@ export default class AdvancedFilters extends Component<AdvancedFiltersAttrs> {
 
     const term = value.trim();
 
-    // A busca de usuários depende de permissão; sem ela o campo segue aceitando
-    // o nome digitado, só sem sugestões.
+    // 用户搜索需要权限；没有权限时该字段仍接受输入的名称，
+    // 只是没有建议。
     if (term.length < 2 || !app.forum.attribute('canSearchUsers')) return;
 
     this.authorTimer = setTimeout(() => {

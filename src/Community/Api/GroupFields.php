@@ -20,12 +20,11 @@ use Illuminate\Database\ConnectionInterface;
 use Lcoy\Roselle\Community\Community;
 
 /**
- * `canelaMemberCount` nos grupos, para os cartões da página /g.
+ * 组上的 `lcoyMemberCount`，用于 /g 页面的卡片。
  *
- * Os grupos vão em todo carregamento do fórum (o ForumResource os inclui), e
- * contar os membros de um por um seria uma consulta por grupo em toda página.
- * A contagem sai numa consulta só, agrupada, guardada nesta instância — o
- * extender cria uma por requisição.
+ * 组会在每次论坛加载时传输（ForumResource 会包含它们），逐个统计成员
+ * 会变成每个页面、每个组一次查询。计数通过一次分组查询完成，并缓存在
+ * 该实例上——extender 每次请求会创建一个实例。
  */
 final class GroupFields
 {
@@ -42,7 +41,7 @@ final class GroupFields
     public function __invoke(): array
     {
         return [
-            Schema\Integer::make('canelaMemberCount')
+            Schema\Integer::make('lcoyMemberCount')
                 ->visible(fn () => $this->community->enabled(Community::GROUPS_ENABLED))
                 ->get(fn (Group $group) => $this->count($group)),
         ];

@@ -22,9 +22,9 @@ use FoF\Pages\Page;
 use FoF\Pages\Util\Html;
 
 /**
- * As Diretrizes como uma página do fof/pages: qual página é (setting
- * `canela.guidelines_page`), o conteúdo dela e a criação da página com o
- * texto atual. Nada aqui roda sem o fof/pages habilitado.
+ * 把"指南"作为 fof/pages 页面：是哪一页（设置项 `lcoy.guidelines_page`）、
+ * 其内容，以及用当前文本创建该页面。未启用 fof/pages 时，这里的任何
+ * 功能都不会运行。
  */
 final class GuidelinesPage
 {
@@ -40,7 +40,7 @@ final class GuidelinesPage
         return $this->extensions->isEnabled('fof-pages') && class_exists(Page::class);
     }
 
-    /** A página escolhida, se existir e o ator puder vê-la. */
+    /** 选定的页面，前提是它存在且操作者可以查看。 */
     public function find(User $actor): ?Page
     {
         $id = (int) $this->settings->get(Community::GUIDELINES_PAGE);
@@ -60,8 +60,8 @@ final class GuidelinesPage
     }
 
     /**
-     * Cria a página "Diretrizes" no fof/pages com o texto atual das
-     * diretrizes do tema (o do admin, ou o padrão) e a escolhe.
+     * 在 fof/pages 中创建"指南"页面，内容为主题当前的指南文本（管理员设置
+     * 的或默认的），并将其设为选定页面。
      */
     public function create(): Page
     {
@@ -81,7 +81,7 @@ final class GuidelinesPage
         return $page;
     }
 
-    /** O texto padrão do tema, no idioma do fórum. */
+    /** 主题的默认文本，使用论坛的语言。 */
     public function defaultMarkdown(): string
     {
         $locale = strtolower($this->translator->getLocale());

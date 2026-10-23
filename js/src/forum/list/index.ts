@@ -1,7 +1,7 @@
 /*
- * A lista de tópicos do Discourse: ordenações novas, linha em colunas,
- * cabeçalho, barra de navegação, os heróis da página inicial e a página de
- * categorias. Chamada uma vez no initializer do fórum.
+ * Discourse 的主题列表：新的排序方式、按列显示的行、
+ * 页眉、导航栏、首页 hero 以及分类页面。
+ * 在论坛的 initializer 中调用一次。
  */
 import installSorts from './sorts';
 import installListItem from './listItem';

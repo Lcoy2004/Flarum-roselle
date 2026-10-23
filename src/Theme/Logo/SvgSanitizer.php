@@ -18,12 +18,12 @@ use DOMDocument;
 use DOMElement;
 
 /**
- * Limpa um SVG enviado pelo admin antes de ele virar arquivo público.
+ * 在管理员上传的 SVG 变成公开文件之前对其进行清理。
  *
- * Lista de permissões, e não de bloqueio: só ficam elementos de desenho e
- * atributos que não executam nada. Saem scripts, `foreignObject`, eventos
- * (`on*`), links para fora (`href` que não seja `#id` ou imagem raster em
- * `data:`) e `url()`/`@import` externos. Sem DTD nem entidades.
+ * 采用允许列表而非阻止列表：只保留绘图元素和不执行任何操作的属性。
+ * 脚本、`foreignObject`、事件（`on*`）、外部链接（不是 `#id` 或 `data:`
+ * 中栅格图片的 `href`）以及外部 `url()`/`@import` 都会被移除。不含 DTD
+ * 和实体。
  */
 final class SvgSanitizer
 {
@@ -38,14 +38,13 @@ final class SvgSanitizer
     ];
 
     /**
-     * Animação declarativa (SMIL), aceita só quando quem chama pede: o
-     * indicador de carregamento vira imagem no CSS (onde nada executa), e boa
-     * parte dos SVGs de "loader" prontos anima com `<animate>`. O logo não
-     * precisa disso e continua sem.
+     * 声明式动画（SMIL），仅在调用方要求时允许：加载指示器会变成 CSS 中的
+     * 图片（那里不会执行任何内容），而许多现成的 "loader" SVG 使用
+     * `<animate>` 播放动画。logo 不需要这些，因此仍然不允许。
      */
     private const ANIMATION_ELEMENTS = ['animate', 'animatetransform', 'animatemotion', 'set', 'mpath'];
 
-    /** `url(` que não aponta para um `#id` do próprio arquivo. */
+    /** 不指向文件自身 `#id` 的 `url(`。 */
     private const EXTERNAL_URL = '/url\(\s*["\x27]?\s*(?!#)/i';
 
     public static function sanitize(string $svg, bool $allowAnimation = false): ?string
@@ -105,7 +104,7 @@ final class SvgSanitizer
             }
         }
 
-        // <style>: sem @import nem url() para fora.
+        // <style>：不含 @import，也不含指向外部的 url()。
         if (strtolower($element->localName) === 'style') {
             $css = $element->textContent;
 
@@ -116,9 +115,9 @@ final class SvgSanitizer
     }
 
     /**
-     * Escape de CSS (`\75 rl(`, `@\69mport`): o navegador desfaz o escape e lê
-     * `url(`/`@import`, que as buscas por texto acima não reconhecem. Um logo
-     * não precisa disso, então CSS com barra invertida não passa.
+     * CSS 转义（`\75 rl(`、`@\69mport`）：浏览器会还原转义并读取
+     * `url(`/`@import`，而上面的文本检查识别不到。logo 不需要这种写法，
+     * 因此含反斜杠的 CSS 不会通过。
      */
     private static function cssEscaped(string $css): bool
     {
@@ -126,8 +125,8 @@ final class SvgSanitizer
     }
 
     /**
-     * Um `<animate>`/`<set>` que mexe em `href` ou num evento (`on*`) troca o
-     * destino de um link ou cria um handler depois da limpeza: sai inteiro.
+     * 修改 `href` 或事件（`on*`）的 `<animate>`/`<set>` 会在清理之后
+     * 更换链接目标或创建处理函数：整个移除。
      */
     private static function safeAnimation(DOMElement $element): bool
     {

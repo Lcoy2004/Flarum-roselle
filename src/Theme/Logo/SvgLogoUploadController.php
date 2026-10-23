@@ -27,21 +27,19 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
 /**
- * O upload do logo do fórum (Administração → Aparência) aceitando SVG.
+ * 论坛 logo 的上传（管理 → 外观），支持 SVG。
  *
- * O core converte todo logo em WebP de 60px de altura com o Intervention, que
- * não lê SVG. Aqui o SVG passa direto — vetor fica nítido em qualquer
- * tamanho —, depois de limpo ({@see SvgSanitizer}): o arquivo é servido do
- * próprio domínio, e um SVG com script aberto direto no navegador rodaria
- * com os cookies do fórum.
+ * 核心会用 Intervention 把任何 logo 转成 60px 高的 WebP，而 Intervention
+ * 无法读取 SVG。这里 SVG 直接通过——矢量在任何尺寸下都清晰——在清理后
+ * 使用（{@see SvgSanitizer}）：该文件会从本站域名提供，而带有脚本的 SVG
+ * 直接在浏览器中打开时会带着论坛的 cookie 执行。
  *
- * Os outros formatos seguem o caminho do UploadLogoController do core,
- * reproduzido aqui: o `makeImage` dele declara só imagem codificada como
- * retorno, e o SVG volta como stream.
+ * 其他格式沿用核心 UploadLogoController 的路径，这里做了复现：它的
+ * `makeImage` 只声明编码后的图片作为返回类型，而 SVG 以 stream 返回。
  */
 final class SvgLogoUploadController extends UploadImageController
 {
-    /** O mesmo teto que o core usa para imagens do admin. */
+    /** 与核心对后台图片使用的上限相同。 */
     private const MAX_BYTES = 2 * 1024 * 1024;
 
     protected string $filePathSettingKey = 'logo_path';
@@ -57,8 +55,8 @@ final class SvgLogoUploadController extends UploadImageController
         $file = Arr::get($request->getUploadedFiles(), 'logo');
         $this->svg = $file instanceof UploadedFileInterface && self::isSvg($file);
 
-        // O validador do core recusa image/svg+xml; o SVG tem a própria
-        // checagem em makeImage().
+        // 核心的校验器拒绝 image/svg+xml；SVG 在 makeImage() 中
+        // 有独立的检查。
         if ($this->svg) {
             $this->validator = null;
         }
@@ -70,7 +68,7 @@ final class SvgLogoUploadController extends UploadImageController
     protected function makeImage(UploadedFileInterface $file): EncodedImageInterface|StreamInterface
     {
         if (! $this->svg) {
-            // Como o core: 60px de altura, GIF animado preservado, o resto WebP.
+            // 与核心一致：高度 60px，保留动画 GIF，其余转为 WebP。
             $image = $this->imageManager->read($file->getStream()->getMetadata('uri'))->scale(height: 60);
 
             if ($image->isAnimated()) {
@@ -85,22 +83,21 @@ final class SvgLogoUploadController extends UploadImageController
         }
 
         if (($file->getSize() ?? 0) > self::MAX_BYTES) {
-            throw new ValidationException(['logo' => 'O SVG passa de 2 MB.']);
+            throw new ValidationException(['logo' => '该 SVG 超过 2 MB。']);
         }
 
         $clean = SvgSanitizer::sanitize((string) $file->getStream());
 
         if ($clean === null) {
-            throw new ValidationException(['logo' => 'Este arquivo não é um SVG válido.']);
+            throw new ValidationException(['logo' => '该文件不是有效的 SVG。']);
         }
 
         return (new StreamFactory())->createStream($clean);
     }
 
     /**
-     * A cópia do logo para os e-mails, como o core faz. Ela passa pelo
-     * Intervention, que não lê SVG: com SVG, os e-mails ficam com o logo de
-     * e-mail próprio, se houver.
+     * 与核心一样，把 logo 复制一份供邮件使用。该副本会经过 Intervention，
+     * 而它无法读取 SVG：使用 SVG 时，邮件会使用专用的邮件 logo（若存在）。
      */
     #[\Override]
     protected function afterStore(ServerRequestInterface $request, UploadedFileInterface $file): void

@@ -24,25 +24,25 @@ use Lcoy\Roselle\Bookmarks\BookmarksFeature;
 use Lcoy\Roselle\Bookmarks\Notification\BookmarkReminderBlueprint;
 
 /**
- * Envia os lembretes de marcador vencidos (`php flarum canela:bookmarks:remind`).
+ * 发送已到期的书签提醒（`php flarum lcoy:bookmarks:remind`）。
  *
- * Roda sozinho pelo agendador do Flarum (`php flarum schedule:run` no cron),
- * a cada cinco minutos — o mesmo intervalo do job do Discourse.
+ * 由 Flarum 的调度器自动运行（在 cron 中执行 `php flarum schedule:run`），
+ * 每五分钟一次——与 Discourse 的作业间隔相同。
  */
 final class SendBookmarkReminders extends Command
 {
     /** @var string */
-    protected $signature = 'canela:bookmarks:remind';
+    protected $signature = 'lcoy:bookmarks:remind';
 
     /** @var string */
-    protected $description = 'Envia as notificações dos lembretes de marcador que já venceram.';
+    protected $description = '发送已到期的书签提醒通知。';
 
     private const CHUNK = 100;
 
     public function handle(NotificationSyncer $notifications): int
     {
         if (! BookmarksFeature::enabled()) {
-            $this->info('Marcadores desligados; nada a enviar.');
+            $this->info('书签功能已关闭，无需发送。');
 
             return self::SUCCESS;
         }
@@ -58,16 +58,15 @@ final class SendBookmarkReminders extends Command
             ->chunkById(self::CHUNK, function (Collection $bookmarks) use ($notifications, $now, &$sent) {
                 /** @var Bookmark $bookmark */
                 foreach ($bookmarks as $bookmark) {
-                    // Marcado como enviado antes de enviar: um erro no envio de
-                    // um lembrete não pode fazer o próximo ciclo repeti-lo para
-                    // sempre (e o usuário ainda vê o marcador na lista).
+                    // 在发送之前就标记为已发送：某个提醒发送出错，
+                    // 不能让下一个循环永远重复它（用户仍会在列表中看到该书签）。
                     $bookmark->reminded_at = $now;
                     $bookmark->save();
 
                     $user = $bookmark->user;
 
-                    // O post pode ter sumido para ele (ocultado, tópico movido
-                    // para uma categoria restrita): sem alerta para o invisível.
+                    // 该帖子可能对用户已不可见（被隐藏，或主题被移入受限分类）：
+                    // 不为不可见的内容发送提醒。
                     $post = $user ? Post::whereVisibleTo($user)->find($bookmark->post_id) : null;
 
                     if (! $user || ! $post) {
@@ -79,7 +78,7 @@ final class SendBookmarkReminders extends Command
                 }
             });
 
-        $this->info("Lembretes enviados: $sent.");
+        $this->info("已发送提醒：{$sent}。");
 
         return self::SUCCESS;
     }

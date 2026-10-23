@@ -20,9 +20,9 @@ use Flarum\Foundation\Config;
 use Flarum\Frontend\Compiler\JsCompiler;
 
 /**
- * Wardrobe leve: o ThemeAssets que nunca compila na visita (ver
- * LazyThemeAssets) e, em produção, o compilador de JS sem sourcemap (ver
- * LeanJsCompiler). Registrado só com o Wardrobe habilitado.
+ * 轻量版 Wardrobe：访问时绝不编译的 ThemeAssets（见 LazyThemeAssets），
+ * 以及生产环境不带 sourcemap 的 JS 编译器（见 LeanJsCompiler）。
+ * 仅在启用 Wardrobe 时注册。
  */
 final class WardrobeServiceProvider extends AbstractServiceProvider
 {

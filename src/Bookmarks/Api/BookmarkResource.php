@@ -29,24 +29,24 @@ use Tobyz\JsonApiServer\Pagination\OffsetPagination;
 use Tobyz\JsonApiServer\Pagination\Pagination;
 
 /**
- * `/api/bookmarks`: os marcadores do ator.
+ * `/api/bookmarks`：当前操作者的书签。
  *
- * - GET lista (filtros `q` e `reminder`, ordens `createdAt`, `updatedAt` e
- *   `reminderAt`), com o post, o tópico e o autor incluídos.
- * - POST marca um post; PATCH troca nome e lembrete; DELETE desmarca.
+ * - GET 列表（过滤器 `q` 和 `reminder`，排序 `createdAt`、`updatedAt` 和
+ *   `reminderAt`），并包含帖子、主题和作者。
+ * - POST 标记一个帖子；PATCH 修改名称和提醒；DELETE 取消标记。
  *
- * O escopo já restringe tudo ao dono (ScopeBookmarkVisibility): o marcador de
- * outra pessoa responde 404, e não 403, para nem confirmar que ele existe.
+ * 作用域已把一切限制在所有者范围内（ScopeBookmarkVisibility）：访问他人
+ * 的书签返回 404 而非 403，以免确认其存在。
  *
  * @extends AbstractDatabaseResource<Bookmark>
  */
 final class BookmarkResource extends AbstractDatabaseResource
 {
-    /** Ordens aceitas => coluna. A lista fecha no id para a paginação não pular nem repetir. */
+    /** 允许的排序 => 列。列表以 id 收尾，使分页既不跳过也不重复。 */
     private const SORT_COLUMNS = [
-        'createdAt' => 'canela_bookmarks.created_at',
-        'updatedAt' => 'canela_bookmarks.updated_at',
-        'reminderAt' => 'canela_bookmarks.reminder_at',
+        'createdAt' => 'lcoy_bookmarks.created_at',
+        'updatedAt' => 'lcoy_bookmarks.updated_at',
+        'reminderAt' => 'lcoy_bookmarks.reminder_at',
     ];
 
     #[\Override]
@@ -70,8 +70,8 @@ final class BookmarkResource extends AbstractDatabaseResource
     #[\Override]
     public function endpoints(): array
     {
-        // `before` roda depois de achar o modelo e antes de qualquer escrita:
-        // com o recurso desligado, tudo responde 404.
+        // `before` 在找到模型之后、任何写入之前运行：
+        // 功能关闭时，一切请求都返回 404。
         $assertEnabled = static fn () => BookmarksFeature::assertEnabled();
 
         return [
@@ -81,8 +81,8 @@ final class BookmarkResource extends AbstractDatabaseResource
                 ->defaultInclude(['post', 'post.discussion', 'post.user'])
                 ->defaultSort('-createdAt')
                 ->paginate(20, 50)
-                // Sem um searcher, o core recusa qualquer `filter[...]`; os
-                // filtros daqui são simples o bastante para morar no recurso.
+                // 没有 searcher 时，核心会拒绝任何 `filter[...]`；这里的
+                // 过滤器足够简单，可以直接放在资源里。
                 ->query(function (Builder $query, ?Pagination $pagination, Context $context, array $filters, ?array $sort): Context {
                     $this->applyFilters($query, $context->getActor(), $filters);
                     $this->applySort($query, $sort);
@@ -126,8 +126,8 @@ final class BookmarkResource extends AbstractDatabaseResource
             Schema\DateTime::make('reminderAt')
                 ->nullable()
                 ->writable()
-                // Um lembrete no passado nunca seria enviado — e o Discourse
-                // também só aceita horários à frente.
+                // 过去的提醒永远不会被发送——而 Discourse
+                // 也只接受未来的时间。
                 ->rule('after:now')
                 ->set(static fn (Bookmark $bookmark, ?\DateTimeInterface $value) => $bookmark->setReminder($value)),
 
@@ -153,9 +153,9 @@ final class BookmarkResource extends AbstractDatabaseResource
     }
 
     /**
-     * O dono do marcador é sempre quem marca. Marcar de novo o mesmo post
-     * reaproveita o marcador existente (o índice único não deixa outro), com o
-     * nome e o lembrete que vierem agora — um duplo clique não vira erro.
+     * 书签的所有者始终是标记者本人。再次标记同一个帖子会复用已有的
+     * 书签（唯一索引不允许再存在一个），并采用本次传入的名称和提醒——
+     * 因此双击不会变成错误。
      */
     #[\Override]
     public function creating(object $model, OriginalContext $context): ?object
@@ -189,8 +189,8 @@ final class BookmarkResource extends AbstractDatabaseResource
     /** @param Builder<Bookmark> $query */
     private function applyFilters(Builder $query, User $actor, array $filters): void
     {
-        // Só o que o ator ainda enxerga: um post ocultado ou um tópico que
-        // passou para uma categoria restrita sai da lista, sem apagar o marcador.
+        // 只保留操作者仍可见的内容：被隐藏的帖子，或已转入受限分类的主题，
+        // 会从列表中消失，但不会删除书签。
         $query->whereHas('post', static fn (Builder $posts) => $posts->whereVisibleTo($actor));
 
         $term = trim((string) ($filters['q'] ?? ''));
@@ -199,7 +199,7 @@ final class BookmarkResource extends AbstractDatabaseResource
             $like = '%'.addcslashes($term, '\\%_').'%';
 
             $query->where(static function (Builder $query) use ($like) {
-                $query->where('canela_bookmarks.name', 'like', $like)
+                $query->where('lcoy_bookmarks.name', 'like', $like)
                     ->orWhereHas('post', static function (Builder $posts) use ($like) {
                         $posts->where('content', 'like', $like)
                             ->orWhereHas('discussion', static fn (Builder $discussions) => $discussions->where('title', 'like', $like));
@@ -208,9 +208,9 @@ final class BookmarkResource extends AbstractDatabaseResource
         }
 
         match ($filters['reminder'] ?? null) {
-            'pending' => $query->whereNotNull('canela_bookmarks.reminder_at')->whereNull('canela_bookmarks.reminded_at'),
-            'any' => $query->whereNotNull('canela_bookmarks.reminder_at'),
-            'none' => $query->whereNull('canela_bookmarks.reminder_at'),
+            'pending' => $query->whereNotNull('lcoy_bookmarks.reminder_at')->whereNull('lcoy_bookmarks.reminded_at'),
+            'any' => $query->whereNotNull('lcoy_bookmarks.reminder_at'),
+            'none' => $query->whereNull('lcoy_bookmarks.reminder_at'),
             default => null,
         };
 
@@ -218,7 +218,7 @@ final class BookmarkResource extends AbstractDatabaseResource
             $discussionId = (int) $filters['discussion'];
 
             $query->whereIn(
-                'canela_bookmarks.post_id',
+                'lcoy_bookmarks.post_id',
                 Post::query()->select('id')->where('discussion_id', $discussionId)
             );
         }
@@ -231,16 +231,16 @@ final class BookmarkResource extends AbstractDatabaseResource
 
         foreach ($sort ?? [] as $name => $direction) {
             if (isset(self::SORT_COLUMNS[$name])) {
-                // Lembrete vazio vai para o fim nos dois sentidos: a ordem "por
-                // lembrete" é para ver o próximo que vence.
+                // 空提醒在两种排序方向下都排在最后：按"提醒"
+                // 排序是为了查看下一个到期项。
                 if ($name === 'reminderAt') {
-                    $query->orderByRaw('CASE WHEN '.$query->getQuery()->getGrammar()->wrap('canela_bookmarks.reminder_at').' IS NULL THEN 1 ELSE 0 END');
+                    $query->orderByRaw('CASE WHEN '.$query->getQuery()->getGrammar()->wrap('lcoy_bookmarks.reminder_at').' IS NULL THEN 1 ELSE 0 END');
                 }
 
                 $query->orderBy(self::SORT_COLUMNS[$name], $direction);
             }
         }
 
-        $query->orderBy('canela_bookmarks.id', $direction);
+        $query->orderBy('lcoy_bookmarks.id', $direction);
     }
 }

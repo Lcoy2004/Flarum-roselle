@@ -1,16 +1,14 @@
 /*
- * O mapa do tópico do Discourse atual (topic-map.--op), logo abaixo do
- * primeiro post: uma faixa entre duas linhas com os números em destaque
- * (visualizações, curtidas, usuários) e, ao lado, os avatares de quem mais
- * participou. Curtidas e usuários abrem um menu ("Respostas mais curtidas",
- * "Autores frequentes"), como lá. Em tópicos longos ele se repete no fim
- * (topic-map.--bottom).
+ * 当前 Discourse 的主题地图（topic-map.--op），位于第一楼正下方：
+ * 夹在两条线之间的横条，醒目展示各项数字（浏览量、点赞、用户），旁边是
+ * 参与最多的用户头像。点赞和用户会打开菜单（“最受欢迎的回复”、
+ * “常驻作者”），与那边一致。在长主题中，它会在末尾重复出现
+ * （topic-map.--bottom）。
  *
- * Só o menu de links e o de curtidas leem dados já carregados; visualizações
- * só aparecem quando alguma extensão já manda o atributo; usuários e curtidas
- * são contados dos posts, mas só quando todos já estão na memória — uma soma
- * parcial seria um número errado com cara de certo. Sem eles, entra o número
- * de respostas, que o Flarum sempre tem.
+ * 只有链接菜单和点赞菜单读取已加载的数据；浏览量仅在某个扩展已经下发该
+ * 属性时出现；用户和点赞由帖子统计得出，但仅当所有帖子都已在内存中——
+ * 部分求和会得到一个看似正确实则错误的数字。没有它们时，改用回复数，
+ * Flarum 总是有这个数。
  */
 import app from 'flarum/forum/app';
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
@@ -27,24 +25,20 @@ import type Mithril from 'mithril';
 
 import { isExtensionEnabled, t } from '../../utils/settings';
 import { formatViews, viewsLabel } from '../../utils/views';
-import { discussionLinks, trackClick, type TopicLink } from '../../features/links/data';
 
 export interface TopicMapAttrs extends ComponentAttrs {
   discussion: Discussion;
-  /** 'op' abaixo do primeiro post; 'bottom' no fim do tópico. */
+  /** 'op' 在第一楼下方；'bottom' 在主题末尾。 */
   position?: 'op' | 'bottom';
 }
 
-/** Quantos avatares cabem na faixa, e quantos posts no menu de curtidas. */
+/** 横条中能放下几个头像，以及点赞菜单中显示几篇帖子。 */
 const POSTERS_LIMIT = 5;
 const LIKED_LIMIT = 3;
-/** A partir de quantas respostas o mapa se repete no fim (o Meta repete em 11). */
+/** 回复数达到多少时地图在末尾重复出现（Meta 在 11 时重复）。 */
 const BOTTOM_MIN_REPLIES = 10;
 
-type MenuKey = 'likes' | 'links' | 'users';
-
-/** Quantos links o menu "Links populares" mostra antes do "Mostrar mais" (o Discourse mostra 5). */
-const LINKS_LIMIT = 5;
+type MenuKey = 'likes' | 'users';
 
 function numericAttribute(discussion: Discussion, names: string[]): number | null {
   for (const name of names) {
@@ -56,7 +50,7 @@ function numericAttribute(discussion: Discussion, names: string[]): number | nul
   return null;
 }
 
-/** Todos os posts do tópico, se já estiverem carregados; senão, null. */
+/** 主题的所有帖子，如果都已加载；否则为 null。 */
 function allPosts(discussion: Discussion): Post[] | null {
   const posts: Post[] = [];
 
@@ -71,7 +65,7 @@ function allPosts(discussion: Discussion): Post[] | null {
   return posts;
 }
 
-/** Os posts já carregados (para os avatares, que podem ser parciais). */
+/** 已加载的帖子（用于头像，可以是部分）。 */
 function loadedPosts(discussion: Discussion): Post[] {
   return discussion
     .postIds()
@@ -81,7 +75,7 @@ function loadedPosts(discussion: Discussion): Post[] {
 
 const VIEW_ATTRIBUTES = ['views', 'view_count'];
 
-/** Sem respostas nem visualizações o mapa só repetiria o cabeçalho do post. */
+/** 没有回复也没有浏览量时，地图只会重复帖子的头部。 */
 export function hasTopicMap(discussion: Discussion): boolean {
   return discussion.replyCount() > 0 || numericAttribute(discussion, VIEW_ATTRIBUTES) !== null;
 }
@@ -94,7 +88,7 @@ function likesOf(post: Post): number {
   return Number(post.attribute('likesCount')) || 0;
 }
 
-/** Quem mais postou, primeiro; empate fica com quem postou antes. */
+/** 发帖最多的人在前；并列时先发帖的人在前。 */
 function posters(posts: Post[]): { user: User; count: number }[] {
   const counts = new Map<User, number>();
 
@@ -126,7 +120,7 @@ export default class TopicMap extends Component<TopicMapAttrs> {
     const comments = posts ? posts.filter((post) => post.contentType() === 'comment' && !post.isHidden()) : null;
     const users = numericAttribute(discussion, ['participantCount', 'participantsCount']) ?? (comments ? posters(comments).length : null);
     const likes =
-      numericAttribute(discussion, ['canelaLikeCount']) ??
+      numericAttribute(discussion, ['lcoyLikeCount']) ??
       (comments && isExtensionEnabled('flarum-likes') ? comments.reduce((sum, post) => sum + likesOf(post), 0) : null);
 
     const visible = loadedPosts(discussion).filter((post) => post.contentType() === 'comment' && !post.isHidden());
@@ -134,16 +128,11 @@ export default class TopicMap extends Component<TopicMapAttrs> {
 
     const stats: Mithril.Children[] = [];
 
-    // `minViewsCount` do Discourse: o tópico aberto agora nunca tem zero
-    // visualizações.
+    // Discourse 的 `minViewsCount`：当前打开的主题浏览量不会为零。
     const shownViews = views === null ? null : Math.max(views, 1);
 
     if (shownViews !== null) stats.push(this.stat('views', shownViews, viewsLabel(shownViews)));
     if (likes) stats.push(this.stat('likes', likes, t('topic.map.likes', { count: likes }), 'likes'));
-
-    // "N links" entre curtidas e usuários, como no Discourse (recurso `links`).
-    const links = discussionLinks(discussion);
-    if (links && links.total > 0) stats.push(this.stat('links', links.total, t('topic.map.links', { count: links.total }), 'links'));
     if (users !== null && users > 0) stats.push(this.stat('users', users, t('topic.map.users', { count: users }), 'users'));
     if (users === null) {
       const replies = discussion.replyCount();
@@ -151,15 +140,15 @@ export default class TopicMap extends Component<TopicMapAttrs> {
     }
 
     return (
-      <section className={classList('CanelaTopicMap', `CanelaTopicMap--${position}`)} aria-label={t('topic.map.aria_label')}>
-        <div className={classList('CanelaTopicMap-stats', { 'CanelaTopicMap-stats--single': stats.length === 1 })}>
+      <section className={classList('LcoyTopicMap', `LcoyTopicMap--${position}`)} aria-label={t('topic.map.aria_label')}>
+        <div className={classList('LcoyTopicMap-stats', { 'LcoyTopicMap-stats--single': stats.length === 1 })}>
           {stats}
 
           {top.length > 1 && (
-            <div className="CanelaTopicMap-users">
+            <div className="LcoyTopicMap-users">
               {top.slice(0, POSTERS_LIMIT).map(({ user, count }) => (
                 <Link
-                  className={user.isOnline() ? 'CanelaTopicMap-poster CanelaTopicMap-poster--online' : 'CanelaTopicMap-poster'}
+                  className={user.isOnline() ? 'LcoyTopicMap-poster LcoyTopicMap-poster--online' : 'LcoyTopicMap-poster'}
                   href={app.route.user(user)}
                   title={`${user.displayName()}: ${t('topic.map.posts', { count })}`}
                 >
@@ -171,7 +160,6 @@ export default class TopicMap extends Component<TopicMapAttrs> {
         </div>
 
         {this.open === 'likes' && this.likesMenu(visible)}
-        {this.open === 'links' && links && this.linksMenu(discussion, links.top)}
         {this.open === 'users' && this.usersMenu(top)}
       </section>
     );
@@ -179,17 +167,17 @@ export default class TopicMap extends Component<TopicMapAttrs> {
 
   stat(key: string, value: number, label: string, menu?: MenuKey): Mithril.Children {
     const content = [
-      // O `dNumber … noTitle` do Discourse: 1,2k, 120k, 1,0M.
-      <span className="CanelaTopicMap-number number">{formatViews(value)}</span>,
-      <span className="CanelaTopicMap-label">{label}</span>,
+      // Discourse 的 `dNumber … noTitle`：1.2k、120k、1.0M。
+      <span className="LcoyTopicMap-number number">{formatViews(value)}</span>,
+      <span className="LcoyTopicMap-label">{label}</span>,
     ];
 
-    if (!menu) return <div className={`CanelaTopicMap-stat CanelaTopicMap-stat--${key}`}>{content}</div>;
+    if (!menu) return <div className={`LcoyTopicMap-stat LcoyTopicMap-stat--${key}`}>{content}</div>;
 
     return (
       <button
         type="button"
-        className={classList('CanelaTopicMap-stat', `CanelaTopicMap-stat--${key}`, { active: this.open === menu })}
+        className={classList('LcoyTopicMap-stat', `LcoyTopicMap-stat--${key}`, { active: this.open === menu })}
         aria-expanded={this.open === menu ? 'true' : 'false'}
         onclick={(event: MouseEvent) => this.toggle(menu, event.currentTarget as HTMLElement)}
       >
@@ -208,10 +196,10 @@ export default class TopicMap extends Component<TopicMapAttrs> {
     this.open = menu;
     this.anchorLeft = trigger.offsetLeft;
 
-    // Fecha ao clicar fora ou com Esc, como os menus do Discourse.
+    // 点击外部或按 Esc 时关闭，与 Discourse 的菜单一致。
     this.closer = (event: Event) => {
       if (event instanceof KeyboardEvent && event.key !== 'Escape') return;
-      if (event.type === 'mousedown' && (event.target as HTMLElement).closest?.('.CanelaTopicMap-menu, .CanelaTopicMap-stat')) return;
+      if (event.type === 'mousedown' && (event.target as HTMLElement).closest?.('.LcoyTopicMap-menu, .LcoyTopicMap-stat')) return;
 
       this.close();
       m.redraw();
@@ -238,14 +226,14 @@ export default class TopicMap extends Component<TopicMapAttrs> {
 
   menu(className: string, title: string, body: Mithril.Children): Mithril.Children {
     return (
-      <div className={classList('CanelaTopicMap-menu', className)} role="dialog" aria-label={title} style={{ left: `${this.anchorLeft}px` }}>
-        <h3 className="CanelaTopicMap-menuTitle">{title}</h3>
+      <div className={classList('LcoyTopicMap-menu', className)} role="dialog" aria-label={title} style={{ left: `${this.anchorLeft}px` }}>
+        <h3 className="LcoyTopicMap-menuTitle">{title}</h3>
         {body}
       </div>
     );
   }
 
-  /** As respostas mais curtidas (o primeiro post não conta, como no Discourse). */
+  /** 点赞最多的回复（第一楼不计入，与 Discourse 一致）。 */
   likesMenu(posts: Post[]): Mithril.Children {
     const liked = posts
       .filter((post) => post.number() > 1 && likesOf(post) > 0)
@@ -253,21 +241,21 @@ export default class TopicMap extends Component<TopicMapAttrs> {
       .slice(0, LIKED_LIMIT);
 
     return this.menu(
-      'CanelaTopicMap-menu--likes',
+      'LcoyTopicMap-menu--likes',
       t('topic.map.most_liked'),
-      <ul className="CanelaTopicMap-liked">
+      <ul className="LcoyTopicMap-liked">
         {liked.map((post) => (
           <li>
             <Link href={app.route.post(post)} onclick={() => this.close()}>
-              <span className="CanelaTopicMap-likedUser">
+              <span className="LcoyTopicMap-likedUser">
                 <Avatar user={post.user() || null} />
                 {username(post.user() || null)}
               </span>
-              <span className="CanelaTopicMap-likedCount">
+              <span className="LcoyTopicMap-likedCount">
                 {abbreviateNumber(likesOf(post))}
                 <Icon name="fas fa-heart" />
               </span>
-              <p className="CanelaTopicMap-likedExcerpt">{post.contentPlain()?.slice(0, 200)}</p>
+              <p className="LcoyTopicMap-likedExcerpt">{post.contentPlain()?.slice(0, 200)}</p>
             </Link>
           </li>
         ))}
@@ -275,57 +263,15 @@ export default class TopicMap extends Component<TopicMapAttrs> {
     );
   }
 
-  /** Mostra todos os links no menu, e não só os primeiros. */
-  allLinks = false;
-
-  /** "Links populares": cliques, título (ou endereço) e domínio, os mais clicados primeiro. */
-  linksMenu(discussion: Discussion, links: TopicLink[]): Mithril.Children {
-    const shown = this.allLinks ? links : links.slice(0, LINKS_LIMIT);
-
-    return this.menu('CanelaTopicMap-menu--links', t('topic.map.popular_links'), [
-      <ul className="CanelaTopicMap-links">
-        {shown.map((link) => (
-          <li className="CanelaTopicMap-link">
-            {/* Uma coluna fixa para os títulos alinharem com ou sem cliques. */}
-            <span className="CanelaTopicMap-linkCount">
-              {link.clicks > 0 && (
-                <span className="CanelaTopicMap-linkClicks badge clicks" title={t('links.clicks', { count: link.clicks })}>
-                  {formatViews(link.clicks)}
-                </span>
-              )}
-            </span>
-            <a
-              className="CanelaTopicMap-linkTitle"
-              href={link.url}
-              target="_blank"
-              rel="noopener nofollow ugc"
-              title={link.url}
-              onclick={() => trackClick(link.postId, link.url, discussion)}
-              onauxclick={(event: MouseEvent) => event.button === 1 && trackClick(link.postId, link.url, discussion)}
-            >
-              {link.title || link.url.replace(/^https?:\/\//, '')}
-            </a>
-            <span className="CanelaTopicMap-linkDomain">{link.domain.replace(/^www\./, '')}</span>
-          </li>
-        ))}
-      </ul>,
-      links.length > LINKS_LIMIT && !this.allLinks ? (
-        <button type="button" className="Button Button--link CanelaTopicMap-linksMore" onclick={() => (this.allLinks = true)}>
-          {t('topic.map.show_more_links')}
-        </button>
-      ) : null,
-    ]);
-  }
-
   usersMenu(top: { user: User; count: number }[]): Mithril.Children {
     return this.menu(
-      'CanelaTopicMap-menu--users',
+      'LcoyTopicMap-menu--users',
       t('topic.map.frequent_posters'),
-      <div className="CanelaTopicMap-usersList">
+      <div className="LcoyTopicMap-usersList">
         {top.slice(0, 24).map(({ user, count }) => (
-          <Link className="CanelaTopicMap-poster" href={app.route.user(user)} title={user.displayName()} onclick={() => this.close()}>
+          <Link className="LcoyTopicMap-poster" href={app.route.user(user)} title={user.displayName()} onclick={() => this.close()}>
             <Avatar user={user} />
-            {count > 1 && <span className="CanelaTopicMap-postCount">{count}</span>}
+            {count > 1 && <span className="LcoyTopicMap-postCount">{count}</span>}
           </Link>
         ))}
       </div>

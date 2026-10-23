@@ -11,10 +11,10 @@
  */
 
 /*
- * As abas das preferências (`/u/{username}/preferences/{tab}`), como as do
- * Discourse. Só a rota do documento: o conteúdo é o SettingsPage do core,
- * dividido em abas no JS. `/u/{username}/preferences` sem aba já é atendida
- * pela rota do perfil do core (`/u/{username}[/{filter}]`).
+ * 偏好设置标签页（`/u/{username}/preferences/{tab}`），与
+ * Discourse 相同。只有文档路由：内容由核心的 SettingsPage 提供，
+ * 在 JS 中拆分为标签。不带标签的 `/u/{username}/preferences` 已由
+ * 核心的个人资料路由处理（`/u/{username}[/{filter}]`）。
  */
 
 use Flarum\Extend;
@@ -22,6 +22,6 @@ use Flarum\Forum\Content\AssertRegistered;
 
 return [
     (new Extend\Frontend('forum'))
-        // Como o `/settings` do core: visitante vai para o login.
-        ->route('/u/{username}/preferences/{tab:[a-z-]+}', 'canela.user.preferences.tab', AssertRegistered::class),
+        // 与核心的 `/settings` 相同：访客会被引导到登录页。
+        ->route('/u/{username}/preferences/{tab:[a-z-]+}', 'lcoy.user.preferences.tab', AssertRegistered::class),
 ];

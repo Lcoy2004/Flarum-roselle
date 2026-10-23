@@ -1,23 +1,22 @@
 /*
- * Pré-carregamento da primeira carga (recurso `preload` no servidor).
+ * 首次加载的预加载（服务器上的 `preload` 功能）。
  *
- * O core já entrega no HTML o `apiDocument` da rota; o tema acrescenta, em
- * `payload.canelaPreload`, as respostas dos pedidos que as próprias páginas
- * fariam logo depois do boot (Resumo do perfil, lista de notificações, Sobre,
- * contagens de uma tag). Cada uma tem por chave o caminho na API e os
- * parâmetros achatados e ordenados — a mesma conta de
- * `src/Preload/PreloadKey.php`.
+ * 核心已经在 HTML 中提供路由的 `apiDocument`；主题在
+ * `payload.lcoyPreload` 中添加页面在启动后立即会发出的请求的响应
+ * （个人主页摘要、通知列表、关于、标签的计数）。
+ * 每个响应以 API 路径和展平、排序后的参数为键——与
+ * `src/Preload/PreloadKey.php` 使用相同的计算方式。
  *
- * Em vez de mexer em cada página, `app.store.find` e `app.request` (GET)
- * olham aqui antes de ir à rede: se a chave bate, a resposta pronta é usada
- * uma única vez. Fora disso (navegação dentro do app, outros parâmetros,
- * depois de MAX_AGE_MS) o pedido segue normal.
+ * 主题没有修改每个页面，而是让 `app.store.find` 和 `app.request`（GET）
+ * 在访问网络前查看这里：如果键匹配，就使用准备好的响应
+ * 一次。除此之外（应用内导航、其他参数、
+ * MAX_AGE_MS 之后），请求照常进行。
  */
 import app from 'flarum/forum/app';
 import Store from 'flarum/common/Store';
 import { override } from 'flarum/common/extend';
 
-/** Depois disso o dado pré-carregado já pode estar velho: a página pede de novo. */
+/** 超过这个时间后，预加载的数据可能已过时：页面会重新请求。 */
 const MAX_AGE_MS = 30_000;
 
 let entries: Record<string, unknown> | null = null;
@@ -34,13 +33,13 @@ function flatten(value: unknown, prefix: string, pairs: string[]): void {
     return;
   }
 
-  // O Mithril também deixa de fora o valor vazio (`page[limit]` sem número).
+  // Mithril 也会忽略空值（没有数字的 `page[limit]`）。
   if (value === '') return;
 
   pairs.push(`${prefix}=${String(value)}`);
 }
 
-/** `caminho?a=1&b[c]=2`, sem codificação e em ordem alfabética. */
+/** `路径?a=1&b[c]=2`，不编码并按字母顺序排列。 */
 export function preloadKey(path: string, params: Record<string, unknown> = {}, extraPairs: string[] = []): string {
   const pairs = [...extraPairs];
   flatten(params, '', pairs);
@@ -49,7 +48,7 @@ export function preloadKey(path: string, params: Record<string, unknown> = {}, e
   return `${path.replace(/^\/+|\/+$/g, '')}?${pairs.join('&')}`;
 }
 
-/** A resposta pré-carregada desse pedido, uma vez só; null se não houver. */
+/** 该请求的预加载响应，仅一次；没有时为 null。 */
 export function takePreloaded<T = any>(path: string, params: Record<string, unknown> = {}, extraPairs: string[] = []): T | null {
   if (!entries) return null;
 
@@ -68,7 +67,7 @@ export function takePreloaded<T = any>(path: string, params: Record<string, unkn
   return data;
 }
 
-/** O caminho relativo à API (`canela-about`) e os pares da query, ou null se a URL não é da API. */
+/** 相对于 API 的路径（`lcoy-about`）和查询参数对，或当 URL 不属于 API 时为 null。 */
 function apiPath(url: string): { path: string; pairs: string[] } | null {
   try {
     const target = new URL(url, window.location.href);
@@ -89,9 +88,9 @@ function apiPath(url: string): { path: string; pairs: string[] } | null {
 }
 
 export default function installPreload(): void {
-  const data = (app.data as any)?.canelaPreload;
+  const data = (app.data as any)?.lcoyPreload;
 
-  // Sem nada pré-carregado (a maioria das rotas), nada a interceptar.
+  // 没有任何预加载内容（大多数路由）：无需拦截。
   if (!data || typeof data !== 'object') return;
 
   entries = data;
@@ -101,7 +100,7 @@ export default function installPreload(): void {
     Store.prototype,
     'find',
     function (this: Store, original: (...args: any[]) => any, type: string, idOrParams?: any, query: any = {}, options: any = {}) {
-      // Uma lista de ids vira `filter[id]` lá dentro: esse formato o servidor não pré-carrega.
+      // id 列表会在内部变成 `filter[id]`：服务器不会预加载这种格式。
       if (entries && !Array.isArray(idOrParams)) {
         const single = typeof idOrParams === 'string' || typeof idOrParams === 'number';
         const preloaded = takePreloaded(single ? `${type}/${idOrParams}` : type, single ? query : idOrParams || {});

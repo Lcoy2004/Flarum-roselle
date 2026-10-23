@@ -11,32 +11,30 @@
  */
 
 /*
- * Editor (composer) do Discourse: seletor de emoji, tópicos semelhantes,
- * #categoria/#etiqueta, rascunhos, "responder como tópico vinculado" e a
- * pré-visualização lado a lado.
+ * Discourse 的编辑器（composer）：emoji 选择器、相似主题、
+ * #分类/#标签、草稿、"作为关联主题回复" 以及并排预览。
  *
- * Tudo é front-end; aqui ficam só as opções do admin. Os rascunhos são
- * guardados pelo fof/drafts (tabela `drafts`, API `/api/drafts`).
+ * 全部是前端功能；这里只放管理员选项。草稿由 fof/drafts 保存
+ * （`drafts` 表，API `/api/drafts`）。
  */
 
 use Flarum\Extend;
 
-// O extend.php principal faz `require` deste arquivo no próprio escopo: uma
-// variável solta aqui (como $settings) sobrescreveria a dele. Por isso tudo
-// fica dentro de uma função.
+// 主 extend.php 会在自身作用域内 `require` 这个文件：这里散落的变量
+// （如 $settings）会覆盖它的。所以一切都在函数内部。
 $composerSettings = (static function (): Extend\Settings {
     $settings = new Extend\Settings();
 
-    // chave => atributo no fórum. Todas ligadas por padrão: o tema reproduz o
-    // Discourse, e quem não quiser uma delas desliga no card do admin.
+    // 键 => 论坛中的属性。全部默认开启：主题复刻了
+    // Discourse，不想要其中某项的人可在管理员卡片中关闭。
     foreach ([
-        'canela.composer_enabled' => 'canelaComposerEnabled',
-        'canela.composer_similar' => 'canelaComposerSimilar',
-        'canela.composer_hashtags' => 'canelaComposerHashtags',
-        // Só vale com o fof/drafts habilitado (o front confere a extensão).
-        'canela.composer_drafts' => 'canelaComposerDrafts',
-        'canela.composer_linked_topic' => 'canelaComposerLinkedTopic',
-        'canela.composer_preview' => 'canelaComposerPreview',
+        'lcoy.composer_enabled' => 'lcoyComposerEnabled',
+        'lcoy.composer_similar' => 'lcoyComposerSimilar',
+        'lcoy.composer_hashtags' => 'lcoyComposerHashtags',
+        // 仅在启用 fof/drafts 时有效（前端会检查该扩展）。
+        'lcoy.composer_drafts' => 'lcoyComposerDrafts',
+        'lcoy.composer_linked_topic' => 'lcoyComposerLinkedTopic',
+        'lcoy.composer_preview' => 'lcoyComposerPreview',
     ] as $key => $attributeName) {
         $settings->default($key, true)->serializeToForum($attributeName, $key, 'boolval');
     }

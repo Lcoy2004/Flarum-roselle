@@ -1,9 +1,9 @@
 /*
- * "Exibir código em tela cheia" e "Expandir tabela" do Discourse: a mesma
- * janela grande, com uma cópia do bloco do post.
+ * Discourse 的“全屏查看代码”和“展开表格”：同一个大窗口，
+ * 内含帖子块的副本。
  *
- * O HTML vem do próprio post já desenhado (o servidor já o limpou), então
- * pode entrar com m.trust sem passar de novo pelo formatador.
+ * HTML 来自已经绘制好的帖子本身（服务器已做清洗），因此
+ * 可以直接用 m.trust 插入，无需再次经过格式化器。
  */
 import Modal, { type IInternalModalAttrs } from 'flarum/common/components/Modal';
 import type Mithril from 'mithril';
@@ -16,7 +16,7 @@ export interface CookedFullscreenModalAttrs extends IInternalModalAttrs {
 
 export default class CookedFullscreenModal extends Modal<CookedFullscreenModalAttrs> {
   className() {
-    return `CanelaFullscreenModal CanelaFullscreenModal--${this.attrs.kind} Modal--large`;
+    return `LcoyFullscreenModal LcoyFullscreenModal--${this.attrs.kind} Modal--large`;
   }
 
   title() {
@@ -26,7 +26,7 @@ export default class CookedFullscreenModal extends Modal<CookedFullscreenModalAt
   content(): Mithril.Children {
     return (
       <div className="Modal-body">
-        <div className="CanelaFullscreenModal-content Post-body">{m.trust(this.attrs.html)}</div>
+        <div className="LcoyFullscreenModal-content Post-body">{m.trust(this.attrs.html)}</div>
       </div>
     );
   }

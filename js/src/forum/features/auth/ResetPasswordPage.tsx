@@ -1,10 +1,10 @@
 /*
- * /reset/{token}: "Redefinir senha" com a cara das páginas de entrar (logo,
- * cartão, título, campos com rótulo flutuante), no lugar da página solta do
- * core. O servidor (src/Auth/ResetPasswordContent) valida o token como o
- * core e entrega o token e os erros da última tentativa; o formulário posta
- * no POST /reset do core (SavePasswordController), que troca a senha, entra
- * e volta para a página inicial — ou, num erro, volta para cá com os erros.
+ * /reset/{token}：“重置密码”页面，外观与登录页面一致（logo、
+ * 卡片、标题、带浮动标签的字段），替代核心的简陋页面。
+ * 服务端（src/Auth/ResetPasswordContent）按核心的方式校验 token，
+ * 并下发 token 及上次尝试的错误；表单提交到核心的 POST /reset
+ * （SavePasswordController），由它更换密码、登录并跳回首页——
+ * 若出错则带着错误信息返回本页。
  */
 import app from 'flarum/forum/app';
 import Page, { type IPageAttrs } from 'flarum/common/components/Page';
@@ -20,7 +20,7 @@ interface ResetPayload {
 }
 
 export default class ResetPasswordPage extends Page<IPageAttrs> {
-  protected bodyClass = 'Canela--authPage';
+  protected bodyClass = 'Lcoy--authPage';
   loading = false;
 
   oninit(vnode: Mithril.Vnode<IPageAttrs, this>) {
@@ -31,9 +31,9 @@ export default class ResetPasswordPage extends Page<IPageAttrs> {
   }
 
   payload(): ResetPayload | null {
-    const data = (app.data as any).canelaReset as ResetPayload | undefined;
+    const data = (app.data as any).lcoyReset as ResetPayload | undefined;
 
-    // Só vale o token da própria URL (o payload é o do primeiro carregamento).
+    // 只认可当前 URL 中的 token（payload 属于首次加载）。
     return data && data.token === m.route.param('token') ? data : null;
   }
 
@@ -41,10 +41,10 @@ export default class ResetPasswordPage extends Page<IPageAttrs> {
     const data = this.payload();
 
     return (
-      <div className="CanelaAuthPage CanelaAuthPage--reset">
-        <div className="CanelaAuthPage-inner">
+      <div className="LcoyAuthPage LcoyAuthPage--reset">
+        <div className="LcoyAuthPage-inner">
           {authLogo()}
-          <div className="Modal modal-dialog CanelaAuthForm CanelaResetForm">
+          <div className="Modal modal-dialog LcoyAuthForm LcoyResetForm">
             <div className="Modal-content">{data ? this.form(data) : this.unavailable()}</div>
           </div>
           {backToLogin()}
@@ -90,7 +90,7 @@ export default class ResetPasswordPage extends Page<IPageAttrs> {
 
   field(name: string, label: string, focus: boolean): Mithril.Children {
     return (
-      <div className="Form-group CanelaFloat">
+      <div className="Form-group LcoyFloat">
         <input
           className="FormControl"
           type="password"
@@ -102,14 +102,14 @@ export default class ResetPasswordPage extends Page<IPageAttrs> {
           minlength={8}
           oncreate={focus ? (vnode: Mithril.VnodeDOM) => (vnode.dom as HTMLInputElement).focus() : undefined}
         />
-        <label className="CanelaFloat-label" aria-hidden="true">
+        <label className="LcoyFloat-label" aria-hidden="true">
           {label}
         </label>
       </div>
     );
   }
 
-  /** Chegou aqui navegando dentro do fórum (sem o payload do servidor): recarrega a página. */
+  /** 在论坛内部导航到达此处（无服务端 payload）：刷新页面。 */
   unavailable(): Mithril.Children {
     return (
       <div className="Modal-body">

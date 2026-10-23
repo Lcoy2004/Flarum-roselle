@@ -13,27 +13,27 @@ import type { LoadedRow } from './DirectoryState';
 import { t } from '../../utils/settings';
 import { shortAge } from '../../utils/dates';
 
-/** Ícone de cada coluna, como os do cabeçalho do diretório do Discourse. */
+/** 每一列的图标，与 Discourse 目录表头的一致。 */
 const COLUMN_ICONS: Record<string, string> = {
   likesReceived: 'fas fa-heart',
   likesGiven: 'fas fa-heart',
 };
 
-/** Colunas numéricas que vêm na linha (as outras saem do modelo do usuário). */
+/** 行数据中自带的数值列（其他列取自用户模型）。 */
 const NUMERIC = ['likesReceived', 'likesGiven', 'topicCount', 'postCount', 'daysVisited', 'postsRead'];
 
 export interface DirectoryTableAttrs extends ComponentAttrs {
   state: DirectoryState;
-  /** Texto quando não há ninguém (sem busca). */
+  /** 无人时的文本（未进行搜索）。 */
   emptyText: string;
 }
 
 /**
- * A tabela do diretório do Discourse: usuário à esquerda, uma coluna por
- * número, cabeçalhos clicáveis para ordenar e "carregar mais" no fim.
+ * Discourse 的目录表格：左侧为用户名，每个数值占一列，表头可点击
+ * 排序，末尾有“加载更多”。
  *
- * "Último acesso" sempre aparece (quando o usuário o divulga), mas só ordena
- * para quem tem a permissão do core — o servidor diz quais colunas ordenam.
+ * “最后访问”始终显示（当用户公开该信息时），但仅对有核心权限的
+ * 用户可排序——服务端会告知哪些列可排序。
  */
 export default class DirectoryTable extends Component<DirectoryTableAttrs> {
   view(): Mithril.Children {
@@ -41,21 +41,21 @@ export default class DirectoryTable extends Component<DirectoryTableAttrs> {
     const columns = this.displayColumns();
 
     if (state.failed && !state.rows.length) {
-      return <p className="CanelaCommunity-empty">{t('community.load_error')}</p>;
+      return <p className="LcoyCommunity-empty">{t('community.load_error')}</p>;
     }
 
     if (!state.loading && !state.rows.length && state.total !== null) {
-      return <p className="CanelaCommunity-empty">{state.params.q ? t('community.users.no_results') : emptyText}</p>;
+      return <p className="LcoyCommunity-empty">{state.params.q ? t('community.users.no_results') : emptyText}</p>;
     }
 
     return (
-      <div className="CanelaDirectory">
-        <div className="CanelaCommunity-tableWrap">
-          <table className="CanelaCommunity-table CanelaDirectory-table">
+      <div className="LcoyDirectory">
+        <div className="LcoyCommunity-tableWrap">
+          <table className="LcoyCommunity-table LcoyDirectory-table">
             <thead>
               <tr>
-                {this.header('username', t('community.users.column.username'), 'CanelaDirectory-userCol')}
-                {columns.map((column) => this.header(column, t(`community.users.column.${column}`), 'CanelaCommunity-num'))}
+                {this.header('username', t('community.users.column.username'), 'LcoyDirectory-userCol')}
+                {columns.map((column) => this.header(column, t(`community.users.column.${column}`), 'LcoyCommunity-num'))}
               </tr>
             </thead>
             <tbody>{state.rows.map((row) => this.row(row, columns))}</tbody>
@@ -65,7 +65,7 @@ export default class DirectoryTable extends Component<DirectoryTableAttrs> {
         {state.loading && <LoadingIndicator display="block" />}
 
         {!state.loading && state.hasMore && (
-          <div className="CanelaCommunity-more">
+          <div className="LcoyCommunity-more">
             <Button className="Button" onclick={() => state.loadMore()}>
               {t('community.load_more')}
             </Button>
@@ -75,7 +75,7 @@ export default class DirectoryTable extends Component<DirectoryTableAttrs> {
     );
   }
 
-  /** As colunas do servidor, mais "Último acesso" quando ele não ordena por ela. */
+  /** 服务端返回的列，外加“最后访问”（若服务端未按此列排序）。 */
   displayColumns(): string[] {
     const columns = [...this.attrs.state.columns];
 
@@ -91,24 +91,24 @@ export default class DirectoryTable extends Component<DirectoryTableAttrs> {
     const icon = COLUMN_ICONS[column];
     const content = (
       <>
-        {icon && <Icon name={icon} className="CanelaDirectory-columnIcon" />}
+        {icon && <Icon name={icon} className="LcoyDirectory-columnIcon" />}
         <span>{label}</span>
-        {active && <Icon name={state.params.dir === 'asc' ? 'fas fa-chevron-up' : 'fas fa-chevron-down'} className="CanelaDirectory-sortIcon" />}
+        {active && <Icon name={state.params.dir === 'asc' ? 'fas fa-chevron-up' : 'fas fa-chevron-down'} className="LcoyDirectory-sortIcon" />}
       </>
     );
 
     return (
       <th
-        className={classList(className, `CanelaDirectory-col--${column}`, { 'is-sorted': active })}
+        className={classList(className, `LcoyDirectory-col--${column}`, { 'is-sorted': active })}
         aria-sort={active ? (state.params.dir === 'asc' ? 'ascending' : 'descending') : undefined}
         scope="col"
       >
         {sortable ? (
-          <button type="button" className="CanelaDirectory-sort" onclick={() => state.sortBy(column)}>
+          <button type="button" className="LcoyDirectory-sort" onclick={() => state.sortBy(column)}>
             {content}
           </button>
         ) : (
-          <span className="CanelaDirectory-sort is-static">{content}</span>
+          <span className="LcoyDirectory-sort is-static">{content}</span>
         )}
       </th>
     );
@@ -120,14 +120,11 @@ export default class DirectoryTable extends Component<DirectoryTableAttrs> {
 
     return (
       <tr key={row.user} className={classList({ 'is-me': isMe })}>
-        <td className="CanelaDirectory-userCol">
+        <td className="LcoyDirectory-userCol">
           <UserTile user={user} size="small" />
         </td>
         {columns.map((column) => (
-          <td
-            className={`CanelaCommunity-num CanelaDirectory-value CanelaDirectory-col--${column}`}
-            data-label={t(`community.users.column.${column}`)}
-          >
+          <td className={`LcoyCommunity-num LcoyDirectory-value LcoyDirectory-col--${column}`} data-label={t(`community.users.column.${column}`)}>
             {this.value(row, column)}
           </td>
         ))}

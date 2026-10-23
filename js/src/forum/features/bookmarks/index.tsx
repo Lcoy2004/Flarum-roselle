@@ -1,15 +1,15 @@
 /*
- * Marcadores do Discourse.
+ * Discourse 风格的书签。
  *
- * - Botão de marcador na barra de ações de cada post: marca direto; num post
- *   já marcado, abre o "Editar marcador" (nome, lembrete, excluir).
- * - "Marcar discussão" nos controles do tópico (o "…" do rodapé e o menu da
- *   página), que marca o primeiro post, como lá.
- * - Aba "Marcadores" no perfil (só o próprio) e item no menu do usuário.
- * - O tipo de notificação do lembrete nas preferências de notificação.
+ * - 每个帖子操作栏中的书签按钮：直接收藏；已收藏的帖子则打开
+ *   “编辑书签”（名称、提醒、删除）。
+ * - 主题控制中的“收藏主题”（页脚的“…”和页面菜单），会收藏
+ *   首帖，与 Discourse 相同。
+ * - 个人资料页中的“书签”标签（仅本人可见）以及用户菜单中的入口。
+ * - 通知偏好设置中的提醒通知类型。
  *
- * A rota, o modelo e o componente da notificação ficam em ./extend (o
- * principal espalha aquele array no `extend` do fórum).
+ * 路由、模型和通知组件位于 ./extend（主入口会把该数组展开到
+ * 论坛的 `extend` 中）。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -30,7 +30,7 @@ import { bookmarksEnabled, createBookmark, firstPostOf, isBusy, postBookmark } f
 import { reminderLabel } from './reminders';
 import { forumBool, t } from '../../utils/settings';
 
-/** Entre o "copiar link" (-10) e o "…" (-50) da barra do tema, como no Discourse. */
+/** 位于主题的“复制链接”（-10）与“…”（-50）之间，与 Discourse 一致。 */
 const POST_ACTION_PRIORITY = -20;
 
 export default function installBookmarks() {
@@ -42,9 +42,9 @@ export default function installBookmarks() {
 }
 
 /**
- * Num post sem marcador, marca e avisa — com o atalho "Definir lembrete" no
- * próprio aviso, já que o Discourse abre o menu de lembrete logo depois de
- * marcar. Num post marcado, abre o modal.
+ * 未收藏的帖子：收藏并提示——提示本身带有“设置提醒”快捷操作，
+ * 因为 Discourse 在收藏后会立即打开提醒菜单。已收藏的帖子则
+ * 打开弹窗。
  */
 export function togglePostBookmark(post: Post): void {
   if (isBusy(post)) return;
@@ -102,10 +102,10 @@ function addPostButton() {
     const label = buttonTitle(post);
 
     items.add(
-      'canelaBookmark',
+      'lcoyBookmark',
       <Button
-        className={classList('Button Button--icon Button--flat CanelaPostAction CanelaBookmarkButton', {
-          'CanelaBookmarkButton--active': !!state,
+        className={classList('Button Button--icon Button--flat LcoyPostAction LcoyBookmarkButton', {
+          'LcoyBookmarkButton--active': !!state,
         })}
         icon={state ? 'fas fa-bookmark' : 'far fa-bookmark'}
         aria-label={label}
@@ -114,14 +114,14 @@ function addPostButton() {
         disabled={isBusy(post)}
         onclick={() => togglePostBookmark(post)}
       >
-        {hasReminder && <Icon name="fas fa-clock" className="CanelaBookmarkButton-clock" />}
+        {hasReminder && <Icon name="fas fa-clock" className="LcoyBookmarkButton-clock" />}
       </Button>,
       POST_ACTION_PRIORITY
     );
   });
 }
 
-/** Marca (ou edita) o primeiro post do tópico. */
+/** 收藏（或编辑）主题的首帖。 */
 export async function toggleTopicBookmark(discussion: Discussion): Promise<void> {
   const post = await firstPostOf(discussion);
 
@@ -142,16 +142,16 @@ export function topicIsBookmarked(discussion: Discussion): boolean {
 
 function addTopicControl() {
   extend(DiscussionControls, 'userControls', function (items: ItemList<Mithril.Children>, discussion: Discussion) {
-    if (!bookmarksEnabled() || !forumBool('canelaBookmarksTopicButton', true)) return;
+    if (!bookmarksEnabled() || !forumBool('lcoyBookmarksTopicButton', true)) return;
 
     const bookmarked = topicIsBookmarked(discussion);
 
     items.add(
-      'canelaBookmark',
+      'lcoyBookmark',
       <Button icon={bookmarked ? 'fas fa-bookmark' : 'far fa-bookmark'} onclick={() => toggleTopicBookmark(discussion).catch(() => {})}>
         {t(bookmarked ? 'bookmarks.topic.edit' : 'bookmarks.topic.add')}
       </Button>,
-      // Logo abaixo do "Responder" (sem prioridade, fica no topo da lista).
+      // 紧接在“回复”下方（无优先级，位于列表顶部）。
       -10
     );
   });
@@ -159,11 +159,11 @@ function addTopicControl() {
 
 function addProfileTab() {
   extend(UserPage.prototype, 'navItems', function (this: UserPage, items: ItemList<Mithril.Children>) {
-    // Marcadores são pessoais: a aba só aparece no próprio perfil.
+    // 书签属于个人内容：该标签仅在本人资料页显示。
     if (!this.user || !bookmarksEnabled() || app.session.user !== this.user) return;
 
     items.add(
-      'canelaBookmarks',
+      'lcoyBookmarks',
       <LinkButton href={app.route('user.bookmarks', { username: this.user.slug() })} icon="far fa-bookmark">
         {t('bookmarks.page.nav')}
       </LinkButton>,
@@ -176,27 +176,27 @@ function addSessionItem() {
   extend(SessionDropdown.prototype, 'items', function (items: ItemList<Mithril.Children>) {
     const user = app.session.user;
 
-    if (!user || !bookmarksEnabled() || !forumBool('canelaBookmarksUserMenu', true)) return;
+    if (!user || !bookmarksEnabled() || !forumBool('lcoyBookmarksUserMenu', true)) return;
 
     items.add(
-      'canelaBookmarks',
+      'lcoyBookmarks',
       <LinkButton icon="far fa-bookmark" href={app.route('user.bookmarks', { username: user.slug() })}>
         {t('bookmarks.page.nav')}
       </LinkButton>,
-      // Logo abaixo de "Perfil" (100) e acima de "Configurações" (50).
+      // 紧接在“个人资料”（100）下方、“设置”（50）上方。
       90
     );
   });
 }
 
 function addNotificationType() {
-  // Pelo nome do módulo: o NotificationGrid vem no pedaço da página de
-  // configurações, carregado sob demanda — no boot a classe ainda não existe.
+  // 按模块名扩展：NotificationGrid 位于设置页面的 chunk 中，
+  // 按需加载——启动时该类尚不存在。
   extend('flarum/forum/components/NotificationGrid' as any, 'notificationTypes', function (items: ItemList<any>) {
-    if (!forumBool('canelaBookmarksEnabled', false)) return;
+    if (!forumBool('lcoyBookmarksEnabled', false)) return;
 
-    items.add('canelaBookmarkReminder', {
-      name: 'canelaBookmarkReminder',
+    items.add('lcoyBookmarkReminder', {
+      name: 'lcoyBookmarkReminder',
       icon: 'fas fa-bookmark',
       label: t('bookmarks.settings.notify_reminder_label'),
     });

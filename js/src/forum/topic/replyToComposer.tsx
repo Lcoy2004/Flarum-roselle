@@ -1,19 +1,17 @@
 /*
- * O composer no "em resposta a" do avocado (canela.topic_reply_to_style =
- * avocado): a menção do post respondido (`@"Fulano"#p7`) que abre o texto sai
- * da área de digitação e vira o indicador "↳ Em resposta a [avatar] Fulano ×"
- * no cabeçalho do composer. Ao enviar ela volta ao começo do conteúdo: o
- * flarum/mentions precisa dela para ligar a resposta, e o post salvo é o mesmo
- * de sempre.
+ * avocado 的“回复给”中的 composer（lcoy.topic_reply_to_style =
+ * avocado）：位于文本开头的被回复帖子提及（`@"某某"#p7`）从输入区移出，
+ * 变成 composer 头部的“↳ 回复给 [头像] 某某 ×”指示器。发送时它回到内容的
+ * 开头：flarum/mentions 需要它来建立回复关联，保存下来的帖子与平时完全一样。
  *
- * Vale ao responder (a menção chega pelo "Responder" do mentions, por citar ou
- * por um rascunho) e ao editar (a menção já está no começo do post). Só a
- * menção do começo vira indicador; uma menção no meio do texto fica onde está.
+ * 在回复时生效（提及通过 mentions 的“回复”、引用或草稿到来）以及编辑时
+ * （提及已经在帖子开头）。只有开头的提及会变成指示器；文本中间的提及保持
+ * 原样。
  *
- * Rascunhos (fof/drafts): o fof salva o `data()` do corpo do composer, que já
- * leva a menção de volta; ao abrir o rascunho ela vira o indicador de novo.
+ * 草稿（fof/drafts）：fof 保存 composer 正文的 `data()`，其中已经把提及
+ * 放回；打开草稿时它又会变成指示器。
  *
- * Portado de avocado-v2/js/src/forum/utils/replyTo.ts.
+ * 移植自 avocado-v2/js/src/forum/utils/replyTo.ts。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -27,27 +25,27 @@ import type Mithril from 'mithril';
 import { t } from '../utils/settings';
 import { topicSettings } from './ui';
 
-/** A menção de post no começo do texto-fonte: `@"Fulano"#p7` e um espaço. */
+/** 源文本开头的帖子提及：`@"某某"#p7` 加一个空格。 */
 const LEADING_MENTION = /^@"((?:[^"\\]|\\.)+)"#p(\d+)[ \t]?/;
 
 interface ComposerReply {
-  /** O id do post respondido. */
+  /** 被回复帖子的 id。 */
   id: string;
-  /** O nome que a menção mostra. */
+  /** 提及显示的名字。 */
   name: string;
-  /** A menção como estava no texto, para voltar igual ao enviar. */
+  /** 提及在文本中的原样形式，发送时原样放回。 */
   raw: string;
 }
 
 const BODIES = ['flarum/forum/components/ReplyComposer', 'flarum/forum/components/EditPostComposer'];
 
 function composerReply(composer: any): ComposerReply | null {
-  return composer?.fields?.canelaReplyTo || null;
+  return composer?.fields?.lcoyReplyTo || null;
 }
 
 /**
- * Tira a menção do começo do texto e guarda no composer. Roda a cada mudança
- * do texto (o editor só existe depois do primeiro desenho, daí a espera).
+ * 从文本开头取出提及并保存到 composer 中。文本每次变化时运行
+ * （编辑器在首次绘制后才存在，因此需要等待）。
  */
 function absorbLeadingMention(composer: any, attrs: any): void {
   const editor = composer?.editor;
@@ -60,12 +58,11 @@ function absorbLeadingMention(composer: any, attrs: any): void {
   if (!match) return;
 
   const raw = match[0];
-  composer.fields.canelaReplyTo = { id: match[2], name: match[1].replace(/\\(.)/g, '$1'), raw } as ComposerReply;
+  composer.fields.lcoyReplyTo = { id: match[2], name: match[1].replace(/\\(.)/g, '$1'), raw } as ComposerReply;
 
-  // O texto "original" é o que o fechar compara para perguntar se descarta: o
-  // mentions grava a menção nele ao abrir uma resposta vazia, e a edição grava
-  // o post inteiro. Sem tirar dali também, fechar sem escrever nada
-  // perguntaria se quer descartar.
+  // “原始”文本是关闭时用来比较、询问是否丢弃的基准：
+  // mentions 在打开空回复时把提及写进去，编辑时则写入整篇帖子。
+  // 如果不从这里也去掉，什么都没写就关闭时会询问是否丢弃。
   for (const target of [composer.body?.attrs, attrs]) {
     const original = target?.originalContent;
 
@@ -74,8 +71,8 @@ function absorbLeadingMention(composer: any, attrs: any): void {
 
   editor.insertBetween(0, raw.length, '', false);
 
-  // O `insertBetween` com texto vazio depende do navegador (execCommand): se
-  // a menção ficou, a textarea é ajustada direto.
+  // 用空文本调 `insertBetween` 取决于浏览器（execCommand）：如果提及
+  // 还在，就直接调整 textarea。
   const el: HTMLTextAreaElement | undefined = editor.el;
 
   if (String(composer.fields.content() || '').startsWith(raw) && el && typeof el.value === 'string') {
@@ -86,7 +83,7 @@ function absorbLeadingMention(composer: any, attrs: any): void {
   m.redraw();
 }
 
-/** O autor do post respondido, se ele já está carregado (ou um usuário com o nome da menção). */
+/** 被回复帖子的作者，如果已加载（或名字与提及一致的用户）。 */
 function replyUser(reply: ComposerReply): User | null {
   const post = app.store.getById<PostModel>('posts', reply.id);
   const user = post?.user();
@@ -100,19 +97,19 @@ function ReplyIndicator(composer: any, reply: ComposerReply): Mithril.Children {
   const user = replyUser(reply);
 
   return (
-    <span className="CanelaComposerReplyTo">
-      <Icon name="fas fa-reply" className="CanelaComposerReplyTo-icon" />
-      <span className="CanelaComposerReplyTo-label">{t('topic.post.reply_to_label')}</span>
+    <span className="LcoyComposerReplyTo">
+      <Icon name="fas fa-reply" className="LcoyComposerReplyTo-icon" />
+      <span className="LcoyComposerReplyTo-label">{t('topic.post.reply_to_label')}</span>
       {user ? <Avatar user={user} /> : null}
-      <span className="CanelaComposerReplyTo-name">{reply.name}</span>
+      <span className="LcoyComposerReplyTo-name">{reply.name}</span>
       <button
         type="button"
-        className="CanelaComposerReplyTo-remove"
+        className="LcoyComposerReplyTo-remove"
         aria-label={t('topic.post.remove_reply')}
         title={t('topic.post.remove_reply')}
-        // Desfaz a resposta: o texto já está sem a menção, ela só não volta ao enviar.
+        // 撤销回复：文本中已经没有提及，只是发送时不再把它放回去。
         onclick={() => {
-          composer.fields.canelaReplyTo = null;
+          composer.fields.lcoyReplyTo = null;
           composer.editor?.focus?.();
         }}
       >
@@ -136,14 +133,14 @@ export default function installReplyToComposer(): void {
       });
     });
 
-    // Depois do título do composer (prioridade 1000 no tema).
+    // 放在 composer 标题之后（主题中的优先级为 1000）。
     extend(module as any, 'headerItems', function (this: any, items: ItemList<Mithril.Children>) {
       const reply = topicSettings.replyToLine() ? composerReply(this.attrs.composer) : null;
 
-      if (reply) items.add('canelaReplyTo', ReplyIndicator(this.attrs.composer, reply), 900);
+      if (reply) items.add('lcoyReplyTo', ReplyIndicator(this.attrs.composer, reply), 900);
     });
 
-    // Ao enviar (e ao salvar o rascunho do fof/drafts), a menção volta ao começo.
+    // 发送时（以及保存 fof/drafts 草稿时），提及回到开头。
     extend(module as any, 'data', function (this: any, data: any) {
       const reply = composerReply(this.attrs.composer);
 

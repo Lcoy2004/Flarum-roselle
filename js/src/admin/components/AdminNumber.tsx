@@ -4,13 +4,12 @@ import { AdminComponent, getStr, saveSetting } from '../util';
 const SAVE_DELAY_MS = 600;
 
 /**
- * Inteiro com mínimo e máximo, que salva sozinho.
+ * 带最小值和最大值的整数，自动保存。
  *
- * Enquanto se digita, o campo mostra o rascunho (`draft`) e só grava o que
- * estiver dentro da faixa: limitar a cada tecla tornaria impossível digitar
- * "15" com mínimo 3 (o "1" viraria "3" na hora), e um campo apagado no meio da
- * edição não pode ir para o banco como vazio. Ao sair do campo o valor é
- * ajustado à faixa e o rascunho some.
+ * 输入过程中，字段显示草稿（`draft`），只保存落在范围内的值：
+ * 每次按键都限制会导致最小值为 3 时无法输入“15”（“1”会立刻变成“3”），
+ * 而编辑中途被清空的字段不能以空值写入数据库。离开字段时，
+ * 值会被调整到范围内，草稿随之消失。
  */
 export default class AdminNumber extends AdminComponent {
   draft: string | null = null;
@@ -21,11 +20,11 @@ export default class AdminNumber extends AdminComponent {
     const stored = getStr(settingKey, String(fallback));
 
     return (
-      <div className="Form-group CanelaAdmin-number">
-        <label className="CanelaAdmin-label">{label}</label>
-        <div className="CanelaAdmin-numberWrap">
+      <div className="Form-group LcoyAdmin-number">
+        <label className="LcoyAdmin-label">{label}</label>
+        <div className="LcoyAdmin-numberWrap">
           <input
-            className="FormControl CanelaAdmin-numberInput"
+            className="FormControl LcoyAdmin-numberInput"
             type="number"
             inputmode="numeric"
             step={1}
@@ -35,7 +34,7 @@ export default class AdminNumber extends AdminComponent {
             oninput={(event: InputEvent) => this.handleInput((event.target as HTMLInputElement).value)}
             onblur={() => this.commitDraft()}
           />
-          {suffix && <span className="CanelaAdmin-numberSuffix">{suffix}</span>}
+          {suffix && <span className="LcoyAdmin-numberSuffix">{suffix}</span>}
         </div>
         {help && <p className="helpText">{help}</p>}
       </div>

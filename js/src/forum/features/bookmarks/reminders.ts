@@ -1,9 +1,9 @@
 /*
- * Os atalhos de horário do lembrete, como os "time shortcuts" do Discourse.
+ * 提醒的时间快捷项，类似 Discourse 的 “time shortcuts”。
  *
- * As horas seguem as do Discourse: o fim da tarde (18h) para "mais tarde
- * hoje" e o começo da manhã (8h) para os outros, sempre no fuso do navegador
- * — o servidor recebe o instante em UTC e não precisa saber o fuso de ninguém.
+ * 时间点遵循 Discourse 的规则：傍晚（18 点）用于“今天稍后”，
+ * 上午（8 点）用于其余选项，始终使用浏览器时区——服务端接收
+ * UTC 时刻，无需知道任何人的时区。
  */
 import { formatWith } from '../../utils/dates';
 
@@ -12,7 +12,7 @@ export type ReminderPreset = 'later_today' | 'tomorrow' | 'next_week' | 'next_mo
 const MORNING_HOUR = 8;
 const EVENING_HOUR = 18;
 
-/** Depois disso, "mais tarde hoje" ficaria a menos de uma hora: o atalho some. */
+/** 超过该时间后，“今天稍后”将不足一小时：该快捷项不再显示。 */
 const LATER_TODAY_CUTOFF_HOUR = 17;
 
 function at(date: Date, hour: number): Date {
@@ -29,7 +29,7 @@ function addDays(date: Date, days: number): Date {
   return result;
 }
 
-/** O horário de cada atalho, ou `null` quando ele não vale agora. */
+/** 各快捷项对应的时间；当前不适用时返回 `null`。 */
 export function presetDate(preset: ReminderPreset, now = new Date()): Date | null {
   switch (preset) {
     case 'later_today':
@@ -37,7 +37,7 @@ export function presetDate(preset: ReminderPreset, now = new Date()): Date | nul
     case 'tomorrow':
       return at(addDays(now, 1), MORNING_HOUR);
     case 'next_week': {
-      // A próxima segunda-feira (nunca hoje): o "início da semana" do Discourse.
+      // 下一个周一（从不指今天）：即 Discourse 的“一周之始”。
       const daysUntilMonday = (8 - now.getDay()) % 7 || 7;
 
       return at(addDays(now, daysUntilMonday), MORNING_HOUR);
@@ -49,14 +49,14 @@ export function presetDate(preset: ReminderPreset, now = new Date()): Date | nul
   }
 }
 
-/** Os atalhos que fazem sentido agora, na ordem do Discourse. */
+/** 当前可用的快捷项，按 Discourse 的顺序排列。 */
 export function availablePresets(now = new Date()): ReminderPreset[] {
   const presets: ReminderPreset[] = ['later_today', 'tomorrow', 'next_week', 'next_month'];
 
   return presets.filter((preset) => presetDate(preset, now) !== null);
 }
 
-/** "sáb, 08:00" — o que aparece ao lado do nome de cada atalho. */
+/** “周六, 08:00”——显示在每个快捷项名称旁。 */
 export function presetHint(date: Date, now = new Date()): string {
   const sameDay = date.toDateString() === now.toDateString();
 
@@ -70,12 +70,12 @@ export function presetHint(date: Date, now = new Date()): string {
   );
 }
 
-/** Data longa do lembrete: "sábado, 18 de outubro, 08:00". */
+/** 提醒的完整日期：“10月18日 星期六, 08:00”。 */
 export function reminderLabel(date: Date): string {
   return formatWith(date, { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 }
 
-/** `YYYY-MM-DD` e `HH:MM` no fuso local, para os campos `date` e `time`. */
+/** 本地时区的 `YYYY-MM-DD` 与 `HH:MM`，供 `date` 和 `time` 字段使用。 */
 export function toLocalInputs(date: Date): { date: string; time: string } {
   const pad = (value: number) => String(value).padStart(2, '0');
 
@@ -85,7 +85,7 @@ export function toLocalInputs(date: Date): { date: string; time: string } {
   };
 }
 
-/** O inverso: os campos do horário personalizado viram um instante (ou `null` se incompletos). */
+/** 反向转换：自定义时间字段转为一个时刻（不完整时返回 `null`）。 */
 export function fromLocalInputs(dateValue: string, timeValue: string): Date | null {
   const dateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue);
 

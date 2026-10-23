@@ -23,9 +23,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Lcoy\Roselle\Community\LegalPages;
 
 /**
- * /tos e /privacy, como no Discourse com `tos_url`/`privacy_policy_url`: levam
- * ao endereço da política (do fof/terms ou do admin do tema). Sem endereço, a
- * página não existe — 404, e não uma página vazia.
+ * /tos 和 /privacy，与 Discourse 的 `tos_url`/`privacy_policy_url` 类似：
+ * 跳转到政策地址（来自 fof/terms 或主题的后台设置）。没有地址时页面
+ * 不存在——返回 404，而不是空页面。
  */
 final class LegalPageRedirect implements RequestHandlerInterface
 {

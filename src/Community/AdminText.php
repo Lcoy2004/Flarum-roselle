@@ -20,12 +20,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
 /**
- * Os textos longos que o admin escreve para as páginas de comunidade (o
- * "sobre", as diretrizes) em HTML. Com tags HTML, o texto vai como está — o
- * admin já é dono do HTML do fórum (a mensagem de boas-vindas do core é
- * igual). Sem tags, passa pelo formatador das postagens, para valer o
- * Markdown e o BBCode que o fórum tiver ligados; o resultado fica em cache
- * pelo conteúdo, então editar o texto já vale na próxima abertura.
+ * 管理员为社区页面（"关于"、指南）撰写的长文本，输出为 HTML。含 HTML 标签时，
+ * 文本按原样输出——管理员本就掌控论坛的 HTML（核心的欢迎消息也是如此）。
+ * 不含标签时，则交给帖子格式化器处理，以便支持论坛启用的 Markdown 和
+ * BBCode；结果按内容缓存，因此修改文本后下次打开即生效。
  */
 final class AdminText
 {
@@ -49,11 +47,11 @@ final class AdminText
             return $text;
         }
 
-        return $this->cache->remember('canela.about.text.'.md5($text), self::CACHE_TTL, function () use ($text, $request) {
+        return $this->cache->remember('lcoy.about.text.'.md5($text), self::CACHE_TTL, function () use ($text, $request) {
             try {
                 return $this->formatter->render($this->formatter->parse($text), null, $request);
             } catch (Throwable) {
-                // Um plugin do formatador que falhe não pode derrubar a página.
+                // 格式化器插件出错不应让页面崩溃。
                 return '<p>'.nl2br(htmlspecialchars($text, ENT_QUOTES)).'</p>';
             }
         });

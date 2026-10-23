@@ -8,17 +8,17 @@ import type Mithril from 'mithril';
 
 export interface UserTileAttrs extends ComponentAttrs {
   user: User;
-  /** Uma linha extra abaixo do nome (último acesso, por exemplo). */
+  /** 名称下方的一行额外信息（例如最后访问）。 */
   meta?: Mithril.Children;
   size?: 'normal' | 'small';
 }
 
 /**
- * Avatar, nome, @usuário e "título" — o bloco de usuário das listas do
- * Discourse (equipe do "Sobre", diretório, membros de grupo).
+ * 头像、名称、@用户名和“头衔”——Discourse 各列表（“关于”页面的
+ * 团队、目录、组成员）中的用户区块。
  *
- * O Flarum não tem título de usuário; o lugar fica com o nome do primeiro
- * grupo, que é o que o Discourse mostra quando o título vem de um grupo.
+ * Flarum 没有用户头衔；该位置显示第一个用户组的名称，这也是
+ * Discourse 在头衔来自用户组时的显示方式。
  */
 export default class UserTile extends Component<UserTileAttrs> {
   view(): Mithril.Children {
@@ -29,18 +29,18 @@ export default class UserTile extends Component<UserTileAttrs> {
     const url = app.route.user(user);
 
     return (
-      <div className={`CanelaUserTile CanelaUserTile--${size}`}>
-        <Link href={url} className="CanelaUserTile-avatar" tabindex="-1" aria-hidden="true">
+      <div className={`LcoyUserTile LcoyUserTile--${size}`}>
+        <Link href={url} className="LcoyUserTile-avatar" tabindex="-1" aria-hidden="true">
           <Avatar user={user} />
         </Link>
-        <div className="CanelaUserTile-info">
-          {/* A name-line do Discourse: o usuário em negrito e o nome ao lado. */}
-          <Link href={url} className="CanelaUserTile-name">
-            <span className="CanelaUserTile-username">{username}</span>
-            {displayName !== username && <span className="CanelaUserTile-displayName">{displayName}</span>}
+        <div className="LcoyUserTile-info">
+          {/* Discourse 的 name-line：用户名加粗，名称显示在旁边。 */}
+          <Link href={url} className="LcoyUserTile-name">
+            <span className="LcoyUserTile-username">{username}</span>
+            {displayName !== username && <span className="LcoyUserTile-displayName">{displayName}</span>}
           </Link>
-          {group && <span className="CanelaUserTile-title">{group.nameSingular()}</span>}
-          {meta && <span className="CanelaUserTile-meta">{meta}</span>}
+          {group && <span className="LcoyUserTile-title">{group.nameSingular()}</span>}
+          {meta && <span className="LcoyUserTile-meta">{meta}</span>}
         </div>
       </div>
     );

@@ -23,20 +23,19 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 use Lcoy\Roselle\Support\SchemaCache;
 
 /**
- * A consulta do diretório de usuários (/u) e da lista de membros de um grupo
- * (/g/:nome): cada usuário com o que fez no período escolhido.
+ * 用户目录（/u）和组成员列表（/g/:nome）所用的查询：每个用户及其在
+ * 所选时间范围内的活动情况。
  *
- * O Discourse guarda uma tabela pronta (`directory_items`) recalculada a cada
- * hora; aqui cada coluna é uma subconsulta agrupada por usuário, ligada com
- * LEFT JOIN, para a ordenação e a paginação acontecerem no banco. Só contam
- * tópicos e respostas públicos — sem ocultos nem privados —, o mesmo que o
- * Discourse conta.
+ * Discourse 维护一张每小时重算的现成表（`directory_items`）；这里每一列
+ * 都是按用户分组的子查询，通过 LEFT JOIN 连接，使排序和分页都在数据库中
+ * 完成。只统计公开的主题和回复——不含隐藏或私密内容——与 Discourse
+ * 的统计范围一致。
  */
 final class Directory
 {
     public const PAGE_SIZE = 50;
 
-    /** Período do Discourse => dias para trás (`null` = desde sempre). */
+    /** Discourse 的时间范围 => 回溯天数（`null` = 从始至终）。 */
     public const PERIODS = [
         'all' => null,
         'yearly' => 365,
@@ -46,8 +45,8 @@ final class Directory
         'daily' => 1,
     ];
 
-    /** A tabela de visitas do recurso "stats" do tema, quando ele existe. */
-    private const VISITS_TABLE = 'canela_user_visits';
+    /** 主题的 "stats" 功能所使用的访问表（若存在）。 */
+    private const VISITS_TABLE = 'lcoy_user_visits';
 
     /** @var array{date: string, read: string|null}|false|null */
     private array|false|null $visitsSchema = null;
@@ -64,8 +63,8 @@ final class Directory
     }
 
     /**
-     * As colunas que existem neste fórum, na ordem do Discourse. O fórum usa a
-     * lista para montar a tabela; ordenar por uma coluna fora dela é recusado.
+     * 本论坛实际存在的列，按 Discourse 的顺序排列。论坛用该列表构建
+     * 表格；按列表之外的列排序会被拒绝。
      *
      * @return list<string>
      */
@@ -87,8 +86,8 @@ final class Directory
             }
         }
 
-        // A ordenação por "último acesso" vazaria a ordem de quem esconde que
-        // está online — o core só a permite com a mesma permissão.
+        // 按"最后访问"排序会泄露那些隐藏在线状态的人的顺序——
+        // 核心只在拥有相同权限时才允许这种排序。
         if ($this->canSortByLastSeen($actor)) {
             $columns[] = 'lastSeenAt';
         }
@@ -125,7 +124,7 @@ final class Directory
             $this->applySearch($users, $search);
         }
 
-        // O total sai antes dos JOINs: ele só depende dos filtros.
+        // 总数在 JOIN 之前取得：它只取决于过滤条件。
         $total = (clone $users)->toBase()->getCountForPagination();
 
         $users->select('users.*');
@@ -173,7 +172,7 @@ final class Directory
     }
 
     /**
-     * Os números de um usuário que veio de `query()`.
+     * 由 `query()` 返回的用户的活动数字。
      *
      * @return array<string, int>
      */
@@ -192,10 +191,10 @@ final class Directory
         return $stats;
     }
 
-    /** Nome da coluna calculada no SELECT, sem colidir com as do `users`. */
+    /** SELECT 中计算列的名称，避免与 `users` 的列冲突。 */
     private static function alias(string $column): string
     {
-        return 'canela_dir_'.strtolower((string) preg_replace('/[A-Z]/', '_$0', $column));
+        return 'lcoy_dir_'.strtolower((string) preg_replace('/[A-Z]/', '_$0', $column));
     }
 
     private function joinAggregate(Builder $users, string $column, QueryBuilder $aggregate): void
@@ -216,7 +215,7 @@ final class Directory
         $users->where(function (Builder $query) use ($like, $hasNickname) {
             $query->where('users.username', 'like', $like);
 
-            // O fof/nicknames guarda o nome de exibição numa coluna própria.
+            // fof/nicknames 把显示名称存在单独的列里。
             if ($hasNickname) {
                 $query->orWhere('users.nickname', 'like', $like);
             }
@@ -235,7 +234,7 @@ final class Directory
             ->groupBy('discussions.user_id');
     }
 
-    /** "Respostas" no Discourse não contam a primeira postagem do tópico. */
+    /** Discourse 中的"回复"不包含主题的首帖。 */
     private function replies(?Carbon $since): QueryBuilder
     {
         return $this->publicPosts()
@@ -250,9 +249,9 @@ final class Directory
     {
         return $this->publicPosts()
             ->join('post_likes', 'post_likes.post_id', '=', 'posts.id')
-            // Curtir a própria postagem (`flarum-likes.like_own_post`) não é
-            // curtida recebida: o resumo do perfil e os níveis de confiança
-            // já descontam, e o diretório mostrava um número maior.
+            // 点赞自己的帖子（`flarum-likes.like_own_post`）不算
+            // 收到的点赞：资料摘要和信任等级
+            // 已经将其扣除，而目录此前显示的数量偏大。
             ->whereColumn('post_likes.user_id', '!=', 'posts.user_id')
             ->select('posts.user_id')
             ->selectRaw('COUNT(*) as aggregate')
@@ -269,7 +268,7 @@ final class Directory
             ->groupBy('post_likes.user_id');
     }
 
-    /** Dias visitados (uma linha por dia) ou, com `$sumColumn`, a soma dela. */
+    /** 访问天数（每天一行），或在提供 `$sumColumn` 时对其求和。 */
     private function visits(?Carbon $since, string $dateColumn, ?string $sumColumn): QueryBuilder
     {
         $table = self::VISITS_TABLE;
@@ -300,9 +299,8 @@ final class Directory
     }
 
     /**
-     * Descobre as colunas da tabela de visitas do recurso "stats" sem depender
-     * dele: o diretório funciona sem a tabela e ganha as colunas quando ela
-     * aparece.
+     * 探测 "stats" 功能所用访问表的列，而不依赖该功能：没有该表时目录仍可
+     * 工作，表出现后就多出这些列。
      *
      * @return array{date: string, read: string|null}|null
      */

@@ -18,18 +18,17 @@ use Flarum\Search\SearchCriteria;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Ordenação "mais curtidos" da busca (`sort=-canelaLikes`).
+ * 搜索的"最多点赞"排序（`sort=-lcoyLikes`）。
  *
- * O buscador do core não usa as classes de ordenação do recurso: ele ordena
- * pela coluna `snake_case` do nome pedido. Então a ordenação é registrada no
- * recurso só para passar na validação, e os mutadores de busca põem a coluna
- * `canela_likes` no SELECT quando ela é pedida.
+ * 核心的搜索器不使用资源的排序类：它按所请求名称对应的 `snake_case` 列
+ * 排序。因此该排序只在资源中注册以通过校验，搜索 mutator 在请求该排序时
+ * 把 `lcoy_likes` 列放入 SELECT。
  */
 final class SortsByLikes
 {
-    public const SORT = 'canelaLikes';
+    public const SORT = 'lcoyLikes';
 
-    public const COLUMN = 'canela_likes';
+    public const COLUMN = 'lcoy_likes';
 
     public static function requested(SearchCriteria $criteria): bool
     {
@@ -37,12 +36,12 @@ final class SortsByLikes
     }
 
     /**
-     * A contagem de curtidas como coluna `canela_likes`, para a postagem cujo
-     * id está em `$postIdColumn`.
+     * 以 `lcoy_likes` 列表示的点赞计数，针对 id 位于 `$postIdColumn`
+     * 的帖子。
      *
-     * `addSelect` com chave, e não `selectRaw`: com o SELECT ainda vazio o
-     * Laravel põe `tabela.*` antes da subconsulta; com `selectRaw` sobraria só
-     * a contagem, sem as colunas do modelo.
+     * 使用带键的 `addSelect` 而非 `selectRaw`：当 SELECT 仍为空时，
+     * Laravel 会把 `表名.*` 放在子查询之前；若用 `selectRaw`，就只剩
+     * 计数，缺少模型的列。
      */
     public static function addColumn(Builder $query, string $postIdColumn): void
     {

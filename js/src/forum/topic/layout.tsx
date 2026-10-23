@@ -1,8 +1,6 @@
 /*
- * A página do tópico como um todo: as classes que ligam o layout de duas
- * colunas (stream | linha do tempo), o fim do tópico (botões + sugeridos), a
- * barra de novas respostas, o controle de notificações e o "↓ N não lidas"
- * na coluna da linha do tempo, e o destaque amarelado do post-alvo.
+ * 主题页面的整体：连接两栏布局（stream | 时间线）的类、主题末尾（按钮 + 推荐）、
+ * 新回复横条、通知控件、时间线栏中的“↓ N 条未读”，以及目标帖子的黄色高亮。
  */
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
@@ -18,24 +16,24 @@ import TopicNotifications from './components/TopicNotifications';
 import { canSubscribe, topicSettings } from './ui';
 import { t } from '../utils/settings';
 
-/** Quanto dura o destaque do post-alvo (o mesmo tempo da animação no LESS). */
+/** 目标帖子高亮持续的时间（与 LESS 中动画的时长一致）。 */
 const HIGHLIGHT_MS = 2500;
 
 export default function installLayout(): void {
   extend(DiscussionPage.prototype, 'view', function (this: any, vnode: any) {
     if (!vnode || !vnode.attrs) return;
 
-    vnode.attrs.className = classList(vnode.attrs.className, 'CanelaTopic', {
-      'CanelaTopic--timeline': topicSettings.timeline(),
-      'CanelaTopic--footer': topicSettings.footer(),
-      'CanelaTopic--guest': !app.session.user,
+    vnode.attrs.className = classList(vnode.attrs.className, 'LcoyTopic', {
+      'LcoyTopic--timeline': topicSettings.timeline(),
+      'LcoyTopic--footer': topicSettings.footer(),
+      'LcoyTopic--guest': !app.session.user,
     });
 
     if (!this.discussion || !this.stream) return;
 
-    // O fim do tópico vai depois do PostStream, e não no endItems dele: lá
-    // ficaria antes da caixa "Responder…", que o core põe por último — e que
-    // precisa continuar a última, porque o stream rola até ela ao responder.
+    // 主题末尾放在 PostStream 之后，而不是它的 endItems 里：放在那里会
+    // 位于“回复…”框之前，而核心把它放在最后——它必须保持最后，
+    // 因为回复时 stream 会滚动到它。
     const children: any[] = Array.isArray(vnode.children) ? vnode.children : [];
     const streamWrapper = children.find((child) => child && child.attrs && child.attrs.className === 'DiscussionPage-stream');
 
@@ -53,11 +51,11 @@ export default function installLayout(): void {
 
     if (!discussion || !topicSettings.timeline()) return;
 
-    // O sino do Discourse no lugar do botão dividido do subscriptions.
+    // 用 Discourse 的铃铛取代 subscriptions 的分离式按钮。
     if (canSubscribe()) {
       if (items.has('subscription')) items.remove('subscription');
 
-      items.add('canelaNotifications', <TopicNotifications discussion={discussion} compact />, 80);
+      items.add('lcoyNotifications', <TopicNotifications discussion={discussion} compact />, 80);
     }
 
     const lastRead = discussion.lastReadPostNumber() || 0;
@@ -65,8 +63,8 @@ export default function installLayout(): void {
 
     if (app.session.user && lastRead > 0 && unread > 0) {
       items.add(
-        'canelaUnread',
-        <Button className="Button Button--flat CanelaTimeline-unread" icon="fas fa-arrow-down" onclick={() => this.stream?.goToNumber(lastRead + 1)}>
+        'lcoyUnread',
+        <Button className="Button Button--flat LcoyTimeline-unread" icon="fas fa-arrow-down" onclick={() => this.stream?.goToNumber(lastRead + 1)}>
           {t('topic.timeline.unread', { count: unread })}
         </Button>,
         -110
@@ -74,8 +72,8 @@ export default function installLayout(): void {
     }
   });
 
-  // O destaque do Discourse: só quando o endereço aponta um post
-  // (/d/x/N), e não o "pulso" do core a cada tópico aberto.
+  // Discourse 的高亮：只在地址指向某篇帖子时（/d/x/N），
+  // 而不是核心每次打开主题时的“脉冲”。
   override('flarum/forum/components/PostStream', 'flashItem', function (this: any, original: ($item: any) => void, $item: any) {
     const near = m.route.param('near');
 
@@ -84,11 +82,11 @@ export default function installLayout(): void {
 
     const element: HTMLElement = $item[0];
 
-    element.classList.remove('fadeIn', 'CanelaHighlight');
-    // Força o reflow para a animação recomeçar num segundo clique no mesmo post.
+    element.classList.remove('fadeIn', 'LcoyHighlight');
+    // 强制 reflow，使在同一帖子上的第二次点击时动画重新开始。
     void element.offsetWidth;
-    element.classList.add('CanelaHighlight');
+    element.classList.add('LcoyHighlight');
 
-    window.setTimeout(() => element.classList.remove('CanelaHighlight'), HIGHLIGHT_MS);
+    window.setTimeout(() => element.classList.remove('LcoyHighlight'), HIGHLIGHT_MS);
   });
 }

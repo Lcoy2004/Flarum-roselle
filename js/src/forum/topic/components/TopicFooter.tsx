@@ -1,10 +1,8 @@
 /*
- * Os botões do fim do tópico, como o #topic-footer-buttons do Discourse:
- * pílulas com borda, ícone e texto — Compartilhar, Favorito, Sinalizar,
- * Marcar não lido — e "Responder" em destaque; o "…" com o que sobra dos
- * controles do tópico (renomear, apagar, imprimir…). Na linha de baixo, o
- * controle de notificações e o texto do nível ("Você será notificado(a)…").
- * O visitante só tem o "Responder".
+ * 主题末尾的按钮，类似 Discourse 的 #topic-footer-buttons：
+ * 带边框的胶囊按钮，图标加文字——分享、收藏、举报、标记为未读——以及
+ * 高亮的“回复”；“…”里放主题控制项剩下的部分（重命名、删除、打印…）。
+ * 下一行是通知控件和级别说明文字（“你将收到通知…”）。访客只有“回复”。
  */
 import app from 'flarum/forum/app';
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
@@ -23,11 +21,11 @@ import { toggleTopicBookmark, topicIsBookmarked } from '../../features/bookmarks
 
 export interface TopicFooterAttrs extends ComponentAttrs {
   discussion: Discussion;
-  /** A DiscussionPage: os controles do tópico mudam conforme o contexto. */
+  /** 一个 DiscussionPage：主题控制项随上下文变化。 */
   page: any;
 }
 
-/** O primeiro post, se já está no store (o fim do tópico quase sempre o tem). */
+/** 第一楼帖子，如果已在 store 中（主题末尾几乎总是有它）。 */
 function firstPost(discussion: Discussion): Post | null {
   const linkedId = (discussion.data.relationships as any)?.firstPost?.data?.id;
 
@@ -44,25 +42,25 @@ export default class TopicFooter extends Component<TopicFooterAttrs> {
   view() {
     const discussion = this.attrs.discussion;
 
-    // O visitante só tem o "Responder", à direita (que abre a janela de entrar).
+    // 访客只有右侧的“回复”（会打开登录窗口）。
     if (!app.session.user) {
       return (
-        <div className="CanelaTopicFooter CanelaTopicFooter--guest" role="group" aria-label={t('topic.footer.aria_label')}>
-          <div className="CanelaTopicFooter-main">{this.replyButton(discussion)}</div>
+        <div className="LcoyTopicFooter LcoyTopicFooter--guest" role="group" aria-label={t('topic.footer.aria_label')}>
+          <div className="LcoyTopicFooter-main">{this.replyButton(discussion)}</div>
         </div>
       );
     }
 
-    // O que já tem botão próprio não se repete no "…".
+    // 已经有独立按钮的内容不在“…”里重复。
     const controls = DiscussionControls.controls(discussion, this.attrs.page);
-    ['reply', 'canelaBookmark'].forEach((key) => controls.has(key) && controls.remove(key));
+    ['reply', 'lcoyBookmark'].forEach((key) => controls.has(key) && controls.remove(key));
     const controlItems = controls.toArray().filter((item: any) => item && item.itemName && !/Separator$/.test(item.itemName));
 
     return (
-      <div className="CanelaTopicFooter" role="group" aria-label={t('topic.footer.aria_label')}>
-        <div className="CanelaTopicFooter-main">
+      <div className="LcoyTopicFooter" role="group" aria-label={t('topic.footer.aria_label')}>
+        <div className="LcoyTopicFooter-main">
           <Button
-            className="Button CanelaTopicFooter-button CanelaTopicFooter-share"
+            className="Button LcoyTopicFooter-button LcoyTopicFooter-share"
             icon="fas fa-arrow-up-from-bracket"
             onclick={() => openShare(discussion)}
           >
@@ -75,8 +73,8 @@ export default class TopicFooter extends Component<TopicFooterAttrs> {
 
           {controlItems.length > 0 && (
             <Dropdown
-              className="CanelaTopicFooter-more"
-              buttonClassName="Button Button--icon CanelaTopicFooter-button"
+              className="LcoyTopicFooter-more"
+              buttonClassName="Button Button--icon LcoyTopicFooter-button"
               menuClassName="Dropdown-menu--right"
               icon="fas fa-ellipsis-h"
               caretIcon=""
@@ -92,16 +90,16 @@ export default class TopicFooter extends Component<TopicFooterAttrs> {
         </div>
 
         {canSubscribe() && (
-          <div className="CanelaTopicFooter-notifications">
+          <div className="LcoyTopicFooter-notifications">
             <TopicNotifications discussion={discussion} />
-            <p className="CanelaTopicFooter-reason">{notificationReason(discussion)}</p>
+            <p className="LcoyTopicFooter-reason">{notificationReason(discussion)}</p>
           </div>
         )}
       </div>
     );
   }
 
-  /** Favorito = o marcador do primeiro post (o "bookmark" de tópico do Discourse). */
+  /** 收藏 = 第一楼的收藏（Discourse 的主题“bookmark”）。 */
   bookmarkButton(discussion: Discussion) {
     if (!bookmarksEnabled()) return null;
 
@@ -109,7 +107,7 @@ export default class TopicFooter extends Component<TopicFooterAttrs> {
 
     return (
       <Button
-        className={classNames('Button CanelaTopicFooter-button', bookmarked && 'CanelaTopicFooter-button--active')}
+        className={classNames('Button LcoyTopicFooter-button', bookmarked && 'LcoyTopicFooter-button--active')}
         icon={bookmarked ? 'fas fa-bookmark' : 'far fa-bookmark'}
         onclick={() => toggleTopicBookmark(discussion).catch(() => {})}
       >
@@ -118,7 +116,7 @@ export default class TopicFooter extends Component<TopicFooterAttrs> {
     );
   }
 
-  /** Sinalizar o tópico = sinalizar o primeiro post, com o modal do flarum/flags. */
+  /** 举报主题 = 举报第一楼，使用 flarum/flags 的弹窗。 */
   flagButton(discussion: Discussion) {
     if (!isExtensionEnabled('flarum-flags')) return null;
 
@@ -128,7 +126,7 @@ export default class TopicFooter extends Component<TopicFooterAttrs> {
 
     return (
       <Button
-        className="Button CanelaTopicFooter-button CanelaTopicFooter-flag"
+        className="Button LcoyTopicFooter-button LcoyTopicFooter-flag"
         icon="far fa-flag"
         onclick={() => app.modal.show(() => flarum.reg.asyncModuleImport('ext:flarum/flags/forum/components/FlagPostModal'), { post })}
       >
@@ -138,25 +136,25 @@ export default class TopicFooter extends Component<TopicFooterAttrs> {
   }
 
   /**
-   * "Marcar não lido": a leitura volta para antes do último post lido e a
-   * pessoa volta para a lista, como no Discourse. Precisa do campo do tema
-   * (extend/topic.php): o core só deixa a leitura andar para a frente.
+   * “标记为未读”：阅读进度回到上次已读帖子之前，用户回到列表，
+   * 与 Discourse 一致。需要主题的字段（extend/topic.php）：
+   * 核心只允许阅读进度向前推进。
    */
   unreadButton(discussion: Discussion) {
     const lastRead = discussion.lastReadPostNumber() || 0;
 
-    if (!app.forum.attribute('canelaMarkUnread') || lastRead < 1) return null;
+    if (!app.forum.attribute('lcoyMarkUnread') || lastRead < 1) return null;
 
     return (
       <Button
-        className="Button CanelaTopicFooter-button CanelaTopicFooter-unread"
+        className="Button LcoyTopicFooter-button LcoyTopicFooter-unread"
         icon="fas fa-circle"
         loading={this.markingUnread}
         onclick={() => {
           this.markingUnread = true;
 
           discussion
-            .save({ canelaMarkUnread: lastRead - 1 } as any)
+            .save({ lcoyMarkUnread: lastRead - 1 } as any)
             .then(() => {
               discussion.pushAttributes({ lastReadPostNumber: lastRead - 1 });
               m.route.set(app.route('index'));
@@ -176,7 +174,7 @@ export default class TopicFooter extends Component<TopicFooterAttrs> {
   replyButton(discussion: Discussion) {
     if (app.session.user && !discussion.canReply()) {
       return (
-        <Button className="Button CanelaTopicFooter-reply disabled" icon="fas fa-reply" disabled>
+        <Button className="Button LcoyTopicFooter-reply disabled" icon="fas fa-reply" disabled>
           {app.translator.trans('core.forum.discussion_controls.cannot_reply_button')}
         </Button>
       );
@@ -184,7 +182,7 @@ export default class TopicFooter extends Component<TopicFooterAttrs> {
 
     return (
       <Button
-        className="Button Button--primary CanelaTopicFooter-reply"
+        className="Button Button--primary LcoyTopicFooter-reply"
         icon="fas fa-reply"
         onclick={() => DiscussionControls.replyAction.call(discussion, true, false).catch(() => {})}
       >

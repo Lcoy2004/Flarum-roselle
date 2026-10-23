@@ -1,12 +1,12 @@
 /*
- * As linhas que brilham enquanto a lista de tópicos carrega (trocar de
- * categoria, de filtro ou de ordem), no lugar do spinner do core.
+ * 主题列表加载时闪烁的占位行（切换
+ * 分类、过滤器或排序时），取代核心的加载动画。
  *
- * Cada linha usa as mesmas classes da linha real (listItem.tsx): título,
- * badges, postadores, respostas, visualizações e atividade, no desktop em
- * colunas e no celular com o avatar de 48px e os números nos cantos. As
- * barras ficam dentro desses elementos (com a fonte e a altura de linha
- * deles) e caem onde o texto vai cair: nada pula quando a lista chega.
+ * 每一行使用真实行的相同类名（listItem.tsx）：标题、
+ * 徽章、发帖人、回复、浏览量以及活动，桌面端按列显示，
+ * 移动端显示 48px 头像且数字位于角落。占位条
+ * 位于这些元素内部（使用它们的字体和行高），
+ * 落在文字将要出现的位置：列表加载完成时不会跳动。
  */
 import app from 'flarum/forum/app';
 import type Mithril from 'mithril';
@@ -15,54 +15,54 @@ import { forumBool } from '../utils/settings';
 
 const ROWS = 8;
 
-/** Larguras que variam de linha para linha, para não parecer uma grade. */
+/** 逐行变化的宽度，以免看起来像网格。 */
 const TITLES = [62, 44, 71, 38, 55, 66, 48, 59];
 const BADGES = ['5em', '7em', '4.5em', '6em'];
 
 function row(index: number, showViews: boolean): Mithril.Children {
   return (
-    <li key={`canela-skeleton-${index}`} className="CanelaListSkeleton-item" aria-hidden="true">
-      <div className="DiscussionListItem CanelaListSkeleton">
+    <li key={`lcoy-skeleton-${index}`} className="LcoyListSkeleton-item" aria-hidden="true">
+      <div className="DiscussionListItem LcoyListSkeleton">
         <div className="DiscussionListItem-content">
-          <div className="CanelaListItem-avatar">
-            <span className="Avatar CanelaSkeleton" />
+          <div className="LcoyListItem-avatar">
+            <span className="Avatar LcoySkeleton" />
           </div>
-          <div className="DiscussionListItem-main CanelaTopic">
-            <h2 className="DiscussionListItem-title CanelaTopic-titleLine">
-              <span className="CanelaSkeleton CanelaSkeleton--line" style={{ width: `${TITLES[index % TITLES.length]}%` }} />
+          <div className="DiscussionListItem-main LcoyTopic">
+            <h2 className="DiscussionListItem-title LcoyTopic-titleLine">
+              <span className="LcoySkeleton LcoySkeleton--line" style={{ width: `${TITLES[index % TITLES.length]}%` }} />
             </h2>
-            <div className="CanelaTopic-meta">
-              <span className="CanelaSkeleton CanelaSkeleton--line" style={{ width: BADGES[index % BADGES.length] }} />
+            <div className="LcoyTopic-meta">
+              <span className="LcoySkeleton LcoySkeleton--line" style={{ width: BADGES[index % BADGES.length] }} />
             </div>
           </div>
-          {forumBool('canelaListPosters', true) && (
-            <div className="CanelaCell CanelaCell--posters CanelaPosters">
+          {forumBool('lcoyListPosters', true) && (
+            <div className="LcoyCell LcoyCell--posters LcoyPosters">
               {index % 3 ? (
-                <span className="CanelaPosters-avatar">
-                  <span className="Avatar CanelaSkeleton" />
+                <span className="LcoyPosters-avatar">
+                  <span className="Avatar LcoySkeleton" />
                 </span>
               ) : null}
-              <span className="CanelaPosters-avatar CanelaPosters-avatar--latest">
-                <span className="Avatar CanelaSkeleton" />
+              <span className="LcoyPosters-avatar LcoyPosters-avatar--latest">
+                <span className="Avatar LcoySkeleton" />
               </span>
             </div>
           )}
-          <div className="CanelaCell CanelaCell--replies">
-            <span className="CanelaSkeleton CanelaSkeleton--word CanelaListSkeleton-number" />
+          <div className="LcoyCell LcoyCell--replies">
+            <span className="LcoySkeleton LcoySkeleton--word LcoyListSkeleton-number" />
           </div>
           {showViews && (
-            <div className="CanelaCell CanelaCell--views">
-              <span className="CanelaSkeleton CanelaSkeleton--word CanelaListSkeleton-number" />
+            <div className="LcoyCell LcoyCell--views">
+              <span className="LcoySkeleton LcoySkeleton--word LcoyListSkeleton-number" />
             </div>
           )}
-          <div className="CanelaCell CanelaCell--activity">
-            <span className="CanelaActivity">
-              <span className="CanelaSkeleton CanelaSkeleton--word CanelaListSkeleton-age" />
+          <div className="LcoyCell LcoyCell--activity">
+            <span className="LcoyActivity">
+              <span className="LcoySkeleton LcoySkeleton--word LcoyListSkeleton-age" />
             </span>
           </div>
         </div>
-        {/* A coluna do ⋮ das linhas reais (só para quem tem controles): o
-            cabeçalho e as linhas reservam a mesma largura antes e depois. */}
+        {/* 真实行中 ⋮ 的列（仅对有控制权的人）：页眉
+            和各行在加载前后预留相同的宽度。 */}
         {app.session.user ? <div className="DiscussionListItem-controls" /> : null}
       </div>
     </li>

@@ -1,45 +1,45 @@
 // =====================================================================
-// Posts no jeito do Discourse (Horizon), medidos em meta.discourse.org a
-// 1440px: coluna do avatar de 45px (o avatar de 48px transborda 3px, como
-// lá) que acompanha a rolagem; cabeçalho de 16px com o nome de usuário em
-// negrito cinza; corpo em 16px/1.5 com 12px de respiro dos lados; barra de
-// ações redonda, de 38px, só de ícones (e "Responder" com texto); separador
-// fino entre os posts; posts de evento como as "small actions".
+// Discourse（Horizon）风格的帖子，在 meta.discourse.org 上以
+// 1440px 测量：45px 头像列（48px 头像溢出 3px，与
+// 那里一致），随滚动移动；16px 头部，用户名为
+// 灰色加粗；正文 16px/1.5，两侧 12px 间距；操作栏
+// 为圆形 38px，仅图标（"回复"带文字）；帖子之间
+// 细分隔线；事件帖类似 "small actions"。
 // =====================================================================
 
-// Na raiz, e não só no tópico: o conteúdo formatado também aparece no
-// perfil e na busca.
+// 作用于根，而非仅话题页：格式化内容也出现在
+// 个人资料和搜索中。
 [data-theme^=light],
 [data-theme^=dark] {
-  // O --love do Discourse: o coração das curtidas não usa a cor do tema.
-  --cn-topic-love: #fa6c8d;
-  --cn-topic-love-low: ~"color-mix(in srgb, var(--cn-topic-love) 15%, var(--cn-surface))";
-  // O fundo e a barra das citações (--d-post-aside-*): no escuro o Discourse
-  // clareia bem mais do que o "muito baixo" da paleta.
-  --cn-post-aside-bg: var(--cn-primary-very-low);
-  --cn-post-aside-border: var(--cn-primary-300);
-  // O texto dos posts acompanha o "tamanho do texto" do leitor (extras).
-  --cn-post-font: calc(16px * var(--cn-text-scale, 1));
+  // Discourse 的 --love：点赞的心形不使用主题色。
+  --lcoy-topic-love: #fa6c8d;
+  --lcoy-topic-love-low: ~"color-mix(in srgb, var(--lcoy-topic-love) 15%, var(--lcoy-surface))";
+  // 引用背景和竖条（--d-post-aside-*）：深色模式下 Discourse
+  // 比调色板的"极低"要亮得多。
+  --lcoy-post-aside-bg: var(--lcoy-primary-very-low);
+  --lcoy-post-aside-border: var(--lcoy-primary-300);
+  // 帖子文字跟随读者的"文字大小"（extras）。
+  --lcoy-post-font: calc(16px * var(--lcoy-text-scale, 1));
 }
 
-.CanelaTopic {
-  // --topic-avatar-width e --topic-body-width-padding do Discourse.
-  --cn-post-avatar: 45px;
-  --cn-post-gap: 12px;
+.LcoyTopic {
+  // Discourse 的 --topic-avatar-width 和 --topic-body-width-padding。
+  --lcoy-post-avatar: 45px;
+  --lcoy-post-gap: 12px;
 }
 
 [data-theme^=dark] {
-  --cn-post-aside-bg: ~"color-mix(in srgb, var(--cn-primary) 17%, var(--cn-surface))";
-  --cn-post-aside-border: ~"color-mix(in srgb, var(--cn-primary) 35%, var(--cn-surface))";
+  --lcoy-post-aside-bg: ~"color-mix(in srgb, var(--lcoy-primary) 17%, var(--lcoy-surface))";
+  --lcoy-post-aside-border: ~"color-mix(in srgb, var(--lcoy-primary) 35%, var(--lcoy-surface))";
 }
 
 // ---------------------------------------------------------------------
-// Conteúdo formatado (posts, prévias, posts embutidos) — o .cooked
+// 格式化内容（帖子、预览、嵌入帖子）—— .cooked
 // ---------------------------------------------------------------------
-.canela-cooked() {
-  font-size: var(--cn-post-font);
+.lcoy-cooked() {
+  font-size: var(--lcoy-post-font);
   line-height: 1.5;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
   overflow-wrap: break-word;
 
   > *:first-child {
@@ -74,9 +74,9 @@
     margin: 0 0 1em;
   }
 
-  // Links do Discourse: só a cor, sem o sublinhado nem o negrito do core.
+  // Discourse 的链接：只有颜色，没有核心的下划线和加粗。
   a {
-    color: var(--cn-link);
+    color: var(--lcoy-link);
     font-weight: inherit;
     border-bottom: 0;
     text-decoration: none;
@@ -88,7 +88,7 @@
     }
   }
 
-  // Os títulos em rem, como no Discourse: não crescem dentro de citações.
+  // 标题使用 rem，与 Discourse 一致：在引用中不会变大。
   h1,
   h2,
   h3,
@@ -99,31 +99,31 @@
     font-weight: 700;
     line-height: 1.2;
     letter-spacing: normal;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 
   h1 {
-    font-size: calc(1.5157rem * var(--cn-text-scale, 1));
+    font-size: calc(1.5157rem * var(--lcoy-text-scale, 1));
   }
 
   h2 {
-    font-size: calc(1.3195rem * var(--cn-text-scale, 1));
+    font-size: calc(1.3195rem * var(--lcoy-text-scale, 1));
   }
 
   h3 {
-    font-size: calc(1.1487rem * var(--cn-text-scale, 1));
+    font-size: calc(1.1487rem * var(--lcoy-text-scale, 1));
   }
 
   h4 {
-    font-size: calc(1rem * var(--cn-text-scale, 1));
+    font-size: calc(1rem * var(--lcoy-text-scale, 1));
   }
 
   h5 {
-    font-size: calc(0.8706rem * var(--cn-text-scale, 1));
+    font-size: calc(0.8706rem * var(--lcoy-text-scale, 1));
   }
 
   h6 {
-    font-size: calc(0.7579rem * var(--cn-text-scale, 1));
+    font-size: calc(0.7579rem * var(--lcoy-text-scale, 1));
   }
 
   strong,
@@ -134,18 +134,18 @@
   hr {
     margin: 1em 0;
     border: 0;
-    border-top: 1px solid var(--cn-primary-low);
+    border-top: 1px solid var(--lcoy-primary-low);
   }
 
-  // Citação: a barra de 5px à esquerda sobre o fundo levemente sombreado.
+  // 引用：左侧 5px 竖条，背景略带阴影。
   blockquote {
     margin: 1em 0;
     padding: 0.75em;
     border: 0;
-    border-left: 5px solid var(--cn-post-aside-border);
+    border-left: 5px solid var(--lcoy-post-aside-border);
     border-radius: 0;
-    background: var(--cn-post-aside-bg);
-    color: var(--cn-primary);
+    background: var(--lcoy-post-aside-bg);
+    color: var(--lcoy-primary);
     font-size: inherit;
     overflow-wrap: break-word;
 
@@ -163,9 +163,9 @@
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
     font-size: 0.875em;
     line-height: 1.3077;
-    color: var(--cn-primary);
-    background: var(--cn-primary-100);
-    border-radius: var(--cn-radius);
+    color: var(--lcoy-primary);
+    background: var(--lcoy-primary-100);
+    border-radius: var(--lcoy-radius);
   }
 
   pre {
@@ -174,7 +174,7 @@
     padding: 0;
     max-height: 2000px;
     border: 0;
-    border-radius: var(--cn-radius);
+    border-radius: var(--lcoy-radius);
     background: none;
     overflow: hidden;
 
@@ -183,9 +183,9 @@
       padding: 12px;
       max-height: 500px;
       overflow: auto;
-      color: var(--cn-primary-very-high);
-      background: var(--cn-primary-100);
-      border-radius: var(--cn-radius);
+      color: var(--lcoy-primary-very-high);
+      background: var(--lcoy-primary-100);
+      border-radius: var(--lcoy-radius);
       font-size: 0.875em;
       line-height: 1.3077;
       white-space: pre;
@@ -201,19 +201,19 @@
     margin: 0 0.15em;
     padding: 0.15em 0.6em;
     box-sizing: border-box;
-    border: 1px solid var(--cn-primary-low-mid);
+    border: 1px solid var(--lcoy-primary-low-mid);
     border-bottom-width: 2px;
     border-radius: 3px;
-    background: var(--cn-primary-very-low);
+    background: var(--lcoy-primary-very-low);
     font-family: inherit;
-    font-size: var(--cn-font-down-1);
+    font-size: var(--lcoy-font-down-1);
     line-height: 1.6;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     box-shadow: none;
   }
 
-  // Tabela do Discourse: cabeçalho em negrito sem fundo, linha grossa no
-  // topo do corpo e uma fina entre as linhas; rola quando passa do post.
+  // Discourse 的表格：表头加粗无背景，主体顶部为粗线，
+  // 行之间为细线；超出帖子时滚动。
   table {
     display: block;
     max-width: 100%;
@@ -224,15 +224,15 @@
       padding: 0 3px 2px 0.5em;
       text-align: left;
       font-weight: 700;
-      color: var(--cn-primary);
+      color: var(--lcoy-primary);
     }
 
     tbody {
-      border-top: 3px solid var(--cn-primary-low);
+      border-top: 3px solid var(--lcoy-primary-low);
     }
 
     tr {
-      border-bottom: 1px solid var(--cn-primary-low);
+      border-bottom: 1px solid var(--lcoy-primary-low);
     }
 
     td {
@@ -262,17 +262,17 @@
     max-height: 500px;
   }
 
-  // O [details] do Discourse: caixa cinza, triângulo de texto, sem negrito.
+  // Discourse 的 [details]：灰色盒子，文字三角形，不加粗。
   details {
     position: relative;
     margin: 0 0 0.5rem;
     padding: 0.25rem 0.75rem;
     border-radius: 0;
-    background: var(--cn-primary-very-low);
+    background: var(--lcoy-primary-very-low);
 
     &:not([open]):hover,
     &:not([open]):focus-within {
-      background: var(--cn-hover);
+      background: var(--lcoy-hover);
     }
 
     summary {
@@ -297,20 +297,20 @@
   }
 
   mark {
-    background: var(--cn-highlight);
+    background: var(--lcoy-highlight);
     color: inherit;
     text-decoration: none;
   }
 
-  // Menções: a pílula cinza do Discourse (.mention).
+  // 提及：Discourse 的灰色胶囊（.mention）。
   .UserMention,
   .PostMention {
     display: inline-block;
     padding: 0.2em 0.34em;
     border: 0;
     border-radius: 0.6em;
-    background: var(--cn-primary-low);
-    color: var(--cn-primary);
+    background: var(--lcoy-primary-low);
+    color: var(--lcoy-primary);
     font-size: 0.93em;
     font-weight: 400;
     line-height: 1;
@@ -318,28 +318,28 @@
 
     &:hover,
     &:focus-visible {
-      background: var(--cn-primary-200);
-      color: var(--cn-primary);
+      background: var(--lcoy-primary-200);
+      color: var(--lcoy-primary);
       text-decoration: none;
     }
 
-    // O "↪" que o mentions põe antes das menções de post.
+    // mentions 放在帖子提及前的"↪"。
     &::before {
       display: none;
     }
   }
 
-  // Menção de grupo: a mesma pílula, tingida pela cor do grupo (--color, que
-  // o flarum/mentions põe no estilo), com o ícone num círculo cheio na frente.
+  // 分组提及：同样的胶囊，用分组颜色着色（--color，
+  // flarum/mentions 将其放入样式），图标位于前方的实心圆中。
   .GroupMention {
     display: inline-flex;
     align-items: center;
     gap: 0.3em;
     padding: 0.18em 0.5em 0.18em 0.22em;
-    border: 1px solid ~"color-mix(in oklch, var(--color, var(--cn-primary-medium)) 28%, transparent)";
+    border: 1px solid ~"color-mix(in oklch, var(--color, var(--lcoy-primary-medium)) 28%, transparent)";
     border-radius: 999px;
-    background: ~"color-mix(in oklch, var(--color, var(--cn-primary-medium)) 12%, var(--cn-surface))";
-    color: ~"color-mix(in oklch, var(--color, var(--cn-primary)) 78%, var(--cn-primary))";
+    background: ~"color-mix(in oklch, var(--color, var(--lcoy-primary-medium)) 12%, var(--lcoy-surface))";
+    color: ~"color-mix(in oklch, var(--color, var(--lcoy-primary)) 78%, var(--lcoy-primary))";
     font-size: 0.93em;
     font-weight: 600;
     line-height: 1.2;
@@ -347,14 +347,14 @@
     transition: background-color 0.15s;
 
     &:hover {
-      background: ~"color-mix(in oklch, var(--color, var(--cn-primary-medium)) 20%, var(--cn-surface))";
+      background: ~"color-mix(in oklch, var(--color, var(--lcoy-primary-medium)) 20%, var(--lcoy-surface))";
     }
 
     .GroupMention-name {
       color: inherit;
     }
 
-    // O ícone do grupo vem depois do nome no HTML: vai para a frente.
+    // 分组图标在 HTML 中位于名称之后：这里移到前面。
     .icon {
       order: -1;
       box-sizing: border-box;
@@ -366,13 +366,13 @@
       margin: 0;
       padding: 0.25em;
       border-radius: 50%;
-      background: var(--color, var(--cn-primary-medium));
+      background: var(--color, var(--lcoy-primary-medium));
       color: #fff;
       font-size: 0.85em;
       line-height: 1;
     }
 
-    // Sem ícone, a pílula não precisa do recuo da esquerda.
+    // 无图标时，胶囊不需要左侧缩进。
     &:not(:has(.icon)) {
       padding-left: 0.5em;
     }
@@ -383,40 +383,40 @@
     opacity: 0.6;
   }
 
-  .CanelaMention-unavailable {
-    color: var(--cn-primary-medium);
+  .LcoyMention-unavailable {
+    color: var(--lcoy-primary-medium);
     font-style: italic;
   }
 
-  // A menção que só marca "respondendo a" (o Discourse mostra isso no
-  // cabeçalho do post, e não no texto).
-  .CanelaReplyMarker {
+  // 仅标记"回复给"的提及（Discourse 在
+  // 帖子头部显示，而非正文中）。
+  .LcoyReplyMarker {
     display: none;
   }
 
-  // Prévia de link (onebox) genérica: caixa com borda.
+  // 通用链接预览（onebox）：带边框的盒子。
   aside.onebox,
   .onebox {
     display: block;
     margin: 0 0 1em;
     padding: 12px 16px;
-    border: 1px solid var(--cn-border);
-    border-radius: var(--cn-radius);
-    background: var(--cn-surface);
+    border: 1px solid var(--lcoy-border);
+    border-radius: var(--lcoy-radius);
+    background: var(--lcoy-surface);
   }
 
-  // Citação de outro post (o aside.quote do Discourse): o tema põe o
-  // cabeçalho "avatar Fulano:" dentro do blockquote que o mentions gera.
-  blockquote.CanelaQuote {
+  // 引用其他帖子（Discourse 的 aside.quote）：主题将
+  // "头像 某某："头部放入 mentions 生成的 blockquote 中。
+  blockquote.LcoyQuote {
     padding: 0.8em 0.75em 0.75em;
   }
 
-  .CanelaQuote-title {
+  .LcoyQuote-title {
     display: flex;
     align-items: flex-start;
-    gap: var(--cn-space-2);
+    gap: var(--lcoy-space-2);
     margin: 0 0 0.75em;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
     user-select: none;
 
     .Avatar {
@@ -425,7 +425,7 @@
     }
   }
 
-  .CanelaQuote-name {
+  .LcoyQuote-name {
     flex: 1 1 auto;
     min-width: 0;
     overflow: hidden;
@@ -439,18 +439,18 @@
       margin: 0;
       padding: 0;
       background: none;
-      color: var(--cn-primary-high);
+      color: var(--lcoy-primary-high);
       font-size: inherit;
       line-height: inherit;
     }
   }
 
-  .CanelaQuote-controls {
+  .LcoyQuote-controls {
     display: flex;
     align-items: center;
     min-height: 24px;
     margin-left: auto;
-    color: var(--cn-primary-low-mid);
+    color: var(--lcoy-primary-low-mid);
 
     a {
       display: inline-flex;
@@ -459,11 +459,11 @@
       width: 18px;
       height: 18px;
       margin-left: 0.3em;
-      color: var(--cn-primary-low-mid);
+      color: var(--lcoy-primary-low-mid);
 
       &:hover,
       &:focus-visible {
-        color: var(--cn-primary-high);
+        color: var(--lcoy-primary-high);
       }
     }
 
@@ -474,36 +474,36 @@
 }
 
 .Post-body,
-.CanelaEmbeddedPost-body {
-  .canela-cooked();
+.LcoyEmbeddedPost-body {
+  .lcoy-cooked();
 }
 
 // ---------------------------------------------------------------------
-// O post
+// 帖子
 // ---------------------------------------------------------------------
-.CanelaTopic {
+.LcoyTopic {
   .Post {
     padding: 13px 0 20px;
     border-radius: 0;
   }
 
-  // O separador do core (::after de cada item) é a borda de cima dos posts
-  // do Discourse: ponta a ponta do stream, na cor das bordas do conteúdo.
+  // 核心的分隔线（每个条目的 ::after）是 Discourse 帖子的
+  // 上边框：贯穿流的首尾，使用内容边框色。
   .PostStream-item:has(+ .PostStream-item)::after {
     width: 100%;
-    background-color: var(--cn-border);
+    background-color: var(--lcoy-border);
   }
 
   .Post-header {
     margin: 0;
     padding: 0 0 4px;
-    font-size: var(--cn-post-font);
+    font-size: var(--lcoy-post-font);
     line-height: 1.4;
 
     &,
     a,
     .Button--text.Button--link {
-      color: var(--cn-primary-medium);
+      color: var(--lcoy-primary-medium);
     }
 
     > ul {
@@ -521,16 +521,16 @@
       }
     }
 
-    // Esquerda: nome e nomes secundários; direita: "em resposta a", lápis, data.
+    // 左侧：名称和次要名称；右侧："回复给"、铅笔、日期。
     .item-user {
       order: 1;
     }
 
-    .item-canelaNames {
+    .item-lcoyNames {
       order: 2;
     }
 
-    .item-canelaReplyTo {
+    .item-lcoyReplyTo {
       order: 3;
       margin-right: 2em;
     }
@@ -548,38 +548,16 @@
       order: 6;
     }
 
-    > ul > li.item-canelaNames,
-    > ul > li.item-user:not(:has(~ li.item-canelaNames)) {
+    > ul > li.item-lcoyNames,
+    > ul > li.item-user:not(:has(~ li.item-lcoyNames)) {
       margin-right: auto;
     }
 
-    // O título do usuário (.user-title) vem depois dos nomes, como no
-    // Discourse — sem ordem, ele caía antes do nome. Quando existe, é ele
-    // quem empurra a data para a direita.
-    .item-canelaUserTitle {
-      order: 2;
-      margin-right: auto;
-    }
-
-    > ul > li.item-canelaNames:has(~ li.item-canelaUserTitle),
-    > ul > li.item-user:not(:has(~ li.item-canelaNames)):has(~ li.item-canelaUserTitle) {
-      margin-right: 0;
-    }
-
-    .item-canelaNames + .item-canelaUserTitle,
-    .item-user + .item-canelaUserTitle {
-      margin-left: 0.33em;
-    }
-
-    // Cinza e reto, como o .user-title do Discourse (o itálico é do perfil).
-    .CanelaPostUserTitle {
-      font-size: inherit;
-      font-style: normal;
-      color: var(--cn-primary-medium);
-    }
+    // 用户头衔（.user-title）位于名称之后，与
+    // Discourse 一致——没有 order 时它会跑到名称之前。存在时，它
   }
 
-  // O nome do autor em preto (a cor do texto), não no cinza do cabeçalho.
+  // 作者名称用黑色（文字色），而非头部的灰色。
   .PostUser-name {
     font-size: inherit;
     line-height: inherit;
@@ -588,11 +566,11 @@
     a {
       font-weight: 700;
       font-size: inherit;
-      color: var(--cn-primary);
+      color: var(--lcoy-primary);
     }
   }
 
-  .CanelaPostNames {
+  .LcoyPostNames {
     display: inline-flex;
     align-items: baseline;
     gap: 0.33em;
@@ -601,39 +579,39 @@
     white-space: nowrap;
   }
 
-  .CanelaPostNames-username {
-    color: var(--cn-primary-high);
+  .LcoyPostNames-username {
+    color: var(--lcoy-primary-high);
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   .PostMeta .Button--text {
     font-size: inherit;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
     text-decoration: none;
 
     &:hover,
     &:focus-visible {
-      color: var(--cn-primary-high);
+      color: var(--lcoy-primary-high);
     }
   }
 
-  .CanelaPostEdited {
-    color: var(--cn-primary-medium);
+  .LcoyPostEdited {
+    color: var(--lcoy-primary-medium);
     font-size: 0.9em;
     cursor: default;
   }
 
-  // "↪ [avatar] Fulano" (o reply-to-tab): abre o post respondido acima deste.
-  .CanelaReplyTo {
+  // "↪ [头像] 某某"（reply-to-tab）：打开在其上方被回复的帖子。
+  .LcoyReplyTo {
     display: inline-flex;
     align-items: center;
-    gap: var(--cn-space-1);
+    gap: var(--lcoy-space-1);
     max-width: 400px;
     padding: 0;
     border: 0;
     background: none;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
     font: inherit;
     cursor: pointer;
     overflow: hidden;
@@ -642,37 +620,37 @@
       .Avatar--size(20px);
     }
 
-    .CanelaReplyTo-icon {
-      color: var(--cn-primary-medium);
+    .LcoyReplyTo-icon {
+      color: var(--lcoy-primary-medium);
       font-size: 0.85em;
     }
 
     &:hover,
     &:focus-visible,
     &--open {
-      color: var(--cn-primary-high);
+      color: var(--lcoy-primary-high);
     }
   }
 
-  // O "em resposta a" do avocado (canela.topic_reply_to_style): uma linha
-  // própria embaixo do nome, "↳ Em resposta a [avatar] Fulano", em cinza com
-  // o nome em negrito.
-  // Logo abaixo do nome, sem o respiro de uma linha inteira entre os dois.
-  .Post-header > ul > li.item-canelaReplyTo:has(> .CanelaReplyTo--line) {
+  // Avocado 的"回复给"（lcoy.topic_reply_to_style）：名称下方
+  // 单独一行，"↳ 回复给 [头像] 某某"，灰色，
+  // 名称加粗。
+  // 紧贴名称下方，两者之间不留整行间距。
+  .Post-header > ul > li.item-lcoyReplyTo:has(> .LcoyReplyTo--line) {
     order: 10;
     flex-basis: 100%;
     margin: -6px 0 0;
   }
 
-  .CanelaReplyTo--line {
+  .LcoyReplyTo--line {
     max-width: 100%;
     gap: 5px;
-    font-size: var(--cn-font-down-1);
+    font-size: var(--lcoy-font-down-1);
     font-weight: 600;
     line-height: 1.3;
 
-    // O "Responder" virado: a seta do "↳".
-    .CanelaReplyTo-icon {
+    // "回复"翻转：即"↳"箭头。
+    .LcoyReplyTo-icon {
       flex: none;
       font-size: 1em;
       transform: rotate(180deg);
@@ -682,18 +660,18 @@
       flex: none;
     }
 
-    .CanelaReplyTo-name {
+    .LcoyReplyTo-name {
       min-width: 0;
       overflow: hidden;
-      color: var(--cn-primary-high);
+      color: var(--lcoy-primary-high);
       font-weight: 700;
       white-space: nowrap;
       text-overflow: ellipsis;
     }
 
-    &:hover .CanelaReplyTo-label,
-    &:focus-visible .CanelaReplyTo-label,
-    &.CanelaReplyTo--open .CanelaReplyTo-label {
+    &:hover .LcoyReplyTo-label,
+    &:focus-visible .LcoyReplyTo-label,
+    &.LcoyReplyTo--open .LcoyReplyTo-label {
       text-decoration: underline;
       text-underline-offset: 2px;
     }
@@ -702,17 +680,17 @@
   .Post--hidden {
     .Post-header,
     .PostUser-name a {
-      color: var(--cn-primary-medium);
+      color: var(--lcoy-primary-medium);
     }
 
     &:not(.revealContent) {
-      padding: var(--cn-space-2) 0;
+      padding: var(--lcoy-space-2) 0;
     }
 
-    // O core puxa a barra para a linha do cabeçalho com margem negativa (a
-    // barra dele flutua à direita); a do tema é uma linha própria embaixo, e
-    // a margem a jogava em cima da data. Aqui ela fica no fluxo, só com os
-    // controles de moderação.
+    // 核心用负外边距把操作栏拉到头部行（它的
+    // 栏浮在右侧）；主题的栏在下方单独一行，
+    // 该外边距会把它甩到日期之上。这里它位于文档流中，只保留
+    // 管理控件。
     .Post-actions {
       margin-top: 0;
       margin-bottom: 0;
@@ -720,81 +698,81 @@
     }
 
     &:not(.revealContent) .Post-actions {
-      margin-top: var(--cn-space-1);
+      margin-top: var(--lcoy-space-1);
     }
 
-    // O "…" que mostra o conteúdo oculto: um ícone discreto, como os da barra.
+    // 显示隐藏内容的"…"：低调图标，与操作栏中的一致。
     .Post-header .item-toggle .Button--more {
       height: 24px;
       padding: 0 6px;
       border: 0;
       border-radius: 4px;
       --button-bg: transparent;
-      --button-color: var(--cn-primary-medium);
+      --button-color: var(--lcoy-primary-medium);
       background: transparent;
-      color: var(--cn-primary-medium);
+      color: var(--lcoy-primary-medium);
 
       &:hover,
       &:focus-visible {
-        --button-bg-hover: var(--cn-primary-low);
-        --button-color-hover: var(--cn-primary-high);
-        background: var(--cn-primary-low);
-        color: var(--cn-primary-high);
+        --button-bg-hover: var(--lcoy-primary-low);
+        --button-color-hover: var(--lcoy-primary-high);
+        background: var(--lcoy-primary-low);
+        color: var(--lcoy-primary-high);
       }
     }
 
     &.revealContent .Post-header .item-toggle .Button--more {
-      background: var(--cn-primary-low);
-      color: var(--cn-primary-high);
+      background: var(--lcoy-primary-low);
+      color: var(--lcoy-primary-high);
     }
   }
 
-  // A "time-gap" do Discourse ("3 meses depois"): uma small action sem ícone.
+  // Discourse 的 "time-gap"（"3 个月后"）：无图标的 small action。
   .PostStream-timeGap {
-    padding: var(--cn-space-3) 0 var(--cn-space-3) calc(var(--cn-post-avatar) + var(--cn-post-gap));
+    padding: var(--lcoy-space-3) 0 var(--lcoy-space-3) calc(var(--lcoy-post-avatar) + var(--lcoy-post-gap));
     text-transform: none;
-    font-size: var(--cn-post-font);
+    font-size: var(--lcoy-post-font);
     font-weight: 400;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
   }
 
   .LoadingPost .fakeText {
-    background: var(--cn-primary-low);
+    background: var(--lcoy-primary-low);
   }
 
   .TypingUsersContainer {
-    margin: var(--cn-space-3) 0 0;
-    padding: var(--cn-space-2) var(--cn-space-3);
-    border-radius: var(--cn-radius);
-    background: var(--cn-primary-very-low);
-    font-size: var(--cn-font-down-1);
+    margin: var(--lcoy-space-3) 0 0;
+    padding: var(--lcoy-space-2) var(--lcoy-space-3);
+    border-radius: var(--lcoy-radius);
+    background: var(--lcoy-primary-very-low);
+    font-size: var(--lcoy-font-down-1);
 
     .TypingUsers {
-      color: var(--cn-primary-high);
+      color: var(--lcoy-primary-high);
     }
   }
 }
 
 @media @tablet-up {
-  .CanelaTopic {
+  .LcoyTopic {
     .Post-container {
-      grid-template-columns: var(--cn-post-avatar) minmax(0, 1fr);
+      grid-template-columns: var(--lcoy-post-avatar) minmax(0, 1fr);
       column-gap: 0;
     }
 
-    // O corpo do Discourse tem 12px de respiro dos dois lados (690px de texto).
+    // Discourse 的正文两侧各有 12px 间距（690px 文字）。
     .Post-main {
-      padding: 0 var(--cn-post-gap);
+      padding: 0 var(--lcoy-post-gap);
     }
 
     .Post-side {
       padding-top: 4px;
     }
 
-    // O z-index cria um contexto de empilhamento próprio: o tooltip do flair
-    // não fica sob o conteúdo dos posts vizinhos. Fixo (sticky) só com a
-    // opção "Avatar fixo nos posts" do admin (.Canela--stickyAvatar).
-    .CanelaPostAvatar {
+    // z-index 创建独立的层叠上下文：flair 的 tooltip
+    // 不会位于相邻帖子的内容之下。仅在后台
+    // "帖子头像固定"选项（.Lcoy--stickyAvatar）下为 sticky。
+    .LcoyPostAvatar {
       z-index: 3;
       position: relative;
       top: auto;
@@ -814,23 +792,23 @@
       min-height: 0;
     }
 
-    // As badges de grupo viram o "flair" no canto do avatar; no desktop elas
-    // moram ao lado do avatar (para acompanhar a rolagem), não no cabeçalho.
+    // 分组徽章变成头像角上的 "flair"；桌面端它们
+    // 位于头像旁（以跟随滚动），而非头部。
     .Post-header .PostUser-badges {
       display: none;
     }
   }
 }
 
-// O flair: o primeiro grupo com ícone, 20px, no canto de baixo do avatar.
-.CanelaPostAvatar {
+// flair：第一个带图标的分组，20px，位于头像下角。
+.LcoyPostAvatar {
   position: relative;
   display: block;
 }
 
-.CanelaPostAvatar-flair {
+.LcoyPostAvatar-flair {
   position: absolute;
-  // Acima do avatar (e o tooltip do grupo, que mora aqui dentro, junto).
+  // 位于头像上方（分组 tooltip 也在这里面）。
   z-index: 2;
   right: -4px;
   bottom: 0;
@@ -843,8 +821,8 @@
     display: none;
   }
 
-  // Só o primeiro grupo que tem ícone (grupo sem ícone, como "Membro", não
-  // desenha um círculo vazio).
+  // 只有第一个带图标的分组（无图标的分组，如"成员"，不会
+  // 绘制空圆）。
   > li:has(.icon) {
     display: block;
   }
@@ -855,16 +833,16 @@
 
   .Badge {
     .Badge--size(20px);
-    box-shadow: 0 0 0 2px var(--cn-surface);
+    box-shadow: 0 0 0 2px var(--lcoy-surface);
   }
 }
 
 // ---------------------------------------------------------------------
-// Ícones depois do nome (utils/userIcons: o selo de verificado, o emoji do
-// status) — os "poster icons" do Discourse: na linha do texto, do tamanho
-// dele, logo depois do nome, sem empurrar o nome.
+// 名称后的图标（utils/userIcons：验证徽章、状态
+// emoji）——Discourse 的 "poster icons"：在文字行中，与其
+// 同尺寸，紧接名称之后，不推动名称。
 // ---------------------------------------------------------------------
-.CanelaUserIcons {
+.LcoyUserIcons {
   display: inline-flex;
   align-items: center;
   gap: 0.25em;
@@ -874,39 +852,36 @@
   font-weight: normal;
 }
 
-.CanelaTopic .Post-header .PostUser-name {
+.LcoyTopic .Post-header .PostUser-name {
   display: inline-flex;
   align-items: center;
   gap: 0.25em;
   min-width: 0;
 
-  .CanelaStatusEmoji--post {
-    margin-left: 0;
-  }
 }
 
-.CanelaReplyTo .CanelaUserIcons {
+.LcoyReplyTo .LcoyUserIcons {
   margin-left: -0.1em;
 }
 
-// No post embutido o nome empurrava a data para a direita: agora quem
-// empurra são os ícones, que vêm depois dele.
-.CanelaEmbeddedPost-header {
-  .CanelaEmbeddedPost-name:has(+ .CanelaUserIcons) {
+// 嵌入帖子中名称曾把日期推到右侧：现在推动的
+// 是名称之后的图标。
+.LcoyEmbeddedPost-header {
+  .LcoyEmbeddedPost-name:has(+ .LcoyUserIcons) {
     margin-right: 0;
   }
 
-  .CanelaUserIcons {
+  .LcoyUserIcons {
     align-self: center;
-    margin-left: ~"calc(0.25em - var(--cn-space-2))";
+    margin-left: ~"calc(0.25em - var(--lcoy-space-2))";
     margin-right: auto;
   }
 }
 
 // ---------------------------------------------------------------------
-// Barra de ações (só quando o tema a monta: há .CanelaPostAction dentro)
+// 操作栏（仅当主题构建它时：内部有 .LcoyPostAction）
 // ---------------------------------------------------------------------
-.Post-actions:has(.CanelaPostAction) {
+.Post-actions:has(.LcoyPostAction) {
   float: none;
   position: relative;
   margin: 20px 0 0;
@@ -924,18 +899,18 @@
     }
   }
 
-  // À esquerda: a contagem de curtidas e "N respostas"; "Responder" sempre o
-  // último à direita.
-  .item-canelaLikeCount {
+  // 左侧：点赞计数和"N 条回复"；"回复"始终
+  // 在最右侧。
+  .item-lcoyLikeCount {
     order: -20;
   }
 
-  .item-canelaReplies {
+  .item-lcoyReplies {
     order: -10;
   }
 
-  .item-canelaReplies,
-  .item-canelaLikeCount:not(:has(~ .item-canelaReplies)) {
+  .item-lcoyReplies,
+  .item-lcoyLikeCount:not(:has(~ .item-lcoyReplies)) {
     margin-right: auto;
   }
 
@@ -944,14 +919,14 @@
   }
 }
 
-// O core esconde as ações até o hover no desktop; no Discourse elas ficam.
+// 桌面端核心在悬停前隐藏操作；在 Discourse 中它们始终显示。
 @media @tablet-up {
-  .no-touch .Post-actions:has(.CanelaPostAction) {
+  .no-touch .Post-actions:has(.LcoyPostAction) {
     opacity: 1;
   }
 }
 
-.CanelaPostAction.Button {
+.LcoyPostAction.Button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -959,9 +934,9 @@
   height: 38px;
   padding: 8px 0.65em;
   border: 1px solid transparent;
-  border-radius: var(--cn-radius-pill);
+  border-radius: var(--lcoy-radius-pill);
   background: none;
-  color: var(--cn-primary-low-mid);
+  color: var(--lcoy-primary-low-mid);
   font-size: 16px;
   line-height: 1;
   box-shadow: none;
@@ -972,16 +947,16 @@
     font-size: 16px;
   }
 
-  // O hover do Discourse (--d-post-control-background--hover): cinza
-  // primary-low, nunca a cor de destaque — nem depois do clique (o link
-  // "copiado" fica com o mouse em cima).
+  // Discourse 的悬停（--d-post-control-background--hover）：灰色
+  // primary-low，绝不是高亮色——点击后也是（"已复制"链接
+  // 在鼠标仍悬停时）。
   &:hover,
   &:focus-visible,
   &:active,
   &.active {
     outline: none;
-    background: var(--cn-primary-low);
-    color: var(--cn-primary);
+    background: var(--lcoy-primary-low);
+    color: var(--lcoy-primary);
     box-shadow: none;
   }
 
@@ -995,73 +970,73 @@
     opacity: 1;
     cursor: not-allowed;
     background: none;
-    color: var(--cn-primary-low-mid);
+    color: var(--lcoy-primary-low-mid);
   }
 }
 
-.CanelaPostAction.Button--icon {
+.LcoyPostAction.Button--icon {
   width: 38.78px;
   padding: 8px 0;
 }
 
-.item-canelaControl-hide .CanelaPostAction:hover,
-.item-canelaControl-delete .CanelaPostAction:hover {
-  background: var(--cn-danger);
+.item-lcoyControl-hide .LcoyPostAction:hover,
+.item-lcoyControl-delete .LcoyPostAction:hover {
+  background: var(--lcoy-danger);
   color: #fff;
 }
 
-// "Responder" (o botão "create" do Discourse): o único com texto, mais escuro.
-.CanelaPostAction--reply.Button {
-  color: var(--cn-primary-high);
+// "回复"（Discourse 的 "create" 按钮）：唯一带文字的，颜色更深。
+.LcoyPostAction--reply.Button {
+  color: var(--lcoy-primary-high);
 
   .Button-label {
     display: inline;
   }
 }
 
-// "N respostas ▾": cinza médio; aberto, ganha o fundo cinza.
-.CanelaPostAction--replies.Button {
-  margin-right: var(--cn-space-2);
-  color: var(--cn-primary-medium);
+// "N 条回复 ▾"：中灰色；展开时获得灰色背景。
+.LcoyPostAction--replies.Button {
+  margin-right: var(--lcoy-space-2);
+  color: var(--lcoy-primary-medium);
   white-space: nowrap;
 
-  .CanelaPostAction-chevron {
+  .LcoyPostAction-chevron {
     margin-left: 0;
-    font-size: var(--cn-font-down-1);
+    font-size: var(--lcoy-font-down-1);
   }
 
   &:hover,
   &:focus-visible {
     background: none;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
 
-    .CanelaPostAction-chevron {
-      color: var(--cn-primary-high);
+    .LcoyPostAction-chevron {
+      color: var(--lcoy-primary-high);
     }
   }
 
   &.active,
   &[aria-expanded="true"] {
-    background: var(--cn-primary-low);
-    color: var(--cn-primary-high);
+    background: var(--lcoy-primary-low);
+    color: var(--lcoy-primary-high);
   }
 }
 
-// O coração: rosa ao passar o mouse e depois de curtido.
-.CanelaLike-toggle.Button {
+// 心形：悬停和点赞后为粉色。
+.LcoyLike-toggle.Button {
   &:not([disabled]):hover,
   &:not([disabled]):focus-visible {
-    background: var(--cn-topic-love-low);
-    color: var(--cn-topic-love);
+    background: var(--lcoy-topic-love-low);
+    color: var(--lcoy-topic-love);
   }
 
-  &.CanelaLike--liked {
-    color: var(--cn-topic-love);
+  &.LcoyLike--liked {
+    color: var(--lcoy-topic-love);
   }
 }
 
-// A batida do coração ao curtir (heartBump, .4s, do Discourse).
-@keyframes canelaHeartBump {
+// 点赞时的心跳（heartBump，.4s，来自 Discourse）。
+@keyframes lcoyHeartBump {
   0% {
     transform: scale(1);
   }
@@ -1076,24 +1051,24 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .CanelaLike--bump .Button-icon {
-    animation: canelaHeartBump 0.4s;
+  .LcoyLike--bump .Button-icon {
+    animation: lcoyHeartBump 0.4s;
   }
 }
 
-// A contagem à esquerda (o resumo de reações do Meta): coração cheio e o
-// número em cinza claro.
-.CanelaLikeCount.Button {
+// 左侧的计数（Meta 的回应摘要）：实心心形和
+// 浅灰色数字。
+.LcoyLikeCount.Button {
   height: 34px;
   padding: 1px 6px;
   gap: 0;
 
-  // O emoji ❤️ do Discourse (twemoji), não o rosa do botão de curtir.
+  // Discourse 的 ❤️ emoji（twemoji），而非点赞按钮的粉色。
   .Button-icon {
     color: #dd2e44;
   }
 
-  .CanelaLikeCount-number {
+  .LcoyLikeCount-number {
     padding: 8px 0 8px 10px;
   }
 
@@ -1102,21 +1077,21 @@
   &.active {
     background: none;
     box-shadow: none;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 }
 
-// O link: copiado, o ícone vira um "certo" por um instante.
-.CanelaPostAction--copied.Button .Button-icon {
-  color: var(--cn-success);
+// 链接：复制后图标短暂变为"对勾"。
+.LcoyPostAction--copied.Button .Button-icon {
+  color: var(--lcoy-success);
 }
 
 // ---------------------------------------------------------------------
-// Rodapé do post: quem curtiu e respostas embutidas
+// 帖子页脚：点赞者和嵌入回复
 // ---------------------------------------------------------------------
-// Só com a barra do tema: o rodapé do core (altura zero ao lado das ações
-// flutuando à direita) não comporta a fileira de avatares nem as respostas.
-.Post-actions:has(.CanelaPostAction) ~ .Post-footer {
+// 仅在主题的操作栏下：核心的页脚（操作栏旁高度为零
+// 且浮在右侧）无法容纳头像行和回复。
+.Post-actions:has(.LcoyPostAction) ~ .Post-footer {
   display: block;
   height: auto;
   margin: 0;
@@ -1126,31 +1101,31 @@
   }
 
   > ul > li {
-    margin: var(--cn-space-2) 0 0;
+    margin: var(--lcoy-space-2) 0 0;
   }
 
   &,
   a {
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
   }
 
-  // As listas das extensões que continuam (com as opções do tema desligadas).
+  // 仍然存在的扩展列表（主题选项关闭时）。
   .Post-likedBy,
   .Post-mentionedBy {
-    font-size: var(--cn-font-down-1);
+    font-size: var(--lcoy-font-down-1);
   }
 }
 
-// Os posts embutidos do Discourse: sem caixa, ligados ao post por uma linha
-// vertical fina que passa atrás dos avatares.
-.CanelaEmbedded {
+// Discourse 的嵌入帖子：无盒子，通过一条从头像后方
+// 穿过的细竖线与帖子相连。
+.LcoyEmbedded {
   position: relative;
 
   .LoadingIndicator {
-    margin: var(--cn-space-3) auto;
+    margin: var(--lcoy-space-3) auto;
   }
 
-  .CanelaEmbeddedPost {
+  .LcoyEmbeddedPost {
     position: relative;
     display: grid;
     grid-template-columns: 48px minmax(0, 1fr);
@@ -1163,42 +1138,42 @@
     }
   }
 
-  // "Em resposta a": acima do post, a linha desce até ele.
+  // "回复给"：位于帖子上方，线条向下延伸到它。
   &--top {
-    margin: 0 0 var(--cn-space-3);
+    margin: 0 0 var(--lcoy-space-3);
 
-    .CanelaEmbeddedPost {
-      padding: 0 0 var(--cn-space-6);
+    .LcoyEmbeddedPost {
+      padding: 0 0 var(--lcoy-space-6);
 
-      // A linha passa da caixa e desce até perto do nome do post de baixo.
+      // 线条超出盒子并向下延伸到下方帖子的名称附近。
       &::before {
         content: "";
         position: absolute;
         top: 24px;
-        bottom: calc(-1 * (var(--cn-space-3) + 14px));
+        bottom: calc(-1 * (var(--lcoy-space-3) + 14px));
         left: 24px;
         width: 1px;
-        background: var(--cn-border);
+        background: var(--lcoy-border);
       }
     }
   }
 
-  // As respostas: abaixo, recuadas, a linha sobe até o post.
+  // 回复：在下方，缩进，线条向上延伸到帖子。
   &--bottom {
     max-width: calc(100% - 66px);
-    margin: var(--cn-space-2) 0 var(--cn-space-6);
+    margin: var(--lcoy-space-2) 0 var(--lcoy-space-6);
 
-    .CanelaEmbeddedPost {
-      padding: 15px 0 calc(var(--cn-space-8) + var(--cn-space-2)) 9px;
+    .LcoyEmbeddedPost {
+      padding: 15px 0 calc(var(--lcoy-space-8) + var(--lcoy-space-2)) 9px;
 
       &::before {
         content: "";
         position: absolute;
-        top: calc(-1 * var(--cn-space-6));
+        top: calc(-1 * var(--lcoy-space-6));
         bottom: 0;
         left: 32px;
         width: 1px;
-        background: var(--cn-border);
+        background: var(--lcoy-border);
       }
 
       &:last-of-type::before {
@@ -1209,64 +1184,64 @@
   }
 }
 
-.CanelaEmbedded-more.Button {
+.LcoyEmbedded-more.Button {
   display: block;
   margin: 0 auto;
   height: auto;
-  padding: var(--cn-space-1) var(--cn-space-2);
-  font-size: var(--cn-font-down-1);
-  color: var(--cn-link);
+  padding: var(--lcoy-space-1) var(--lcoy-space-2);
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-link);
   background: none;
 }
 
-.CanelaEmbeddedPost-main {
+.LcoyEmbeddedPost-main {
   position: relative;
   min-width: 0;
 }
 
-.CanelaEmbeddedPost-header {
+.LcoyEmbeddedPost-header {
   display: flex;
   align-items: baseline;
-  gap: var(--cn-space-2);
-  font-size: var(--cn-post-font);
+  gap: var(--lcoy-space-2);
+  font-size: var(--lcoy-post-font);
   line-height: 1.4;
 }
 
-.CanelaEmbeddedPost-name {
+.LcoyEmbeddedPost-name {
   margin-right: auto;
   font-weight: 700;
-  color: var(--cn-primary-high);
+  color: var(--lcoy-primary-high);
 }
 
-.CanelaEmbeddedPost-link {
+.LcoyEmbeddedPost-link {
   display: inline-flex;
   align-items: center;
-  gap: var(--cn-space-1);
-  color: var(--cn-primary-medium);
+  gap: var(--lcoy-space-1);
+  color: var(--lcoy-primary-medium);
 
-  // O core esconde ícones de links no rodapé do post; a seta é o próprio link.
+  // 核心隐藏帖子页脚中链接的图标；箭头本身就是链接。
   .Post-footer & .icon {
     display: inline-block;
   }
 
   &:hover,
   &:focus-visible {
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
     text-decoration: none;
   }
 }
 
-.CanelaEmbeddedPost-body {
-  margin-top: var(--cn-space-1);
-  padding-top: var(--cn-space-2);
+.LcoyEmbeddedPost-body {
+  margin-top: var(--lcoy-space-1);
+  padding-top: var(--lcoy-space-2);
 }
 
 // ---------------------------------------------------------------------
-// Posts de evento: a "small action" do Discourse, numa linha compacta: o
-// ícone pequeno num círculo na coluna do avatar, o avatar de quem fez e o
-// texto em cinza com o nome em negrito.
+// 事件帖：Discourse 的 "small action"，排成紧凑的一行：
+// 小图标位于头像列的圆中，发帖者头像以及
+// 灰色文字和加粗名称。
 // ---------------------------------------------------------------------
-.CanelaTopic .EventPost {
+.LcoyTopic .EventPost {
   min-height: 32px;
   padding: 0.5em 0;
 
@@ -1280,10 +1255,10 @@
     padding-top: 0;
   }
 
-  // O ícone solto, em cinza claro, sem círculo nem borda (o fundo da
-  // superfície só corta a linha do tempo do estilo Direto em volta dele).
-  // O ícone é um <svg> (Lucide): sem largura/altura explícitas ele esticava
-  // até a coluna do avatar (45px). 1em, no tamanho do texto do evento × 1.1.
+  // 独立的图标，浅灰色，无圆无边框（表面
+  // 背景只截断其周围直聊样式的时间线）。
+  // 图标是 <svg>（Lucide）：没有显式宽高时它会拉伸
+  // 到头像列（45px）。1em，为事件文字大小 × 1.1。
   .EventPost-icon {
     position: relative;
     z-index: 1;
@@ -1294,13 +1269,13 @@
     width: 1em;
     height: 1em;
     margin: 0;
-    // O fundo da superfície com folga em cima e embaixo interrompe a linha do
-    // tempo do estilo com a linha: ela chega ao ícone e continua depois dele.
+    // 上下留白的表面背景会中断带线样式的
+    // 时间线：线条到达图标后继续延伸。
     padding: 5px 2px;
     border: 0;
-    background: var(--cn-surface);
-    color: var(--cn-primary-low-mid);
-    font-size: calc(var(--cn-font-down-1) * 1.1);
+    background: var(--lcoy-surface);
+    color: var(--lcoy-primary-low-mid);
+    font-size: calc(var(--lcoy-font-down-1) * 1.1);
     line-height: 1;
   }
 
@@ -1323,23 +1298,23 @@
 
   .EventPost-info {
     padding-top: 0;
-    font-size: var(--cn-font-down-1);
+    font-size: var(--lcoy-font-down-1);
     line-height: 1.4;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
 
     a {
-      color: var(--cn-primary-high);
+      color: var(--lcoy-primary-high);
       font-weight: 600;
     }
 
     time {
-      color: var(--cn-primary-medium);
+      color: var(--lcoy-primary-medium);
     }
   }
 }
 
 @media @phone {
-  .CanelaTopic .EventPost {
+  .LcoyTopic .EventPost {
     padding-left: 0;
 
     .EventPost-icon {
@@ -1349,12 +1324,12 @@
 }
 
 // ---------------------------------------------------------------------
-// Destaque do post-alvo (/d/x/N): o background-fade-highlight do Discourse
-// — o corpo do post (não o avatar) na cor de destaque clara, que esmaece.
+// 目标帖子高亮（/d/x/N）：Discourse 的 background-fade-highlight
+// ——帖子正文（非头像）使用浅高亮色，并逐渐淡出。
 // ---------------------------------------------------------------------
-@keyframes canelaHighlight {
+@keyframes lcoyHighlight {
   0% {
-    background-color: var(--cn-accent-low);
+    background-color: var(--lcoy-accent-low);
   }
 
   100% {
@@ -1363,79 +1338,79 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .CanelaTopic .PostStream-item.CanelaHighlight .Post-main {
-    animation: canelaHighlight 2.5s ease-out;
+  .LcoyTopic .PostStream-item.LcoyHighlight .Post-main {
+    animation: lcoyHighlight 2.5s ease-out;
   }
 }
 
 // ---------------------------------------------------------------------
-// Botão "Citar" que o mentions mostra sobre o texto selecionado
+// mentions 在选中文字上显示的"引用"按钮
 // ---------------------------------------------------------------------
 .PostQuoteButton.Button {
-  --button-bg: var(--cn-surface);
-  --button-color: var(--cn-primary);
-  --button-bg-hover: var(--cn-hover);
-  --button-color-hover: var(--cn-primary);
+  --button-bg: var(--lcoy-surface);
+  --button-color: var(--lcoy-primary);
+  --button-bg-hover: var(--lcoy-hover);
+  --button-color-hover: var(--lcoy-primary);
   z-index: var(--zindex-dropdown);
   height: 34px;
   padding: 0 12px;
-  border: 1px solid var(--cn-border);
-  border-radius: var(--cn-radius);
-  background: var(--cn-surface);
-  color: var(--cn-primary);
-  box-shadow: var(--cn-shadow-dropdown);
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
+  box-shadow: var(--lcoy-shadow-dropdown);
   font-size: 14px;
 
   .Button-icon {
-    color: var(--cn-accent);
+    color: var(--lcoy-accent);
   }
 
   &:hover,
   &:focus-visible {
-    background: var(--cn-hover);
-    color: var(--cn-primary);
+    background: var(--lcoy-hover);
+    color: var(--lcoy-primary);
   }
 }
 
 // ---------------------------------------------------------------------
-// Caixa "Responder…" no fim do stream e o "Ninguém está digitando" do
-// realtime: o Discourse não tem nenhum dos dois — responde-se pelo botão do
-// rodapé do tópico ou do post. O aviso de digitação só aparece quando alguém
-// está mesmo digitando.
+// 流末尾的"回复…"框和 realtime 的"N 人正在输入"：
+// Discourse 两者都没有——通过话题或帖子页脚的按钮
+// 回复。输入提示仅在确实有人输入时
+// 出现。
 // ---------------------------------------------------------------------
-.CanelaTopic .PostStream-item:has(> .ReplyPlaceholder),
-.CanelaTopic .TypingUsersContainer:not(.TypingUsersContainer-active) {
+.LcoyTopic .PostStream-item:has(> .ReplyPlaceholder),
+.LcoyTopic .TypingUsersContainer:not(.TypingUsersContainer-active) {
   display: none;
 }
 
-.CanelaTopic .PostStream-item:has(+ .PostStream-item > .ReplyPlaceholder)::after {
+.LcoyTopic .PostStream-item:has(+ .PostStream-item > .ReplyPlaceholder)::after {
   display: none;
 }
 
-// Posts de evento (trancou, fixou, renomeou, mudou tags…): o Discourse não os
-// mostra como o Flarum; o toggle "topic_event_posts" do admin os traz de volta.
-.Canela--noEventPosts .PostStream-item:has(> .EventPost) {
+// 事件帖（锁定、置顶、重命名、修改标签……）：Discourse 不像
+// Flarum 那样显示它们；后台的 "topic_event_posts" 开关可恢复。
+.Lcoy--noEventPosts .PostStream-item:has(> .EventPost) {
   display: none;
 }
 
 // ---------------------------------------------------------------------
-// Celular (o .topic-post do Discourse até 640px): avatar de 48px no
-// cabeçalho, nomes empilhados em 14px, corpo na largura toda.
+// 手机端（Discourse 在 640px 以下的 .topic-post）：头部 48px
+// 头像，名称以 14px 堆叠，正文占满整宽。
 // ---------------------------------------------------------------------
 @media @phone {
-  .CanelaTopic {
+  .LcoyTopic {
     .Post {
       padding: 15px 0 8px;
     }
 
-    // O avatar à esquerda, fora do fluxo; à direita, o nome com a data na
-    // primeira linha e o nome secundário e o grupo empilhados embaixo.
+    // 头像在左侧，脱离文档流；右侧第一行为名称和日期，
+    // 次要名称和分组堆叠在下方。
     .Post-header {
       position: relative;
       min-height: 48px;
       margin-bottom: 12px;
       padding: 0 0 0 56px;
-      font-size: calc(0.8706rem * var(--cn-text-scale, 1));
+      font-size: calc(0.8706rem * var(--lcoy-text-scale, 1));
       line-height: 1.2;
 
       > ul {
@@ -1461,43 +1436,43 @@
         order: 1;
       }
 
-      .item-canelaReplyTo,
+      .item-lcoyReplyTo,
       .item-edited,
       .item-meta {
         order: 2;
       }
 
-      .item-canelaReplyTo {
+      .item-lcoyReplyTo {
         margin: 0 0 0 auto;
       }
 
-      > ul > li.item-canelaNames,
-      > ul > li.item-canelaNames:has(~ li.item-canelaUserTitle) {
+      > ul > li.item-lcoyNames,
+      > ul > li.item-lcoyNames:has(~ li.item-lcoyUserTitle) {
         margin-right: 0;
       }
 
-      // O nome sempre empurra a data para a direita na primeira linha — também
-      // sem nome secundário (antes a data colava no nome: "beatriz 7 h").
+      // 名称始终把日期推到第一行右侧——即使
+      // 没有次要名称（此前日期紧贴名称："beatriz 7 h"）。
       > ul > li.item-user,
-      > ul > li.item-user:not(:has(~ li.item-canelaNames)),
-      > ul > li.item-user:not(:has(~ li.item-canelaNames)):has(~ li.item-canelaUserTitle) {
+      > ul > li.item-user:not(:has(~ li.item-lcoyNames)),
+      > ul > li.item-user:not(:has(~ li.item-lcoyNames)):has(~ li.item-lcoyUserTitle) {
         margin-right: auto;
       }
 
-      .item-canelaReplyTo ~ .item-edited,
-      .item-canelaReplyTo ~ .item-meta {
+      .item-lcoyReplyTo ~ .item-edited,
+      .item-lcoyReplyTo ~ .item-meta {
         margin-left: 0;
       }
 
-      .item-canelaNames {
+      .item-lcoyNames {
         order: 3;
         flex-basis: 100%;
       }
 
-      // No celular o título empilha embaixo dos nomes, como no Discourse.
-      .item-canelaUserTitle,
-      .item-canelaNames + .item-canelaUserTitle,
-      .item-user + .item-canelaUserTitle {
+      // 手机端标题堆叠在名称下方，与 Discourse 一致。
+      .item-lcoyUserTitle,
+      .item-lcoyNames + .item-lcoyUserTitle,
+      .item-user + .item-lcoyUserTitle {
         order: 4;
         flex-basis: 100%;
         margin: 0;
@@ -1505,26 +1480,26 @@
       }
     }
 
-    // O flair do avatar lateral não tem onde ficar: no celular o avatar mora
-    // no cabeçalho e o flair é o das badges dele (senão sobrava um segundo
-    // ícone solto no canto direito, acima da data). O anel de presença fica:
-    // ele é o avatar, não um ícone à parte.
-    .Post-side .CanelaPostAvatar-flair {
+    // 侧边头像的 flair 无处可放：手机端头像位于
+    // 头部，flair 是徽章的（否则会多出一个
+    // 独立图标在右上角、日期上方）。在线环保留：
+    // 它就是头像，不是单独的图标。
+    .Post-side .LcoyPostAvatar-flair {
       display: none;
     }
 
-    .CanelaPostNames {
+    .LcoyPostNames {
       flex-direction: column;
       align-items: flex-start;
       gap: 0;
       white-space: normal;
     }
 
-    .CanelaPostNames-username {
+    .LcoyPostNames-username {
       font-weight: 700;
     }
 
-    .CanelaPostNames-username {
+    .LcoyPostNames-username {
       line-height: 1.2;
     }
 
@@ -1533,8 +1508,8 @@
     }
   }
 
-  .Post-actions:has(.CanelaPostAction) {
-    margin-top: var(--cn-space-3);
+  .Post-actions:has(.LcoyPostAction) {
+    margin-top: var(--lcoy-space-3);
 
     > ul {
       gap: 0;
@@ -1542,15 +1517,15 @@
   }
 }
 
-// No Discourse só tem flair quem pertence a um grupo com ícone: grupo sem
-// ícone (como "Membro") não desenha um círculo vazio no avatar.
+// Discourse 中只有属于带图标分组的用户才有 flair：无图标
+// 的分组（如"成员"）不会在头像上绘制空圆。
 .PostUser-badges li:not(:has(.icon)) {
   display: none;
 }
 
 @media @phone {
-  // O flair no canto de baixo do avatar de 48px do cabeçalho.
-  .CanelaTopic .Post-header .PostUser-badges {
+  // 头部 48px 头像下角的 flair。
+  .LcoyTopic .Post-header .PostUser-badges {
     position: absolute;
     top: 28px;
     left: 32px;
@@ -1563,14 +1538,14 @@
 
     .Badge {
       .Badge--size(20px);
-      box-shadow: 0 0 0 2px var(--cn-surface);
+      box-shadow: 0 0 0 2px var(--lcoy-surface);
     }
   }
 }
 
-// O "…" dos posts de evento (excluir o aviso): discreto, cinza e sem fundo,
-// e só aparece ao passar o mouse na linha (ou com o menu aberto / em foco).
-.CanelaTopic .EventPost {
+// 事件帖的"…"（删除提示）：低调、灰色、无背景，
+// 仅在鼠标悬停该行时出现（或菜单打开/聚焦时）。
+.LcoyTopic .EventPost {
   .Post-controls {
     opacity: 0;
     transition: opacity 0.15s;
@@ -1580,12 +1555,12 @@
       height: 28px;
       padding: 0;
       background: none !important;
-      color: var(--cn-primary-medium);
+      color: var(--lcoy-primary-medium);
 
       &:hover,
       &:focus-visible {
-        background: var(--cn-hover) !important;
-        color: var(--cn-primary);
+        background: var(--lcoy-hover) !important;
+        color: var(--lcoy-primary);
       }
     }
   }
@@ -1598,21 +1573,21 @@
 }
 
 @media (hover: none) {
-  .CanelaTopic .EventPost .Post-controls {
+  .LcoyTopic .EventPost .Post-controls {
     opacity: 1;
   }
 }
 
-// Eventos seguidos ficam juntos, como na lista de eventos das mensagens:
-// sem o fio entre um e outro (só antes do primeiro e depois do último).
-.CanelaTopic .PostStream-item:has(> .EventPost):has(+ .PostStream-item > .EventPost)::after {
+// 连续事件相邻显示，与消息的事件列表一致：
+// 彼此之间无线条（仅第一个之前和最后一个之后）。
+.LcoyTopic .PostStream-item:has(> .EventPost):has(+ .PostStream-item > .EventPost)::after {
   display: none;
 }
 
-// Um fio ligando o ícone do evento ao avatar de quem fez, na altura do meio:
-// do lado direito do ícone (centrado na coluna) até 3px antes do avatar (a
-// coluna do avatar e o conteúdo ficam a 12px um do outro).
-.CanelaTopic .EventPost .Post-side {
+// 连接事件图标和发帖者头像的线条，位于中部高度：
+// 从图标右侧（在列中居中）到头像前 3px（头像
+// 列与内容相距 12px）。
+.LcoyTopic .EventPost .Post-side {
   position: relative;
   align-self: stretch;
   align-items: center;
@@ -1621,18 +1596,18 @@
     content: '';
     position: absolute;
     top: 50%;
-    left: calc(50% + 0.5 * var(--cn-font-down-1) * 1.1 + 4px);
+    left: calc(50% + 0.5 * var(--lcoy-font-down-1) * 1.1 + 4px);
     right: -9px;
     height: 1px;
-    background: var(--cn-primary-low-mid);
+    background: var(--lcoy-primary-low-mid);
     transform: translateY(-0.5px);
   }
 }
 
-// O "…" do evento na linha do texto, centrado na altura, menor e sem
-// deslocamento (o core o posiciona como o dos posts normais).
-// Relativo: o menu (absoluto) abre colado ao "…", não na ponta direita do post.
-.CanelaTopic .EventPost .Post-controls {
+// 事件"…"位于文字行中，高度居中，更小且无
+// 偏移（核心将其定位为普通帖子的方式）。
+// 相对定位：菜单（绝对定位）紧贴"…"展开，而非帖子右端。
+.LcoyTopic .EventPost .Post-controls {
   position: relative;
   float: none;
   display: inline-flex;
@@ -1651,7 +1626,7 @@
     line-height: 1;
   }
 
-  // O "…" fica logo depois do texto: o menu abre para a direita, embaixo dele.
+  // "…"紧跟文字之后：菜单在其下方向右展开。
   .Dropdown-menu {
     top: 100%;
     right: auto;
@@ -1660,16 +1635,16 @@
   }
 }
 
-// Avatar fixo (admin: topic_sticky_avatar): nos posts longos o avatar
-// acompanha a rolagem, logo abaixo do cabeçalho, até o fim do post.
-.Canela--stickyAvatar .CanelaTopic .CanelaPostAvatar {
+// 固定头像（后台：topic_sticky_avatar）：在长帖子中头像
+// 随滚动移动，紧贴头部下方，直到帖子结束。
+.Lcoy--stickyAvatar .LcoyTopic .LcoyPostAvatar {
   position: sticky;
-  top: calc(var(--cn-header-height, 52px) + 13px);
+  top: calc(var(--lcoy-header-height, 52px) + 13px);
 }
 
-// O "…" mora em aside.Post-actions > ul > li (blocos e inline-block do core):
-// a linha de base deslocava o botão para cima. Tudo em flex, centrado.
-.CanelaTopic .EventPost .Post-actions {
+// "…"位于 aside.Post-actions > ul > li（核心的块和 inline-block）：
+// 基线曾把按钮向上推。全部改为 flex 并居中。
+.LcoyTopic .EventPost .Post-actions {
   position: static;
   display: flex;
   align-items: center;
@@ -1687,43 +1662,43 @@
   }
 }
 
-// Sem o pontinho de presença nos posts: quem está online aparece no anel em
-// volta do avatar (abaixo) — o ponto que o core põe ao lado do nome some.
-.CanelaTopic .Post-header .UserOnline {
+// 帖子中不再有在线小圆点：在线者显示在头像
+// 周围的环中（见下）——核心放在名称旁的点消失。
+.LcoyTopic .Post-header .UserOnline {
   display: none !important;
 }
 
-// Online, como no meta.discourse.org (discourse-whos-online, "ring"): um anel
-// verde em volta do avatar do post, separado dele por 1px da cor do cartão.
-// No celular o avatar visível é o do cabeçalho (o da coluna lateral some):
-// o anel vai nele, pelo ponto de presença que o core deixa ao lado do nome.
-.CanelaPostAvatar--online .Post-avatar,
-.CanelaPostAvatar--online > a .Avatar,
-.CanelaTopic .Post-header:has(.UserOnline) .Post-avatar {
+// 在线状态，与 meta.discourse.org 一致（discourse-whos-online，"ring"）：帖子
+// 头像周围一圈绿色环，与头像之间隔 1px 卡片色。
+// 手机端可见的头像是头部的（侧栏的被隐藏）：
+// 环加在它上面，通过核心留在名称旁的在线点。
+.LcoyPostAvatar--online .Post-avatar,
+.LcoyPostAvatar--online > a .Avatar,
+.LcoyTopic .Post-header:has(.UserOnline) .Post-avatar {
   box-shadow:
-    0 0 0 1px var(--cn-surface),
-    0 0 0 3px var(--online-user-circle-color, var(--cn-success));
+    0 0 0 1px var(--lcoy-surface),
+    0 0 0 3px var(--online-user-circle-color, var(--lcoy-success));
 }
 
-// O mesmo anel, mais fino, nos avatares do mapa da discussão.
-.CanelaTopicMap-poster--online .Avatar {
+// 讨论地图头像上同样的环，更细。
+.LcoyTopicMap-poster--online .Avatar {
   box-shadow:
-    0 0 0 1px var(--cn-surface),
-    0 0 0 2px var(--online-user-circle-color, var(--cn-success));
+    0 0 0 1px var(--lcoy-surface),
+    0 0 0 2px var(--online-user-circle-color, var(--lcoy-success));
 }
 
-// O post ainda carregando (LoadingPost do core: header com avatar e uma
-// barra, corpo com três barras) com as medidas do post real, para nada
-// pular quando ele chega (medido a 1440px e a 390px contra um post de verdade):
-//   - tablet/desktop: 13px de respiro em cima, o avatar 4px abaixo (o
-//     padding da .Post-side) na coluna de 45px, o nome no meio do cabeçalho
-//     de 58px, o texto a 16px do cabeçalho em linhas de 24px (16px/1.5) e,
-//     embaixo, o espaço da barra de ações (20 + 38) e os 20px do post;
-//   - celular: o avatar no cabeçalho de 48px, o nome ao lado dele (56px),
-//     o texto na largura toda 12px abaixo e o espaço das ações (12 + 38 + 8).
-// Cada barra fica no meio da linha de texto que ela representa.
-.CanelaTopic .LoadingPost {
-  --cn-skel-line: calc(var(--cn-post-font, 16px) * 1.5);
+// 仍在加载的帖子（核心的 LoadingPost：头部含头像和一条
+// 占位条，正文含三条）采用真实帖子的尺寸，使加载完成时
+// 不发生跳动（在 1440px 和 390px 下对照真实帖子测量）：
+// - 平板/桌面：上方 13px 间距，头像在 45px 列中下移 4px
+// （.Post-side 的内边距），名称位于 58px 头部的中部，
+// 文字距头部 16px、行高 24px（16px/1.5），以及
+// 下方操作栏的空间（20 + 38）和帖子的 20px；
+// - 手机端：头像位于 48px 头部，名称在其旁（56px），
+// 文字占满整宽、位于下方 12px，以及操作空间（12 + 38 + 8）。
+// 每条占位条位于它所代表的文字行中间。
+.LcoyTopic .LoadingPost {
+  --lcoy-skel-line: calc(var(--lcoy-post-font, 16px) * 1.5);
   padding: 13px 0 78px;
   animation: none;
 
@@ -1755,14 +1730,14 @@
     margin: 0;
     padding: 16px 0 4px;
 
-    // Cada barra ocupa a altura de uma linha, com 12px pintados no meio
-    // (o fundo só na caixa do conteúdo): sem margens que se somem ou colapsem.
+    // 每条占位条占一行高度，中间绘制 12px
+    // （背景仅在内容盒内）：没有会叠加或合并的外边距。
     .fakeText {
       display: block;
       box-sizing: border-box;
-      height: var(--cn-skel-line);
+      height: var(--lcoy-skel-line);
       margin: 0;
-      padding: ~"calc((var(--cn-skel-line) - 12px) / 2)" 0;
+      padding: ~"calc((var(--lcoy-skel-line) - 12px) / 2)" 0;
       background-clip: content-box;
       border-radius: 6px;
 
@@ -1774,11 +1749,11 @@
 }
 
 @media @tablet-up {
-  .CanelaTopic .LoadingPost {
+  .LcoyTopic .LoadingPost {
     display: grid;
-    grid-template-columns: var(--cn-post-avatar, 45px) minmax(0, 1fr);
+    grid-template-columns: var(--lcoy-post-avatar, 45px) minmax(0, 1fr);
     grid-template-rows: 58px auto;
-    column-gap: var(--cn-post-gap, 12px);
+    column-gap: var(--lcoy-post-gap, 12px);
 
     .Post-header {
       display: contents;
@@ -1792,7 +1767,7 @@
       margin-top: 4px;
     }
 
-    // O nome real (22px de altura) começa 16px abaixo do topo do cabeçalho.
+    // 真实名称（高度 22px）从头部顶部下方 16px 开始。
     .Post-header .fakeText {
       grid-column: 2;
       grid-row: 1;
@@ -1800,19 +1775,19 @@
       margin-top: 20px;
     }
 
-    // Os 12px de respiro à direita do corpo real (.Post-main).
+    // 真实正文右侧的 12px 间距（.Post-main）。
     .Post-body {
       grid-column: 2;
       grid-row: 2;
-      margin-right: var(--cn-post-gap, 12px);
+      margin-right: var(--lcoy-post-gap, 12px);
     }
   }
 
-  // Com a linha do tempo, o avatar vira um nó dela: ver PostDirect.less.
+  // 使用时间线时，头像成为其节点：见 PostDirect.less。
 }
 
 @media @phone {
-  .CanelaTopic .LoadingPost {
+  .LcoyTopic .LoadingPost {
     display: grid;
     grid-template-columns: 48px minmax(0, 1fr);
     grid-template-rows: 48px auto;
@@ -1829,14 +1804,14 @@
       grid-row: 1;
     }
 
-    // O nome ao lado do avatar (56px da borda), no meio da altura dele.
+    // 名称位于头像旁（距边缘 56px），在其高度中部。
     .Post-header .fakeText {
       grid-column: 2;
       grid-row: 1;
       align-self: center;
     }
 
-    // O texto na largura toda, 12px abaixo do cabeçalho.
+    // 文字占满整宽，位于头部下方 12px。
     .Post-body {
       grid-column: ~"1 / -1";
       grid-row: 2;
@@ -1845,10 +1820,10 @@
   }
 }
 
-// Post oculto (recolhido): o core esconde tudo da coluna lateral, contando com
-// o avatar pequeno do cabeçalho, que o tema esconde no desktop. Aqui o avatar
-// do lado continua visível, esmaecido como o resto do post oculto.
-.CanelaTopic .Post--hidden:not(.revealContent) .Post-side > .CanelaPostAvatar {
+// 隐藏的帖子（折叠）：核心隐藏侧列的一切，依赖
+// 头部的小头像，而主题在桌面端将其隐藏。这里侧边头像
+// 仍可见，像隐藏帖子的其余部分一样变暗。
+.LcoyTopic .Post--hidden:not(.revealContent) .Post-side > .LcoyPostAvatar {
   display: block;
   opacity: 0.5;
 }

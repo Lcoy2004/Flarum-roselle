@@ -14,10 +14,10 @@ use Flarum\Database\Migration;
 use Flarum\Group\Group;
 
 /*
- * Quem pode gerar links de convite: os membros, por padrão (o admin muda em
- * Permissões). O Discourse libera a partir do nível de confiança 2; aqui a
- * permissão por grupo é o equivalente que o Flarum tem.
+ * 谁可以生成邀请链接：默认是普通成员（管理员可在
+ * 权限中修改）。Discourse 从信任等级 2 开始开放；这里的
+ * 按群组设置的权限是 Flarum 的等价做法。
  */
 return Migration::addPermissions([
-    'canela.createInvite' => Group::MEMBER_ID,
+    'lcoy.createInvite' => Group::MEMBER_ID,
 ]);

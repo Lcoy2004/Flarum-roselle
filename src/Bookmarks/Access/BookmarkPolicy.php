@@ -19,11 +19,10 @@ use Flarum\User\User;
 use Lcoy\Roselle\Bookmarks\Bookmark;
 
 /**
- * Marcadores são pessoais: só o dono vê, edita e apaga.
+ * 书签属于个人：只有所有者可以查看、编辑和删除。
  *
- * `forceDeny` para os outros, e não `deny`: sem ele o Gate deixaria passar os
- * administradores, e nem eles leem os marcadores dos outros (no Discourse
- * também não).
+ * 对其他人使用 `forceDeny` 而非 `deny`：若用后者，Gate 会放行管理员，
+ * 而即使是管理员也不读取他人的书签（在 Discourse 中同样如此）。
  */
 final class BookmarkPolicy extends AbstractPolicy
 {

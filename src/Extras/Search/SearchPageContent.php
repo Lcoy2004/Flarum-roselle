@@ -22,12 +22,12 @@ use Psr\Http\Message\ServerRequestInterface;
 use Lcoy\Roselle\Extras\Extras;
 
 /**
- * A rota `/search` do servidor. A página em si é desenhada pelo JS; aqui só se
- * garante que o endereço aberto direto (ou recarregado) não dê 404 do Flarum —
- * e que dê, sim, 404 com o recurso desligado no admin.
+ * 服务端的 `/search` 路由。页面本身由 JS 渲染；这里只确保直接打开（或
+ * 刷新）该地址不会触发 Flarum 的 404——同时在后台关闭该功能时确实返回
+ * 404。
  *
- * Os resultados não vêm pré-carregados: a busca depende de filtros montados no
- * navegador, e repeti-la no servidor só atrasaria a primeira pintura.
+ * 结果不会预加载：搜索依赖浏览器端构建的过滤器，在服务端重复执行只会
+ * 拖慢首次绘制。
  */
 final class SearchPageContent
 {
@@ -49,7 +49,7 @@ final class SearchPageContent
             ? $this->translator->trans('lcoy-roselle.forum.extras.search.meta_title_query', ['query' => $query])
             : $this->translator->trans('lcoy-roselle.forum.extras.search.meta_title');
 
-        // Página de resultados não deve entrar no índice dos buscadores.
+        // 搜索结果页面不应进入搜索引擎索引。
         $document->meta['robots'] = 'noindex';
 
         return $document;

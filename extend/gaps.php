@@ -11,80 +11,68 @@
  */
 
 /*
- * O backend dos recursos do Discourse que faltavam (gaps):
+ * 补齐 Discourse 缺失功能（gaps）的后端：
  *
- * - notificações "editou sua postagem" e "vinculou seu tópico";
- * - o ponto de novidades por categoria na barra lateral (canelaHasUnread);
- * - datas locais [date=…] no formatador;
- * - links de convite (gerar, listar, apagar, o link /invites/{código} e o
- *   resgate no cadastro), com a notificação "aceitou seu convite";
- * - a página 404 do Discourse (a view de erro do core, sobreposta).
+ * - "编辑了你的帖子" 和 "关联了你的主题" 通知；
+ * - 侧边栏中按分类显示的新动态圆点（lcoyHasUnread）；
+ * - 格式化器中的本地日期 [date=…]；
+ * - Discourse 的 404 页面（覆盖核心的错误视图）。
  *
- * Acompanhar/silenciar categorias, ignorar usuários e mover/dividir/mesclar
- * tópicos ficam com fof/follow-tags, fof/ignore-users, fof/split e
- * fof/merge-discussions; o tema só dá o visual. Tabelas em markdown são o
- * PipeTables do fof/formatting.
+ * 关注/静音分类、忽略用户、移动/拆分/合并主题由
+ * fof/follow-tags、fof/ignore-users、fof/split 和
+ * fof/merge-discussions 负责；主题只提供外观。Markdown 表格由
+ * fof/formatting 的 PipeTables 提供。
  *
- * Cada ponto de entrada consulta a própria chave (GapsSettings): desligada, a
- * rota responde 404, o campo some e a notificação não sai.
+ * 每个入口都会查询各自的开关（GapsSettings）：关闭后，
+ * 路由返回 404，字段消失，通知也不再发出。
  */
 
-use Flarum\Api\Resource\ForumResource;
-use Flarum\Api\Resource\UserResource;
 use Flarum\Extend;
 use Flarum\Post\Event\Posted;
 use Flarum\Post\Event\Revised;
-use Lcoy\Roselle\Gaps\Api\ForumResourceFields;
 use Lcoy\Roselle\Gaps\Api\TagResourceFields;
 use Lcoy\Roselle\Gaps\Formatter\LocalDates;
 use Lcoy\Roselle\Gaps\GapsServiceProvider;
 use Lcoy\Roselle\Gaps\GapsSettings;
-use Lcoy\Roselle\Gaps\Invites\Http\InviteInfoController;
-use Lcoy\Roselle\Gaps\Invites\Http\InvitesController;
-use Lcoy\Roselle\Gaps\Invites\Http\RedeemInviteController;
-use Lcoy\Roselle\Gaps\Invites\UserResourceFields;
 use Lcoy\Roselle\Gaps\Listener\NotifyPostEdited;
 use Lcoy\Roselle\Gaps\Listener\NotifyTopicLinked;
-use Lcoy\Roselle\Gaps\Notification\InviteAcceptedBlueprint;
 use Lcoy\Roselle\Gaps\Notification\PostEditedBlueprint;
 use Lcoy\Roselle\Gaps\Notification\TopicLinkedBlueprint;
 
 $settings = (new Extend\Settings())
-    // O fórum só mostra a parte dos recursos que depende do servidor quando
-    // este arquivo está carregado: o atributo é a prova disso.
-    ->default('canela.gaps_backend', true)
-    ->serializeToForum('canelaGapsBackend', 'canela.gaps_backend', fn () => true);
+    // 只有在这个文件被加载时，论坛才会展示依赖服务端的那部分功能：
+    // 这个属性就是证据。
+    ->default('lcoy.gaps_backend', true)
+    ->serializeToForum('lcoyGapsBackend', 'lcoy.gaps_backend', fn () => true);
 
 foreach (GapsSettings::DEFAULTS as $key => $default) {
     $settings->default($key, $default);
 }
 
 $settings
-    ->serializeToForum('canelaNotifyPostEdited', GapsSettings::POST_EDITED, 'boolval')
-    ->serializeToForum('canelaNotifyTopicLinked', GapsSettings::TOPIC_LINKED, 'boolval')
-    ->serializeToForum('canelaInvitesEnabled', GapsSettings::INVITES, 'boolval');
-// As datas locais saem do formatador (servidor): o JS do fórum não lê a
-// configuração, e o admin a lê de app.data.settings.
+    ->serializeToForum('lcoyNotifyPostEdited', GapsSettings::POST_EDITED, 'boolval')
+    ->serializeToForum('lcoyNotifyTopicLinked', GapsSettings::TOPIC_LINKED, 'boolval');
+// 本地日期由格式化器（服务端）输出：论坛的 JS 不读取该
+// 配置，管理员端则从 app.data.settings 读取。
 
 $extenders = [
     $settings,
 
     (new Extend\ServiceProvider())->register(GapsServiceProvider::class),
 
-    // Notificações. Só o alerta, ligado por padrão; cada pessoa desliga em
-    // Configurações → Notificações.
+    // 通知。仅站内提醒，默认开启；每个人可在
+    // 设置 → 通知 中关闭。
     (new Extend\Notification())
         ->type(PostEditedBlueprint::class, ['alert'])
-        ->type(TopicLinkedBlueprint::class, ['alert'])
-        ->type(InviteAcceptedBlueprint::class, ['alert']),
+        ->type(TopicLinkedBlueprint::class, ['alert']),
 
     (new Extend\Event())
         ->listen(Revised::class, NotifyPostEdited::class)
         ->listen(Posted::class, NotifyTopicLinked::class)
         ->listen(Revised::class, NotifyTopicLinked::class),
 
-    // Datas locais. O formatador é montado uma vez e guardado em cache; a
-    // chave liga/desliga só vale depois de limpar o cache.
+    // 本地日期。格式化器只构建一次并缓存；
+    // 开关只有在清除缓存后才会生效。
     (new Extend\Formatter())
         ->configure(function (s9e\TextFormatter\Configurator $config): void {
             if (resolve(GapsSettings::class)->on(GapsSettings::LOCAL_DATES)) {
@@ -92,29 +80,13 @@ $extenders = [
             }
         }),
 
-    // Convites.
-    (new Extend\ApiResource(ForumResource::class))
-        ->fields(ForumResourceFields::class),
-
-    (new Extend\ApiResource(UserResource::class))
-        ->fields(UserResourceFields::class),
-
-    (new Extend\Routes('api'))
-        ->get('/canela-invites', 'canela.invites.index', InvitesController::class)
-        ->post('/canela-invites', 'canela.invites.create', InvitesController::class)
-        ->delete('/canela-invites/{id:\d+}', 'canela.invites.delete', InvitesController::class)
-        ->get('/canela-invite-info/{code:[A-Za-z0-9]+}', 'canela.invites.info', InviteInfoController::class),
-
-    (new Extend\Routes('forum'))
-        ->get('/invites/{code:[A-Za-z0-9]+}', 'canela.invite', RedeemInviteController::class),
-
-    // A página 404 do Discourse: a view de erro do core, sobreposta.
+    // Discourse 的 404 页面：覆盖核心的错误视图。
     (new Extend\View())
         ->namespace('lcoy-roselle-gaps', __DIR__.'/../views/gaps')
         ->extendNamespace('flarum.forum', __DIR__.'/../views/override'),
 ];
 
-// O ponto de novidades por categoria só existe com o flarum/tags.
+// 按分类的新动态圆点只在装有 flarum/tags 时存在。
 if (class_exists(Flarum\Tags\Api\Resource\TagResource::class)) {
     $extenders[] = (new Extend\ApiResource(Flarum\Tags\Api\Resource\TagResource::class))
         ->fields(TagResourceFields::class);

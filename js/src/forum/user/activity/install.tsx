@@ -1,23 +1,21 @@
 /*
- * As subabas de "Atividade" do perfil que faltavam para ficar como no
- * Discourse: Lidos, Reações, Votos e Resolvido. Cada uma só aparece com a
- * extensão dela ligada e a chave dela no admin (card "Página de perfil"):
+ * 资料中原本缺失、用于对齐 Discourse 的“活动”子标签页：
+ * 已读、反应、投票和已解决。每个仅在对应扩展启用且管理后台勾选
+ *（“个人资料页面”卡片）时出现：
  *
- * - Lidos (`user.read`): os tópicos que a pessoa leu, do mais recente para o
- *   mais antigo. Pessoal: só a própria pessoa e administradores.
- * - Reações (`user.reactions`, fof/reactions): curtidas e reações que a
- *   pessoa deu, numa lista só (no Canela a curtida é a reação "coração").
- *   Ela toma o lugar de "Curtidas"; sem o fof, fica a "Curtidas" do core.
- *   As reações só aparecem para quem tem a permissão do fof de ver quem
- *   reagiu; as curtidas, para todos.
- * - Votos (`user.votes`, fof/polls): as postagens com enquetes em que votou,
- *   onde a enquete mostra os votantes (ou todas, para a própria pessoa).
- * - Resolvido (`user.solved`, fof/best-answer): as respostas dela escolhidas
- *   como melhor resposta.
+ * - 已读（`user.read`）：此人读过的主题，从最新到最旧。
+ *   个人性质：仅本人和管理员可见。
+ * - 反应（`user.reactions`，fof/reactions）：此人给出的点赞和反应，
+ *   合并为一个列表（在 Lcoy 中点赞就是“爱心”反应）。它取代“点赞”；
+ *   没有 fof 时保留核心的“点赞”。反应仅对有 fof 的查看反应者权限的人
+ *   可见；点赞对所有人可见。
+ * - 投票（`user.votes`，fof/polls）：此人投票过的带投票帖子，
+ *   且该投票会显示投票者（对本人则全部显示）。
+ * - 已解决（`user.solved`，fof/best-answer）：此人被选为最佳答案的回复。
  *
- * As rotas entram direto em `app.routes` (o initializer roda antes do
- * `mount`); o servidor já atende `/u/{username}[/{filter}]` com a página do
- * perfil. As páginas descem em chunks próprios, sob demanda.
+ * 路由直接放进 `app.routes`（initializer 在 `mount` 之前运行）；
+ * 服务器已经用资料页面响应 `/u/{username}[/{filter}]`。页面在各自的
+ * chunk 中按需加载。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -31,21 +29,21 @@ import type Mithril from 'mithril';
 import { forumBool, isExtensionEnabled, t } from '../../utils/settings';
 
 /**
- * A ordem das subabas, como no Discourse: Todos, Tópicos, Lidos, Rascunhos,
- * Curtidas, Favoritos, Reações, Votos, Resolvido. Menções e mídia (que o
- * Discourse não tem nessa linha) vêm depois; as de outras extensões, no fim.
+ * 子标签页的顺序，与 Discourse 一致：全部、主题、已读、草稿、
+ * 点赞、收藏、反应、投票、已解决。提及和媒体（Discourse 这一行没有）
+ * 排在其后；其他扩展的放在最后。
  */
 export const ACTIVITY_ORDER = [
   'posts',
   'discussions',
-  'canelaRead',
-  'canelaDrafts',
+  'lcoyRead',
+  'lcoyDrafts',
   'likes',
-  // Curtidas + reações: no lugar das Curtidas.
-  'canelaReactions',
-  'canelaBookmarks',
-  'canelaVotes',
-  'canelaSolved',
+  // 点赞 + 反应：取代“点赞”。
+  'lcoyReactions',
+  'lcoyBookmarks',
+  'lcoyVotes',
+  'lcoySolved',
   'mentions',
   'uploads',
 ];
@@ -53,13 +51,13 @@ export const ACTIVITY_ORDER = [
 type Tab = 'read' | 'reactions' | 'votes' | 'solved';
 
 const TABS: Record<Tab, { key: string; icon: string; load: () => Promise<any> }> = {
-  read: { key: 'canelaRead', icon: 'fas fa-clock-rotate-left', load: () => import('./ReadUserPage') },
-  reactions: { key: 'canelaReactions', icon: 'far fa-face-smile', load: () => import('./ReactionsUserPage') },
-  votes: { key: 'canelaVotes', icon: 'fas fa-check-to-slot', load: () => import('./VotesUserPage') },
-  solved: { key: 'canelaSolved', icon: 'far fa-square-check', load: () => import('./SolvedUserPage') },
+  read: { key: 'lcoyRead', icon: 'fas fa-clock-rotate-left', load: () => import('./ReadUserPage') },
+  reactions: { key: 'lcoyReactions', icon: 'far fa-face-smile', load: () => import('./ReactionsUserPage') },
+  votes: { key: 'lcoyVotes', icon: 'fas fa-check-to-slot', load: () => import('./VotesUserPage') },
+  solved: { key: 'lcoySolved', icon: 'far fa-square-check', load: () => import('./SolvedUserPage') },
 };
 
-/** Lidos (e o que mais for pessoal): a própria pessoa ou quem administra. */
+/** 已读（以及其他个人性质的内容）：本人或管理员。 */
 export function canSeePrivate(user: User): boolean {
   const actor = app.session.user;
 
@@ -67,31 +65,31 @@ export function canSeePrivate(user: User): boolean {
 }
 
 /**
- * Se a aba existe para este perfil. Lida na hora de desenhar: no initializer
- * o `app.forum` ainda não existe. Lidos e Votos dependem dos filtros do
- * recurso `activity` do servidor (`canelaActivityFilters`).
+ * 该标签页对此资料是否存在。在绘制时读取：在 initializer 中
+ * `app.forum` 还不存在。已读和投票依赖服务器 `activity` 功能的过滤器
+ *（`lcoyActivityFilters`）。
  */
 export function activityTabOn(tab: Tab, user: User): boolean {
-  const filters = !!app.forum.attribute('canelaActivityFilters');
+  const filters = !!app.forum.attribute('lcoyActivityFilters');
 
   switch (tab) {
     case 'read':
-      return filters && forumBool('canelaUserActivityRead', true) && canSeePrivate(user);
+      return filters && forumBool('lcoyUserActivityRead', true) && canSeePrivate(user);
     case 'reactions':
       return (
         filters &&
         isExtensionEnabled('fof-reactions') &&
-        forumBool('canelaUserActivityReactions', true) &&
-        (isExtensionEnabled('flarum-likes') || !!app.forum.attribute('canelaCanSeeReactions'))
+        forumBool('lcoyUserActivityReactions', true) &&
+        (isExtensionEnabled('flarum-likes') || !!app.forum.attribute('lcoyCanSeeReactions'))
       );
     case 'votes':
-      return filters && isExtensionEnabled('fof-polls') && forumBool('canelaUserActivityVotes', true);
+      return filters && isExtensionEnabled('fof-polls') && forumBool('lcoyUserActivityVotes', true);
     case 'solved':
-      return isExtensionEnabled('fof-best-answer') && forumBool('canelaUserActivitySolved', true);
+      return isExtensionEnabled('fof-best-answer') && forumBool('lcoyUserActivitySolved', true);
   }
 }
 
-/** A aba digitada à mão sem poder vê-la volta para as postagens. */
+/** 手动输入但无权查看的标签页会退回帖子页。 */
 export function leaveIfHidden(tab: Tab, user: User): boolean {
   if (activityTabOn(tab, user)) return false;
 
@@ -114,7 +112,7 @@ export default function installActivity() {
 
     if (!user) return;
 
-    // Curtidas e reações viram uma aba só ("Reações").
+    // 点赞和反应合并为一个标签页（“反应”）。
     if (activityTabOn('reactions', user) && items.has('likes')) items.remove('likes');
 
     (Object.keys(TABS) as Tab[]).forEach((tab) => {
@@ -125,7 +123,7 @@ export default function installActivity() {
         <LinkButton href={app.route(`user.${tab}`, { username: user.slug() })} icon={TABS[tab].icon}>
           {t(`user.nav.${tab}`)}
         </LinkButton>,
-        // A posição final sai do ACTIVITY_ORDER, na navegação do perfil.
+        // 最终位置由 ACTIVITY_ORDER 在资料导航中决定。
         60
       );
     });

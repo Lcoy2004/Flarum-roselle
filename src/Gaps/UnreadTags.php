@@ -21,12 +21,11 @@ use Flarum\User\User;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 
 /**
- * Quais categorias e etiquetas têm tópicos novos ou não lidos para quem
- * está vendo — o ponto ao lado da categoria na barra lateral do Discourse.
+ * 针对当前查看者，哪些分类和标签有新的或未读的主题——Discourse 侧边栏
+ * 中分类旁的小圆点。
  *
- * Uma consulta só por requisição (as tags vêm todas juntas no documento do
- * fórum), e só olha as últimas duas semanas: um tópico antigo que a pessoa
- * nunca abriu não é "novidade".
+ * 每个请求只查询一次（标签会一同出现在论坛文档中），且只看最近两周：
+ * 用户从未打开过的旧主题不算"新内容"。
  */
 final class UnreadTags
 {
@@ -35,7 +34,7 @@ final class UnreadTags
     /** @var array<int, array<int, true>> */
     private array $cache = [];
 
-    /** @return array<int, true> ids das tags com novidade (as mães entram junto das filhas) */
+    /** @return array<int, true> 有新内容的标签 id（父标签随子标签一同加入） */
     public function for(User $actor): array
     {
         if ($actor->isGuest()) {
@@ -86,7 +85,7 @@ final class UnreadTags
             $result[(int) $id] = true;
         }
 
-        // A categoria mãe acende junto com a filha, como no Discourse.
+        // 父分类会与子分类一同点亮，与 Discourse 一致。
         if ($result) {
             foreach (Tag::query()->whereIn('id', array_keys($result))->whereNotNull('parent_id')->pluck('parent_id') as $parent) {
                 $result[(int) $parent] = true;

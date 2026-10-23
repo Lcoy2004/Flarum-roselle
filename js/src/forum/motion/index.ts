@@ -1,8 +1,8 @@
 /*
- * Movimento do Discourse: barra de carregamento do topo, toasts, fechamento
- * dos menus, dicas dos botões de ícone, reticências de "digitando" e o
- * retorno de "link copiado". O que é só CSS (aberturas, destaques, spinner,
- * skeleton, foco) mora em `less/forum/Motion.less`.
+ * Discourse 动效：顶部加载条、提示条、菜单关闭、
+ * 图标按钮提示、“正在输入”的省略号，以及
+ * “链接已复制”的反馈。纯 CSS 的部分（打开、高亮、加载指示器、
+ * 骨架屏、聚焦）位于 `less/forum/Motion.less`。
  */
 import installLoadingSlider from './loadingSlider';
 import installToasts from './toasts';
@@ -12,8 +12,8 @@ import installTyping from './typing';
 import installFeedback from './feedback';
 
 export default function installMotion() {
-  // As configurações só existem depois do boot (`app.forum`): cada módulo
-  // as lê na hora de agir, nunca aqui.
+  // 配置只在启动后才存在（`app.forum`）：每个模块在行动时
+  // 读取它，绝不在这里读取。
   installLoadingSlider();
 
   installToasts();

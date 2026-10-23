@@ -12,14 +12,14 @@ use Lcoy\Roselle\Bookmarks\Bookmark;
 use Lcoy\Roselle\Tests\Support\Sqlite;
 
 /**
- * O lembrete do marcador: trocar a hora rearma o envio; salvar a mesma hora
- * (o formulário manda tudo de novo) não manda o lembrete outra vez.
+ * 书签提醒：更改时间会重新启用发送；保存同一时间
+ * （表单会再次提交全部内容）不会再次发送提醒。
  */
 final class BookmarkModelTest extends TestCase
 {
     protected function setUp(): void
     {
-        // Só para o Eloquent saber o formato de data do banco.
+        // 只是为了让 Eloquent 知道数据库的日期格式。
         $resolver = new ConnectionResolver(['default' => Sqlite::connection()]);
         $resolver->setDefaultConnection('default');
         Model::setConnectionResolver($resolver);

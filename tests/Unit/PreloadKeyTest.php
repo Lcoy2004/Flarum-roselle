@@ -8,14 +8,14 @@ use PHPUnit\Framework\TestCase;
 use Lcoy\Roselle\Preload\PreloadKey;
 
 /**
- * A chave do pré-carregamento tem de sair igual à do `preloadKey()` do JS
- * (js/src/forum/utils/preload.ts), senão a página pede tudo de novo.
+ * 预加载的键必须与 JS 的 `preloadKey()` 生成的结果一致
+ * （js/src/forum/utils/preload.ts），否则页面会重新请求全部内容。
  */
 final class PreloadKeyTest extends TestCase
 {
     public function test_pares_em_ordem_e_sem_barras_nas_pontas(): void
     {
-        self::assertSame('canela-about?', PreloadKey::make('/canela-about/'));
+        self::assertSame('lcoy-about?', PreloadKey::make('/lcoy-about/'));
         self::assertSame('posts?b=2&c=3', PreloadKey::make('posts', ['c' => 3, 'b' => '2']));
     }
 

@@ -1,10 +1,10 @@
 /*
- * A ponte entre o tema e o fof/drafts: os rascunhos moram no modelo `drafts`
- * da extensão (API `/api/drafts`, lista em `app.drafts`, contagem em
- * `user.draftCount`). O tema só desenha à moda do Discourse — o "⌄" do botão
- * "Iniciar Discussão", a aba do perfil, salvar sozinho e "Descartar" ao fechar.
+ * 主题与 fof/drafts 之间的桥接：草稿存放在该扩展的 `drafts` 模型中
+ * （API `/api/drafts`，列表在 `app.drafts`，计数在
+ * `user.draftCount`）。主题只负责按 Discourse 风格绘制——“发起主题”
+ * 按钮的“⌄”、个人资料页标签、自动保存以及关闭时的“丢弃”。
  *
- * Sem o fof-drafts habilitado, `draftsOn()` é falso e nada disso aparece.
+ * 未启用 fof-drafts 时，`draftsOn()` 为假，以上内容均不显示。
  */
 import app from 'flarum/forum/app';
 import { truncate } from 'flarum/common/utils/string';
@@ -13,7 +13,7 @@ import type Discussion from 'flarum/common/models/Discussion';
 import { composerOn } from '../common';
 import { t } from '../../../utils/settings';
 
-/** O modelo `Draft` do fof/drafts (só o que o tema usa). */
+/** fof/drafts 的 `Draft` 模型（仅主题用到的部分）。 */
 export interface FofDraft {
   id(): string | undefined;
   exists: boolean;
@@ -42,7 +42,7 @@ export function fofDraftsInstalled(): boolean {
   return 'fof-drafts' in flarum.extensions;
 }
 
-/** Rascunhos valem agora: extensão ligada, pessoa logada com permissão e o recurso ligado no admin do tema. */
+/** 草稿当前可用：扩展已启用、用户已登录且有权限、主题管理后台中该功能已开启。 */
 export function draftsOn(): boolean {
   return fofDraftsInstalled() && !!app.session.user && !!app.forum.attribute('canSaveDrafts') && composerOn('Drafts');
 }
@@ -51,7 +51,7 @@ export function fofState(): FofDraftsState | null {
   return ((app as any).drafts as FofDraftsState | undefined) ?? null;
 }
 
-/** O fof/drafts guarda tópico novo e resposta; edição e mensagem do flarum/messages, não. */
+/** fof/drafts 只保存新主题和回复；编辑与 flarum/messages 的私信不保存。 */
 export function draftableBody(): boolean {
   const composer = app.composer;
 
@@ -72,7 +72,7 @@ export function allDrafts(): FofDraft[] {
     .sort((a: FofDraft, b: FofDraft) => (b.updatedAt()?.getTime?.() ?? 0) - (a.updatedAt()?.getTime?.() ?? 0));
 }
 
-/** Quantos rascunhos a pessoa tem: o que já veio do servidor, ou a contagem do usuário antes disso. */
+/** 用户拥有的草稿数：服务端已返回的数量，或此前用户对象上的计数。 */
 export function draftCount(): number {
   if (draftsLoaded()) return allDrafts().length;
 
@@ -87,7 +87,7 @@ function adjustCount(delta: number): void {
   if (attributes) attributes.draftCount = Math.max(0, (Number(attributes.draftCount) || 0) + delta);
 }
 
-/** Pede a primeira página ao fof (uma vez por sessão) e avisa quando terminou. */
+/** 向 fof 请求第一页（每个会话一次），完成后返回。 */
 export function loadDrafts(): Promise<void> {
   const state = fofState();
 
@@ -96,7 +96,7 @@ export function loadDrafts(): Promise<void> {
 
   state.load();
 
-  // O `load()` do fof não devolve a promessa: espera o `loading` baixar.
+  // fof 的 `load()` 不返回 promise：等待 `loading` 变为 false。
   return new Promise((resolve) => {
     const started = Date.now();
     const timer = setInterval(() => {
@@ -109,7 +109,7 @@ export function loadDrafts(): Promise<void> {
 }
 
 // ---------------------------------------------------------------------
-// O composer aberto
+// 打开的 composer
 // ---------------------------------------------------------------------
 
 function relationshipRef(model: any): { type: string; id: string } | null {
@@ -119,7 +119,7 @@ function relationshipRef(model: any): { type: string; id: string } | null {
   return id && type ? { type: String(type), id: String(id) } : null;
 }
 
-/** O `data()` do corpo no formato da API do fof (relações como JSON:API). */
+/** 主体的 `data()`，采用 fof 的 API 格式（关系表示为 JSON:API 格式）。 */
 function payload(raw: Record<string, any>): Record<string, unknown> {
   const data: Record<string, any> = { ...raw };
 
@@ -140,21 +140,21 @@ function payload(raw: Record<string, any>): Record<string, unknown> {
   return data;
 }
 
-/** Há o que guardar: o fof só guarda rascunho com texto. */
+/** 是否有内容可保存：fof 只会保存含文本的草稿。 */
 export function hasContent(): boolean {
   return draftableBody() && !!(app.composer.fields?.content?.() || '').trim();
 }
 
-/** O texto mudou desde o último salvamento (o `changed()` que o fof põe no ComposerState). */
+/** 自上次保存以来文本已改变（fof 放在 ComposerState 上的 `changed()`）。 */
 export function draftChanged(): boolean {
   return draftableBody() && !!(app.composer as any).changed?.();
 }
 
 /**
- * Salva o composer aberto no fof. Diferente do `saveDraft()` do fof, devolve a
- * promessa e só pendura o rascunho criado no composer se ele ainda é o mesmo:
- * salvar e fechar logo em seguida não deixa um rascunho velho no composer
- * seguinte (que passaria a gravar por cima dele).
+ * 将打开的 composer 保存到 fof。与 fof 的 `saveDraft()` 不同，它会
+ * 返回 promise，并且仅当 composer 仍是同一个时才把新建的草稿挂到
+ * composer 上：保存后立即关闭不会让旧草稿留在下一个 composer 中
+ * （否则后续保存会覆盖它）。
  */
 export function saveCurrentDraft(): Promise<void> {
   const composer: any = app.composer;
@@ -165,11 +165,11 @@ export function saveCurrentDraft(): Promise<void> {
   const data = payload(composer.data());
   const existing: FofDraft | null = composer.draft || null;
 
-  // Apagado (na lista, em outra aba) antes de salvar: não ressuscita.
+  // 保存前已被删除（在列表或另一个标签页中）：不要恢复它。
   if (existing && existing.id() && !existing.exists) return Promise.resolve();
 
   composer.saving = true;
-  composer.canelaDraftError = false;
+  composer.lcoyDraftError = false;
   m.redraw();
 
   const request = existing ? existing.save(data) : (app.store.createRecord('drafts') as unknown as FofDraft).save(data);
@@ -183,10 +183,10 @@ export function saveCurrentDraft(): Promise<void> {
         if (composer.body === body) composer.draft = saved;
       }
 
-      if (composer.body === body) composer.canelaDraftSavedAt = Date.now();
+      if (composer.body === body) composer.lcoyDraftSavedAt = Date.now();
     })
     .catch(() => {
-      if (composer.body === body) composer.canelaDraftError = true;
+      if (composer.body === body) composer.lcoyDraftError = true;
     })
     .finally(() => {
       composer.saving = false;
@@ -194,7 +194,7 @@ export function saveCurrentDraft(): Promise<void> {
     });
 }
 
-/** Apaga o rascunho do composer aberto, se houver. */
+/** 删除打开的 composer 对应的草稿（若存在）。 */
 export function discardCurrentDraft(): Promise<void> {
   const composer: any = app.composer;
   const draft: FofDraft | null = composer.draft || null;
@@ -212,19 +212,19 @@ export function discardCurrentDraft(): Promise<void> {
     .catch(() => {});
 }
 
-/** O estado discreto do rodapé: salvando, salvo há pouco (até 3 s) ou nada. */
+/** 页脚的轻量状态：保存中、刚保存（3 秒内）或无。 */
 export function draftStatus(): 'saving' | 'saved' | 'error' | null {
   const composer: any = app.composer;
 
-  if (composer.canelaDraftError) return 'error';
+  if (composer.lcoyDraftError) return 'error';
   if (composer.saving) return 'saving';
-  if (composer.canelaDraftSavedAt && Date.now() - composer.canelaDraftSavedAt < 3000) return 'saved';
+  if (composer.lcoyDraftSavedAt && Date.now() - composer.lcoyDraftSavedAt < 3000) return 'saved';
 
   return null;
 }
 
 // ---------------------------------------------------------------------
-// Listas
+// 列表
 // ---------------------------------------------------------------------
 
 export function draftDiscussion(draft: FofDraft): Discussion | null {
@@ -240,8 +240,8 @@ export function replyDraftDiscussionId(draft: FofDraft): string | null {
 const requested = new Set<string>();
 
 /**
- * O fof não manda o tópico junto com o rascunho de resposta, e o título dele
- * é o que a lista mostra ("RE: …"). Busca os que faltam, um por vez.
+ * fof 不会在回复草稿中附带主题，而其标题正是列表所显示的内容
+ * （“RE: …”）。逐个请求缺失的主题。
  */
 export function ensureDiscussions(drafts: FofDraft[]): void {
   drafts.forEach((draft) => {
@@ -260,7 +260,7 @@ export function ensureDiscussions(drafts: FofDraft[]): void {
   });
 }
 
-/** O ícone do Discourse para o tipo: ↩ resposta, ✉ mensagem, ✎ tópico. */
+/** Discourse 各类型对应的图标：↩ 回复、✉ 私信、✎ 主题。 */
 export function draftIcon(draft: FofDraft): string {
   switch (draft.type()) {
     case 'reply':
@@ -272,7 +272,7 @@ export function draftIcon(draft: FofDraft): string {
   }
 }
 
-/** O título da linha: "RE: <tópico>" na resposta, o título (ou o começo do texto) no tópico novo. */
+/** 行标题：回复为“RE: <主题>”，新主题为标题（或文本开头）。 */
 export function draftTitle(draft: FofDraft): string {
   const excerpt = truncate((draft.content() || '').replace(/\s+/g, ' ').trim(), 100);
 
@@ -285,7 +285,7 @@ export function draftTitle(draft: FofDraft): string {
   return draft.title() || excerpt || t('composer.drafts.untitled');
 }
 
-/** Reabre o composer com o rascunho; numa resposta, vai antes para o tópico, como o Discourse. */
+/** 携带草稿重新打开 composer；若为回复，先进入主题，与 Discourse 一致。 */
 export function openDraft(draft: FofDraft): void {
   const state = fofState();
 
@@ -301,6 +301,6 @@ export function openDraft(draft: FofDraft): void {
 }
 
 export function deleteDraft(draft: FofDraft): void {
-  // O fof pergunta antes, ajusta a contagem e fecha o composer se era o dele.
+  // fof 会先询问，再调整计数，并在删除的是当前草稿时关闭 composer。
   fofState()?.deleteDraft(draft);
 }

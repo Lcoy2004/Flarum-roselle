@@ -1,45 +1,45 @@
 // =====================================================================
-// Lista de tópicos no formato do Discourse: colunas Tópico | Postadores |
-// Respostas | Visualizações | Atividade, linhas separadas por borda, e no
-// celular avatar à esquerda com a contagem no canto.
+// Discourse 格式的话题列表：列 话题 | 发帖者 |
+// 回复 | 浏览 | 活动，行之间以边框分隔，在
+// 手机端头像在左，计数在角落。
 //
-// Medidas tiradas do CSS computado do meta.discourse.org (1440, 900 e 400px):
+// 数值取自 meta.discourse.org 的计算样式（1440、900 和 400px）：
 // `.topic-list`, `.topic-list-item`, `.link-top-line`, `.link-bottom-line`,
 // `.badge-category__wrapper`, `td.posters`, `td.num`, `td.activity`.
 // =====================================================================
 
-// Larguras das colunas (o td inteiro do Discourse, com o padding) —
-// compartilhadas pelo cabeçalho e pelas linhas, que usam as mesmas classes
-// CanelaCell--*. A atividade desconta os 12px do padding da linha.
-@canela-col-posters: 154px;   // 146px + 4px de cada lado
-@canela-col-replies: 76px;    // 4.3em + 4px de cada lado
-@canela-col-views: 98px;
-@canela-col-activity: 81px;   // 5.5em de 13.9px + 4px; os 12px finais vêm da linha
-@canela-row-x: 12px;
-// Coluna do ⋮ (controles da discussão), no lugar dos 12px finais da linha:
-// o botão de 28px fica a 4px da borda e a 9px do texto da atividade.
-@canela-col-controls: 36px;
+// 列宽（Discourse 的整个 td，含内边距）——
+// 由头部和行共用，它们使用相同的
+// LcoyCell--* 类。活动列扣除行的 12px 内边距。
+@lcoy-col-posters: 154px;   // 146px + 每侧 4px
+@lcoy-col-replies: 76px;    // 4.3em + 每侧 4px
+@lcoy-col-views: 98px;
+@lcoy-col-activity: 81px;   // 13.9px 的 5.5em + 4px；最后 12px 来自行
+@lcoy-row-x: 12px;
+// ⋮ 列（讨论控件），取代行末的 12px：
+// 28px 的按钮距边缘 4px，距活动文字 9px。
+@lcoy-col-controls: 36px;
 
-// A lista mede em em a partir de 1rem (16px), como o Discourse: o body do
-// tema é 15px, e sem isso todas as fontes da lista sairiam 1px menores. 1rem
-// acompanha o "tamanho do texto" do leitor, que escala o html.
-.CanelaList,
-.CanelaListHeader {
+// 列表以 1rem（16px）为基准使用 em，与 Discourse 一致：主题的 body
+// 是 15px，否则列表所有字号都会小 1px。1rem
+// 跟随读者的"文字大小"设置，它会缩放 html。
+.LcoyList,
+.LcoyListHeader {
   font-size: 1rem;
 }
 
 // ---------------------------------------------------------------------
-// Badges de categoria e etiqueta (usados também na barra lateral, no tópico
-// e na página de categorias) — `.badge-category__wrapper` do Discourse
+// 分类和标签徽章（也用于侧边栏、话题
+// 和分类页）——Discourse 的 `.badge-category__wrapper`
 // ---------------------------------------------------------------------
-.CanelaCategorySymbol {
+.LcoyCategorySymbol {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   width: 1em;
   height: 1em;
-  color: var(--category-color, var(--cn-primary-medium));
+  color: var(--category-color, var(--lcoy-primary-medium));
   line-height: 1;
 
   .icon {
@@ -56,38 +56,38 @@
   }
 }
 
-.CanelaBadges {
+.LcoyBadges {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0 8px;
   min-width: 0;
 }
-.CanelaBadges-labels {
+.LcoyBadges-labels {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 0 8px;
 }
 
-.CanelaCategoryBadge,
-.CanelaTagBadge {
+.LcoyCategoryBadge,
+.LcoyTagBadge {
   display: inline-flex;
   align-items: center;
   gap: 0.33em;
   max-width: 100%;
-  color: var(--cn-primary-high);
+  color: var(--lcoy-primary-high);
   text-decoration: none;
   white-space: nowrap;
 
   &:hover,
   &:focus-visible {
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     text-decoration: none;
   }
 }
-// No badge, o símbolo é do tamanho do quadradinho/ícone (0.9em), sem caixa
-// de 1em em volta — senão o nome fica longe dele.
-.CanelaCategoryBadge .CanelaCategorySymbol {
+// 徽章中的符号为小方块/图标的大小（0.9em），周围没有 1em 的
+// 盒子——否则名称会离它太远。
+.LcoyCategoryBadge .LcoyCategorySymbol {
   width: auto;
   height: auto;
 
@@ -95,34 +95,34 @@
     font-size: 0.9em;
   }
 }
-.CanelaCategoryBadge-name {
+.LcoyCategoryBadge-name {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-// "Pai ▪ Filha": um pouco mais de ar antes do quadradinho da filha.
-.CanelaCategoryBadge-parent {
+// "父 ▪ 子"：子级方块前稍多一些空隙。
+.LcoyCategoryBadge-parent {
   margin-right: 0.17em;
 }
-// O ícone da etiqueta do Flarum, na cor dela quando houver.
-.CanelaTagBadge .CanelaTagSymbol {
+// Flarum 标签的图标，有颜色时使用其标签色。
+.LcoyTagBadge .LcoyTagSymbol {
   display: inline-flex;
   font-size: 0.9em;
-  color: var(--tag-color, var(--cn-primary-medium));
+  color: var(--tag-color, var(--lcoy-primary-medium));
 }
 
 // ---------------------------------------------------------------------
-// Cabeçalho de colunas (`.topic-list-header`): 13.9px, padding 12px 4px,
-// sem borda embaixo.
+// 列头（`.topic-list-header`）：13.9px，内边距 12px 4px，
+// 下方无边框。
 // ---------------------------------------------------------------------
-.CanelaListHeader {
+.LcoyListHeader {
   display: flex;
   align-items: center;
-  padding: 0 @canela-row-x;
-  font-size: var(--cn-font-down-1);
+  padding: 0 @lcoy-row-x;
+  font-size: var(--lcoy-font-down-1);
   line-height: 1.2;
-  color: var(--cn-primary-very-high);
+  color: var(--lcoy-primary-very-high);
 }
-.CanelaListHeader-cell {
+.LcoyListHeader-cell {
   flex: 0 0 auto;
   box-sizing: border-box;
   padding: 12px 4px;
@@ -135,7 +135,7 @@
     padding-left: 0;
   }
 }
-.CanelaListHeader-sort {
+.LcoyListHeader-sort {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -149,18 +149,18 @@
   // `.sortable:hover { background-color: var(--d-hover) }`
   &:hover,
   &:focus-visible {
-    background: var(--cn-hover);
+    background: var(--lcoy-hover);
   }
 }
-.CanelaListHeader-arrow {
+.LcoyListHeader-arrow {
   font-size: 0.75em;
 }
-.CanelaListHeader .CanelaCell--activity {
+.LcoyListHeader .LcoyCell--activity {
   padding-right: 0;
 }
-.CanelaListHeader .CanelaCell--replies,
-.CanelaListHeader .CanelaCell--views,
-.CanelaListHeader .CanelaCell--activity {
+.LcoyListHeader .LcoyCell--replies,
+.LcoyListHeader .LcoyCell--views,
+.LcoyListHeader .LcoyCell--activity {
   text-align: center;
   justify-content: center;
   font-weight: normal;
@@ -169,52 +169,52 @@
 }
 
 // ---------------------------------------------------------------------
-// Linha (`.topic-list-item`)
+// 行（`.topic-list-item`）
 // ---------------------------------------------------------------------
-.CanelaList .DiscussionList-discussions {
+.LcoyList .DiscussionList-discussions {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-// Especificidade dupla para vencer o .DiscussionListItem do core, que no
-// tablet+ põe margens negativas, raio e fundo no hover. Mira a lista, e não a
-// linha: o MinimalDiscussionListItem do modal de busca fica como o core.
-.CanelaList .DiscussionListItem {
+// 双倍特异性以胜过核心的 .DiscussionListItem，它在
+// 平板及以上会加负外边距、圆角和悬停背景。作用于列表而非
+// 行：搜索弹窗的 MinimalDiscussionListItem 保持核心样式。
+.LcoyList .DiscussionListItem {
   position: relative;
   margin: 0;
   padding: 0;
   border-radius: 0;
-  border-bottom: 1px solid var(--cn-border);
+  border-bottom: 1px solid var(--lcoy-border);
   transition: none;
 
   &:hover {
     background: transparent;
   }
 
-  // Controles (⋮): numa coluna estreita própria, depois de Atividade, da
-  // altura da linha e com o botão no meio dela. Antes ficavam no canto de
-  // cima, por cima da data da atividade. Aparecem no hover, no foco (teclado)
-  // e com o menu aberto; em telas de toque o core já os deixa sempre à vista.
+  // 控件（⋮）：位于活动列之后的独立窄列中，高度
+  // 与行一致，按钮居中。此前它们位于上角，
+  // 压在活动日期之上。在悬停、焦点（键盘）
+  // 和菜单打开时出现；在触摸屏上核心本就始终显示。
   .DiscussionListItem-controls {
     top: 0;
     bottom: 0;
     right: 0;
-    width: @canela-col-controls;
+    width: @lcoy-col-controls;
     display: flex;
     align-items: center;
     justify-content: center;
 
-    // Aberto para cima, o menu passa por cima da barra de navegação da
-    // lista (.CanelaNav, z-index 4).
+    // 向上展开时，菜单会盖在列表导航栏
+    // （.LcoyNav，z-index 4）之上。
     &.open {
       z-index: 5;
     }
 
-    // O menu abre embaixo da linha inteira (o contêiner tem a altura dela),
-    // alinhado à direita: não cobre o título nem as colunas da própria linha.
-    // Perto do fim da tela o core marca o Dropdown-menu--top, e aí ele abre
-    // acima da linha.
+    // 菜单在整个行的下方展开（容器具有行高），
+    // 右对齐：不遮挡标题，也不遮挡该行自己的列。
+    // 接近屏幕底部时，核心会标记 Dropdown-menu--top，此时它在
+    // 行的上方展开。
     .Dropdown-menu {
       top: 100%;
       bottom: auto;
@@ -232,87 +232,87 @@
       width: 28px;
       height: 28px;
       padding: 0;
-      border-radius: var(--cn-radius-pill);
-      background: var(--cn-surface);
-      color: var(--cn-primary-medium);
+      border-radius: var(--lcoy-radius-pill);
+      background: var(--lcoy-surface);
+      color: var(--lcoy-primary-medium);
 
       &:hover,
       &:focus-visible {
-        background: var(--cn-primary-100);
-        color: var(--cn-primary);
+        background: var(--lcoy-primary-100);
+        color: var(--lcoy-primary);
       }
     }
   }
 }
 
-// A linha do tópico de onde o leitor voltou (`background-fade-highlight`).
-@keyframes canela-fade-highlight {
+// 读者返回时所处的话题行（`background-fade-highlight`）。
+@keyframes lcoy-fade-highlight {
   0% {
-    background-color: var(--cn-accent-low);
+    background-color: var(--lcoy-accent-low);
   }
   100% {
     background-color: transparent;
   }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .CanelaList .DiscussionListItem.CanelaListItem--highlighted {
-    animation: canela-fade-highlight 2.5s ease-out;
+  .LcoyList .DiscussionListItem.LcoyListItem--highlighted {
+    animation: lcoy-fade-highlight 2.5s ease-out;
   }
 }
 
-// A coluna do ⋮ só existe quando alguma linha tem controles (visitante não
-// tem): aí a linha e o cabeçalho reservam a mesma largura no fim, e nada
-// passa por cima de Respostas, Visualizações ou Atividade. No celular o core
-// esconde o ⋮ (as ações vêm do deslizar), e a linha segue com o grid de lá.
+// ⋮ 列仅在某个行有控件时存在（访客
+// 没有）：此时行和头部在末尾预留相同宽度，任何内容
+// 都不会压到回复、浏览或活动之上。在手机端核心
+// 隐藏 ⋮（操作来自滑动），行则沿用那里的网格。
 @media @tablet-up {
-  .CanelaList:has(.DiscussionListItem-controls) {
+  .LcoyList:has(.DiscussionListItem-controls) {
     .DiscussionListItem-content,
-    .CanelaListHeader {
-      padding-right: @canela-col-controls;
+    .LcoyListHeader {
+      padding-right: @lcoy-col-controls;
     }
   }
 
-  .CanelaList .DiscussionListItem:focus-within .DiscussionListItem-controls {
+  .LcoyList .DiscussionListItem:focus-within .DiscussionListItem-controls {
     opacity: 1;
   }
 }
 
-// td: padding 20px 4px; a primeira coluna começa a 12px e a última termina a 12px.
-.CanelaList .DiscussionListItem-content {
+// td：内边距 20px 4px；第一列从 12px 开始，最后一列在 12px 结束。
+.LcoyList .DiscussionListItem-content {
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 0 @canela-row-x;
-  color: var(--cn-primary-very-high);
+  padding: 0 @lcoy-row-x;
+  color: var(--lcoy-primary-very-high);
 }
 
-.CanelaListItem-avatar {
+.LcoyListItem-avatar {
   display: none;
 }
 
-.CanelaTopic.DiscussionListItem-main {
+.LcoyTopic.DiscussionListItem-main {
   flex: 1 1 auto;
   align-self: stretch;
   min-width: 0;
   padding: 20px 4px 20px 0;
 }
 
-// `.link-top-line`: --font-up-1 (18.4px), line-height 1.2, peso 400.
-.CanelaTopic-titleLine.DiscussionListItem-title {
+// `.link-top-line`：--font-up-1（18.4px），行高 1.2，字重 400。
+.LcoyTopic-titleLine.DiscussionListItem-title {
   margin: 0;
-  font-size: var(--cn-font-up-1);
+  font-size: var(--lcoy-font-up-1);
   font-weight: normal;
   line-height: 1.2;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
   overflow: visible;
   overflow-wrap: anywhere;
 
-  // O core põe negrito nos não lidos; o Discourse marca com a bolinha.
+  // 核心将未读设为加粗；Discourse 用小圆点标记。
   .DiscussionList:not(.DiscussionList--searchResults) .unread & {
     font-weight: normal;
   }
 }
-.CanelaTopic-title {
+.LcoyTopic-title {
   color: inherit;
   text-decoration: none;
 
@@ -322,9 +322,9 @@
     text-decoration: none;
   }
 
-  // Visitado: --title-color--read (primary-medium).
+  // 已访问：--title-color--read（primary-medium）。
   .read & {
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
   }
 
   mark {
@@ -332,19 +332,19 @@
     box-shadow: none;
     padding: 0;
     font-weight: 700;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 }
 
-// `.topic-statuses`: ícones em primary-medium antes do título (16px: um
-// pouco maiores que os 14px do Discourse, a pedido do usuário).
-.CanelaTopic-status {
+// `.topic-statuses`：标题前的 primary-medium 图标（16px：比
+// Discourse 的 14px 略大，按用户要求）。
+.LcoyTopic-status {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   margin-right: 6px;
   vertical-align: 1px;
-  color: var(--cn-primary-medium);
+  color: var(--lcoy-primary-medium);
 
   .Badge {
     --size: auto;
@@ -362,7 +362,7 @@
   }
 }
 
-.CanelaUnread {
+.LcoyUnread {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -374,17 +374,17 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: ~"oklch(from var(--cn-accent) calc(l + (1 - l) * 0.35) calc(c * 0.7) h)";
+    background: ~"oklch(from var(--lcoy-accent) calc(l + (1 - l) * 0.35) calc(c * 0.7) h)";
   }
 
   &--count {
     min-width: 1.5em;
     height: 1.5em;
     padding: 0 0.45em;
-    border-radius: var(--cn-radius-pill);
-    background: var(--cn-accent);
-    color: var(--cn-accent-text);
-    font-size: var(--cn-font-down-2);
+    border-radius: var(--lcoy-radius-pill);
+    background: var(--lcoy-accent);
+    color: var(--lcoy-accent-text);
+    font-size: var(--lcoy-font-down-2);
     font-weight: 600;
     line-height: 1;
   }
@@ -395,32 +395,32 @@
   }
 }
 
-// `.link-bottom-line`: --font-down-1, margin-top 4px, gap 0 8px, line-height 1.4.
-.CanelaTopic-meta {
+// `.link-bottom-line`：--font-down-1，margin-top 4px，gap 0 8px，行高 1.4。
+.LcoyTopic-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0 8px;
   margin-top: 4px;
-  font-size: var(--cn-font-down-1);
+  font-size: var(--lcoy-font-down-1);
   line-height: 1.4;
-  color: var(--cn-primary-high);
+  color: var(--lcoy-primary-high);
 
   &:empty {
     display: none;
   }
 }
-.CanelaTopic-info.DiscussionListItem-info {
+.LcoyTopic-info.DiscussionListItem-info {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 0 8px;
   font-size: inherit;
-  color: var(--cn-primary-medium);
+  color: var(--lcoy-primary-medium);
 }
-.CanelaTopic-stats {
+.LcoyTopic-stats {
   display: inline-flex;
   gap: 8px;
-  color: var(--cn-primary-medium);
+  color: var(--lcoy-primary-medium);
 
   .DiscussionListItem-stats-item {
     font-size: inherit;
@@ -428,13 +428,13 @@
   }
 }
 
-// `.topic-excerpt`: 16px, line-height 1.4, primary-high, margin-top 4px.
-.CanelaTopic-excerpt {
+// `.topic-excerpt`：16px，行高 1.4，primary-high，margin-top 4px。
+.LcoyTopic-excerpt {
   margin-top: 4px;
   padding-right: 4px;
-  font-size: var(--cn-font-0);
+  font-size: var(--lcoy-font-0);
   line-height: 1.4;
-  color: var(--cn-primary-high);
+  color: var(--lcoy-primary-high);
   overflow-wrap: anywhere;
   min-width: 0;
 
@@ -446,11 +446,11 @@
     color: inherit;
   }
 
-  // fof/synopsis: com o excerto rico, o resumo traz HTML do post — imagens,
-  // código, tabelas. A extensão só limita as mídias dentro de
-  // `.DiscussionListItem-info`, e no tema o excerto mora aqui: sem isto uma
-  // imagem de 1280px estourava a lista e alargava a página inteira (a janela
-  // ganhava uma barra de rolagem horizontal).
+  // fof/synopsis：使用富摘要时，摘要会带帖子的 HTML——图片、
+  // 代码、表格。扩展只限制
+  // `.DiscussionListItem-info` 内的媒体，而主题中摘要位于此处：否则
+  // 一张 1280px 的图片会撑破列表并加宽整个页面（窗口
+  // 会出现横向滚动条）。
   .Synopsis-excerpt {
     max-width: 100%;
     min-width: 0;
@@ -463,7 +463,7 @@
       max-width: 100%;
       max-height: var(--synopsis-media-max-height, 200px);
       object-fit: contain;
-      border-radius: var(--cn-radius);
+      border-radius: var(--lcoy-radius);
     }
 
     video,
@@ -487,68 +487,68 @@
     }
   }
 }
-// "ler mais" do Discourse: na mesma cor do excerto no desktop.
-.CanelaTopic-excerptMore {
+// Discourse 的"阅读更多"：桌面端与摘要同色。
+.LcoyTopic-excerptMore {
   color: inherit;
   text-decoration: none;
   white-space: nowrap;
 
   &:hover,
   &:focus-visible {
-    color: var(--cn-link);
+    color: var(--lcoy-link);
     text-decoration: none;
   }
 }
 
 // ---------------------------------------------------------------------
-// Colunas (`td.num`, 13.9px, primary-very-high)
+// 列（`td.num`，13.9px，primary-very-high）
 // ---------------------------------------------------------------------
-.CanelaCell {
+.LcoyCell {
   flex: 0 0 auto;
   box-sizing: border-box;
   padding: 0 4px;
   text-align: center;
-  font-size: var(--cn-font-down-1);
+  font-size: var(--lcoy-font-down-1);
   line-height: 1.2;
-  color: var(--cn-primary-very-high);
+  color: var(--lcoy-primary-very-high);
 }
 
-.CanelaCell--posters {
-  width: @canela-col-posters;
+.LcoyCell--posters {
+  width: @lcoy-col-posters;
   text-align: left;
 }
-.CanelaCell--replies {
-  width: @canela-col-replies;
+.LcoyCell--replies {
+  width: @lcoy-col-replies;
 }
-.CanelaCell--views {
-  width: @canela-col-views;
+.LcoyCell--views {
+  width: @lcoy-col-views;
   display: none;
 
-  .CanelaList--views & {
+  .LcoyList--views & {
     display: block;
   }
 }
-.CanelaCell--activity {
-  width: @canela-col-activity;
+.LcoyCell--activity {
+  width: @lcoy-col-activity;
   padding-right: 0;
   text-align: right;
 }
 
-// `td.posters > a { float: left; margin-right: 4px }`, avatares de 24px.
-// Até quatro participantes encavalados (como no Discourse moderno) e um "+"
-// quando há mais gente na conversa.
-.CanelaPosters {
+// `td.posters > a { float: left; margin-right: 4px }`，24px 头像。
+// 最多四个参与者叠放（与现代 Discourse 一致），以及一个"+"
+// 当对话中有更多人时。
+.LcoyPosters {
   display: flex;
   align-items: center;
   padding-left: 4px;
 }
-.CanelaPosters-avatar {
+.LcoyPosters-avatar {
   display: block;
   position: relative;
   flex: none;
   margin-left: -7px;
   border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--cn-surface);
+  box-shadow: 0 0 0 2px var(--lcoy-surface);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 
   &:first-child {
@@ -558,7 +558,7 @@
   &:hover {
     z-index: 1;
     transform: translateY(-1px);
-    box-shadow: 0 0 0 2px var(--cn-surface), 0 2px 6px ~"oklch(from var(--cn-primary) l c h / 0.28)";
+    box-shadow: 0 0 0 2px var(--lcoy-surface), 0 2px 6px ~"oklch(from var(--lcoy-primary) l c h / 0.28)";
   }
 
   .Avatar {
@@ -567,17 +567,17 @@
 
   &:focus-visible {
     z-index: 1;
-    box-shadow: 0 0 0 3px var(--cn-ring);
+    box-shadow: 0 0 0 3px var(--lcoy-ring);
   }
 }
-// O autor que também postou por último ganha o brilho do Discourse
-// (`.posters a:first-child .avatar.latest:not(.single)`).
-.CanelaPosters-avatar--glow .Avatar {
-  border: 1px solid ~"oklch(from var(--cn-accent) l c h / 0.55)";
-  box-shadow: 0 0 3px 1px ~"oklch(from var(--cn-accent) l c h / 0.35)";
+// 同时也是最后发帖者的作者会获得 Discourse 的光环
+// （`.posters a:first-child .avatar.latest:not(.single)`）。
+.LcoyPosters-avatar--glow .Avatar {
+  border: 1px solid ~"oklch(from var(--lcoy-accent) l c h / 0.55)";
+  box-shadow: 0 0 3px 1px ~"oklch(from var(--lcoy-accent) l c h / 0.35)";
 }
-// O "+" do "tem mais gente": mesma altura dos avatares, no fim da pilha.
-.CanelaPosters-more {
+// "还有更多人"的"+"：与头像同高，位于堆栈末端。
+.LcoyPosters-more {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -586,56 +586,56 @@
   height: 24px;
   margin-left: -7px;
   border-radius: 50%;
-  background: var(--cn-accent-low);
-  color: var(--cn-accent);
+  background: var(--lcoy-accent-low);
+  color: var(--lcoy-accent);
   font-size: 14px;
   font-weight: 700;
   line-height: 1;
-  box-shadow: 0 0 0 2px var(--cn-surface);
+  box-shadow: 0 0 0 2px var(--lcoy-surface);
 }
 
-.CanelaCell--replies {
+.LcoyCell--replies {
   font-weight: 700;
 }
 
-// `td.activity a { padding: 15px 5px }`: o texto termina 5px antes da borda.
-.CanelaCell--activity .CanelaActivity {
+// `td.activity a { padding: 15px 5px }`：文字在边框前 5px 结束。
+.LcoyCell--activity .LcoyActivity {
   display: inline-block;
   padding: 15px 5px;
 }
-.CanelaActivity {
+.LcoyActivity {
   color: inherit;
   text-decoration: none;
 
   &:hover,
   &:focus-visible {
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     text-decoration: none;
   }
 }
 
-// Calor das contagens (.heatmap-* do Discourse).
-.CanelaCell--heat-low {
-  color: var(--cn-heat-low);
+// 计数的热度（Discourse 的 .heatmap-*）。
+.LcoyCell--heat-low {
+  color: var(--lcoy-heat-low);
 }
-.CanelaCell--heat-med {
-  color: var(--cn-heat-med);
+.LcoyCell--heat-med {
+  color: var(--lcoy-heat-med);
 }
-.CanelaCell--heat-high {
-  color: var(--cn-heat-high);
+.LcoyCell--heat-high {
+  color: var(--lcoy-heat-high);
 }
-// Só o alto engorda (`.topic-list .heatmap-high { font-weight: 500 }` do
-// Horizon); o leve e o moderado mudam só a cor.
-.CanelaCell--views.CanelaCell--heat-high {
+// 只有高热度加粗（Horizon 的
+// `.topic-list .heatmap-high { font-weight: 500 }`）；轻度和中度只改变颜色。
+.LcoyCell--views.LcoyCell--heat-high {
   font-weight: 500;
 }
 
-// O "frio" da atividade (coldmap) não tem cor na lista de tópicos do Meta —
-// só na lista de categorias. As classes ficam, sem estilo, para quem quiser.
+// 活动的"冷"（coldmap）在 Meta 的话题列表中没有颜色——
+// 只在分类列表中。类保留但不加样式，供需要者使用。
 
-// Carregar mais / lista vazia. Com a rolagem infinita, o botão só aparece
-// se o observador não existir (ou para quem navega pelo teclado).
-.CanelaList .DiscussionList-loadMore {
+// 加载更多 / 空列表。使用无限滚动时，按钮仅在
+// 观察器不存在时出现（或供键盘导航者使用）。
+.LcoyList .DiscussionList-loadMore {
   margin: 0;
   padding: 20px 0;
   text-align: center;
@@ -646,66 +646,66 @@
 }
 
 // ---------------------------------------------------------------------
-// Tablet (Discourse entre sm e lg, com barra lateral): título de 16px,
-// badges de 12.1px, só o avatar do último postador e sem visualizações.
+// 平板（Discourse 介于 sm 和 lg 之间，带侧边栏）：标题 16px，
+// 徽章 12.1px，只显示最后发帖者的头像，不显示浏览量。
 // ---------------------------------------------------------------------
 @media (min-width: 768px) and (max-width: 1023px) {
-  .CanelaTopic-titleLine.DiscussionListItem-title {
-    font-size: var(--cn-font-0);
+  .LcoyTopic-titleLine.DiscussionListItem-title {
+    font-size: var(--lcoy-font-0);
   }
 
-  .CanelaTopic-meta {
-    font-size: var(--cn-font-down-1);
+  .LcoyTopic-meta {
+    font-size: var(--lcoy-font-down-1);
 
-    .CanelaBadges {
-      font-size: var(--cn-font-down-1);
+    .LcoyBadges {
+      font-size: var(--lcoy-font-down-1);
     }
   }
 
-  .CanelaTopic-excerpt {
-    font-size: var(--cn-font-down-1);
+  .LcoyTopic-excerpt {
+    font-size: var(--lcoy-font-down-1);
   }
 
-  // `@mixin hide-posters`: coluna de 2em com só o `a.latest`, centrado.
-  .CanelaCell--posters {
+  // `@mixin hide-posters`：2em 的列，只有居中的 `a.latest`。
+  .LcoyCell--posters {
     width: 40px;
   }
-  .CanelaPosters {
+  .LcoyPosters {
     justify-content: center;
   }
-  .CanelaPosters-avatar:not(.CanelaPosters-avatar--latest) {
+  .LcoyPosters-avatar:not(.LcoyPosters-avatar--latest) {
     display: none;
   }
-  .CanelaPosters-avatar--latest {
+  .LcoyPosters-avatar--latest {
     margin-left: 0;
   }
-  .CanelaPosters-more {
+  .LcoyPosters-more {
     display: none;
   }
 
-  .CanelaCell--views,
-  .CanelaList--views .CanelaCell--views {
+  .LcoyCell--views,
+  .LcoyList--views .LcoyCell--views {
     display: none;
   }
 }
 
 // ---------------------------------------------------------------------
-// Celular (print mob-a e CSS de `.mobile-view .topic-list`): avatar de 48px,
-// título a 78% da largura, contagem de 21px no canto; embaixo, o excerto e
-// a linha de badges com a atividade à direita.
+// 手机端（印刷稿 mob-a 与 `.mobile-view .topic-list` 的 CSS）：头像 48px，
+// 标题占宽度 78%，角上 21px 的计数；下方是摘要和
+// 一行徽章，活动在右侧。
 // ---------------------------------------------------------------------
 @media @phone {
-  .CanelaListHeader {
+  .LcoyListHeader {
     display: none;
   }
 
-  // O core estica a lista 15px para cada lado no celular; dentro do cartão
-  // ela vai de borda a borda do padding, como a tabela do Discourse.
-  .CanelaList.DiscussionList {
+  // 核心在手机端把列表向两侧拉伸 15px；在卡片内
+  // 它从内边距的边到边，与 Discourse 的表格一致。
+  .LcoyList.DiscussionList {
     margin: 0;
   }
 
-  .CanelaList .DiscussionListItem-content {
+  .LcoyList .DiscussionListItem-content {
     display: grid;
     grid-template-columns: 48px minmax(0, 1fr) auto;
     grid-template-rows: auto 1fr;
@@ -718,7 +718,7 @@
     }
   }
 
-  .CanelaListItem-avatar {
+  .LcoyListItem-avatar {
     display: block;
     grid-column: 1;
     grid-row: ~"1 / span 2";
@@ -728,9 +728,9 @@
     }
   }
 
-  // O bloco do tópico ocupa até a borda; a contagem e a data ficam por cima
-  // dele, nos cantos, como o `.pull-right` e o `.num.activity` do Discourse.
-  .CanelaTopic.DiscussionListItem-main {
+  // 话题块占据到边缘；计数和日期位于其上方
+  // 的角落，与 Discourse 的 `.pull-right` 和 `.num.activity` 一致。
+  .LcoyTopic.DiscussionListItem-main {
     grid-column: ~"2 / -1";
     grid-row: ~"1 / span 2";
     display: flex;
@@ -738,38 +738,38 @@
     padding: 0;
   }
 
-  .CanelaTopic-titleLine.DiscussionListItem-title {
+  .LcoyTopic-titleLine.DiscussionListItem-title {
     width: 78%;
-    font-size: var(--cn-font-up-1);
+    font-size: var(--lcoy-font-up-1);
     line-height: 1.2;
   }
 
-  // No celular o excerto vem antes da linha de badges.
-  .CanelaTopic-excerpt {
+  // 手机端摘要位于徽章行之前。
+  .LcoyTopic-excerpt {
     order: 1;
     margin-top: 4px;
     padding-right: 0;
-    font-size: var(--cn-font-0);
+    font-size: var(--lcoy-font-0);
   }
 
-  .CanelaTopic-excerptMore {
-    color: var(--cn-link);
+  .LcoyTopic-excerptMore {
+    color: var(--lcoy-link);
   }
 
-  .CanelaTopic-meta {
+  .LcoyTopic-meta {
     order: 2;
     margin-top: 8px;
     padding-right: 4.5em;
     line-height: 1.2;
   }
 
-  .CanelaCell--posters,
-  .CanelaCell--views,
-  .CanelaList--views .CanelaCell--views {
+  .LcoyCell--posters,
+  .LcoyCell--views,
+  .LcoyList--views .LcoyCell--views {
     display: none;
   }
 
-  .CanelaCell--replies {
+  .LcoyCell--replies {
     position: relative;
     z-index: 1;
     grid-column: 3;
@@ -777,11 +777,11 @@
     width: auto;
     padding: 0;
     text-align: right;
-    font-size: var(--cn-font-up-2);
+    font-size: var(--lcoy-font-up-2);
     line-height: 1.2;
   }
 
-  .CanelaCell--activity {
+  .LcoyCell--activity {
     position: relative;
     z-index: 1;
     grid-column: 3;
@@ -789,26 +789,26 @@
     align-self: end;
     width: auto;
     padding: 0;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
 
-    .CanelaActivity {
+    .LcoyActivity {
       padding: 0;
     }
   }
 }
 
 // ---------------------------------------------------------------------
-// Lista carregando (list/listSkeleton.tsx): as linhas reais com barras no
-// lugar do texto; aqui só o tamanho dos números e da idade.
+// 列表加载中（list/listSkeleton.tsx）：真实行，文字位置
+// 为占位条；这里只处理数字和时间的尺寸。
 // ---------------------------------------------------------------------
-.CanelaListSkeleton {
+.LcoyListSkeleton {
   pointer-events: none;
 }
 
-.CanelaListSkeleton .CanelaSkeleton--word.CanelaListSkeleton-number {
+.LcoyListSkeleton .LcoySkeleton--word.LcoyListSkeleton-number {
   width: 1.4em;
 }
 
-.CanelaListSkeleton .CanelaSkeleton--word.CanelaListSkeleton-age {
+.LcoyListSkeleton .LcoySkeleton--word.LcoyListSkeleton-age {
   width: 2.6em;
 }

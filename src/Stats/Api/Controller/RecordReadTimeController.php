@@ -21,31 +21,29 @@ use Lcoy\Roselle\Stats\StatsSettings;
 use Lcoy\Roselle\Stats\VisitRecorder;
 
 /**
- * POST /api/canela-read-time — o "timings" do Discourse, simplificado: a aba
- * do tópico manda, de tempos em tempos, quantos segundos a pessoa passou lendo
- * e quais postagens passaram pela tela.
+ * POST /api/lcoy-read-time——简化的 Discourse "timings"：主题页面会不时
+ * 上报用户阅读了多少秒，以及哪些帖子在屏幕上出现过。
  *
- * O navegador não é confiável, então o servidor só aceita o plausível:
- * - os segundos nunca passam do tempo real desde o último envio (duas abas
- *   abertas dividem o mesmo relógio em vez de somar) nem de um teto por envio;
- * - as postagens precisam ser do tópico informado e visíveis para quem envia,
- *   e cada uma conta uma vez por dia;
- * - o dia inteiro tem teto (VisitRecorder).
+ * 浏览器并不可信，因此服务端只接受合理的数据：
+ * - 秒数绝不能超过自上次上报以来的真实时间（打开两个选项卡时共用同一个
+ *   时钟，而不是相加），也不能超过每次上报的上限；
+ * - 帖子必须属于所上报的主题，且对上报者可见，每条每天只计一次；
+ * - 一整天有总量上限（VisitRecorder）。
  */
 final class RecordReadTimeController implements RequestHandlerInterface
 {
-    /** O front-end envia a cada 30 s; o dobro dá folga para atrasos da rede. */
+    /** 前端每 30 秒上报一次；取其两倍为网络延迟留出余量。 */
     public const MAX_SECONDS_PER_CALL = 60;
 
-    /** No primeiro envio não há relógio anterior para comparar. */
+    /** 第一次上报时没有可比较的先前时钟。 */
     private const FIRST_CALL_SECONDS = 35;
 
-    /** Tolerância do relógio entre um envio e outro (latência, arredondamento). */
+    /** 两次上报之间允许的时钟误差（延迟、取整）。 */
     private const CLOCK_SLACK_SECONDS = 5;
 
     private const MAX_POSTS_PER_CALL = 50;
 
-    /** Quantas postagens lidas hoje o cache lembra para não contar de novo. */
+    /** 缓存记住今天已读帖子的数量，以避免重复计数。 */
     private const MAX_REMEMBERED_POSTS = 2000;
 
     public function __construct(
@@ -67,8 +65,8 @@ final class RecordReadTimeController implements RequestHandlerInterface
 
         $body = (array) $request->getParsedBody();
 
-        // findOrFail: um tópico que a pessoa não pode ver responde 404, como
-        // se não existisse — o mesmo que a API faz no Show.
+        // findOrFail：用户看不到的主题会返回 404，就像
+        // 它不存在一样——与 API 在 Show 中的做法一致。
         $discussion = Discussion::query()->whereVisibleTo($actor)->findOrFail((int) Arr::get($body, 'discussionId'));
 
         $seconds = $this->creditedSeconds((int) $actor->id, (int) Arr::get($body, 'seconds', 0));
@@ -82,16 +80,16 @@ final class RecordReadTimeController implements RequestHandlerInterface
     private function creditedSeconds(int $userId, int $claimed): int
     {
         $now = Carbon::now()->getTimestamp();
-        $key = "canela.stats.read_clock.$userId";
+        $key = "lcoy.stats.read_clock.$userId";
         $last = $this->cache->get($key);
 
         $allowed = is_int($last) ? max(0, $now - $last + self::CLOCK_SLACK_SECONDS) : self::FIRST_CALL_SECONDS;
         $credited = max(0, min($claimed, $allowed, self::MAX_SECONDS_PER_CALL));
 
-        // O relógio avança exatamente o que foi creditado, e não até "agora":
-        // assim a soma de tudo o que se credita nunca passa do tempo real desde
-        // o primeiro envio (mais uma folga), por mais envios que cheguem. Sem
-        // envios por uma hora, o relógio expira e recomeça.
+        // 时钟只前进已计入的秒数，而不是推进到"现在"：
+        // 这样无论收到多少次上报，所有已计入的时间总和都不会超过自第一次
+        // 上报以来的真实时间（再加上一点余量）。若一小时没有上报，时钟
+        // 过期并重新开始。
         if ($credited > 0) {
             $this->cache->put($key, is_int($last) ? $last + $credited : $now, 3600);
         }
@@ -111,7 +109,7 @@ final class RecordReadTimeController implements RequestHandlerInterface
             return 0;
         }
 
-        $key = "canela.stats.read_posts.$userId.".Carbon::now()->toDateString();
+        $key = "lcoy.stats.read_posts.$userId.".Carbon::now()->toDateString();
         $seen = (array) $this->cache->get($key, []);
         $ids = array_values(array_diff($ids, $seen));
 

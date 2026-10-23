@@ -1,10 +1,9 @@
 /*
- * O `horizontal-overflow-nav` do Discourse: uma linha de abas que rola na
- * horizontal e, quando não cabe, ganha setas ‹ › nas pontas (e a borda que
- * esmaece) do lado em que ainda há abas escondidas.
+ * Discourse 的 `horizontal-overflow-nav`：一行可横向滚动的标签页，
+ * 放不下时在仍有隐藏标签页的一侧出现 ‹ › 箭头（以及渐隐的边框）。
  *
- * As classes `--left`/`--right` são trocadas direto no DOM, no scroll e no
- * resize: redesenhar o Mithril a cada pixel rolado seria desperdício.
+ * `--left`/`--right` 类在滚动和 resize 时直接改 DOM：为每个滚动像素
+ * 重绘 Mithril 是浪费。
  */
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
 import Icon from 'flarum/common/components/Icon';
@@ -17,7 +16,7 @@ export interface ScrollNavAttrs extends ComponentAttrs {
   className?: string;
 }
 
-/** Folga, em px, para arredondamentos do scroll (zoom, telas de alta densidade). */
+/** 容差（px），用于滚动取整（缩放、高密度屏幕）。 */
 const EDGE = 2;
 
 export default class ScrollNav extends Component<ScrollNavAttrs> {
@@ -27,20 +26,20 @@ export default class ScrollNav extends Component<ScrollNavAttrs> {
 
   view(vnode: Mithril.Vnode<ScrollNavAttrs, this>) {
     return (
-      <div className="CanelaScrollNav">
+      <div className="LcoyScrollNav">
         <button
           type="button"
-          className="CanelaScrollNav-arrow CanelaScrollNav-arrow--left"
+          className="LcoyScrollNav-arrow LcoyScrollNav-arrow--left"
           tabindex="-1"
           aria-label={t('user.nav.scroll_left')}
           onclick={() => this.scrollBy(-1)}
         >
           <Icon name="fas fa-chevron-left" />
         </button>
-        <ul className={classList('CanelaScrollNav-list', this.attrs.className)}>{vnode.children}</ul>
+        <ul className={classList('LcoyScrollNav-list', this.attrs.className)}>{vnode.children}</ul>
         <button
           type="button"
-          className="CanelaScrollNav-arrow CanelaScrollNav-arrow--right"
+          className="LcoyScrollNav-arrow LcoyScrollNav-arrow--right"
           tabindex="-1"
           aria-label={t('user.nav.scroll_right')}
           onclick={() => this.scrollBy(1)}
@@ -54,7 +53,7 @@ export default class ScrollNav extends Component<ScrollNavAttrs> {
   oncreate(vnode: Mithril.VnodeDOM<ScrollNavAttrs, this>) {
     super.oncreate(vnode);
 
-    this.list = this.element.querySelector('.CanelaScrollNav-list');
+    this.list = this.element.querySelector('.LcoyScrollNav-list');
     this.list?.addEventListener('scroll', this.sync, { passive: true });
 
     if (typeof ResizeObserver !== 'undefined' && this.list) {
@@ -64,7 +63,7 @@ export default class ScrollNav extends Component<ScrollNavAttrs> {
       window.addEventListener('resize', this.sync);
     }
 
-    // A aba ativa à vista, como no Discourse ao abrir uma aba do fim da linha.
+    // 激活的标签页可见，与 Discourse 打开行末标签页时一致。
     const active = this.list?.querySelector<HTMLElement>('[active="true"], .active');
 
     if (this.list && active) {
@@ -99,11 +98,11 @@ export default class ScrollNav extends Component<ScrollNavAttrs> {
     if (!list || !this.element) return;
 
     const max = list.scrollWidth - list.clientWidth;
-    // `scrollLeft` fica negativo em páginas da direita para a esquerda.
+    // 在从右到左的页面中 `scrollLeft` 为负数。
     const position = Math.abs(list.scrollLeft);
 
-    this.element.classList.toggle('CanelaScrollNav--left', max > EDGE && position > EDGE);
-    this.element.classList.toggle('CanelaScrollNav--right', max > EDGE && position < max - EDGE);
+    this.element.classList.toggle('LcoyScrollNav--left', max > EDGE && position > EDGE);
+    this.element.classList.toggle('LcoyScrollNav--right', max > EDGE && position < max - EDGE);
   }
 
   private scrollBy(direction: -1 | 1): void {

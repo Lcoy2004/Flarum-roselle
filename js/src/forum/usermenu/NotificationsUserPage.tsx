@@ -1,8 +1,7 @@
 /*
- * A aba "Notificações" do perfil (`/u/:username/notifications`), como a do
- * Discourse: a mesma lista e as mesmas abas da página /notifications (todas,
- * respostas, curtidas, chat, outras), dentro do perfil. Só no próprio perfil:
- * a API só devolve as notificações de quem pede.
+ * 资料的“通知”标签页（`/u/:username/notifications`），与 Discourse 一致：
+ * 与 /notifications 页面相同的列表和标签页（全部、回复、点赞、聊天、
+ * 其他），位于资料内。仅在自己的资料中：API 只返回请求者自己的通知。
  */
 import app from 'flarum/forum/app';
 import UserPage, { type IUserPageAttrs } from 'flarum/forum/components/UserPage';
@@ -31,12 +30,12 @@ export default class NotificationsUserPage<Attrs extends IUserPageAttrs = IUserP
   }
 
   content(): Mithril.Children {
-    if (!this.isOwnProfile()) return <p className="CanelaNotificationsPage-private">{umText('page.private')}</p>;
+    if (!this.isOwnProfile()) return <p className="LcoyNotificationsPage-private">{umText('page.private')}</p>;
 
     const slug = this.user!.slug();
 
     return (
-      <div className="NotificationsPage CanelaNotificationsPage CanelaNotificationsPage--profile">
+      <div className="NotificationsPage LcoyNotificationsPage LcoyNotificationsPage--profile">
         {NotificationsPageView((filter) => app.route('user.notifications', filter ? { username: slug, filter } : { username: slug }))}
       </div>
     );

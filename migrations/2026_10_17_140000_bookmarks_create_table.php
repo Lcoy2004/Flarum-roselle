@@ -14,26 +14,26 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
 
 /*
- * Marcadores (bookmarks) do Discourse: cada usuário marca posts, com um nome
- * opcional e um lembrete.
+ * Discourse 的书签（bookmarks）：每个用户收藏帖子，可带
+ * 一个可选名称和一个提醒。
  *
- * - Um marcador por usuário e post (o índice único): marcar de novo edita o
- *   que já existe, como no Discourse.
- * - `reminded_at` separado de `reminder_at`: o comando agendado procura os
- *   lembretes vencidos que ainda não foram enviados, e trocar o horário zera o
- *   envio sem perder o histórico do anterior.
- * - As chaves estrangeiras apagam o marcador junto com o post ou o usuário —
- *   um marcador órfão não tem para onde levar.
+ * - 每个用户和帖子一个书签（唯一索引）：再次收藏会编辑
+ *   已有的记录，与 Discourse 相同。
+ * - `reminded_at` 与 `reminder_at` 分开：定时命令查找
+ *   已到期但尚未发送的提醒，更改时间会重置
+ *   发送状态而不丢失上一次的历史。
+ * - 外键在帖子或用户被删除时一并删除书签 ——
+ *   孤立书签没有可指向的对象。
  */
 return [
     'up' => static function (Builder $schema): void {
-        // Idempotente: quem vem do Canela já tem a tabela, mas a migração
-        // antiga não está registrada com este nome.
-        if ($schema->hasTable('canela_bookmarks')) {
+        // 幂等：来自 Lcoy 的用户已经有该表，但旧的迁移
+        // 没有以这个名称注册。
+        if ($schema->hasTable('lcoy_bookmarks')) {
             return;
         }
 
-        $schema->create('canela_bookmarks', static function (Blueprint $table): void {
+        $schema->create('lcoy_bookmarks', static function (Blueprint $table): void {
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('post_id');
@@ -43,7 +43,7 @@ return [
             $table->timestamps();
 
             $table->unique(['user_id', 'post_id']);
-            // O comando agendado varre por aqui a cada poucos minutos.
+            // 定时命令每隔几分钟就会在此索引上扫描。
             $table->index(['reminded_at', 'reminder_at']);
 
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
@@ -52,6 +52,6 @@ return [
     },
 
     'down' => static function (Builder $schema): void {
-        $schema->dropIfExists('canela_bookmarks');
+        $schema->dropIfExists('lcoy_bookmarks');
     },
 ];

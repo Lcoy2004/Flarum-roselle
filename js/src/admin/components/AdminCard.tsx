@@ -1,13 +1,13 @@
 /*
- * O card do painel e as primitivas de layout do miolo. São POJOs com `view`
- * (formato de componente que o Mithril aceita), tipados como `any` para o JSX
- * aceitá-los.
+ * 面板卡片和内容区的基础布局组件。它们是带 `view` 的普通对象
+ * （Mithril 接受的组件形式），类型标为 `any` 以便 JSX
+ * 接受它们。
  *
- * Estados do card de um recurso (CardDef com `master`):
- * - ligado: a chave do cabeçalho ligada e o miolo à vista;
- * - desligado: só o cabeçalho (título, o que faz, a chave) — o miolo some;
- * - trancado: falta uma extensão (ou outro requisito); a chave fica travada e
- *   o motivo aparece no lugar do miolo.
+ * 功能卡片的状态（带 `master` 的 CardDef）：
+ * - 开启：标题栏开关打开，内容可见；
+ * - 关闭：只有标题栏（标题、作用、开关）——内容消失；
+ * - 锁定：缺少某个扩展（或其他必要条件）；开关被锁住，
+ *   原因显示在内容的位置。
  */
 import app from 'flarum/admin/app';
 import Link from 'flarum/common/components/Link';
@@ -19,15 +19,15 @@ import { setBool } from './AdminToggle';
 
 const KEY = 'lcoy-roselle.admin.settings.shell';
 
-/** Por que o card está trancado, ou `null`. */
+/** 卡片被锁定的原因，或 `null`。 */
 export const lockReason = (card: CardDef): { text: string; extension?: string } | null => {
   const missing = missingExtension(card.extensions);
   if (missing) {
     return {
       extension: missing,
       text: extensionInstalled(missing)
-        ? trans(`${KEY}.extension_disabled`, 'Precisa da extensão {name}, que está instalada mas desligada.', { name: extensionName(missing) })
-        : trans(`${KEY}.extension_missing`, 'Precisa da extensão {name}, que não está instalada.', { name: extensionName(missing) }),
+        ? trans(`${KEY}.extension_disabled`, '需要 {name} 扩展，该扩展已安装但未启用。', { name: extensionName(missing) })
+        : trans(`${KEY}.extension_missing`, '需要 {name} 扩展，但该扩展尚未安装。', { name: extensionName(missing) }),
     };
   }
 
@@ -43,39 +43,39 @@ export const AdminCard: any = {
     const lock = lockReason(card);
     const hasMaster = !!card.master;
     const on = hasMaster ? !lock && getBool(card.master!) : !lock;
-    const titleId = `CanelaAdmin-card-${card.id}-title`;
-    const descId = `CanelaAdmin-card-${card.id}-desc`;
+    const titleId = `LcoyAdmin-card-${card.id}-title`;
+    const descId = `LcoyAdmin-card-${card.id}-desc`;
     const body = on && card.body ? card.body() : null;
 
     return (
       <section
-        id={`CanelaAdmin-card-${card.id}`}
-        className={`CanelaAdmin-card${hasMaster ? ' is-feature' : ''}${hasMaster && !on ? ' is-off' : ''}${lock ? ' is-locked' : ''}${body ? '' : ' is-empty'}`}
+        id={`LcoyAdmin-card-${card.id}`}
+        className={`LcoyAdmin-card${hasMaster ? ' is-feature' : ''}${hasMaster && !on ? ' is-off' : ''}${lock ? ' is-locked' : ''}${body ? '' : ' is-empty'}`}
         aria-labelledby={titleId}
       >
-        <header className="CanelaAdmin-card-header">
-          <span className="CanelaAdmin-card-icon">
+        <header className="LcoyAdmin-card-header">
+          <span className="LcoyAdmin-card-icon">
             <i className={card.icon} aria-hidden="true" />
           </span>
-          <div className="CanelaAdmin-card-heading">
-            <h3 className="CanelaAdmin-card-title" id={titleId}>
+          <div className="LcoyAdmin-card-heading">
+            <h3 className="LcoyAdmin-card-title" id={titleId}>
               {card.title()}
-              {groupLabel && <span className="CanelaAdmin-card-group">{groupLabel}</span>}
+              {groupLabel && <span className="LcoyAdmin-card-group">{groupLabel}</span>}
             </h3>
             {card.description && (
-              <p className="CanelaAdmin-card-desc" id={descId}>
+              <p className="LcoyAdmin-card-desc" id={descId}>
                 {card.description()}
               </p>
             )}
           </div>
-          <span className="CanelaAdmin-card-saved" aria-live="polite">
+          <span className="LcoyAdmin-card-saved" aria-live="polite">
             <i className="fas fa-check" aria-hidden="true" />
-            {trans(`${KEY}.saved`, 'Salvo')}
+            {trans(`${KEY}.saved`, '已保存')}
           </span>
           {hasMaster && (
-            <div className="CanelaAdmin-card-master">
-              <span className="CanelaAdmin-card-state">
-                {lock ? trans(`${KEY}.locked`, 'Indisponível') : on ? trans(`${KEY}.on`, 'Ativo') : trans(`${KEY}.off`, 'Inativo')}
+            <div className="LcoyAdmin-card-master">
+              <span className="LcoyAdmin-card-state">
+                {lock ? trans(`${KEY}.locked`, '不可用') : on ? trans(`${KEY}.on`, '开启') : trans(`${KEY}.off`, '关闭')}
               </span>
               <AdminSwitch
                 state={on}
@@ -96,28 +96,28 @@ export const AdminCard: any = {
         </header>
 
         {lock && (
-          <div className="CanelaAdmin-card-lock">
+          <div className="LcoyAdmin-card-lock">
             <i className={lock.extension ? 'fas fa-plug-circle-xmark' : 'fas fa-lock'} aria-hidden="true" />
             <span>{lock.text}</span>
             {lock.extension && extensionInstalled(lock.extension) && (
-              <Link className="CanelaAdmin-card-lockLink" href={app.route('extension', { id: lock.extension })}>
-                {trans(`${KEY}.open_extension`, 'Abrir a extensão')}
+              <Link className="LcoyAdmin-card-lockLink" href={app.route('extension', { id: lock.extension })}>
+                {trans(`${KEY}.open_extension`, '打开该扩展')}
               </Link>
             )}
           </div>
         )}
 
-        {body && <div className="CanelaAdmin-card-body">{body}</div>}
+        {body && <div className="LcoyAdmin-card-body">{body}</div>}
       </section>
     );
   },
 };
 
-/** Aviso em destaque dentro de um card: dependências, efeitos colaterais. */
+/** 卡片内的高亮提示：依赖项、副作用。 */
 export const AdminNotice: any = {
   view({ attrs: { icon = 'fas fa-circle-info' }, children }: any) {
     return (
-      <p className="CanelaAdmin-notice">
+      <p className="LcoyAdmin-notice">
         <i className={icon} aria-hidden="true" />
         <span>{children}</span>
       </p>
@@ -127,20 +127,20 @@ export const AdminNotice: any = {
 
 export const SubDivider: any = {
   view() {
-    return <div className="CanelaAdmin-subDivider" />;
+    return <div className="LcoyAdmin-subDivider" />;
   },
 };
 
-/** Opções que dependem da de cima, recuadas num bloco. */
+/** 依赖上方选项的选项，缩进在一个块中。 */
 export const AdminSubGroup: any = {
   view({ children }: any) {
-    return <div className="CanelaAdmin-subGroup">{children}</div>;
+    return <div className="LcoyAdmin-subGroup">{children}</div>;
   },
 };
 
-/** Um título pequeno que separa blocos dentro de um card. */
+/** 分隔卡片内各个区块的小标题。 */
 export const SubTitle: any = {
   view({ children }: any) {
-    return <h4 className="CanelaAdmin-subTitle">{children}</h4>;
+    return <h4 className="LcoyAdmin-subTitle">{children}</h4>;
   },
 };

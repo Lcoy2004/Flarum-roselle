@@ -1,19 +1,19 @@
 /*
- * Os desenhos do Lucide de todos os nomes do mapa (iconMap.ts): os ícones de
- * interface e os que um admin pode escolher para tags e grupos (foguete,
- * troféu, paleta…), que no Meta também viram Lucide.
+ * 映射中所有名称（iconMap.ts）的 Lucide 图案：界面图标，
+ * 以及管理员可能为标签和用户组选择的图标（火箭、
+ * 奖杯、调色板……），它们在 Meta 中也会变成 Lucide。
  *
- * Tudo no pacote principal, de propósito: com os desenhos num chunk sob
- * demanda, o primeiro desenho sairia no Font Awesome e as partes que o Flarum
- * congela (o SubtreeRetainer dos itens da lista) nunca trocariam pelo Lucide.
- * Só os ícones importados por nome entram no pacote (o lucide declara
- * `sideEffects: false`, então o webpack descarta os outros ~3.500).
+ * 所有内容都放在主包中，这是有意为之：如果图案位于按需加载的
+ * chunk 中，首次绘制会使用 Font Awesome，而 Flarum
+ * 冻结的部分（列表条目的 SubtreeRetainer）永远不会切换到 Lucide。
+ * 只有按名称导入的图标会进入包中（lucide 声明了
+ * `sideEffects: false`，因此 webpack 会丢弃其余约 3,500 个）。
  *
- * O lucide está fixado na 0.555.0: é a versão mais próxima do sprite do
- * componente "Discourse Lucide Icons" (226 de 238 desenhos idênticos; a 1.x
- * redesenhou dezenas). Os poucos que divergem vêm do próprio sprite do Meta.
+ * lucide 固定在 0.555.0：这是最接近
+ * “Discourse Lucide Icons” 组件 sprite 的版本（238 个图案中有 226 个完全相同；
+ * 1.x 重绘了数十个）。少数不同的来自 Meta 自身的 sprite。
  *
- * Lucide (https://lucide.dev), licença ISC. Copyright (c) for portions of
+ * Lucide (https://lucide.dev)，ISC 许可证。Copyright (c) for portions of
  * Lucide are held by Cole Bemis 2013-2022 as part of Feather (MIT). All other
  * copyright (c) for Lucide are held by Lucide Contributors 2022. Permission to
  * use, copy, modify, and/or distribute this software for any purpose with or
@@ -493,7 +493,7 @@ export const GLYPHS: Record<string, IconNode> = {
   x: X,
   'zoom-in': ZoomIn,
   'zoom-out': ZoomOut,
-  // Desenhos do sprite do Meta: o lucide@0.555.0 já traz a versão revista destes.
+  // Meta sprite 中的图案：lucide@0.555.0 已经带有这些的修订版本。
   'align-left': [
     ['path', { d: 'M15 12H3' }],
     ['path', { d: 'M17 18H3' }],

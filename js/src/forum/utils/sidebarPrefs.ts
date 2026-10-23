@@ -1,15 +1,15 @@
 /*
- * Quais categorias e etiquetas o leitor escolheu para a barra lateral — o
- * "personalizar seção" do Discourse. Fica no localStorage, por usuário: a
- * escolha é uma preferência de leitura, não um dado que precise ir ao servidor.
- * Sem escolha (null), a seção mostra o padrão do fórum.
+ * 读者为侧栏选择的分类和标签——Discourse 的
+ * “自定义区域”。按用户保存在 localStorage 中：该选择是
+ * 阅读偏好，而不是需要发送到服务器的数据。
+ * 没有选择（null）时，区域显示论坛默认值。
  */
 import app from 'flarum/forum/app';
 
 export type SidebarSectionName = 'categories' | 'tags';
 
 function storageKey(section: SidebarSectionName): string {
-  return `canela.sidebarPicks.${app.session.user?.id() ?? 'guest'}.${section}`;
+  return `lcoy.sidebarPicks.${app.session.user?.id() ?? 'guest'}.${section}`;
 }
 
 export function getSidebarPicks(section: SidebarSectionName): string[] | null {
@@ -28,16 +28,16 @@ export function setSidebarPicks(section: SidebarSectionName, ids: string[] | nul
     if (ids === null) localStorage.removeItem(storageKey(section));
     else localStorage.setItem(storageKey(section), JSON.stringify(ids));
   } catch {
-    // Sem armazenamento a escolha vale só até recarregar a página.
+    // 没有存储时，该选择仅在页面重新加载前有效。
   }
 }
 
 /*
- * Na seção principal (Início, Chat, Wiki…), quais itens o leitor mandou para
- * dentro do "Mais". Mesmo esquema: localStorage, por usuário; null = padrão.
+ * 在主区域（首页、聊天、Wiki……）中，读者把哪些条目放进了
+ * “更多”。同样的方案：按用户保存在 localStorage 中；null = 默认。
  */
 function communityKey(): string {
-  return `canela.sidebarCommunityMore.${app.session.user?.id() ?? 'guest'}`;
+  return `lcoy.sidebarCommunityMore.${app.session.user?.id() ?? 'guest'}`;
 }
 
 export function getCommunityMore(): string[] {
@@ -55,6 +55,6 @@ export function setCommunityMore(keys: string[]): void {
     if (keys.length) localStorage.setItem(communityKey(), JSON.stringify(keys));
     else localStorage.removeItem(communityKey());
   } catch {
-    // Sem armazenamento a escolha vale só até recarregar a página.
+    // 没有存储时，该选择仅在页面重新加载前有效。
   }
 }

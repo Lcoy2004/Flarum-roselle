@@ -6,7 +6,7 @@
 
 [English](README.md) · [简体中文](README.zh-Hans.md)
 
-A Flarum 2 theme forked from [Canela](https://github.com/ram0ng1/canela), inspired by Discourse's Horizon theme and laid out after meta.discourse.org.
+A Flarum 2 theme inspired by Discourse's Horizon theme and laid out after meta.discourse.org.
 
 Roselle keeps the Discourse structure — a sidebar with sections, a discussion list in columns, a topic map and timeline, profiles with a cover — and adds this forum's own customizations. Every feature can be switched on or off from the admin panel, and the whole palette derives from Flarum's primary colour in both light and dark mode.
 
@@ -29,6 +29,26 @@ Then enable **Roselle** on the Extensions page. Settings live under the theme's 
 
 If the forum uses bookmark reminders, keep `php flarum schedule:run` in cron.
 
+## Upgrading
+
+From any earlier Roselle build or a Canela-prefixed release:
+
+1. Back up the database — the cleanup migrations drop obsolete tables/columns and cannot be undone.
+2. `composer update lcoy/roselle`
+3. `php flarum migrate` — renames the tables still in use, moves every `canela.*` setting to `lcoy.*`, updates notification types, and then deletes the removed features' tables plus every remaining Canela table, column, setting, permission, notification type and user preference.
+4. `php flarum assets:publish`
+5. Reload the forum and purge any CDN/proxy cache.
+
+Every step checks whether the old name still exists before renaming or dropping, so an interrupted upgrade can be re-run safely. The cleanup is unconditional: if any Canela companion extension (chat, AI, badges, drafts, dialogs) is still installed, its tables and data are deleted too, and the extension will stop working. Back up first if you need that data.
+
+### Breaking changes of the rename
+
+- Settings keys `canela.*` → `lcoy.*` (migrated automatically).
+- API/forum attributes and routes `canela*` / `/canela-*` → `lcoy*` / `/lcoy-*`.
+- CSS classes `.Canela*` → `.Lcoy*` and variables `--cn-*` → `--lcoy-*`; custom CSS snippets using the old names must be updated.
+- Edit history, link-click stats and invite links were removed; their tables/data are deleted.
+- Old `localStorage` / `sessionStorage` keys are ignored and can be cleared manually.
+
 ## Features
 
 **Structure**
@@ -36,7 +56,7 @@ If the forum uses bookmark reminders, keep `php flarum schedule:run` in cron.
 - Sidebar with collapsible sections, tags with unread dots, custom links and a footer
 - Header search pill, user menu with notification panels, login and sign-up pages
 - Discussion list in columns (posters, replies, views, activity), New / Unread / Top tabs, tag filters, infinite scroll
-- Topic page with discussion map, timeline, suggested discussions, share modal, inline title editing and edit history
+- Topic page with discussion map, timeline, suggested discussions, share modal and inline title editing
 
 **Reading and writing**
 
@@ -46,9 +66,9 @@ If the forum uses bookmark reminders, keep `php flarum schedule:run` in cron.
 
 **Profiles and community**
 
-- Profile with title, status and birthday from the theme, bio from fof/user-bio, social links from fof/socialprofile and a cover from forumaker/profile-cover
+- Profile with bio from fof/user-bio, social links from fof/socialprofile and a cover from forumaker/profile-cover
 - Summary and activity tabs (read, reactions, votes, solved), user directory (fof/user-directory), group pages, About page with extra tabs, guidelines and legal redirects
-- Invite links and the user card popover
+- User card popover
 
 ## Integrations
 
@@ -67,7 +87,6 @@ The theme never reimplements what an installed extension already does: it styles
 | `flarum/approval` | Review queue and the "queued" filter |
 | `flarum/lock`, `flarum/sticky` | Search filters, plus sticky ordering above explicit sorts |
 | `flarum/nicknames` | Display name above the username on posts, cards and profiles |
-| `flarum/suspend` | Suspended members cannot edit the extended profile (policy) |
 | `flarum/markdown`, `flarum/bbcode` | Format selector and toolbar in the composer |
 | `flarum/emoji` | Emoji rendering in posts and the composer preview |
 | `flarum/pusher` | "There are N new replies" bar while reading a topic |
@@ -150,7 +169,7 @@ views/                error-page overrides
 assets/               fonts and locale flags
 ```
 
-A feature file that fails to load is skipped and logged, so the forum keeps running with the rest. For debugging a single feature without touching the whitelist, send the `X-Canela-Probe: <feature>` header.
+A feature file that fails to load is skipped and logged, so the forum keeps running with the rest. For debugging a single feature without touching the whitelist, send the `X-Lcoy-Probe: <feature>` header.
 
 ## Languages
 
@@ -158,7 +177,7 @@ English and Simplified Chinese ship with the theme. Core and extension strings c
 
 ## Credits
 
-Forked from **Canela** by [Ramon Guilherme](https://ramonguilherme.com.br), itself inspired by Discourse's Horizon theme. Canela is an unofficial project, not affiliated with or endorsed by Discourse. Roselle is maintained by Lcoy.
+Roselle is maintained by Lcoy. It is an unofficial project, not affiliated with or endorsed by Discourse. The original MIT copyright notices are kept in the LICENSE file.
 
 ## License
 

@@ -4,18 +4,18 @@ import classList from 'flarum/common/utils/classList';
 import type Mithril from 'mithril';
 
 export interface SidebarSectionAttrs extends ComponentAttrs {
-  /** Chave da seção, usada para lembrar se o leitor a recolheu. */
+  /** 区域键，用于记住读者是否将其折叠。 */
   name: string;
-  /** Sem título, a seção não recolhe — é a seção da comunidade, no topo. */
+  /** 没有标题时区域不可折叠——这是顶部的社区区域。 */
   title?: Mithril.Children;
-  /** O lápis de "personalizar seção", que aparece ao passar o mouse no cabeçalho. */
+  /** “自定义区域”的铅笔图标，在鼠标悬停于标题栏时显示。 */
   onEdit?: () => void;
   editLabel?: string;
-  /** O ícone do botão do cabeçalho; o padrão é o lápis (o "+" das mensagens diretas do chat é outro). */
+  /** 标题栏按钮的图标；默认是铅笔（聊天私信的“+”是另一个）。 */
   editIcon?: string;
 }
 
-const STORAGE_PREFIX = 'canela.sidebarSection.';
+const STORAGE_PREFIX = 'lcoy.sidebarSection.';
 
 function readCollapsed(name: string): boolean {
   try {
@@ -26,8 +26,8 @@ function readCollapsed(name: string): boolean {
 }
 
 /**
- * Seção da barra lateral, com o cabeçalho em versalete e a seta que a recolhe —
- * as "Categorias" e "Etiquetas" do Discourse.
+ * 侧栏区域，标题栏使用小型大写字母，并有折叠箭头——
+ * 即 Discourse 的“分类”和“标签”。
  */
 export default class SidebarSection extends Component<SidebarSectionAttrs> {
   collapsed = false;
@@ -40,33 +40,33 @@ export default class SidebarSection extends Component<SidebarSectionAttrs> {
 
   view(vnode: Mithril.Vnode<SidebarSectionAttrs, this>) {
     const { name, title, onEdit, editLabel, editIcon } = this.attrs;
-    const contentId = `canela-sidebar-section-${name}`;
+    const contentId = `lcoy-sidebar-section-${name}`;
 
     return (
-      <section className={classList('CanelaSidebar-section', `CanelaSidebar-section--${name}`, { collapsed: this.collapsed })}>
+      <section className={classList('LcoySidebar-section', `LcoySidebar-section--${name}`, { collapsed: this.collapsed })}>
         {title && (
-          <div className="CanelaSidebar-sectionHead">
+          <div className="LcoySidebar-sectionHead">
             <button
               type="button"
-              className="CanelaSidebar-sectionHeader"
+              className="LcoySidebar-sectionHeader"
               aria-expanded={this.collapsed ? 'false' : 'true'}
               aria-controls={contentId}
               onclick={() => this.toggle()}
             >
-              <Icon name="fas fa-angle-down" className="CanelaSidebar-sectionCaret" />
-              <span className="CanelaSidebar-sectionTitle">{title}</span>
+              <Icon name="fas fa-angle-down" className="LcoySidebar-sectionCaret" />
+              <span className="LcoySidebar-sectionTitle">{title}</span>
             </button>
             {onEdit && (
-              <button type="button" className="CanelaSidebar-sectionEdit" aria-label={editLabel} title={editLabel} onclick={onEdit}>
+              <button type="button" className="LcoySidebar-sectionEdit" aria-label={editLabel} title={editLabel} onclick={onEdit}>
                 <Icon name={editIcon || 'fas fa-pencil'} />
               </button>
             )}
           </div>
         )}
-        {/* O conteúdo continua montado quando a seção está recolhida: os
-            widgets das extensões só buscam os dados no `oncreate`, e
-            desmontá-los deixaria a seção vazia ao reabrir. O CSS esconde. */}
-        <ul className="CanelaSidebar-sectionContent" id={contentId}>
+        {/* 区域折叠时内容仍保持挂载：扩展的小部件只在
+            `oncreate` 中获取数据，卸载它们会让区域在重新打开时
+            为空。由 CSS 隐藏。 */}
+        <ul className="LcoySidebar-sectionContent" id={contentId}>
           {vnode.children}
         </ul>
       </section>
@@ -79,7 +79,7 @@ export default class SidebarSection extends Component<SidebarSectionAttrs> {
     try {
       localStorage.setItem(STORAGE_PREFIX + this.attrs.name, this.collapsed ? '1' : '0');
     } catch {
-      // Sem armazenamento a escolha vale só até recarregar a página.
+      // 没有存储时，该选择仅在页面重新加载前有效。
     }
   }
 }

@@ -1,13 +1,11 @@
 /*
- * A aba "Reações" do perfil (como a do discourse-reactions): curtidas e
- * reações que a pessoa deu, numa lista só, da mais nova para a mais antiga.
- * No Canela a curtida é a reação "coração", então ela aparece como ❤️.
- * Cada item é o `user-stream-item` das outras abas (avatar do autor, título,
- * categoria, data e trecho) com a linha da reação: o emoji e o avatar de
- * quem reagiu.
+ * 资料的“反应”标签页（类似 discourse-reactions）：此人给出的点赞和
+ * 反应，合并为一个列表，从最新到最旧。在 Lcoy 中点赞就是“爱心”反应，
+ * 因此显示为 ❤️。每项是其他标签页所用的 `user-stream-item`（作者头像、
+ * 标题、分类、日期和摘录），外加反应行：emoji 和做出反应者的头像。
  *
- * A ordem e a visibilidade vêm de `/api/canela-user-reactions`
- * (extend/activity.php); os posts, de `/api/posts?filter[id]=…`.
+ * 顺序和可见性来自 `/api/lcoy-user-reactions`
+ *（extend/activity.php）；帖子来自 `/api/posts?filter[id]=…`。
  */
 import app from 'flarum/forum/app';
 import UserPage, { type IUserPageAttrs } from 'flarum/forum/components/UserPage';
@@ -28,7 +26,7 @@ import { t } from '../../utils/settings';
 
 const PAGE_SIZE = 20;
 
-/** Uma linha da API: `reactionId` nulo é uma curtida. */
+/** API 的一行：`reactionId` 为 null 表示点赞。 */
 interface Row {
   postId: number;
   reactionId: number | null;
@@ -36,7 +34,7 @@ interface Row {
 
 interface ReactionGroup {
   post: Post;
-  /** Chaves únicas: `like` ou o id da reação. */
+  /** 唯一键：`like` 或反应 id。 */
   keys: string[];
 }
 
@@ -66,11 +64,11 @@ export default class ReactionsUserPage<Attrs extends IUserPageAttrs = IUserPageA
     if (!groups.length) return this.loading ? <LoadingIndicator /> : <Placeholder text={t('user.nav.reactions_empty')} />;
 
     return (
-      <div className="PostsUserPage CanelaReactionsUserPage">
-        <ul className="PostList-discussions CanelaReactionsList">
+      <div className="PostsUserPage LcoyReactionsUserPage">
+        <ul className="PostList-discussions LcoyReactionsList">
           {groups.map((group) => (
             <li key={group.post.id()} data-id={group.post.id()}>
-              {streamItem(group.post, { className: 'CanelaStreamItem--reaction', extra: this.reactionRow(group) })}
+              {streamItem(group.post, { className: 'LcoyStreamItem--reaction', extra: this.reactionRow(group) })}
             </li>
           ))}
         </ul>
@@ -91,16 +89,16 @@ export default class ReactionsUserPage<Attrs extends IUserPageAttrs = IUserPageA
 
   private reactionRow(group: ReactionGroup): Mithril.Children {
     return (
-      <div className="CanelaStreamItem-reaction">
+      <div className="LcoyStreamItem-reaction">
         {group.keys.map((key) => (
-          <span className="CanelaStreamItem-reactionEmoji">{this.emoji(key)}</span>
+          <span className="LcoyStreamItem-reactionEmoji">{this.emoji(key)}</span>
         ))}
-        <Avatar user={this.user} className="CanelaStreamItem-reactionAvatar" />
+        <Avatar user={this.user} className="LcoyStreamItem-reactionAvatar" />
       </div>
     );
   }
 
-  /** O emoji do fof (a mesma imagem dos posts); a curtida é a reação "heart", ou o coração. */
+  /** fof 的 emoji（与帖子中同一图片）；点赞是“heart”反应，或爱心图标。 */
   private emoji(key: string): Mithril.Children {
     const ReactionComponent = extModule<any>('fof-reactions', 'common/components/ReactionComponent');
     const reaction =
@@ -108,10 +106,10 @@ export default class ReactionsUserPage<Attrs extends IUserPageAttrs = IUserPageA
 
     if (ReactionComponent && reaction) return m(ReactionComponent, { reaction });
 
-    return key === 'like' ? <Icon name="fas fa-heart" className="CanelaStreamItem-likeIcon" /> : null;
+    return key === 'like' ? <Icon name="fas fa-heart" className="LcoyStreamItem-likeIcon" /> : null;
   }
 
-  /** Um item por post; curtida e coração do fof no mesmo post contam uma vez. */
+  /** 每篇帖子一项；同一帖子上的点赞和 fof 爱心只计一次。 */
   private groups(): ReactionGroup[] {
     const groups: ReactionGroup[] = [];
     const byPost = new Map<string, ReactionGroup>();
@@ -146,7 +144,7 @@ export default class ReactionsUserPage<Attrs extends IUserPageAttrs = IUserPageA
     try {
       const page = await app.request<{ data: Row[]; hasMore: boolean }>({
         method: 'GET',
-        url: app.forum.attribute('apiUrl') + '/canela-user-reactions',
+        url: app.forum.attribute('apiUrl') + '/lcoy-user-reactions',
         params: { username: this.user.slug(), offset: this.rows.length, limit: PAGE_SIZE },
       });
 

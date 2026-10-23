@@ -1,26 +1,26 @@
 /*
- * O mapa Font Awesome → Lucide do tema.
+ * 主题的 Font Awesome → Lucide 映射。
  *
- * O meta.discourse.org não usa os ícones sólidos do Font Awesome: ele roda o
- * componente de tema oficial "Discourse Lucide Icons"
- * (github.com/discourse/discourse-lucide-icons), que troca cada ícone do
- * Discourse pelo equivalente de traço do Lucide via `api.replaceIcon`. O
- * META_MAP abaixo é a tabela desse componente, copiada como está: é ela que
- * decide quais ícones o Meta desenha com o Lucide e quais continuam no Font
- * Awesome. Ficaram de fora só os nomes internos do Discourse (`d-*`,
- * `discourse-*`, `notification.*`…), que não existem no Flarum.
+ * meta.discourse.org 不使用 Font Awesome 的实心图标：它运行官方
+ * 主题组件 “Discourse Lucide Icons”
+ * （github.com/discourse/discourse-lucide-icons），通过
+ * `api.replaceIcon` 把 Discourse 的每个图标替换为 Lucide 的描边
+ * 等价项。下面的 META_MAP 是该组件的表格，原样复制：它
+ * 决定 Meta 用 Lucide 绘制哪些图标，哪些继续使用 Font
+ * Awesome。只排除了 Discourse 的内部名称（`d-*`、
+ * `discourse-*`、`notification.*`……），它们在 Flarum 中不存在。
  *
- * Os nomes do Discourse são os do Font Awesome 6 (`magnifying-glass`, não
- * `search`; `far-bell` para o regular). O Flarum e as extensões ainda usam
- * muitos apelidos do FA 4/5, então o nome passa antes pelo FA_ALIASES.
+ * Discourse 的名称使用 Font Awesome 6（`magnifying-glass`，而不是
+ * `search`；常规体使用 `far-bell`）。Flarum 和扩展仍在使用
+ * 许多 FA 4/5 的别名，因此名称会先经过 FA_ALIASES。
  *
- * Este arquivo só tem nomes (strings): os desenhos ficam em glyphs.ts.
+ * 本文件只有名称（字符串）：图案位于 glyphs.ts。
  */
 
 /**
- * Apelidos antigos do Font Awesome → nome canônico do FA 6 (o que o Discourse
- * usa). Só os que aparecem no core, nas extensões instaladas ou no tema, mais
- * os mais comuns que um admin digita para tags e grupos.
+ * Font Awesome 的旧别名 → FA 6 的规范名称（Discourse 使用的
+ * 名称）。只包含出现在核心、已安装扩展或主题中的，
+ * 以及管理员为标签和用户组输入的最常见名称。
  */
 export const FA_ALIASES: Record<string, string> = {
   'angle-double-down': 'angles-down',
@@ -102,8 +102,8 @@ export const FA_ALIASES: Record<string, string> = {
 };
 
 /**
- * A tabela do "Discourse Lucide Icons" (nome do Discourse → nome do Lucide),
- * na ordem do original. As chaves `far-*` são as variantes regulares.
+ * “Discourse Lucide Icons” 的表格（Discourse 名称 → Lucide 名称），
+ * 按原始顺序。`far-*` 这些键是常规体变体。
  */
 export const META_MAP: Record<string, string> = {
   'align-left': 'align-left',
@@ -379,26 +379,26 @@ export const META_MAP: Record<string, string> = {
 };
 
 /**
- * Os que o componente do Meta ignora por padrão (configuração
- * `ignored_icons`: "d-liked|square-full|circle"). O `circle` sólido fica no
- * Font Awesome porque é usado como bolinha cheia (status, não lido). O
- * `d-liked` (coração cheio de quem curtiu) não tem nome no Flarum: o tema o
- * reproduz preenchendo o coração do Lucide pelo CSS (Icons.less).
+ * Meta 组件默认忽略的图标（配置
+ * `ignored_icons`: "d-liked|square-full|circle"）。实心 `circle` 保留在
+ * Font Awesome 中，因为它被用作实心圆点（状态、未读）。`d-liked`
+ * （点赞者的实心爱心）在 Flarum 中没有名称：主题通过 CSS
+ * 填充 Lucide 的爱心来重现它（Icons.less）。
  */
 export const META_IGNORED = new Set(['circle', 'square-full']);
 
 /**
- * Ícones de interface que o Flarum e as extensões usam e que o Discourse não
- * tem (logo, o Meta não precisou mapear). Sem eles, a casca misturaria traço
- * e sólido na mesma barra; o equivalente escolhido é o do próprio Lucide.
+ * Flarum 和扩展使用、而 Discourse 没有的界面图标
+ * （因此 Meta 无需映射）。没有它们，外壳会在同一栏中混合描边
+ * 和实心；所选等价项来自 Lucide 本身。
  */
-export const CANELA_EXTRAS: Record<string, string> = {
-  // Editor (barra de formatação do composer e do markdown/bbcode)
+export const LCOY_EXTRAS: Record<string, string> = {
+  // 编辑器（composer 与 markdown/bbcode 的格式工具栏）
   heading: 'heading',
   strikethrough: 'strikethrough',
   eraser: 'eraser',
   terminal: 'square-terminal',
-  // Ações de post e de tópico
+  // 帖子和主题的操作
   'reply-all': 'reply-all',
   trash: 'trash',
   'lock-open': 'lock-open',
@@ -407,16 +407,16 @@ export const CANELA_EXTRAS: Record<string, string> = {
   'rotate-left': 'rotate-ccw',
   'code-branch': 'git-branch',
   print: 'printer',
-  // O composer do Discourse usa "discourse-expand/compress" → maximize/minimize
+  // Discourse 的 composer 使用 "discourse-expand/compress" → maximize/minimize
   expand: 'maximize',
   'up-right-and-down-left-from-center': 'maximize',
   'down-left-and-up-right-to-center': 'minimize',
-  // Usuários e moderação
+  // 用户与审核
   'user-minus': 'user-minus',
   'user-slash': 'user-x',
   shield: 'shield',
   'grip-vertical': 'grip-vertical',
-  // Mensagens, arquivos e enquetes (flarum/messages, fof/upload, fof/polls)
+  // 私信、文件与投票（flarum/messages、fof/upload、fof/polls）
   message: 'message-square',
   'envelope-open': 'mail-open',
   'book-open': 'book-open',
@@ -437,18 +437,18 @@ export const CANELA_EXTRAS: Record<string, string> = {
   feather: 'feather',
   'calendar-days': 'calendar-days',
   'circle-dot': 'circle-dot',
-  // O seletor de tema do core usa o laptop para "automático"
+  // 核心的主题选择器使用笔记本电脑表示“自动”
   laptop: 'laptop',
-  // Ícones que o admin costuma dar às etiquetas do Flarum: sem o traço, a
-  // seção "Etiquetas" da barra misturaria sólido e traço.
+  // 管理员常给 Flarum 标签使用的图标：没有描边时，
+  // 侧栏的“标签”区域会混合实心和描边。
   server: 'server',
   'universal-access': 'accessibility',
-  // O seletor "Recentes ⌃⌄" da lista no celular (`discourse-chevron-expand`,
-  // que o componente do Meta troca pelo chevrons-up-down).
+  // 手机上列表的“最新 ⌃⌄”选择器（`discourse-chevron-expand`，
+  // Meta 组件会将其替换为 chevrons-up-down）。
   'discourse-chevron-expand': 'chevrons-up-down',
 };
 
-/** Classes do Font Awesome que são estilo, não nome de ícone. */
+/** 属于样式而非图标名称的 Font Awesome 类。 */
 const STYLE_CLASSES = new Set([
   'fa',
   'fas',
@@ -467,15 +467,15 @@ const STYLE_CLASSES = new Set([
   'fa-sharp-duotone',
 ]);
 
-/** Utilitários do Font Awesome (`fa-fw`, `fa-spin`, `fa-2x`…), que também começam com `fa-`. */
+/** Font Awesome 的工具类（`fa-fw`、`fa-spin`、`fa-2x`……），它们也以 `fa-` 开头。 */
 const UTILITY =
   /^fa-(fw|spin|spin-pulse|spin-reverse|pulse|beat|beat-fade|fade|bounce|shake|flip|border|inverse|li|ul|stack|stack-1x|stack-2x|lg|sm|xs|2xs|xl|2xl|\dx|10x|rotate-\d+|rotate-by|flip-\w+|pull-\w+|swap-opacity|width-auto)$/;
 
 /**
- * O nome do Lucide para uma classe de ícone do Flarum (`fas fa-search`,
- * `far fa-bell fa-fw`…), ou `null` quando o ícone deve continuar no Font
- * Awesome: marcas (`fab`), os ignorados pelo Meta e qualquer um fora do mapa,
- * como boa parte dos que o admin escolhe para tags e grupos.
+ * Flarum 图标类（`fas fa-search`、`far fa-bell fa-fw`……）对应的
+ * Lucide 名称，或当图标应继续使用 Font Awesome 时为 `null`：
+ * 品牌（`fab`）、Meta 忽略的图标，以及所有不在映射中的
+ * 图标，比如管理员为标签和用户组选择的大部分图标。
  */
 export function lucideNameFor(classes: string): string | null {
   let regular = false;
@@ -493,12 +493,12 @@ export function lucideNameFor(classes: string): string | null {
 
   const name = FA_ALIASES[icon] ?? icon;
 
-  // No Discourse o regular tem chave própria (`far-bell`). No Flarum o
-  // regular e o sólido do mesmo nome são o mesmo ícone de interface, e no
-  // Lucide (só traço) os dois sairiam iguais: daí o recuo para o sólido.
+  // 在 Discourse 中常规体有自己的键（`far-bell`）。在 Flarum 中，
+  // 同名的常规体和实心体是同一个界面图标，而在
+  // Lucide（只有描边）中两者会相同：因此回退到实心体。
   const regularName = regular ? META_MAP[`far-${name}`] : undefined;
   if (regularName) return regularName;
   if (!regular && META_IGNORED.has(name)) return null;
 
-  return META_MAP[name] ?? CANELA_EXTRAS[name] ?? null;
+  return META_MAP[name] ?? LCOY_EXTRAS[name] ?? null;
 }

@@ -21,14 +21,14 @@ use FoF\Pages\Page;
 use FoF\Pages\Util\Html;
 
 /**
- * As páginas do fof/pages que o admin pôs como abas extras da área Sobre
- * (setting `canela.about_pages`, uma lista JSON de `{id, label, icon}` na
- * ordem das abas). Só as páginas da lista abrem pelas rotas do tema, e sempre
- * com a visibilidade do próprio fof/pages. Sem o fof/pages, a lista é vazia.
+ * 管理员设为"关于"区域额外选项卡的 fof/pages 页面（设置项
+ * `lcoy.about_pages`，是按选项卡顺序排列的 `{id, label, icon}` JSON 列表）。
+ * 只有列表中的页面才能通过主题的路由打开，并且始终遵循 fof/pages 自身的
+ * 可见性规则。未启用 fof/pages 时，列表为空。
  */
 final class AboutPages
 {
-    /** Mais que isso não cabe como abas, e o JSON do setting fica pequeno. */
+    /** 再多就放不下作为选项卡了，同时也让设置项的 JSON 保持精简。 */
     public const MAX = 20;
 
     public function __construct(
@@ -43,7 +43,7 @@ final class AboutPages
     }
 
     /**
-     * A lista do admin, já limpa (ids inteiros e únicos, no máximo MAX).
+     * 管理员配置的列表，已清理（整数且唯一的 id，最多 MAX 个）。
      *
      * @return list<array{id: int, label: string, icon: string}>
      */
@@ -53,9 +53,9 @@ final class AboutPages
     }
 
     /**
-     * As abas que o ator vê, na ordem do admin: só páginas que existem e que o
-     * fof/pages deixa ele ver. Vai no payload do fórum, por isso só o
-     * necessário para desenhar a aba e montar a URL.
+     * 操作者能看到的选项卡，按管理员的顺序：只包含存在且 fof/pages
+     * 允许其查看的页面。由于会进入论坛的 payload，因此只包含绘制选项卡
+     * 和拼接 URL 所需的内容。
      *
      * @return list<array{id: int, label: string, slug: string, icon: string}>
      */
@@ -93,7 +93,7 @@ final class AboutPages
         return $tabs;
     }
 
-    /** A página, se estiver na lista do admin e o ator puder vê-la. */
+    /** 若页面在管理员列表中且操作者可以查看，则返回该页面。 */
     public function find(User $actor, int $id): ?Page
     {
         if ($id <= 0 || ! $this->available() || ! in_array($id, array_column($this->entries(), 'id'), true)) {
@@ -105,7 +105,7 @@ final class AboutPages
         return $page instanceof Page ? $page : null;
     }
 
-    /** O rótulo da aba (o do admin ou o título da página). */
+    /** 选项卡的标签（管理员的标签或页面标题）。 */
     public function label(Page $page): string
     {
         foreach ($this->entries() as $entry) {
@@ -123,8 +123,8 @@ final class AboutPages
     }
 
     /**
-     * O id no começo do parâmetro da rota (`3-regras` → 3), como o `/d/{id}`
-     * do core: o slug é só enfeite e pode mudar sem quebrar links.
+     * 路由参数开头的 id（`3-regras` → 3），与核心的 `/d/{id}` 相同：
+     * slug 只是装饰，可以变更而不会破坏链接。
      */
     public static function idFromParam(string $param): int
     {
@@ -132,9 +132,8 @@ final class AboutPages
     }
 
     /**
-     * O valor do setting no formato certo, para guardar. Qualquer coisa que
-     * não seja uma lista de objetos com id inteiro positivo é descartada: o
-     * admin manda JSON, mas a API de settings aceita qualquer texto.
+     * 以正确格式保存设置项的值。任何不是"正整数 id 对象列表"的内容都会被
+     * 丢弃：管理员提交 JSON，但设置 API 接受任意文本。
      */
     public static function normalize(mixed $raw): string
     {
@@ -171,8 +170,8 @@ final class AboutPages
             $out[] = [
                 'id' => $id,
                 'label' => mb_substr($label, 0, 60),
-                // Só classes do Font Awesome ("fas fa-scale-balanced"): o ícone vira
-                // atributo `class`, e nada além de letras, números e hífens entra lá.
+                // 只接受 Font Awesome 的类名（"fas fa-scale-balanced"）：图标会变成
+                // `class` 属性，因此只允许字母、数字和连字符。
                 'icon' => preg_match('/^[a-z0-9 -]{1,60}$/i', $icon) ? $icon : '',
             ];
 
@@ -184,7 +183,7 @@ final class AboutPages
         return $out;
     }
 
-    /** O slug seguro para a URL (o do fof/pages pode vir vazio ou com espaços). */
+    /** 用于 URL 的安全 slug（fof/pages 提供的 slug 可能为空或含空格）。 */
     private static function slug(string $slug): string
     {
         return trim((string) preg_replace('/[^\pL\pN_-]+/u', '-', $slug), '-');

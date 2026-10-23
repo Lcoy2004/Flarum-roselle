@@ -1,17 +1,17 @@
 // =====================================================================
-// A linha do tempo do Discourse (topic-timeline do Horizon) sobre o
-// PostStreamScrubber do core: o menu do scrubber fica sempre aberto na
-// coluna da direita, com a data de criação em cima, o trilho de 1px na cor
-// de destaque, a alça de 8px com "1/11" e a data ao lado, e "4 h atrás"
-// embaixo. Abaixo, os botões redondos (responder, "…", notificações).
+// Discourse 的时间线（Horizon 的 topic-timeline），基于核心的
+// PostStreamScrubber：scrubber 菜单始终展开在
+// 右侧列中，顶部是创建日期，1px 的高亮色
+// 轨道，带"1/11"的 8px 滑块，旁边是日期，底部是"4 小时前"。
+// 下方是圆形按钮（回复、"…"、通知）。
 //
-// Tudo sob .CanelaTopic--timeline: com a opção desligada o scrubber volta
-// ao visual do core.
+// 全部位于 .LcoyTopic--timeline 下：关闭该选项时 scrubber 恢复
+// 核心的外观。
 // =====================================================================
 
-// O texto do core é "1 de 11 posts"; o Discourse escreve "1/11". Os números
-// são os únicos com tamanho de fonte, o resto some com o font-size: 0.
-.canela-scrubber-count(@size; @separator) {
+// 核心的文字是"1 de 11 posts"；Discourse 写作"1/11"。数字
+// 是唯一带字号的元素，其余通过 font-size: 0 隐藏。
+.lcoy-scrubber-count(@size; @separator) {
   font-size: 0;
 
   .Scrubber-index,
@@ -25,54 +25,54 @@
   }
 }
 
-// Botão redondo com borda — os controles da linha do tempo do Discourse.
-// Vale também para o "Responder", que é o principal do Flarum: na linha do
-// tempo ele é só mais um círculo, e o destaque fica no rodapé do tópico.
-.canela-round-button() {
+// 带边框的圆形按钮——Discourse 时间线的控件。
+// 同样适用于"回复"，它是 Flarum 的主按钮：在时间线
+// 中它只是又一个圆形，突出显示留给话题页脚。
+.lcoy-round-button() {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 38.78px;
   height: 38px;
   padding: 0;
-  border-radius: var(--cn-radius-pill);
-  border: 1px solid var(--cn-primary-300);
-  background: var(--cn-surface);
-  color: var(--cn-primary-high);
+  border-radius: var(--lcoy-radius-pill);
+  border: 1px solid var(--lcoy-primary-300);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary-high);
   box-shadow: none;
 
   .Button-icon,
   .icon {
     margin: 0;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
     font-size: 15px;
   }
 
-  // O rótulo continua lá para leitores de tela.
+  // 该标签仍保留，供屏幕阅读器使用。
   .Button-label {
-    .canela-topic-sr-only();
+    .lcoy-topic-sr-only();
   }
 
   .Button-caret {
     display: none;
   }
 
-  // O core troca o ícone pelo triângulo no botão do menu dividido; aqui o
-  // "…" é o próprio botão.
+  // 核心会把拆分按钮的图标换成三角形；这里
+  // "…"就是按钮本身。
   &.Dropdown-toggle .Button-icon {
     display: inline-block;
   }
 
   &:hover,
   &:focus-visible {
-    background: var(--cn-hover);
-    border-color: var(--cn-primary-low-mid);
-    color: var(--cn-primary);
+    background: var(--lcoy-hover);
+    border-color: var(--lcoy-primary-low-mid);
+    color: var(--lcoy-primary);
     box-shadow: none;
   }
 }
 
-.canela-topic-sr-only() {
+.lcoy-topic-sr-only() {
   position: absolute !important;
   width: 1px;
   height: 1px;
@@ -85,34 +85,34 @@
 }
 
 // ---------------------------------------------------------------------
-// Desktop (a partir de 925px, como o Discourse): a coluna
+// 桌面端（从 925px 起，与 Discourse 一致）：该列
 // ---------------------------------------------------------------------
 @media (min-width: 925px) {
-  .CanelaTopic--timeline .DiscussionPage-nav {
+  .LcoyTopic--timeline .DiscussionPage-nav {
     > ul {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: var(--cn-space-2);
+      gap: var(--lcoy-space-2);
 
       > li {
         margin: 0;
       }
     }
 
-    // A linha do tempo primeiro, depois o atalho para as não lidas, e os
-    // botões numa fileira embaixo, como no Discourse.
+    // 先是时间线，然后是未读的快捷入口，按钮在下方
+    // 排成一行，与 Discourse 一致。
     .item-scrubber {
       order: -2;
       flex: 0 0 100%;
     }
 
-    .item-canelaUnread {
+    .item-lcoyUnread {
       order: -1;
       flex: 0 0 100%;
     }
 
-    // O core estica os botões e o SplitDropdown na largura da coluna.
+    // 核心会把按钮和 SplitDropdown 拉伸到列的宽度。
     .ButtonGroup,
     :not(.ButtonGroup) > .Button {
       width: auto;
@@ -120,14 +120,14 @@
 
     .ButtonGroup {
       display: inline-flex;
-      gap: var(--cn-space-2);
+      gap: var(--lcoy-space-2);
     }
 
     .ButtonGroup > .Button,
     .ButtonGroup:not(.itemCount1) > .Button:first-of-type,
     .ButtonGroup:not(.itemCount1) > .Dropdown-toggle,
-    .CanelaNotifications--compact > .Dropdown-toggle {
-      .canela-round-button();
+    .LcoyNotifications--compact > .Dropdown-toggle {
+      .lcoy-round-button();
       margin: 0;
     }
 
@@ -135,29 +135,29 @@
       min-width: 220px;
     }
 
-    // Os botões redondos ficam 16px abaixo de "4 h atrás" (.timeline-footer-controls).
-    > ul > li:not(.item-scrubber):not(.item-canelaUnread) {
-      margin-top: var(--cn-space-2);
+    // 圆形按钮位于"4 小时前"下方 16px（.timeline-footer-controls）。
+    > ul > li:not(.item-scrubber):not(.item-lcoyUnread) {
+      margin-top: var(--lcoy-space-2);
     }
 
-    // O "只看楼主" (lcoy/only-op) fica numa linha própria, abaixo de
-    // "Responder" e do sino, em vez de disputar a mesma fileira.
+    // "只看楼主"（lcoy/only-op）位于单独一行，在
+    // "回复"和铃铛下方，而不是争夺同一行。
     > ul > li.item-onlyOp {
       flex: 0 0 100%;
     }
 
-    .CanelaNotifications-menu {
+    .LcoyNotifications-menu {
       min-width: 300px;
     }
   }
 
-  .CanelaTopic--timeline {
+  .LcoyTopic--timeline {
     .PostStreamScrubber {
       margin: 0;
     }
 
-    // O menu do scrubber, sempre aberto na coluna, herdava a sombra dos
-    // dropdowns (no escuro, uma caixa visível em volta da linha do tempo).
+    // 始终在列中展开的 scrubber 菜单继承了
+    // 下拉菜单的阴影（深色模式下，时间线周围会出现一个可见的盒子）。
     .PostStreamScrubber > .Dropdown-menu {
       border: 0;
       background: none;
@@ -172,7 +172,7 @@
       font-size: 16px;
       line-height: 1.4;
       text-align: left;
-      color: var(--cn-primary-medium);
+      color: var(--lcoy-primary-medium);
       background: none;
       border-radius: 0;
 
@@ -182,19 +182,19 @@
 
       &:hover,
       &:focus-visible {
-        color: var(--cn-primary-high);
+        color: var(--lcoy-primary-high);
         background: none;
       }
     }
 
     .Scrubber-last {
-      margin-top: var(--cn-space-2);
+      margin-top: var(--lcoy-space-2);
     }
 
-    // O trilho: a borda do próprio scrollbar, de ponta a ponta.
+    // 轨道：滚动条自身的边框，贯穿首尾。
     .Scrubber-scrollbar {
-      margin: var(--cn-space-2) 0 0 var(--cn-space-2);
-      border-left: 1px solid var(--cn-timeline-rail);
+      margin: var(--lcoy-space-2) 0 0 var(--lcoy-space-2);
+      border-left: 1px solid var(--lcoy-timeline-rail);
     }
 
     .Scrubber-before,
@@ -202,8 +202,8 @@
       border-left: 0;
     }
 
-    // A .timeline-padding do Discourse: a altura desliza (.15s ease-out),
-    // menos enquanto o leitor arrasta a alça.
+    // Discourse 的 .timeline-padding：高度带动画（.15s ease-out），
+    // 读者拖动滑块时更短。
     .PostStreamScrubber:not(.dragging) {
       .Scrubber-before,
       .Scrubber-after,
@@ -217,25 +217,25 @@
       margin-left: -3.5px;
     }
 
-    // A alça do Horizon: 0.35em de largura, arredondada, na cor do trilho.
+    // Horizon 的滑块：宽 0.35em，圆角，使用轨道颜色。
     .Scrubber-bar {
       width: 5.6px;
       margin-left: 0.5px;
       border-radius: 0.8em;
-      background: var(--cn-timeline-handle);
+      background: var(--lcoy-timeline-handle);
       outline: 1px solid transparent;
       transition: none;
     }
 
     .disabled .Scrubber-bar {
-      background: var(--cn-primary-low);
+      background: var(--lcoy-primary-low);
     }
 
     .Scrubber-info {
       top: 50%;
-      left: var(--cn-space-4);
+      left: var(--lcoy-space-4);
       width: auto;
-      max-width: calc(100% - var(--cn-space-4));
+      max-width: calc(100% - var(--lcoy-space-4));
       max-height: 3em;
       margin-top: 0;
       overflow: hidden;
@@ -245,32 +245,32 @@
       white-space: nowrap;
 
       strong {
-        .canela-scrubber-count(16px; "/");
+        .lcoy-scrubber-count(16px; "/");
         display: block;
         font-weight: 700;
-        color: var(--cn-primary);
+        color: var(--lcoy-primary);
       }
     }
 
     .Scrubber-description {
       font-size: 16px;
-      color: var(--cn-primary-medium);
+      color: var(--lcoy-primary-medium);
     }
 
-    // As não lidas: só o trecho tingido no trilho; a contagem fica no botão
-    // "↓ N não lidas" embaixo.
+    // 未读：只有轨道上的着色段；计数位于下方的
+    // "↓ N 条未读"按钮中。
     .Scrubber-unread {
       border-left: 0;
       padding: 0;
       font-size: 0;
-      background-image: linear-gradient(to right, var(--cn-accent-low), transparent 70%);
+      background-image: linear-gradient(to right, var(--lcoy-accent-low), transparent 70%);
     }
 
-    .CanelaTimeline-unread {
+    .LcoyTimeline-unread {
       height: auto;
-      padding: var(--cn-space-1) 0;
-      font-size: var(--cn-font-down-1);
-      color: var(--cn-link);
+      padding: var(--lcoy-space-1) 0;
+      font-size: var(--lcoy-font-down-1);
+      color: var(--lcoy-link);
       background: none;
 
       .Button-icon {
@@ -280,42 +280,42 @@
       &:hover,
       &:focus-visible {
         background: none;
-        color: var(--cn-link);
+        color: var(--lcoy-link);
         text-decoration: underline;
       }
     }
   }
 }
 
-// As cores da linha do tempo do Horizon: no claro, trilho e alça no mesmo
-// tom lavado da cor de destaque (o --tertiary-400); no escuro, os dois na cor
-// cheia.
+// Horizon 时间线的颜色：浅色模式下，轨道和滑块使用同一
+// 种高亮色的淡化调（--tertiary-400）；深色模式下，两者为
+// 全色。
 [data-theme^=light] {
-  --cn-timeline-handle: ~"color-mix(in srgb, var(--cn-accent) 26%, var(--cn-surface))";
-  --cn-timeline-rail: var(--cn-timeline-handle);
+  --lcoy-timeline-handle: ~"color-mix(in srgb, var(--lcoy-accent) 26%, var(--lcoy-surface))";
+  --lcoy-timeline-rail: var(--lcoy-timeline-handle);
 }
 
 [data-theme^=dark] {
-  --cn-timeline-handle: var(--cn-accent);
-  --cn-timeline-rail: var(--cn-accent);
+  --lcoy-timeline-handle: var(--lcoy-accent);
+  --lcoy-timeline-rail: var(--lcoy-accent);
 }
 
 // ---------------------------------------------------------------------
-// Celular: o #topic-progress do Discourse — uma aba "1 / 11" grudada no
-// pé da tela, à direita, com o fundo que se tinge conforme a leitura — que
-// abre a linha do tempo como folha (timeline-fullscreen): título, categoria
-// e começo do primeiro post à esquerda, o trilho à direita.
+// 手机端：Discourse 的 #topic-progress——一个"1 / 11"标签页吸附在
+// 屏幕底部右侧，其背景随阅读进度着色——点击后
+// 以面板形式打开时间线（timeline-fullscreen）：左侧是标题、分类
+// 和第一个帖子的开头，右侧是轨道。
 // ---------------------------------------------------------------------
-.CanelaTimelineSheet {
+.LcoyTimelineSheet {
   display: none;
 }
 
 @media (max-width: 924px) {
-  .CanelaTopic--timeline .PostStreamScrubber {
+  .LcoyTopic--timeline .PostStreamScrubber {
     margin: 0;
   }
 
-  .CanelaTopic--timeline .DiscussionPage-nav {
+  .LcoyTopic--timeline .DiscussionPage-nav {
     position: static;
     margin: 0;
     padding: 0;
@@ -326,18 +326,18 @@
     }
   }
 
-  // Com o rodapé ligado, os controles do tópico estão lá embaixo, como no
-  // Discourse; no topo sobraria uma fileira de botões soltos.
-  .CanelaTopic--timeline.CanelaTopic--footer .DiscussionPage-nav > ul > li:not(.item-scrubber) {
+  // 页脚开启时，话题控件在下方，与
+  // Discourse 一致；顶部只会剩下一行零散的按钮。
+  .LcoyTopic--timeline.LcoyTopic--footer .DiscussionPage-nav > ul > li:not(.item-scrubber) {
     display: none;
   }
 
-  // Com o editor aberto, a aba sobe e encosta nele (o .with-topic-progress
-  // do Discourse usa bottom: var(--composer-height)).
-  .CanelaTopic--timeline .PostStreamScrubber > .Dropdown-toggle {
+  // 编辑器打开时，标签页上移并贴住它（Discourse 的
+  // .with-topic-progress 使用 bottom: var(--composer-height)）。
+  .LcoyTopic--timeline .PostStreamScrubber > .Dropdown-toggle {
     position: fixed;
     right: 27px;
-    bottom: var(--cn-composer-height, 0px);
+    bottom: var(--lcoy-composer-height, 0px);
     z-index: var(--zindex-header);
     display: flex;
     align-items: center;
@@ -349,23 +349,23 @@
     margin: 0;
     padding: 8px 16px;
     box-sizing: border-box;
-    border: 1px solid var(--cn-accent-low);
+    border: 1px solid var(--lcoy-accent-low);
     border-bottom: 0;
     border-radius: 0;
-    background: var(--cn-surface);
+    background: var(--lcoy-surface);
     box-shadow: none;
-    color: var(--cn-link);
+    color: var(--lcoy-link);
     font-size: 0;
     font-weight: 700;
     overflow: hidden;
 
-    // O progresso: o fundo tingido cresce da esquerda para a direita.
+    // 进度：着色背景从左向右增长。
     &::before {
       content: "";
       position: absolute;
       inset: 0 auto 0 0;
-      width: calc(var(--cn-progress, 0) * 100%);
-      background: var(--cn-accent-low);
+      width: calc(var(--lcoy-progress, 0) * 100%);
+      background: var(--lcoy-accent-low);
       transition: width 0.15s ease-out;
     }
 
@@ -386,8 +386,8 @@
     }
   }
 
-  // A folha: largura toda, presa embaixo, sobe com max-height (.4s).
-  .CanelaTopic--timeline .PostStreamScrubber > .Dropdown-menu {
+  // 面板：整宽，固定在底部，以 max-height 上升（.4s）。
+  .LcoyTopic--timeline .PostStreamScrubber > .Dropdown-menu {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) 7em;
     column-gap: 1em;
@@ -401,49 +401,49 @@
     padding: 0 1em;
     overflow: hidden;
     border: 0;
-    border-top: 1px solid var(--cn-border);
+    border-top: 1px solid var(--lcoy-border);
     border-radius: 0;
-    background: var(--cn-surface);
+    background: var(--lcoy-surface);
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.12);
     visibility: hidden;
     transition: max-height 0.3s ease-in, visibility 0s 0.3s;
   }
 
-  .CanelaTopic--timeline .PostStreamScrubber.open > .Dropdown-menu {
+  .LcoyTopic--timeline .PostStreamScrubber.open > .Dropdown-menu {
     max-height: 700px;
     padding: 20px 1em;
     visibility: visible;
     transition: max-height 0.4s ease-out, visibility 0s;
   }
 
-  .CanelaTimelineSheet {
+  .LcoyTimelineSheet {
     display: block;
     min-width: 0;
     padding-left: 1em;
   }
 
-  .CanelaTimelineSheet-title {
-    margin: 0 0 var(--cn-space-2);
+  .LcoyTimelineSheet-title {
+    margin: 0 0 var(--lcoy-space-2);
     font-size: 1.2853rem;
     font-weight: 700;
     line-height: 1.2;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     display: -webkit-box;
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
 
-  .CanelaTimelineSheet-badges {
-    margin-bottom: var(--cn-space-2);
-    font-size: var(--cn-font-down-1);
+  .LcoyTimelineSheet-badges {
+    margin-bottom: var(--lcoy-space-2);
+    font-size: var(--lcoy-font-down-1);
   }
 
-  .CanelaTimelineSheet-excerpt {
+  .LcoyTimelineSheet-excerpt {
     max-width: 650px;
     font-size: 1rem;
     line-height: 1.6;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     overflow-wrap: anywhere;
     display: -webkit-box;
     -webkit-line-clamp: 8;
@@ -451,25 +451,25 @@
     overflow: hidden;
   }
 
-  .CanelaTimelineSheet-user {
+  .LcoyTimelineSheet-user {
     font-weight: 700;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
   }
 
-  // O trilho à direita, com os rótulos alinhados à direita dele.
-  .CanelaTopic--timeline .Scrubber {
+  // 轨道在右侧，标签与其右对齐。
+  .LcoyTopic--timeline .Scrubber {
     text-align: right;
   }
 
-  .CanelaTopic--timeline .Scrubber-first,
-  .CanelaTopic--timeline .Scrubber-last {
+  .LcoyTopic--timeline .Scrubber-first,
+  .LcoyTopic--timeline .Scrubber-last {
     display: block;
     width: 100%;
     height: auto;
     padding: 0.5em 0;
     text-align: right;
     font-size: 1rem;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
     background: none;
 
     .Button-icon {
@@ -477,26 +477,26 @@
     }
   }
 
-  .CanelaTopic--timeline .Scrubber-scrollbar {
+  .LcoyTopic--timeline .Scrubber-scrollbar {
     margin: 0;
     border-left: 0;
-    border-right: 1px solid var(--cn-timeline-rail);
+    border-right: 1px solid var(--lcoy-timeline-rail);
   }
 
-  .CanelaTopic--timeline .Scrubber-before,
-  .CanelaTopic--timeline .Scrubber-after {
+  .LcoyTopic--timeline .Scrubber-before,
+  .LcoyTopic--timeline .Scrubber-after {
     border: 0;
   }
 
-  .CanelaTopic--timeline .Scrubber-bar {
+  .LcoyTopic--timeline .Scrubber-bar {
     float: right;
     width: 11px;
     margin: 0 -6px 0 0;
     border-radius: 0.8em;
-    background: var(--cn-timeline-handle);
+    background: var(--lcoy-timeline-handle);
   }
 
-  .CanelaTopic--timeline .Scrubber-info {
+  .LcoyTopic--timeline .Scrubber-info {
     top: 50%;
     right: 1em;
     left: auto;
@@ -508,36 +508,36 @@
     line-height: 1.4;
 
     strong {
-      .canela-scrubber-count(1rem; "/");
+      .lcoy-scrubber-count(1rem; "/");
       display: block;
-      color: var(--cn-primary);
+      color: var(--lcoy-primary);
     }
   }
 
-  .CanelaTopic--timeline .Scrubber-description {
-    color: var(--cn-primary-medium);
+  .LcoyTopic--timeline .Scrubber-description {
+    color: var(--lcoy-primary-medium);
   }
 }
 
-// O visitante não tem botões na linha do tempo do Discourse: ele responde
-// pelo "Responder" do fim do tópico.
+// 访客在 Discourse 的时间线上没有按钮：他通过话题末尾的
+// "回复"来回复。
 @media (min-width: 925px) {
-  .CanelaTopic--timeline.CanelaTopic--guest .DiscussionPage-nav .item-controls {
+  .LcoyTopic--timeline.LcoyTopic--guest .DiscussionPage-nav .item-controls {
     display: none;
   }
 }
 
-// Com um item só no menu (o visitante só tem "Responder", que já é o botão
-// principal), o botão do menu sairia como um quadrado vazio ao lado.
+// 菜单中只有一项时（访客只有"回复"，而它已是主
+// 按钮），菜单按钮会变成一个空的方形。
 .DiscussionPage-nav .Dropdown--split.itemCount1 > .Dropdown-toggle {
   display: none;
 }
 
-// Celular: os painéis do cabeçalho (perfil, notificações, idioma) descem por
-// cima da página, mas a aba "7 / 7" é fixa no mesmo nível do cabeçalho e
-// vinha depois no DOM, aparecendo por cima deles. Some enquanto um está aberto.
+// 手机端：页头面板（个人资料、通知、语言）向下覆盖
+// 页面，但"7 / 7"标签页固定在页头同一层级，且在 DOM 中
+// 靠后，因此显示在它们之上。有面板打开时会隐藏。
 @media @phone {
-  .App:has(.App-header :is(.Dropdown.open, .CanelaUserMenuWrap--open)) .CanelaTopic--timeline .PostStreamScrubber > .Dropdown-toggle {
+  .App:has(.App-header :is(.Dropdown.open, .LcoyUserMenuWrap--open)) .LcoyTopic--timeline .PostStreamScrubber > .Dropdown-toggle {
     visibility: hidden;
   }
 }

@@ -13,10 +13,10 @@ export interface RulesPayload {
 }
 
 /**
- * Corta o HTML nos títulos `h2`: o que vem antes é a abertura (vai para o
- * topo) e cada título vira uma seção com âncora. Nos itens de lista, cada um
- * vira uma "regra" numerada. O HTML é o do servidor (página do fof/pages ou
- * texto do admin), já higienizado lá.
+ * 按 `h2` 标题切分 HTML：之前的内容为引言（放在顶部），每个标题
+ * 成为一个带锚点的章节。列表项各自变成一条带编号的“规则”。
+ * HTML 来自服务端（fof/pages 页面或管理员文本），已在服务端
+ * 净化。
  */
 function structure(html: string): { intro: string; sections: RulesSection[] } {
   const root = new DOMParser().parseFromString(`<div>${html}</div>`, 'text/html').body.firstElementChild as HTMLElement;
@@ -49,9 +49,9 @@ function structure(html: string): { intro: string; sections: RulesSection[] } {
     }
 
     if (node instanceof HTMLElement && (node.tagName === 'UL' || node.tagName === 'OL')) {
-      node.classList.add('CanelaRules-list');
+      node.classList.add('LcoyRules-list');
       Array.from(node.children).forEach((li, index) => {
-        li.classList.add('CanelaRules-rule');
+        li.classList.add('LcoyRules-rule');
         li.setAttribute('data-n', String(index + 1));
       });
     }
@@ -66,9 +66,9 @@ function structure(html: string): { intro: string; sections: RulesSection[] } {
 }
 
 /**
- * Base das páginas de regras da área Sobre (as Diretrizes e as páginas extras
- * do fof/pages): título, índice de seções em pílulas e cada seção num cartão.
- * Cada página só diz de onde vem o HTML e qual aba fica ativa.
+ * “关于”区域中规则页面的基类（“准则”以及 fof/pages 的额外页面）：
+ * 标题、以胶囊按钮呈现的章节索引，以及每节一张卡片。
+ * 每个页面只需说明 HTML 的来源和哪个标签处于激活状态。
  */
 export default abstract class RulesPage extends CommunityPage {
   html: string | null = null;
@@ -81,10 +81,10 @@ export default abstract class RulesPage extends CommunityPage {
     if (this.enabled()) this.load();
   }
 
-  /** O endereço na API, relativo (`/canela-guidelines`). */
+  /** API 地址，相对路径（`/lcoy-guidelines`）。 */
   abstract endpoint(): string;
 
-  /** A aba de AboutNav que fica marcada. */
+  /** AboutNav 中高亮显示的标签。 */
   abstract activeTab(): string;
 
   load(): void {
@@ -102,39 +102,38 @@ export default abstract class RulesPage extends CommunityPage {
       .finally(() => m.redraw());
   }
 
-  /** Depois de carregar (a página extra troca o título da aba do navegador). */
+  /** 加载完成后执行（额外页面会更新浏览器标签页标题）。 */
   loaded(_data: RulesPayload): void {}
 
   content(): Mithril.Children {
     let body: Mithril.Children;
 
-    if (this.failed) body = <p className="CanelaCommunity-empty">{t('community.load_error')}</p>;
+    if (this.failed) body = <p className="LcoyCommunity-empty">{t('community.load_error')}</p>;
     else if (this.html === null) body = this.skeleton();
     else body = this.rules(this.html);
 
     return (
-      <div className="CanelaAbout CanelaGuidelines">
-        <header className="CanelaAbout-header">{AboutNav(this.activeTab())}</header>
+      <div className="LcoyAbout LcoyGuidelines">
+        <header className="LcoyAbout-header">{AboutNav(this.activeTab())}</header>
         {body}
       </div>
     );
   }
 
   /**
-   * O texto ainda vindo: o título (já conhecido) e dois cartões de regras com
-   * as classes dos reais, com barras de texto no lugar das linhas, para o
-   * conteúdo chegar onde o esqueleto estava.
+   * 文本尚未到达：标题（已确定）和两张沿用真实类名的规则卡片，
+   * 用骨架条代替文字行，使内容到达时正落在骨架所在的位置。
    */
   skeleton(): Mithril.Children {
-    const line = (width: string) => <span className="CanelaSkeleton CanelaSkeleton--line" style={{ width }} />;
+    const line = (width: string) => <span className="LcoySkeleton LcoySkeleton--line" style={{ width }} />;
 
     return (
-      <div className="CanelaRules CanelaRules--loading" aria-busy="true">
-        <h1 className="CanelaRules-title">{this.title()}</h1>
-        <nav className="CanelaRules-toc" aria-hidden="true">
+      <div className="LcoyRules LcoyRules--loading" aria-busy="true">
+        <h1 className="LcoyRules-title">{this.title()}</h1>
+        <nav className="LcoyRules-toc" aria-hidden="true">
           {['9em', '12em', '8em', '11em', '10em', '7em'].map((width) => (
             <a>
-              <span className="CanelaSkeleton CanelaSkeleton--word" style={{ width }} />
+              <span className="LcoySkeleton LcoySkeleton--word" style={{ width }} />
             </a>
           ))}
         </nav>
@@ -142,9 +141,9 @@ export default abstract class RulesPage extends CommunityPage {
           ['30%', ['100%', '94%', '72%']],
           ['24%', ['96%', '100%', '58%']],
         ].map(([title, lines]) => (
-          <section className="CanelaRules-card">
-            <h2 className="CanelaRules-sectionTitle">{line(title as string)}</h2>
-            <div className="CanelaRules-body Post-body">
+          <section className="LcoyRules-card">
+            <h2 className="LcoyRules-sectionTitle">{line(title as string)}</h2>
+            <div className="LcoyRules-body Post-body">
               <p>{(lines as string[]).map(line)}</p>
             </div>
           </section>
@@ -158,21 +157,21 @@ export default abstract class RulesPage extends CommunityPage {
     const title = this.pageTitle || this.title();
 
     return (
-      <div className="CanelaRules">
-        <h1 className="CanelaRules-title">{title}</h1>
+      <div className="LcoyRules">
+        <h1 className="LcoyRules-title">{title}</h1>
 
-        {/* Sem nenhum h2, o texto todo é o conteúdo: vai num cartão, com as regras numeradas. */}
+        {/* 没有任何 h2 时，整段文本就是内容：放在一张卡片中，并带编号规则。 */}
         {intro &&
           (sections.length ? (
-            <div className="CanelaRules-intro Post-body">{m.trust(intro)}</div>
+            <div className="LcoyRules-intro Post-body">{m.trust(intro)}</div>
           ) : (
-            <section className="CanelaRules-card">
-              <div className="CanelaRules-body Post-body">{m.trust(intro)}</div>
+            <section className="LcoyRules-card">
+              <div className="LcoyRules-body Post-body">{m.trust(intro)}</div>
             </section>
           ))}
 
         {sections.length > 1 && (
-          <nav className="CanelaRules-toc" aria-label={title}>
+          <nav className="LcoyRules-toc" aria-label={title}>
             {sections.map((section) => (
               <a
                 href={`#${section.id}`}
@@ -188,9 +187,9 @@ export default abstract class RulesPage extends CommunityPage {
         )}
 
         {sections.map((section) => (
-          <section className="CanelaRules-card" id={section.id}>
-            <h2 className="CanelaRules-sectionTitle">{section.title}</h2>
-            <div className="CanelaRules-body Post-body">{m.trust(section.html)}</div>
+          <section className="LcoyRules-card" id={section.id}>
+            <h2 className="LcoyRules-sectionTitle">{section.title}</h2>
+            <div className="LcoyRules-body Post-body">{m.trust(section.html)}</div>
           </section>
         ))}
       </div>

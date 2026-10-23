@@ -21,9 +21,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Lcoy\Roselle\Community\Community;
 
 /**
- * O conteúdo das rotas /about, /u e /g no servidor: o título da aba (que o
- * Mithril depois mantém) e o 404 quando o recurso está desligado — sem isso o
- * fórum abriria a página e só então descobriria que ela não existe.
+ * 服务端的 /about、/u 和 /g 路由内容：选项卡标题（之后由 Mithril 维护）
+ * 以及功能关闭时的 404——否则论坛会先打开页面，然后才发现它并不存在。
  */
 final class CommunityPage
 {
@@ -33,7 +32,7 @@ final class CommunityPage
     ) {
     }
 
-    /** O callback de uma página, no formato que o `Extend\Frontend::route()` espera. */
+    /** 页面回调，采用 `Extend\Frontend::route()` 期望的格式。 */
     public static function for(string $settingKey, string $titleKey): Closure
     {
         return static function (Document $document, ServerRequestInterface $request) use ($settingKey, $titleKey): void {

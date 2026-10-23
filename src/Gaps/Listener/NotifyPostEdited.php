@@ -21,8 +21,8 @@ use Lcoy\Roselle\Gaps\GapsSettings;
 use Lcoy\Roselle\Gaps\Notification\PostEditedBlueprint;
 
 /**
- * Avisa o autor quando outra pessoa edita a postagem dele — o `edited` do
- * Discourse. A própria edição não avisa ninguém.
+ * 当其他人编辑了某人的帖子时通知作者——即 Discourse 的 `edited`。
+ * 自己的编辑不会通知任何人。
  */
 final class NotifyPostEdited
 {
@@ -41,8 +41,8 @@ final class NotifyPostEdited
             return;
         }
 
-        // Quem não vê mais a postagem (tópico movido para uma categoria
-        // restrita, por exemplo) não tem o que abrir.
+        // 若作者已看不到该帖子（例如主题被移入受限分类），
+        // 就没有可打开的内容。
         if (! Post::query()->whereVisibleTo($author)->whereKey($post->id)->exists()) {
             return;
         }

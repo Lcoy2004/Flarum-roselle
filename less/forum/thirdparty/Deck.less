@@ -1,34 +1,34 @@
-// flarum/deck (/deck)：o tema entra só no que a casca atrapalha.
+// flarum/deck（/deck）：主题只处理外壳造成干扰的部分。
 //
-// O Deck calcula a própria altura como `100dvh - var(--header-height)` — os
-// 52px do cabeçalho do tema batem com os do core, então a conta fecha. O que
-// não fechava era o `.Page` do tema reservar 48px no pé para o compositor
-// (Shell.less): o Deck já cuida disso com `--deck-bottom-gap`, e os 48px
-// comiam um pedaço das colunas. Em tela cheia o Deck esconde `#header` e
-// `#app-navigation`, mas não conhece a barra lateral do tema nem a margem que
-// ela deixa no conteúdo.
+// Deck 将自身高度计算为 `100dvh - var(--header-height)`——主题
+// 头部的 52px 与核心一致，因此计算成立。不成立的
+// 是主题的 `.Page` 在底部为编辑器预留 48px
+// （Shell.less）：Deck 已通过 `--deck-bottom-gap` 处理，这 48px
+// 会吃掉列的一部分。全屏时 Deck 隐藏 `#header` 和
+// `#app-navigation`，但它不知道主题的侧边栏，也不知道
+// 侧边栏在内容中留下的外边距。
 
-.Canela.App--deck {
-  // A altura do Deck é a da janela: o pé é dele, não do compositor.
+.Lcoy.App--deck {
+  // Deck 的高度等于窗口：底部属于它，而非编辑器。
   .Page {
     padding-bottom: 0;
   }
 
-  // A linha de colunas rola na horizontal; a barra fina do tema some no fundo.
+  // 列行横向滚动；主题的细滚动条隐入背景。
   .DeckRow-columns {
     scrollbar-width: thin;
-    scrollbar-color: var(--cn-primary-low) transparent;
+    scrollbar-color: var(--lcoy-primary-low) transparent;
   }
 }
 
-// Tela cheia: só o Deck. O cabeçalho e a navegação do core saem pelo próprio
-// Deck; aqui saem a barra global do tema, o fundo do painel do celular e os
-// espaçamentos que a casca deixa no conteúdo.
-.Canela.App--deckFullscreen {
+// 全屏：只有 Deck。核心的头部和导航由 Deck 自身
+// 移除；这里移除主题的全局栏、手机端面板背景以及
+// 外壳在内容中留下的间距。
+.Lcoy.App--deckFullscreen {
   padding-top: 0;
 
-  #canela-sidebar,
-  .CanelaSidebar-backdrop {
+  #lcoy-sidebar,
+  .LcoySidebar-backdrop {
     display: none;
   }
 

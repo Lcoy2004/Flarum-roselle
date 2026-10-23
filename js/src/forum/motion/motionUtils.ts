@@ -1,13 +1,13 @@
 /*
- * Utilidades de movimento compartilhadas pelos módulos de `motion/`.
+ * `motion/` 各模块共享的动效工具。
  */
 
-/** Quem pede menos movimento recebe tudo na hora (o Discourse zera as durações). */
+/** 要求减少动画的人会立即看到一切（Discourse 会将时长归零）。 */
 export function prefersReducedMotion(): boolean {
   return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 }
 
-/** Celular (< 768px): lá os menus são folhas e o toque não tem hover. */
+/** 手机（< 768px）：那里的菜单是底部面板，触摸也没有悬停。 */
 export function isPhone(): boolean {
   return window.matchMedia?.('(max-width: 767.98px)').matches ?? false;
 }

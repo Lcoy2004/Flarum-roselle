@@ -11,12 +11,12 @@
  */
 
 /*
- * Marcadores (bookmarks) do Discourse: marcar posts e o tópico inteiro, com
- * nome e lembrete, e a página "Marcadores" no perfil.
+ * Discourse 的书签功能（bookmarks）：收藏帖子及整个主题，可命名和设置提醒，
+ * 并在个人资料中提供 "书签" 页面。
  *
- * Tudo fica registrado mesmo com o recurso desligado no admin — as rotas da
- * API são montadas no boot, antes das configurações — e cada ponto de entrada
- * consulta `canela.bookmarks_enabled` (BookmarksFeature).
+ * 即使在管理员处关闭了该功能，一切都仍会注册 —— API 路由在启动时装配，
+ * 早于配置加载 —— 而每个入口都会查询 `lcoy.bookmarks_enabled`
+ * （BookmarksFeature）。
  */
 
 use Flarum\Api\Resource\PostResource;
@@ -43,8 +43,8 @@ return [
     (new Extend\Policy())
         ->modelPolicy(Bookmark::class, BookmarkPolicy::class),
 
-    // Só o alerta, ligado por padrão. O usuário desliga em Configurações →
-    // Notificações, como qualquer outro tipo.
+    // 仅站内提醒，默认开启。用户可在 设置 → 通知 中关闭，
+    // 与其他通知类型一样。
     (new Extend\Notification())
         ->type(BookmarkReminderBlueprint::class, ['alert']),
 
@@ -56,7 +56,7 @@ return [
         ->default(BookmarksFeature::ENABLED, true)
         ->default(BookmarksFeature::TOPIC_BUTTON, true)
         ->default(BookmarksFeature::USER_MENU, true)
-        ->serializeToForum('canelaBookmarksEnabled', BookmarksFeature::ENABLED, 'boolval')
-        ->serializeToForum('canelaBookmarksTopicButton', BookmarksFeature::TOPIC_BUTTON, 'boolval')
-        ->serializeToForum('canelaBookmarksUserMenu', BookmarksFeature::USER_MENU, 'boolval'),
+        ->serializeToForum('lcoyBookmarksEnabled', BookmarksFeature::ENABLED, 'boolval')
+        ->serializeToForum('lcoyBookmarksTopicButton', BookmarksFeature::TOPIC_BUTTON, 'boolval')
+        ->serializeToForum('lcoyBookmarksUserMenu', BookmarksFeature::USER_MENU, 'boolval'),
 ];

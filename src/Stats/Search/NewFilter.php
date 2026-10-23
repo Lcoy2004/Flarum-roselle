@@ -10,8 +10,8 @@ use Flarum\Search\SearchState;
 use Lcoy\Roselle\Stats\TopicCounter;
 
 /**
- * `filter[canelaNew]=1` — a aba "Novos" do Discourse: só os tópicos que a
- * pessoa nunca abriu, pela mesma regra da contagem "Novos (N)".
+ * `filter[lcoyNew]=1`——Discourse 的"新帖"选项卡：只包含用户从未打开过的
+ * 主题，规则与"新帖 (N)"计数相同。
  *
  * @implements FilterInterface<DatabaseSearchState>
  */
@@ -25,7 +25,7 @@ final class NewFilter implements FilterInterface
     #[\Override]
     public function getFilterKey(): string
     {
-        return 'canelaNew';
+        return 'lcoyNew';
     }
 
     #[\Override]
@@ -33,7 +33,7 @@ final class NewFilter implements FilterInterface
     {
         $actor = $state->getActor();
 
-        // Para o visitante não há "novo" pessoal: a lista fica como estava.
+        // 对访客而言没有个人的"新帖"：列表保持原样。
         if ($actor->isGuest() || $negate) {
             return;
         }

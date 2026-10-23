@@ -1,82 +1,82 @@
 // =====================================================================
-// Páginas de comunidade: Sobre (/about), Usuários (/u) e Grupos (/g).
-// Medidas do Discourse (about.scss, directory.scss, groups.scss): títulos
-// h1 em 2em/700, tabelas com cabeçalho cinza pequeno e linhas separadas
-// pela borda do conteúdo.
+// 社区页面：关于（/about）、用户（/u）和分组（/g）。
+// 数值取自 Discourse（about.scss、directory.scss、groups.scss）：h1 标题
+// 为 2em/700，表格带小型灰色表头，行之间以
+// 内容边框分隔。
 // =====================================================================
 
-// A navegação está na barra global: a coluna lateral do PageStructure sobra.
-.CanelaCommunityPage .Page-sidebar {
+// 导航位于全局侧边栏：PageStructure 的侧列留空。
+.LcoyCommunityPage .Page-sidebar {
   display: none;
 }
 
-.CanelaCommunityPage .Page-content {
+.LcoyCommunityPage .Page-content {
   flex: 1 1 auto;
   min-width: 0;
   width: 100%;
 }
 
-// O Discourse trabalha com 16px de base (o corpo do Flarum é 15px), e as
-// medidas em em abaixo contam com isso.
-.CanelaCommunityPage .Page-container {
+// Discourse 以 16px 为基准（Flarum 的正文是 15px），下面的
+// em 数值也基于此。
+.LcoyCommunityPage .Page-container {
   font-size: 16px;
   line-height: 1.4;
 }
 
 // ---------------------------------------------------------------------
-// Peças comuns
+// 通用部件
 // ---------------------------------------------------------------------
-.CanelaCommunity-empty {
-  margin: var(--cn-space-6) 0;
-  color: var(--cn-primary-medium);
+.LcoyCommunity-empty {
+  margin: var(--lcoy-space-6) 0;
+  color: var(--lcoy-primary-medium);
 }
 
-.CanelaCommunity-more {
+.LcoyCommunity-more {
   display: flex;
   justify-content: center;
-  margin: var(--cn-space-4) 0;
+  margin: var(--lcoy-space-4) 0;
 }
 
-// Tabelas largas rolam de lado dentro do cartão, sem empurrar a página.
-.CanelaCommunity-tableWrap {
+// 宽表格在卡片内横向滚动，不撑宽页面。
+.LcoyCommunity-tableWrap {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-.CanelaCommunity-table {
+.LcoyCommunity-table {
   width: 100%;
-  margin-top: var(--cn-space-1);
+  margin-top: var(--lcoy-space-1);
   border-collapse: collapse;
 
-  // `.directory-table__cell`: 12px × 8px, a borda da tabela embaixo.
+  // `.directory-table__cell`：12px × 8px，下方为表格边框。
   th,
   td {
     padding: 12px 8px;
-    border-bottom: 1px solid var(--cn-border);
+    border-bottom: 1px solid var(--lcoy-border);
     text-align: left;
     vertical-align: middle;
   }
 
-  // `.directory-table__column-header`: cinza, 8px, texto normal.
+  // `.directory-table__column-header`：灰色，8px，正常文字。
   thead th {
     padding: 8px;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
     font-size: 1em;
     font-weight: 400;
     white-space: nowrap;
   }
 
-  .CanelaCommunity-num {
+  .LcoyCommunity-num {
     text-align: center;
   }
 }
 
 // ---------------------------------------------------------------------
-// Bloco de usuário (o `user-info` do Discourse): avatar de 48px, 1em de vão,
-// usuário em negrito e o nome ao lado, o título cinza embaixo
+// 用户块（Discourse 的 `user-info`）：48px 头像，1em 间距，
+// 用户名加粗，名称在旁，头衔灰色在下
 // ---------------------------------------------------------------------
-.CanelaUserTile {
+.LcoyUserTile {
   display: flex;
   align-items: flex-start;
   gap: 1em;
@@ -102,11 +102,11 @@
     flex-wrap: wrap;
     gap: 0 0.5em;
     min-width: 0;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
     text-decoration: none;
 
     &:hover {
-      color: var(--cn-primary-high);
+      color: var(--lcoy-primary-high);
       text-decoration: none;
     }
   }
@@ -127,7 +127,7 @@
 
   &-title,
   &-meta {
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -135,19 +135,19 @@
 }
 
 // ---------------------------------------------------------------------
-// Sobre (about.scss): abas, nome do fórum em font-up-1, a faixa de números
-// entre linhas e as duas colunas (650px / 200px, 2em de vão)
+// 关于（about.scss）：标签页，论坛名称 font-up-1，两行之间的
+// 数字横带以及两列（650px / 200px，间距 2em）
 // ---------------------------------------------------------------------
-// Sem largura própria: a área Sobre ocupa o cartão do conteúdo, que segue a
-// "Largura do conteúdo" do admin.
-.CanelaAbout {
+// 无自身宽度：关于区域占据内容卡片，其宽度跟随
+// 后台的"内容宽度"。
+.LcoyAbout {
   max-width: none;
 
   &-header {
     max-width: none;
   }
 
-  // As abas do topo: `.nav-pills` com o sublinhado de 2px na ativa.
+  // 顶部标签页：`.nav-pills`，激活项带 2px 下划线。
   &-nav {
     margin-bottom: 2.5em;
 
@@ -157,7 +157,7 @@
       margin: 0;
       padding: 0;
       list-style: none;
-      // Quatro abas não cabem no celular: rolam de lado, como as do Discourse.
+      // 四个标签页在手机端放不下：横向滚动，与 Discourse 一致。
       overflow-x: auto;
       scrollbar-width: none;
     }
@@ -172,15 +172,15 @@
       align-items: center;
       min-height: 30px;
       padding: 0.65em 0.75em;
-      border-radius: var(--cn-radius);
+      border-radius: var(--lcoy-radius);
       background: transparent;
-      color: var(--cn-primary);
+      color: var(--lcoy-primary);
       font-size: 1em;
       line-height: 1;
       text-decoration: none;
       transition: none;
 
-      // O ícone opcional das abas extras (páginas do fof/pages).
+      // 额外标签页的可选图标（fof/pages 的页面）。
       .Button-icon {
         margin-right: 0.45em;
         font-size: 0.9em;
@@ -188,7 +188,7 @@
 
       &:hover,
       &[active="true"] {
-        color: var(--cn-link);
+        color: var(--lcoy-link);
         background: transparent;
         text-decoration: none;
 
@@ -199,43 +199,43 @@
           right: 0;
           bottom: 0;
           height: 0.125em;
-          background: var(--cn-link);
+          background: var(--lcoy-link);
         }
       }
     }
   }
 
-  .CanelaCommunityPage &-title {
+  .LcoyCommunityPage &-title {
     margin: 0 0 8px;
     font-size: 1.1487em;
     font-weight: 700;
     line-height: 1.4;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 
   &-description {
     margin: 1em 0;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     font-size: 1em;
   }
 
-  // A faixa de números entre duas linhas, na coluna da esquerda.
+  // 两行之间的数字横带，位于左侧列。
   &-summary {
     display: flex;
     margin: 0 0 1em;
     padding: 1em;
-    border-top: 1px solid var(--cn-border);
-    border-bottom: 1px solid var(--cn-border);
+    border-top: 1px solid var(--lcoy-border);
+    border-bottom: 1px solid var(--lcoy-border);
     list-style: none;
   }
 
   &-summaryItem {
     flex: 1 0 fit-content;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
 
     .icon {
       margin-right: 3px;
-      color: var(--cn-primary);
+      color: var(--lcoy-primary);
     }
   }
 
@@ -256,12 +256,12 @@
     min-width: 0;
   }
 
-  .CanelaCommunityPage &-sectionTitle {
+  .LcoyCommunityPage &-sectionTitle {
     margin: 0 0 8px;
     font-size: 1.1487em;
     font-weight: 700;
     line-height: 1.4;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 
   &-text {
@@ -293,11 +293,11 @@
 
   &-contactInfo {
     margin: 1em 0;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     word-break: break-word;
 
     a {
-      color: var(--cn-link);
+      color: var(--lcoy-link);
     }
   }
 
@@ -307,7 +307,7 @@
     list-style: none;
   }
 
-  // `.about__activities-item`: ícone de 1em na cor do texto, 1em até o texto.
+  // `.about__activities-item`：1em 图标，使用文字色，距文字 1em。
   &-activityItem {
     display: flex;
     align-items: center;
@@ -317,7 +317,7 @@
   &-activityIcon {
     flex-shrink: 0;
     margin-right: 1em;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 
   &-activityText {
@@ -326,11 +326,11 @@
   }
 
   &-activityCount {
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 
   &-activityPeriod {
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     font-size: 0.7579em;
   }
 
@@ -341,78 +341,78 @@
   &-statsTable {
     tbody th {
       font-weight: 400;
-      color: var(--cn-primary);
+      color: var(--lcoy-primary);
       white-space: nowrap;
     }
 
     tbody td {
-      color: var(--cn-primary-medium);
+      color: var(--lcoy-primary-medium);
       font-variant-numeric: tabular-nums;
     }
   }
 
   &-statsIcon {
     width: 1.25em;
-    margin-right: var(--cn-space-2);
-    color: var(--cn-primary-medium);
+    margin-right: var(--lcoy-space-2);
+    color: var(--lcoy-primary-medium);
     text-align: center;
   }
 }
 
 // ---------------------------------------------------------------------
-// Diretório (directory.scss): o período como título à esquerda; o total e o
-// filtro por nome à direita; a tabela com números grandes e cinza. Sem
-// destaque de linha no hover e sem transição — o Discourse não tem.
+// 目录（directory.scss）：时间段作为标题在左；总数和
+// 名称筛选在右；表格中有大的灰色数字。悬停时无行
+// 高亮、无过渡——Discourse 没有。
 // ---------------------------------------------------------------------
-.CanelaDirectory-controls {
+.LcoyDirectory-controls {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--cn-space-2);
-  margin: 0 0 var(--cn-space-2);
+  gap: var(--lcoy-space-2);
+  margin: 0 0 var(--lcoy-space-2);
 }
 
-// Os filtros se desmancham na barra: período à esquerda, busca no fim.
-.CanelaDirectory-filters {
+// 筛选器在栏中分散：时间段在左，搜索在末尾。
+.LcoyDirectory-filters {
   display: contents;
 }
 
-.CanelaDirectory-period {
+.LcoyDirectory-period {
   order: 0;
   width: auto;
   margin-right: auto;
 }
 
-.CanelaUsers .Select:has(> .CanelaDirectory-period) {
+.LcoyUsers .Select:has(> .LcoyDirectory-period) {
   order: 0;
   margin-right: auto;
 
   .Select-caret {
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 }
 
-.CanelaUsers .CanelaDirectory-period.Select-input {
+.LcoyUsers .LcoyDirectory-period.Select-input {
   width: auto;
   height: auto;
   padding: 0 1.4em 0 0;
   border: 0;
   background: transparent;
   box-shadow: none;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
   font-size: 1.5157em;
   font-weight: 700;
   line-height: 1.2;
 }
 
-.CanelaDirectory-total {
+.LcoyDirectory-total {
   order: 1;
-  color: var(--cn-primary-medium);
+  color: var(--lcoy-primary-medium);
   font-weight: 400;
 }
 
-.CanelaDirectory-search {
+.LcoyDirectory-search {
   position: relative;
   order: 2;
   display: block;
@@ -427,34 +427,34 @@
     max-width: 100%;
     height: 38px;
     padding: 8px 0.65em;
-    border-radius: var(--cn-radius);
+    border-radius: var(--lcoy-radius);
   }
 }
 
-.CanelaDirectory-table {
-  // A coluna do usuário fica parada ao rolar a tabela de lado no celular.
-  .CanelaDirectory-userCol {
+.LcoyDirectory-table {
+  // 手机端横向滚动表格时，用户列保持不动。
+  .LcoyDirectory-userCol {
     position: sticky;
     left: 0;
     z-index: 1;
     min-width: 200px;
-    background: var(--cn-surface);
+    background: var(--lcoy-surface);
   }
 
-  thead .CanelaDirectory-userCol {
+  thead .LcoyDirectory-userCol {
     z-index: 2;
   }
 
-  // A linha de quem está vendo (`.me`): o realce amarelo do Discourse.
+  // 正在浏览者的行（`.me`）：Discourse 的黄色高亮。
   tbody tr.is-me td {
-    background: ~"color-mix(in srgb, var(--cn-highlight) 35%, var(--cn-surface))";
+    background: ~"color-mix(in srgb, var(--lcoy-highlight) 35%, var(--lcoy-surface))";
   }
 }
 
-.CanelaDirectory-sort {
+.LcoyDirectory-sort {
   display: inline-flex;
   align-items: center;
-  gap: var(--cn-space-1);
+  gap: var(--lcoy-space-1);
   padding: 0;
   border: 0;
   background: none;
@@ -466,7 +466,7 @@
 
   &:hover,
   &:focus-visible {
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 
   &.is-static {
@@ -478,47 +478,47 @@
   }
 
   th.is-sorted & {
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 }
 
-// O coração das colunas de curtidas, na cor `--love`.
-.CanelaDirectory-columnIcon {
-  color: var(--cn-love);
+// 点赞列的心形，使用 `--love` 颜色。
+.LcoyDirectory-columnIcon {
+  color: var(--lcoy-love);
   font-size: 0.8706em;
 }
 
-.CanelaDirectory-sortIcon {
+.LcoyDirectory-sortIcon {
   font-size: 0.75em;
 }
 
-// Os números grandes e cinza do Discourse, só quando a tabela tem espaço.
-.CanelaDirectory-value {
-  color: var(--cn-primary-medium);
+// Discourse 的大号灰色数字，仅在表格有空间时。
+.LcoyDirectory-value {
+  color: var(--lcoy-primary-medium);
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
 @media @tablet-up {
-  .CanelaUsers .CanelaDirectory-value {
+  .LcoyUsers .LcoyDirectory-value {
     font-size: 1.3195em;
   }
 }
 
-// Na página do grupo os valores ficam do tamanho do texto, na cor dele, e o
-// período sai (o Discourse só tem o filtro por nome ali).
-.CanelaGroup .CanelaDirectory-value {
-  color: var(--cn-primary);
+// 分组页中数值为文字大小、文字颜色，且
+// 时间段不显示（Discourse 在那里只有名称筛选）。
+.LcoyGroup .LcoyDirectory-value {
+  color: var(--lcoy-primary);
 }
 
-.CanelaGroup .Select:has(> .CanelaDirectory-period) {
+.LcoyGroup .Select:has(> .LcoyDirectory-period) {
   display: none;
 }
 
 // ---------------------------------------------------------------------
-// Grupos (groups.scss): `group-box` em grade de 16em, flair redondo de 40px
+// 分组（groups.scss）：16em 网格中的 `group-box`，40px 圆形 flair
 // ---------------------------------------------------------------------
-.CanelaGroupFlair {
+.LcoyGroupFlair {
   --flair-size: 40px;
   display: inline-flex;
   align-items: center;
@@ -527,8 +527,8 @@
   width: var(--flair-size);
   height: var(--flair-size);
   border-radius: 50%;
-  background: var(--cn-primary-low);
-  color: var(--cn-primary);
+  background: var(--lcoy-primary-low);
+  color: var(--lcoy-primary);
   font-size: calc(var(--flair-size) * 0.5556);
   font-weight: 700;
 
@@ -542,21 +542,21 @@
   }
 }
 
-.CanelaGroups-header {
+.LcoyGroups-header {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 1em;
 }
 
-.CanelaGroups-filter.FormControl {
+.LcoyGroups-filter.FormControl {
   width: 210px;
   height: 38px;
   margin: 0 0.5em 0.5em 0;
   padding: 8px 0.65em;
-  border-radius: var(--cn-radius);
+  border-radius: var(--lcoy-radius);
 }
 
-.CanelaGroups-grid {
+.LcoyGroups-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(16em, 1fr));
   gap: 1em;
@@ -566,29 +566,29 @@
   list-style: none;
 }
 
-.CanelaGroups-item {
+.LcoyGroups-item {
   display: flex;
   min-width: 0;
 }
 
-// Sem transição: a borda escurece na hora, como no Discourse.
-.CanelaGroupCard {
+// 无过渡：边框立即变暗，与 Discourse 一致。
+.LcoyGroupCard {
   display: flex;
   flex: 1;
   box-sizing: border-box;
   min-width: 0;
-  border: 1px solid var(--cn-border);
-  border-radius: var(--cn-radius);
-  background: var(--cn-surface);
-  color: var(--cn-primary);
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
   text-decoration: none;
   cursor: pointer;
   transition: none;
 
   &:hover,
   &:focus-visible {
-    border-color: var(--cn-primary-low-mid);
-    color: var(--cn-primary);
+    border-color: var(--lcoy-primary-low-mid);
+    color: var(--lcoy-primary);
     text-decoration: none;
   }
 
@@ -609,7 +609,7 @@
     margin-bottom: 0.25em;
     overflow: hidden;
 
-    .CanelaGroupFlair {
+    .LcoyGroupFlair {
       margin-right: 0.5em;
     }
   }
@@ -646,32 +646,32 @@
     display: flex;
     align-items: center;
     flex: none;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
 
     .icon {
       margin-right: 0.25em;
       font-size: 0.8em;
-      color: var(--cn-primary-medium);
+      color: var(--lcoy-primary-medium);
     }
   }
 
   &-membership {
     margin-top: auto;
     padding-top: 1em;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
   }
 }
 
-// O `group-details-container`: caixa com borda, flair de 50px e o nome.
-.CanelaGroup {
+// `group-details-container`：带边框的盒子，50px flair 和名称。
+.LcoyGroup {
   &-header {
     display: flex;
     flex-direction: column;
     gap: 0.5em;
     margin-bottom: 1em;
     padding: 16px;
-    border: 1px solid var(--cn-border);
-    border-radius: var(--cn-radius);
+    border: 1px solid var(--lcoy-border);
+    border-radius: var(--lcoy-radius);
   }
 
   &-info {
@@ -685,24 +685,24 @@
     min-width: 0;
   }
 
-  .CanelaCommunityPage &-name {
+  .LcoyCommunityPage &-name {
     margin: 0;
     font-size: 1.5157em;
     font-weight: 700;
     line-height: 1.4;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 
   &-mention {
     margin-bottom: 0.5em;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 
-  // Abas como o `.group-nav` (nav-pills): o sublinhado de 2px na ativa; só o
-  // ícone tem transição (cor, 0.2s).
+  // 标签页如 `.group-nav`（nav-pills）：激活项 2px 下划线；只有
+  // 图标有过渡（颜色，0.2s）。
   &-tabs {
     margin-bottom: 1em;
-    border-bottom: 1px solid var(--cn-border);
+    border-bottom: 1px solid var(--lcoy-border);
 
     ul {
       display: flex;
@@ -727,7 +727,7 @@
     border: 0;
     border-radius: 0;
     background: transparent;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     font-size: 1em;
     font-weight: 400;
     line-height: 1;
@@ -735,7 +735,7 @@
 
     .Button-icon {
       margin-right: 5px;
-      color: var(--cn-primary-high);
+      color: var(--lcoy-primary-high);
       font-size: 0.8706em;
       transition: color 0.2s;
     }
@@ -743,10 +743,10 @@
     &:hover,
     &.active {
       background: transparent;
-      color: var(--cn-link);
+      color: var(--lcoy-link);
 
       .Button-icon {
-        color: var(--cn-link);
+        color: var(--lcoy-link);
       }
 
       &::after {
@@ -756,7 +756,7 @@
         right: 0;
         bottom: 0;
         height: 0.125em;
-        background: var(--cn-link);
+        background: var(--lcoy-link);
       }
     }
   }
@@ -770,16 +770,16 @@
   }
 }
 
-// O "stream" de atividade do Discourse (`user-stream-item`): avatar de 48px,
-// título do tópico como link, autor e data embaixo e o trecho recuado 56px.
-.CanelaStream {
+// Discourse 的活动"流"（`user-stream-item`）：48px 头像，
+// 话题标题作为链接，作者和日期在下方，摘要缩进 56px。
+.LcoyStream {
   margin: 0;
   padding: 0;
   list-style: none;
 
   &-item {
     padding: 16px 0.53em;
-    border-bottom: 1px solid var(--cn-border);
+    border-bottom: 1px solid var(--lcoy-border);
   }
 
   &-header {
@@ -803,45 +803,45 @@
   }
 
   &-topic {
-    color: var(--cn-link);
+    color: var(--lcoy-link);
     font-size: 1em;
     font-weight: 400;
     line-height: 1.4;
 
     &:hover {
-      color: var(--cn-link);
+      color: var(--lcoy-link);
       text-decoration: underline;
     }
   }
 
   &-meta {
     display: flex;
-    gap: var(--cn-space-2);
-    color: var(--cn-primary-medium);
+    gap: var(--lcoy-space-2);
+    color: var(--lcoy-primary-medium);
     font-size: 0.8706em;
 
     a {
-      color: var(--cn-primary-medium);
+      color: var(--lcoy-primary-medium);
     }
   }
 
   &-excerpt {
     margin: 12px 0 0 56px;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     line-height: 1.4;
     word-break: break-word;
   }
 }
 
 // ---------------------------------------------------------------------
-// Celular
+// 手机端
 // ---------------------------------------------------------------------
 @media @phone {
-  .CanelaAbout-summary {
+  .LcoyAbout-summary {
     flex-direction: column;
   }
 
-  .CanelaAbout-summaryItem {
+  .LcoyAbout-summaryItem {
     margin-bottom: 1em;
 
     &:last-child {
@@ -849,56 +849,56 @@
     }
   }
 
-  .CanelaDirectory-controls,
-  .CanelaDirectory-filters,
-  .CanelaDirectory-search,
-  .CanelaDirectory-search .FormControl {
+  .LcoyDirectory-controls,
+  .LcoyDirectory-filters,
+  .LcoyDirectory-search,
+  .LcoyDirectory-search .FormControl {
     width: 100%;
   }
 
-  .CanelaDirectory-table .CanelaDirectory-userCol {
+  .LcoyDirectory-table .LcoyDirectory-userCol {
     min-width: 160px;
   }
 
-  .CanelaStream-excerpt {
+  .LcoyStream-excerpt {
     margin-left: 0;
   }
 
 }
 
 
-// As Diretrizes como página de regras: índice de seções em pílulas (âncoras)
-// e cada seção num cartão, com as regras (itens de lista) numeradas e
-// realçadas no hover. Ocupa a largura toda do cartão da página.
-.CanelaGuidelines .CanelaRules {
+// 指南作为规则页：分节索引以胶囊（锚点）呈现，
+// 每节一张卡片，规则（列表项）编号并在悬停时
+// 高亮。占据页面卡片的整个宽度。
+.LcoyGuidelines .LcoyRules {
   max-width: none;
   margin: 0;
-  // Sem folga em cima: as abas já têm a margem delas.
-  padding: 0 0 var(--cn-space-6, 32px);
+  // 上方无间距：标签页本身已有外边距。
+  padding: 0 0 var(--lcoy-space-6, 32px);
   line-height: 1.55;
 }
 
-// O título da página, solto acima do índice, como os das outras páginas do
-// tema (Categorias, Emblemas): sem caixa e alinhado à esquerda.
-.CanelaCommunityPage .CanelaRules-title {
+// 页面标题单独位于索引上方，与主题的其他页面
+// （分类、徽章）一致：无盒子且左对齐。
+.LcoyCommunityPage .LcoyRules-title {
   margin: 0 0 0.75rem;
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1.4;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
   text-align: left;
 }
 
-.CanelaRules-intro {
+.LcoyRules-intro {
   margin: 0 0 1.25rem;
-  color: var(--cn-primary-medium);
+  color: var(--lcoy-primary-medium);
 
   p:last-child {
     margin-bottom: 0;
   }
 }
 
-.CanelaRules-toc {
+.LcoyRules-toc {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -906,10 +906,10 @@
 
   a {
     padding: 6px 14px;
-    border: 1px solid ~"color-mix(in oklch, var(--cn-accent) 45%, transparent)";
+    border: 1px solid ~"color-mix(in oklch, var(--lcoy-accent) 45%, transparent)";
     border-radius: 999px;
-    color: var(--cn-accent);
-    font-size: var(--cn-font-down-1);
+    color: var(--lcoy-accent);
+    font-size: var(--lcoy-font-down-1);
     font-weight: 600;
     text-decoration: none;
     white-space: nowrap;
@@ -917,50 +917,50 @@
 
     &:hover,
     &:focus-visible {
-      background: var(--cn-accent);
-      color: var(--cn-secondary, #fff);
+      background: var(--lcoy-accent);
+      color: var(--lcoy-secondary, #fff);
       text-decoration: none;
     }
   }
 }
 
-.CanelaRules-card {
+.LcoyRules-card {
   margin-bottom: 1.125rem;
   padding: 1.25rem 1.5rem;
-  border: 1px solid var(--cn-border);
-  border-radius: var(--cn-radius-large, 12px);
-  background: var(--cn-surface);
-  scroll-margin-top: calc(var(--cn-header-height, 52px) + 16px);
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius-large, 12px);
+  background: var(--lcoy-surface);
+  scroll-margin-top: calc(var(--lcoy-header-height, 52px) + 16px);
 }
 
-.CanelaRules-sectionTitle {
+.LcoyRules-sectionTitle {
   margin: 0 0 0.75rem;
   font-size: 1.3rem;
   font-weight: 700;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
 }
 
-.CanelaRules-body {
-  color: var(--cn-primary-high);
+.LcoyRules-body {
+  color: var(--lcoy-primary-high);
 
   p:last-child {
     margin-bottom: 0;
   }
 
-  // Cada item de lista é uma regra: número num quadradinho, texto ao lado.
-  .CanelaRules-list {
+  // 每个列表项是一条规则：数字在小方块中，文字在旁。
+  .LcoyRules-list {
     margin: 0.75rem 0;
     padding: 0;
     list-style: none;
   }
 
-  .CanelaRules-rule {
+  .LcoyRules-rule {
     position: relative;
     margin: 0 0 0.625rem;
     padding: 0.75rem 0.875rem 0.75rem 3.25rem;
-    border: 1px solid var(--cn-border);
+    border: 1px solid var(--lcoy-border);
     border-radius: 10px;
-    background: var(--cn-primary-very-low);
+    background: var(--lcoy-primary-very-low);
     transition: border-color 0.18s, transform 0.18s;
 
     &::before {
@@ -973,14 +973,14 @@
       width: 1.75rem;
       height: 1.75rem;
       border-radius: 8px;
-      background: ~"color-mix(in oklch, var(--cn-accent) 14%, transparent)";
-      color: var(--cn-accent);
-      font-size: var(--cn-font-down-1);
+      background: ~"color-mix(in oklch, var(--lcoy-accent) 14%, transparent)";
+      color: var(--lcoy-accent);
+      font-size: var(--lcoy-font-down-1);
       font-weight: 700;
     }
 
     &:hover {
-      border-color: var(--cn-accent);
+      border-color: var(--lcoy-accent);
       transform: translateY(-1px);
     }
 
@@ -991,17 +991,17 @@
 }
 
 @media @phone {
-  .CanelaRules-card {
+  .LcoyRules-card {
     padding: 1rem;
   }
 
-  .CanelaCommunityPage .CanelaRules-title {
+  .LcoyCommunityPage .LcoyRules-title {
     font-size: 1.3rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .CanelaRules-body .CanelaRules-rule {
+  .LcoyRules-body .LcoyRules-rule {
     transition: none;
 
     &:hover {
@@ -1010,9 +1010,9 @@
   }
 }
 
-// Diretrizes carregando (RulesPage.skeleton): as pílulas do sumário com a
-// borda neutra, sem a cor de link das reais.
-.CanelaRules--loading .CanelaRules-toc a {
-  border-color: var(--cn-border);
+// 指南加载中（RulesPage.skeleton）：目录胶囊使用
+// 中性边框，不带真实链接的链接色。
+.LcoyRules--loading .LcoyRules-toc a {
+  border-color: var(--lcoy-border);
   pointer-events: none;
 }

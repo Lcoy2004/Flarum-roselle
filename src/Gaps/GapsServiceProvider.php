@@ -15,12 +15,10 @@ declare(strict_types=1);
 namespace Lcoy\Roselle\Gaps;
 
 use Flarum\Foundation\AbstractServiceProvider;
-use Lcoy\Roselle\Gaps\Invites\InviteService;
 
 /**
- * Uma instância por requisição das peças que guardam cálculo: as tags com
- * novidade são calculadas uma vez para todas as tags do documento, e o
- * "as tabelas existem?" dos convites é perguntado uma vez só.
+ * 每个请求一份会做计算的组件实例：有更新的标签会针对文档中的所有标签
+ * 统一计算一次。
  */
 final class GapsServiceProvider extends AbstractServiceProvider
 {
@@ -28,6 +26,5 @@ final class GapsServiceProvider extends AbstractServiceProvider
     public function register(): void
     {
         $this->container->singleton(UnreadTags::class);
-        $this->container->singleton(InviteService::class);
     }
 }

@@ -1,7 +1,7 @@
 /*
- * O alerta "Lembrete do marcador" (tipo `canelaBookmarkReminder`), mandado
- * pelo comando agendado quando o horário escolhido chega. Leva ao post
- * marcado; o trecho é o nome do marcador, ou o começo do post sem nome.
+ * “书签提醒”通知（类型 `lcoyBookmarkReminder`），由计划任务
+ * 在到达所选时间时发送。点击进入被收藏的帖子；摘录为书签名称，
+ * 若无名称则为帖子的开头部分。
  */
 import app from 'flarum/forum/app';
 import Notification from 'flarum/forum/components/Notification';

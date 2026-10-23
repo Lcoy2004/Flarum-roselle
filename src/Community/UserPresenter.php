@@ -19,17 +19,16 @@ use Flarum\Http\SlugManager;
 use Flarum\User\User;
 
 /**
- * Transforma usuários em objetos de recurso do JSON:API (`type: users`) com
- * só o que as páginas de comunidade mostram.
+ * 把用户转换成 JSON:API 资源对象（`type: users`），只包含社区页面展示
+ * 所需的字段。
  *
- * Os endpoints do tema não passam pelo UserResource — o /api/users exige a
- * permissão de busca, que o "Sobre" não pode exigir —, mas devolver o mesmo
- * formato deixa o fórum pôr esses usuários no store (`pushObject`) e usar o
- * Avatar, o `username()` e as rotas de perfil do core sem adaptação.
+ * 主题的端点不经过 UserResource——/api/users 要求搜索权限，而"关于"页面
+ * 不能要求该权限——但返回相同的格式可以让论坛把这些用户放入 store
+ * （`pushObject`），并直接使用 Avatar、`username()` 和核心的资料路由，
+ * 无需适配。
  *
- * As regras de visibilidade são as do UserResource: `lastSeenAt` só quando o
- * usuário divulga que está online ou o ator pode ver, e grupos ocultos só para
- * quem pode vê-los.
+ * 可见性规则与 UserResource 一致：`lastSeenAt` 仅在用户公开在线状态或
+ * 操作者有权查看时出现，隐藏的组也只对有权查看者显示。
  */
 final class UserPresenter
 {

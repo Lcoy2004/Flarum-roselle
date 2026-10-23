@@ -1,39 +1,37 @@
 /*
- * Painel do tema no admin.
+ * 后台的主题面板。
  *
- * Os cards moram em GRUPOS (Aparência · Cabeçalho e barra lateral · Lista ·
- * Tópico · Editor e busca · Perfil e usuários · Comunidade · Moderação ·
- * Integrações), na ordem em que se percorre o fórum. Os dois últimos só
- * aparecem com "Mais opções". Cada
- * recurso é um card com a chave liga/desliga no cabeçalho; desligada, o miolo
- * some, e os cards e opções que dependem dela somem também (ver
- * components/SettingsPanel e util: registerDeps/isOn).
+ * 卡片位于分组（外观 · 页头与侧边栏 · 列表 ·
+ * 主题 · 编辑器与搜索 · 个人资料与用户 · 社区 · 审核 ·
+ * 集成）中，按浏览论坛的顺序排列。最后两个只在
+ * “更多选项”下显示。每个
+ * 功能都是一张卡片，标题栏带开关；关闭后内容
+ * 消失，依赖它的卡片和选项也会消失（见
+ * components/SettingsPanel 和 util: registerDeps/isOn）。
  *
- * Os cards do tema base estão em ./cards/core e os dos recursos com backend em
- * ./features/*. Card novo = uma entrada numa dessas listas, com um `id` único;
- * a posição dentro do grupo vem de ORDER, abaixo (o que não estiver lá vai
- * para o fim do grupo). As chaves e os padrões são os da tabela
- * `$forumSettings` do extend.php e dos extend/<recurso>.php.
+ * 基础主题的卡片在 ./cards/core，带后端的功能在
+ * ./features/*。新卡片 = 这些列表中的一项，带唯一的 `id`；
+ * 组内位置由下方的 ORDER 决定（不在其中的
+ * 会放到组末尾）。键和默认值来自 extend.php 的
+ * `$forumSettings` 表以及 extend/<功能>.php。
  */
 import normalizeRevManifest from '../common/revManifest';
 import app from 'flarum/admin/app';
 import ExtensionPage from 'flarum/admin/components/ExtensionPage';
 import { override } from 'flarum/common/extend';
 
-import { trans } from './util';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import { lazyComponent } from '../forum/utils/lazy';
 
 const EXTENSION_ID = 'lcoy-roselle';
-const KEY = 'lcoy-roselle.admin.settings';
 
-/** A ordem dos cards dentro de cada grupo — do mais visível ao mais específico. */
+/** 每个组内卡片的顺序——从最显眼到最具体。 */
 const Panel = lazyComponent(
   () => import('./panel').then((mod) => mod.default),
   () => <LoadingIndicator />
 );
 
-// Todos os controles salvam sozinhos: o botão Salvar nativo só confundiria.
+// 所有控件都会自动保存：原生“保存”按钮只会让人困惑。
 override(ExtensionPage.prototype, 'submitButton', function (this: ExtensionPage, original: () => any) {
   if (this.extension?.id === EXTENSION_ID) return null;
 
@@ -41,19 +39,8 @@ override(ExtensionPage.prototype, 'submitButton', function (this: ExtensionPage,
 });
 
 app.initializers.add(EXTENSION_ID, () => {
-  // Antes de qualquer chunk: as chaves das revisões no Windows (ver o arquivo).
+  // 在任何 chunk 之前：Windows 上的修订键（见该文件）。
   normalizeRevManifest();
-  // Um único item no registro: a casca desenha os grupos e os cards.
+  // 注册表中只有一个条目：外壳负责绘制分组和卡片。
   app.registry.for(EXTENSION_ID).registerSetting(() => m(Panel), 100);
-
-  // Quem pode gerar links de convite (gaps: extend/gaps.php).
-  app.registry.for(EXTENSION_ID).registerPermission(
-    {
-      icon: 'fas fa-user-plus',
-      label: trans(`${KEY}.gaps.invite_permission`, 'Convidar pessoas (links de convite)'),
-      permission: 'canela.createInvite',
-    },
-    'start',
-    80
-  );
 });

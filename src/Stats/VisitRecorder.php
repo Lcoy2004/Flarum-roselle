@@ -11,16 +11,16 @@ use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\Expression;
 
 /**
- * Os dias de visita e o tempo de leitura de cada pessoa (canela_user_visits).
+ * 每个人的访问天数和阅读时长（lcoy_user_visits）。
  */
 final class VisitRecorder
 {
-    public const TABLE = 'canela_user_visits';
+    public const TABLE = 'lcoy_user_visits';
 
-    /** Teto diário — um dia tem 86 400 segundos, nenhuma conta lê mais que isso. */
+    /** 每日上限——一天有 86 400 秒，没有账号能读得比这更多。 */
     public const MAX_TIME_PER_DAY = 86400;
 
-    /** Teto diário de postagens lidas; acima disso é script, não leitura. */
+    /** 每日已读帖子上限；超过这个数量就是脚本，而不是阅读。 */
     public const MAX_POSTS_PER_DAY = 10000;
 
     public function __construct(
@@ -30,13 +30,13 @@ final class VisitRecorder
     }
 
     /**
-     * Marca o dia de hoje como visitado. Roda em toda requisição autenticada,
-     * então o cache evita ir ao banco mais de uma vez por pessoa por dia.
+     * 把今天标记为已访问。它会在每个已认证请求中运行，
+     * 因此缓存可让每人每天最多只访问数据库一次。
      */
     public function touch(User $user, bool $mobile): void
     {
         $today = Carbon::now()->toDateString();
-        $cacheKey = "canela.stats.visit.{$user->id}.{$today}";
+        $cacheKey = "lcoy.stats.visit.{$user->id}.{$today}";
 
         if ($this->cache->has($cacheKey)) {
             return;
@@ -47,7 +47,7 @@ final class VisitRecorder
         $this->cache->put($cacheKey, true, Carbon::now()->endOfDay());
     }
 
-    /** Soma leitura ao dia de hoje, respeitando os tetos diários. */
+    /** 把阅读量累加到今天，并遵守每日上限。 */
     public function addReading(User $user, int $seconds, int $posts, bool $mobile): void
     {
         if ($seconds <= 0 && $posts <= 0) {
@@ -58,9 +58,9 @@ final class VisitRecorder
 
         $this->ensureDay($user, $today, $mobile);
 
-        // O teto no próprio UPDATE: vale mesmo com duas abas somando ao mesmo
-        // tempo, o que um "lê, soma, grava" no PHP não garantiria. CASE em vez
-        // de LEAST porque o SQLite, que o Flarum 2 também aceita, não tem LEAST.
+        // 上限写在 UPDATE 本身：即使两个选项卡同时累加也能生效，
+        // 而在 PHP 中"读取、相加、写入"则无法保证。使用 CASE 而不是
+        // LEAST，因为 Flarum 2 同样支持的 SQLite 没有 LEAST。
         $this->db->table(self::TABLE)
             ->where('user_id', $user->id)
             ->where('visited_at', $today)

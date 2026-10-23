@@ -6,7 +6,7 @@
 
 [English](README.md) · [简体中文](README.zh-Hans.md)
 
-Roselle 是一个 Flarum 2 主题，fork 自 [Canela](https://github.com/ram0ng1/canela)，灵感来自 Discourse 的 Horizon 主题，布局参考 meta.discourse.org。
+Roselle 是一个 Flarum 2 主题，灵感来自 Discourse 的 Horizon 主题，布局参考 meta.discourse.org。
 
 Roselle 保留了 Discourse 的结构——带分区的侧栏、分栏的讨论列表、主题信息与时间线、带封面的个人主页——并加入本论坛自己的定制。所有功能都可以在后台开关，整套配色在明暗模式下都由 Flarum 主色派生。
 
@@ -29,6 +29,26 @@ php flarum assets:publish
 
 如果使用收藏提醒，请保持 cron 中运行 `php flarum schedule:run`。
 
+## 升级
+
+从任意旧版 Roselle 或仍使用 canela 前缀的版本升级：
+
+1. **先备份数据库**——清理迁移会删除废弃表/列，且不可回滚。
+2. `composer update lcoy/roselle`
+3. `php flarum migrate`——重命名在用表、把 `canela.*` 设置迁到 `lcoy.*`、更新通知类型；随后删除已移除功能的表，并清理所有剩余的 Canela 表、列、设置、权限、通知类型与用户偏好。
+4. `php flarum assets:publish`
+5. 刷新论坛，并清理 CDN/反代缓存。
+
+每个迁移都会先判断旧名称是否存在，再执行重命名或删除，因此升级中断后可以安全重跑。清理是无条件的：如果站点仍装着 Canela 配套扩展（聊天、AI、徽章、草稿、会话），它们的表和数据也会被删除，扩展将失效；需要保留就先备份。
+
+### 改名带来的破坏性变更
+
+- 设置键 `canela.*` → `lcoy.*`（自动迁移）。
+- API/论坛属性与路由 `canela*` / `/canela-*` → `lcoy*` / `/lcoy-*`。
+- CSS 类 `.Canela*` → `.Lcoy*`、变量 `--cn-*` → `--lcoy-*`；自定义 CSS 片段需要同步修改。
+- 编辑历史、外链点击统计、邀请链接已移除，相关表与数据已删除。
+- 旧的 `localStorage` / `sessionStorage` 键会被忽略，可手动清理。
+
 ## 功能
 
 **结构**
@@ -36,7 +56,7 @@ php flarum assets:publish
 - 可折叠分区的侧栏、带未读圆点的标签、自定义链接和页脚
 - 页头搜索胶囊、带通知面板的用户菜单、登录与注册页面
 - 分栏讨论列表（参与者、回复、浏览、活动）、新帖 / 未读 / 热门标签页、标签筛选、无限滚动
-- 主题页：讨论信息、时间线、推荐讨论、分享弹窗、标题就地编辑、编辑历史
+- 主题页：讨论信息、时间线、推荐讨论、分享弹窗、标题就地编辑
 
 **阅读与写作**
 
@@ -46,9 +66,9 @@ php flarum assets:publish
 
 **个人主页与社区**
 
-- 个人主页：头衔、状态、生日由主题提供；简介来自 fof/user-bio，社交链接来自 fof/socialprofile，封面来自 forumaker/profile-cover
+- 个人主页：简介来自 fof/user-bio，社交链接来自 fof/socialprofile，封面来自 forumaker/profile-cover
 - 摘要与活动标签页（阅读、反应、投票、已解决）、用户目录（fof/user-directory）、用户组页面、带额外标签页的关于页、社区守则与法律条款跳转
-- 邀请链接和用户卡片浮层
+- 用户卡片浮层
 
 ## 集成
 
@@ -67,7 +87,6 @@ php flarum assets:publish
 | `flarum/approval` | 审核队列和「待审核」筛选 |
 | `flarum/lock`、`flarum/sticky` | 搜索筛选，以及在显式排序下仍置顶 |
 | `flarum/nicknames` | 帖子、卡片和个人主页在用户名上方显示昵称 |
-| `flarum/suspend` | 被封禁用户无法编辑扩展资料（策略） |
 | `flarum/markdown`、`flarum/bbcode` | 编辑器的格式选择器和工具栏 |
 | `flarum/emoji` | 帖子与编辑器预览中的 emoji 渲染 |
 | `flarum/pusher` | 浏览主题时的「有 N 条新回复」提示条 |
@@ -147,7 +166,7 @@ views/                错误页覆盖
 assets/               字体和语言旗帜
 ```
 
-某个功能文件加载失败时会被跳过并记录日志，论坛其余部分继续运行。调试单个功能时，可在请求头中发送 `X-Canela-Probe: <feature>`，无需改动白名单。
+某个功能文件加载失败时会被跳过并记录日志，论坛其余部分继续运行。调试单个功能时，可在请求头中发送 `X-Lcoy-Probe: <feature>`，无需改动白名单。
 
 ## 语言
 
@@ -155,7 +174,7 @@ assets/               字体和语言旗帜
 
 ## 致谢
 
-Fork 自 [Ramon Guilherme](https://ramonguilherme.com.br) 的 **Canela**，后者受 Discourse 的 Horizon 主题启发。Canela 是非官方项目，与 Discourse 无隶属关系，也未获其背书。Roselle 由 Lcoy 维护。
+Roselle 由 Lcoy 维护，是非官方项目，与 Discourse 无隶属关系，也未获其背书。原始的 MIT 版权声明保留在 LICENSE 文件中。
 
 ## 许可证
 

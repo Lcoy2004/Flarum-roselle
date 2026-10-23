@@ -1,16 +1,16 @@
 /*
- * A fila de revisão do Discourse (/review) sobre o flarum/flags: cada post
- * com sinalizações abertas vira um `.reviewable-item` — o tipo, o tópico com
- * a categoria, o post inteiro, quem sinalizou e por quê, e as ações.
+ * 基于 flarum/flags 的 Discourse 审核队列（/review）：每个有未处理
+ * 举报的帖子变成一个 `.reviewable-item` —— 类型、带
+ * 分类的主题、完整帖子、举报人与原因，以及操作。
  *
- * O flarum/flags não guarda histórico (resolver = apagar as sinalizações), então
- * não há o filtro de status do Discourse; o filtro é pelo tipo do item. As
- * postagens que o flarum/approval segura chegam pela mesma lista (ele cria
- * uma sinalização do tipo `approval`) e viram "Postagem na fila".
+ * flarum/flags 不保存历史（解决 = 删除举报），因此
+ * 没有 Discourse 的状态过滤器；过滤依据是条目类型。
+ * flarum/approval 扣下的帖子通过同一列表到达（它创建
+ * 一个 `approval` 类型的举报），并显示为 "队列中的帖子"。
  *
- * A lista é carregada aqui, e não pelo `app.flags`, porque o item precisa do
- * post inteiro com todas as sinalizações e as etiquetas do tópico: o
- * `FlagListState` só pede o post e o autor.
+ * 列表在这里加载，而不是由 `app.flags` 加载，因为条目需要
+ * 带全部举报和主题标签的完整帖子：
+ * `FlagListState` 只请求帖子和作者。
  */
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
@@ -31,15 +31,15 @@ import { discussionBadges, isTagsEnabled } from '../utils/tags';
 import { fullDate, shortAge } from '../utils/dates';
 import { isExtensionEnabled, t } from '../utils/settings';
 
-/** Tudo o que o item mostra, numa requisição só. */
+/** 条目显示的全部内容，一次请求完成。 */
 const INCLUDE = ['user', 'post', 'post.user', 'post.discussion', 'post.discussion.tags', 'post.flags', 'post.flags.user'];
 
-/** Acima disso o post começa recolhido, como o `.post-body.is-collapsed` do Discourse. */
+/** 超过此长度时帖子初始折叠，与 Discourse 的 `.post-body.is-collapsed` 相同。 */
 const COLLAPSE_AT = 600;
 
 type ReviewFilter = 'all' | 'flagged' | 'queued';
 
-/** Os motivos do flarum/flags com os nomes das sinalizações do Discourse. */
+/** flarum/flags 的原因，使用 Discourse 的举报名称。 */
 const REASONS: Record<string, string> = {
   off_topic: 'review.reason_off_topic',
   inappropriate: 'review.reason_inappropriate',
@@ -55,7 +55,7 @@ function postFlags(post: Post): any[] {
   return ((post as any).flags?.() || []).filter(Boolean);
 }
 
-/** Na fila do flarum/approval: a sinalização dele, ou o post ainda não aprovado. */
+/** 在 flarum/approval 的队列中：它的举报，或尚未批准的帖子。 */
 function isQueued(post: Post): boolean {
   return (post as any).isApproved?.() === false || postFlags(post).some((flag) => flag.type() === 'approval');
 }
@@ -83,7 +83,7 @@ function reasonIcon(flag: any): string {
 }
 
 export default class ReviewQueue extends Component {
-  /** Uma sinalização por post (a API agrupa por post); o post traz todas. */
+  /** 每个帖子一条举报（API 按帖子分组）；帖子包含全部举报。 */
   posts: Post[] = [];
   loading = true;
   loadingMore = false;
@@ -102,7 +102,7 @@ export default class ReviewQueue extends Component {
     this.load();
   }
 
-  /** Quando o post entrou na fila: a sinalização mais nova, ou o próprio post (na aprovação). */
+  /** 帖子进入队列的时间：最新的举报，或帖子本身（在审核批准中）。 */
   postDate(post: Post): number {
     if (isQueued(post)) return post.createdAt()?.getTime() || 0;
 
@@ -114,7 +114,7 @@ export default class ReviewQueue extends Component {
     );
   }
 
-  /** Posts da fila, do mais recente ao mais antigo. */
+  /** 队列中的帖子，从最新到最旧。 */
   entries(): Mithril.Children[] {
     const items: { date: number; render: () => Mithril.Children }[] = [];
 
@@ -126,7 +126,7 @@ export default class ReviewQueue extends Component {
   }
 
   load(more = false): void {
-    // Quem só modera o chat não vê as sinalizações de posts (a API recusaria).
+    // 仅管理聊天的人看不到帖子举报（API 会拒绝）。
     if (!app.forum.attribute<boolean>('canViewFlags')) {
       this.loading = false;
       return;
@@ -151,7 +151,7 @@ export default class ReviewQueue extends Component {
         this.offset += Array.from(results as any[]).length;
         this.hasMore = !!results.payload?.links?.next;
 
-        // A API marcou tudo como visto (`read_flags_at`): a bolha do menu zera.
+        // API 已将全部标记为已读（`read_flags_at`）：菜单气泡归零。
         app.session.user?.pushAttributes({ newFlagCount: 0 });
       })
       .catch(() => {})
@@ -172,9 +172,9 @@ export default class ReviewQueue extends Component {
     const entries = this.entries();
 
     return (
-      <div className="CanelaReview reviewable">
-        <div className="CanelaReview-header">
-          <h2 className="CanelaReview-title">{rt('title')}</h2>
+      <div className="LcoyReview reviewable">
+        <div className="LcoyReview-header">
+          <h2 className="LcoyReview-title">{rt('title')}</h2>
           {this.filters()}
         </div>
         {this.loading ? (
@@ -182,10 +182,10 @@ export default class ReviewQueue extends Component {
         ) : entries.length ? (
           <div className="reviewables">{entries}</div>
         ) : (
-          <div className="CanelaReview-empty no-review">{rt('empty')}</div>
+          <div className="LcoyReview-empty no-review">{rt('empty')}</div>
         )}
         {this.hasMore && !this.loading ? (
-          <div className="CanelaReview-more">
+          <div className="LcoyReview-more">
             <Button className="Button" loading={this.loadingMore} onclick={() => this.load(true)}>
               {rt('load_more')}
             </Button>
@@ -204,9 +204,9 @@ export default class ReviewQueue extends Component {
     if (isExtensionEnabled('flarum-approval')) options.push({ key: 'queued', label: rt('filter_queued') });
 
     return (
-      <ul className="CanelaReview-filters reviewable-filters" role="tablist" aria-label={rt('filter_label')}>
+      <ul className="LcoyReview-filters reviewable-filters" role="tablist" aria-label={rt('filter_label')}>
         {options.map((option) => (
-          <li key={option.key} className={classList('CanelaReview-filter', { active: this.filter === option.key })}>
+          <li key={option.key} className={classList('LcoyReview-filter', { active: this.filter === option.key })}>
             <button
               type="button"
               role="tab"
@@ -216,7 +216,7 @@ export default class ReviewQueue extends Component {
               }}
             >
               {option.label}
-              {this.countFor(option.key) ? <span className="CanelaReview-filterCount">{this.countFor(option.key)}</span> : null}
+              {this.countFor(option.key) ? <span className="LcoyReview-filterCount">{this.countFor(option.key)}</span> : null}
             </button>
           </li>
         ))}
@@ -293,12 +293,12 @@ export default class ReviewQueue extends Component {
                 <span className="names username">{username(user)}</span>
               )}
               {post.isHidden() ? (
-                <span className="CanelaReview-hiddenLabel">
+                <span className="LcoyReview-hiddenLabel">
                   <Icon name="far fa-eye-slash" />
                   {rt('hidden_label')}
                 </span>
               ) : null}
-              <Link className="CanelaReview-postLink" href={app.route.post(post)}>
+              <Link className="LcoyReview-postLink" href={app.route.post(post)}>
                 <Icon name="fas fa-up-right-from-square" />
                 {rt('view_post')}
               </Link>
@@ -323,7 +323,7 @@ export default class ReviewQueue extends Component {
     );
   }
 
-  /** "Inadequado ×2" — os motivos somados, como o `.review-item__flag-badges`. */
+  /** "不当 ×2" —— 汇总后的原因，与 `.review-item__flag-badges` 相同。 */
   reasonChips(flags: any[]): Mithril.Children {
     const counts = new Map<string, { flag: any; count: number }>();
 
@@ -336,19 +336,19 @@ export default class ReviewQueue extends Component {
     });
 
     return (
-      <span className="CanelaReview-reasons">
+      <span className="LcoyReview-reasons">
         {Array.from(counts.values()).map(({ flag, count }) => (
           <span className="reviewable-score-type">
             <Icon name={reasonIcon(flag)} />
             {reasonLabel(flag)}
-            {count > 1 ? <span className="CanelaReview-reasonCount">×{count}</span> : null}
+            {count > 1 ? <span className="LcoyReview-reasonCount">×{count}</span> : null}
           </span>
         ))}
       </span>
     );
   }
 
-  /** Quem sinalizou, o motivo, quando e a mensagem (o `.reviewable-scores` do Discourse). */
+  /** 举报人、原因、时间以及留言（Discourse 的 `.reviewable-scores`）。 */
   scores(flags: any[]): Mithril.Children {
     if (!flags.length) return null;
 
@@ -379,11 +379,11 @@ export default class ReviewQueue extends Component {
                       <span>{username(flagger)}</span>
                     )}
                   </td>
-                  <td className="CanelaReview-reason">
+                  <td className="LcoyReview-reason">
                     <Icon name={reasonIcon(flag)} />
                     {reasonLabel(flag)}
                   </td>
-                  <td className="CanelaReview-when" title={flag.createdAt() ? fullDate(flag.createdAt()) : undefined}>
+                  <td className="LcoyReview-when" title={flag.createdAt() ? fullDate(flag.createdAt()) : undefined}>
                     {shortAge(flag.createdAt())}
                   </td>
                 </tr>,
@@ -425,7 +425,7 @@ export default class ReviewQueue extends Component {
 
     return [
       <Dropdown
-        className="CanelaReview-agree"
+        className="LcoyReview-agree"
         buttonClassName="Button Button--primary"
         label={rt('agree')}
         icon="far fa-thumbs-up"
@@ -492,11 +492,11 @@ export default class ReviewQueue extends Component {
   }
 
   // -------------------------------------------------------------------
-  // Ações: as mesmas chamadas do flarum/flags (DELETE /posts/:id/flags), do
-  // core (ocultar, restaurar, excluir) e do flarum/approval (isApproved).
+  // 操作：与 flarum/flags（DELETE /posts/:id/flags）、核心
+  //（隐藏、恢复、删除）以及 flarum/approval（isApproved）相同的调用。
   // -------------------------------------------------------------------
 
-  /** Excluir o primeiro post é excluir o tópico, como no Discourse. */
+  /** 删除第一个帖子就是删除主题，与 Discourse 相同。 */
   canDelete(post: Post): boolean {
     const discussion: any = post.discussion();
 
@@ -532,7 +532,7 @@ export default class ReviewQueue extends Component {
 
   dismiss(post: Post): Promise<unknown> {
     return app.request({ url: app.forum.attribute('apiUrl') + (post as any).apiEndpoint() + '/flags', method: 'DELETE' }).then(() => {
-      // Como o `dismissFlag` do flarum/flags: o post no tópico perde a faixa.
+      // 与 flarum/flags 的 `dismissFlag` 相同：主题中的帖子失去该标记。
       if ((post.data as any).relationships) delete (post.data as any).relationships.flags;
     });
   }
@@ -553,8 +553,8 @@ export default class ReviewQueue extends Component {
     return post.save({ isApproved: true } as any).then(() => {
       if (post.number() === 1) (post.discussion() as any)?.pushAttributes({ isApproved: true });
 
-      // A sinalização `approval` fica: o flarum/flags a apaga junto, como o
-      // botão "Aprovar" da faixa do post.
+      // `approval` 举报保留：flarum/flags 会一并删除它，
+      // 与帖子标记栏中的 "批准" 按钮相同。
       return this.dismiss(post);
     });
   }
@@ -569,7 +569,7 @@ export default class ReviewQueue extends Component {
     return post.delete().then(() => discussion?.removePost?.(post.id()));
   }
 
-  /** Sai da fila; o contador do menu e a lista do `app.flags` acompanham. */
+  /** 移出队列；菜单计数和 `app.flags` 的列表会一同更新。 */
   resolved(post: Post): void {
     this.posts = this.posts.filter((item) => item !== post);
     this.expanded.delete(post.id()!);

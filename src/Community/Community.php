@@ -20,37 +20,36 @@ use Flarum\User\Exception\PermissionDeniedException;
 use Flarum\User\User;
 
 /**
- * As chaves das configurações das páginas de comunidade e as regras de quem
- * pode ver o quê, num lugar só: os controladores da API, o conteúdo das rotas
- * do fórum e o atributo `canelaCanViewDirectory` precisam concordar, senão o
- * link aparece e a página responde 403 (ou o contrário).
+ * 社区页面的设置键与"谁能看到什么"的规则集中放在一处：API 控制器、
+ * 论坛路由的内容以及 `lcoyCanViewDirectory` 属性必须保持一致，否则会
+ * 出现链接显示而页面返回 403（或反之）的情况。
  */
 final class Community
 {
-    public const ABOUT_ENABLED = 'canela.about_enabled';
-    public const ABOUT_TEXT = 'canela.about_text';
-    public const ABOUT_CONTACT_EMAIL = 'canela.about_contact_email';
-    public const ABOUT_CONTACT_URL = 'canela.about_contact_url';
-    public const ABOUT_SHOW_STAFF = 'canela.about_show_staff';
-    public const ABOUT_SHOW_STATS = 'canela.about_show_stats';
+    public const ABOUT_ENABLED = 'lcoy.about_enabled';
+    public const ABOUT_TEXT = 'lcoy.about_text';
+    public const ABOUT_CONTACT_EMAIL = 'lcoy.about_contact_email';
+    public const ABOUT_CONTACT_URL = 'lcoy.about_contact_url';
+    public const ABOUT_SHOW_STAFF = 'lcoy.about_show_staff';
+    public const ABOUT_SHOW_STATS = 'lcoy.about_show_stats';
 
-    /** As abas "Diretrizes", "Termos de Serviço" e "Política de Privacidade" do Sobre. */
-    public const GUIDELINES_ENABLED = 'canela.guidelines_enabled';
-    public const GUIDELINES_TEXT = 'canela.guidelines_text';
+    /** "关于"页面中的"指南"、"服务条款"和"隐私政策"选项卡。 */
+    public const GUIDELINES_ENABLED = 'lcoy.guidelines_enabled';
+    public const GUIDELINES_TEXT = 'lcoy.guidelines_text';
 
-    /** Com o fof/pages: o id da página que vira as Diretrizes (vazio = o texto acima). */
-    public const GUIDELINES_PAGE = 'canela.guidelines_page';
-    /** Com o fof/pages: as páginas que viram abas extras da área Sobre (JSON, ver AboutPages). */
-    public const ABOUT_PAGES = 'canela.about_pages';
-    public const TOS_URL = 'canela.tos_url';
-    public const PRIVACY_URL = 'canela.privacy_url';
+    /** 配合 fof/pages：用作指南的页面 id（为空 = 使用上方的文本）。 */
+    public const GUIDELINES_PAGE = 'lcoy.guidelines_page';
+    /** 配合 fof/pages：作为"关于"区域额外选项卡的页面（JSON，见 AboutPages）。 */
+    public const ABOUT_PAGES = 'lcoy.about_pages';
+    public const TOS_URL = 'lcoy.tos_url';
+    public const PRIVACY_URL = 'lcoy.privacy_url';
 
-    /** Visitantes também podem ver os membros dos grupos (a permissão do core é só para membros). */
-    public const DIRECTORY_GUESTS = 'canela.directory_guests';
+    /** 访客也可以查看组成员（核心的权限只授予成员）。 */
+    public const DIRECTORY_GUESTS = 'lcoy.directory_guests';
 
-    public const GROUPS_ENABLED = 'canela.groups_enabled';
-    public const GROUPS_ACTIVITY = 'canela.groups_activity';
-    public const GROUPS_PROFILE_LINKS = 'canela.groups_profile_links';
+    public const GROUPS_ENABLED = 'lcoy.groups_enabled';
+    public const GROUPS_ACTIVITY = 'lcoy.groups_activity';
+    public const GROUPS_PROFILE_LINKS = 'lcoy.groups_profile_links';
 
     public function __construct(
         private readonly SettingsRepositoryInterface $settings
@@ -62,7 +61,7 @@ final class Community
         return (bool) $this->settings->get($key);
     }
 
-    /** Desligado no admin, a página e a API somem: 404, e não 403. */
+    /** 在后台关闭后，页面和 API 都会消失：返回 404 而不是 403。 */
     public function assertEnabled(string $key): void
     {
         if (! $this->enabled($key)) {
@@ -71,10 +70,9 @@ final class Community
     }
 
     /**
-     * Listar usuários é a permissão `searchUsers` do core ("Ver a lista de
-     * usuários", que o core só dá aos membros). O admin pode abrir a lista de
-     * membros dos grupos aos visitantes como o Discourse faz por padrão — mas
-     * nunca num fórum fechado, em que o visitante nem pode ver o fórum.
+     * 列出用户依赖核心的 `searchUsers` 权限（"查看用户列表"，核心只授予
+     * 成员）。管理员可以像 Discourse 默认那样，把组成员列表开放给访客——
+     * 但绝不在封闭论坛中开放，那里访客连论坛都看不到。
      */
     public function canListUsers(User $actor): bool
     {

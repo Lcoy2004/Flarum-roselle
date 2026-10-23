@@ -18,8 +18,8 @@ use Lcoy\Roselle\Tests\Support\ArraySettings;
 use Lcoy\Roselle\Tests\Support\Sqlite;
 
 /**
- * Tempo de leitura (o "timings" do Discourse): o navegador diz quanto leu, e o
- * servidor só credita o que cabe no relógio real e no teto do dia.
+ * 阅读时长（Discourse 的 "timings"）：浏览器报告读了多少，
+ * 服务端只计入符合真实时钟和当天上限的部分。
  */
 final class ReadingTimeTest extends TestCase
 {
@@ -79,11 +79,11 @@ final class ReadingTimeTest extends TestCase
         $this->credit(30);
 
         Carbon::setTestNow('2026-10-18 12:00:10');
-        // 10 s de relógio + 5 s de folga.
+        // 10 秒真实时间 + 5 秒余量。
         self::assertSame(15, $this->credit(30));
     }
 
-    /** Duas abas dividem o mesmo relógio: a segunda só leva a folga. */
+    /** 两个标签页共享同一个时钟：第二个只能拿到余量。 */
     public function test_duas_abas_nao_somam(): void
     {
         $this->credit(30);

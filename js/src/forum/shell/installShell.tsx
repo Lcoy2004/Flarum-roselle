@@ -1,12 +1,11 @@
 /*
- * A casca do Discourse: cabeçalho de largura total com o hambúrguer, o logo e a
- * busca centralizada; barra lateral global à esquerda; e o conteúdo num cartão
- * sobre o fundo tingido.
+ * Discourse 外壳：全宽页头，带汉堡菜单、徽标和
+ * 居中搜索；左侧全局侧栏；内容位于淡色背景之上的卡片中。
  *
- * O layout do core (forum.blade.php) não tem onde pôr uma barra lateral global,
- * então ela ganha um <aside> próprio dentro do #app, montado logo depois que o
- * core monta o resto. No celular o mesmo <aside> vira o painel do hambúrguer
- * (o .menu-panel do Discourse), por cima de tudo.
+ * 核心布局（forum.blade.php）没有位置放全局侧栏，
+ * 所以它在 #app 内拥有自己的 <aside>，在核心挂载其余部分后
+ * 立即挂载。在手机上，同一个 <aside> 会变成汉堡菜单的
+ * 面板（Discourse 的 .menu-panel），覆盖在所有内容之上。
  */
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
@@ -17,7 +16,7 @@ import classList from 'flarum/common/utils/classList';
 import type ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 
-import CanelaSidebar from '../components/CanelaSidebar';
+import LcoySidebar from '../components/LcoySidebar';
 import HeaderToggle from '../components/HeaderToggle';
 import HeaderCenter, { watchHeaderTopic } from './HeaderCenter';
 import { watchColoredAccents } from './coloredAccents';
@@ -29,30 +28,30 @@ import { forumBool, t } from '../utils/settings';
 import { SHELL_CLASS, applySidebarState, closeOverlaySidebar, watchViewport } from '../utils/sidebarState';
 import { installColorMode } from './colorMode';
 
-/** Páginas em que o hero vai para dentro do cartão, como no Discourse. */
+/** 在这些页面中，hero 会进入卡片内部，如同 Discourse。 */
 const INLINE_HERO_PAGES = /\b(DiscussionPage|UserPage)\b/;
 
 export default function installShell() {
-  // Estende a instância, e não o protótipo: o core 2.0 não exporta a classe
-  // ForumApplication no registro de módulos. O initializer roda antes do mount.
+  // 扩展实例，而不是原型：核心 2.0 不会在模块注册表中
+  // 导出 ForumApplication 类。initializer 在 mount 之前运行。
   extend(app as any, 'mount', function () {
     const appElement = document.getElementById('app');
 
     if (!appElement) return;
 
-    const sidebarEnabled = forumBool('canelaSidebarEnabled', true);
+    const sidebarEnabled = forumBool('lcoySidebarEnabled', true);
 
     appElement.classList.add(
       ...classList(SHELL_CLASS, {
-        'Canela--pillButtons': forumBool('canelaPillButtons', true),
-        'Canela--tinted': forumBool('canelaTintedBackground', true),
-        'Canela--card': forumBool('canelaContentCard', true),
-        'Canela--noSidebar': !sidebarEnabled,
-        'Canela--headerSearch': forumBool('canelaHeaderSearch', true),
-        'Canela--noEventPosts': !forumBool('canelaTopicEventPosts', true),
-        'Canela--stickyAvatar': forumBool('canelaTopicStickyAvatar', false),
-        // A linha do tempo ligando os avatares (less/forum/PostDirect.less).
-        'Canela--postDirect': app.forum.attribute('canelaPostStyle') === 'direct',
+        'Lcoy--pillButtons': forumBool('lcoyPillButtons', true),
+        'Lcoy--tinted': forumBool('lcoyTintedBackground', true),
+        'Lcoy--card': forumBool('lcoyContentCard', true),
+        'Lcoy--noSidebar': !sidebarEnabled,
+        'Lcoy--headerSearch': forumBool('lcoyHeaderSearch', true),
+        'Lcoy--noEventPosts': !forumBool('lcoyTopicEventPosts', true),
+        'Lcoy--stickyAvatar': forumBool('lcoyTopicStickyAvatar', false),
+        // 连接头像的时间线（less/forum/PostDirect.less）。
+        'Lcoy--postDirect': app.forum.attribute('lcoyPostStyle') === 'direct',
       }).split(' ')
     );
 
@@ -68,7 +67,7 @@ export default function installShell() {
 
     mountBackdrop(appElement);
 
-    if (forumBool('canelaKeyboardShortcuts', true)) installShortcuts();
+    if (forumBool('lcoyKeyboardShortcuts', true)) installShortcuts();
   });
 
   extendHeader();
@@ -80,32 +79,32 @@ export default function installShell() {
 
 function mountSidebar(appElement: HTMLElement) {
   const aside = document.createElement('aside');
-  aside.id = 'canela-sidebar';
-  aside.className = 'CanelaSidebar';
+  aside.id = 'lcoy-sidebar';
+  aside.className = 'LcoySidebar';
   aside.setAttribute('aria-label', t('sidebar.label'));
 
-  // Depois do link "pular para o conteúdo", que precisa ser o primeiro foco.
+  // 放在“跳转到内容”链接之后，它必须获得第一个焦点。
   appElement.insertBefore(aside, document.getElementById('app-navigation'));
 
-  m.mount(aside, { view: () => <CanelaSidebar /> });
+  m.mount(aside, { view: () => <LcoySidebar /> });
 
-  // No painel sobreposto (tablet), escolher um destino fecha o painel.
+  // 在覆盖面板（平板）中，选择目标后会关闭面板。
   aside.addEventListener('click', (event) => {
     if ((event.target as HTMLElement).closest('a')) closeOverlaySidebar();
   });
 
-  // Esc fecha o painel do celular, como o menu do Discourse.
+  // Esc 关闭手机面板，如同 Discourse 的菜单。
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeOverlaySidebar();
   });
 
   const backdrop = document.createElement('div');
-  backdrop.className = 'CanelaSidebar-backdrop';
+  backdrop.className = 'LcoySidebar-backdrop';
   backdrop.addEventListener('click', () => closeOverlaySidebar());
   appElement.insertBefore(backdrop, aside.nextSibling);
 }
 
-/** As peças coloridas e desfocadas do fundo do meta.discourse.org (.meta-bg-icons). */
+/** meta.discourse.org 背景中的彩色模糊元素（.meta-bg-icons）。 */
 const BACKDROP_TILES: [string, string][] = [
   ['plane', 'fas fa-paper-plane'],
   ['chat', 'fas fa-comment-dots'],
@@ -117,14 +116,14 @@ const BACKDROP_TILES: [string, string][] = [
 
 function mountBackdrop(appElement: HTMLElement) {
   const backdrop = document.createElement('div');
-  backdrop.className = 'CanelaBackdrop';
+  backdrop.className = 'LcoyBackdrop';
   backdrop.setAttribute('aria-hidden', 'true');
   appElement.insertAdjacentElement('afterend', backdrop);
 
   m.render(
     backdrop,
     BACKDROP_TILES.map(([name, icon]) => (
-      <div className={`CanelaBackdrop-tile CanelaBackdrop-tile--${name}`}>
+      <div className={`LcoyBackdrop-tile LcoyBackdrop-tile--${name}`}>
         <Icon name={icon} />
       </div>
     ))
@@ -137,47 +136,47 @@ function mountHeader(sidebarEnabled: boolean) {
 
   if (!container || !title) return;
 
-  // Os encaixes podem já existir: o script do <head> (recurso `preload`) os cria
-  // antes da primeira pintura, para o logo não pular de lugar no boot.
+  // 插槽可能已经存在：<head> 中的脚本（`preload` 功能）会在
+  // 首次绘制前创建它们，以免启动时徽标跳动位置。
   if (sidebarEnabled) {
-    let toggleSlot = container.querySelector<HTMLElement>(':scope > .CanelaHeader-toggleSlot');
+    let toggleSlot = container.querySelector<HTMLElement>(':scope > .LcoyHeader-toggleSlot');
 
     if (!toggleSlot) {
       toggleSlot = document.createElement('div');
-      toggleSlot.className = 'CanelaHeader-toggleSlot';
+      toggleSlot.className = 'LcoyHeader-toggleSlot';
       container.insertBefore(toggleSlot, title);
     }
 
     m.mount(toggleSlot, HeaderToggle);
   }
 
-  // O meio do cabeçalho existe mesmo sem a busca: é onde o título do tópico
-  // aparece ao rolar.
-  let centerSlot = container.querySelector<HTMLElement>(':scope > .CanelaHeader-center');
+  // 即使没有搜索，页头中部也存在：滚动时主题标题
+  // 会在这里显示。
+  let centerSlot = container.querySelector<HTMLElement>(':scope > .LcoyHeader-center');
 
   if (!centerSlot) {
     centerSlot = document.createElement('div');
-    centerSlot.className = 'CanelaHeader-search CanelaHeader-center';
+    centerSlot.className = 'LcoyHeader-search LcoyHeader-center';
     container.insertBefore(centerSlot, document.getElementById('header-secondary'));
   }
 
   m.mount(centerSlot, HeaderCenter);
   watchHeaderTopic();
 
-  if (!forumBool('canelaShowTitleWithLogo', false)) {
-    container.classList.add('CanelaHeader--logoOnly');
+  if (!forumBool('lcoyShowTitleWithLogo', false)) {
+    container.classList.add('LcoyHeader--logoOnly');
   }
 }
 
 /**
- * No Discourse o título do tópico e a capa do perfil ficam dentro do cartão,
- * e não sobre o fundo como o hero do Flarum. Em vez de reescrever as páginas,
- * o hero muda de lugar no PageStructure, que todas elas usam.
+ * 在 Discourse 中，主题标题和个人主页封面位于卡片内部，
+ * 而不是像 Flarum 的 hero 那样放在背景之上。这里不重写页面，
+ * 而是在所有页面共用的 PageStructure 中移动 hero 的位置。
  */
 /**
- * O Discourse não tem o painel lateral com a lista de discussões que o Flarum
- * abre na página do tópico (o "pane"): ele sai do PageStructure e fica
- * desligado, para não aparecer nem ao passar o mouse na borda.
+ * Discourse 没有 Flarum 在主题页中打开的那个带讨论列表的侧边
+ * 面板（“pane”）：将它从 PageStructure 中移除，
+ * 使其即便在鼠标移到边缘时也不会出现。
  */
 function removeDiscussionPane() {
   override(PageStructure.prototype, 'rootItems', function (this: PageStructure, original: () => ItemList<Mithril.Children>) {

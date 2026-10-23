@@ -1,8 +1,8 @@
 /*
- * O "Descartar" das listas Não lidos e Novos do Discourse
- * (topic-dismiss-buttons): em cima, à direita, e de novo no fim da lista.
- * Marca como lidos os tópicos da lista — e, na lista geral de não lidos, tudo,
- * com o "marcar tudo como lido" do core, numa requisição só.
+ * Discourse 的“未读”和“新”列表中的“忽略”
+ *（topic-dismiss-buttons）：顶部右侧一个，列表末尾再来一个。
+ * 把列表中的主题标为已读——在总的未读列表中则标记全部，
+ * 通过核心的“全部标为已读”，只发一次请求。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -30,7 +30,7 @@ function unreadLoaded(): Discussion[] {
   return loaded().filter((discussion) => discussion.isUnread());
 }
 
-/** Em que listas o botão aparece: Não lidos sempre; Novos, se houver o que descartar. */
+/** 按钮出现在哪些列表：未读列表始终出现；新列表在有可忽略的条目时出现。 */
 function shouldShow(): boolean {
   if (!gaps.dismiss() || !app.session.user || app.discussions.isEmpty() || app.discussions.isInitialLoading()) return false;
 
@@ -55,10 +55,10 @@ async function dismiss(): Promise<void> {
 
   try {
     if (sort === 'unread' && !filtered) {
-      // A lista geral de não lidos é "tudo": o mesmo do botão do core.
+      // 总的未读列表就是“全部”：与核心的按钮相同。
       await app.session.user!.save({ markedAllAsReadAt: new Date() });
     } else {
-      // Numa categoria (ou em Novos) só os tópicos da lista, como o Discourse.
+      // 在分类中（或“新”列表中）只处理列表里的主题，与 Discourse 一致。
       await Promise.all(unreadLoaded().map((discussion) => discussion.save({ lastReadPostNumber: discussion.lastPostNumber() }).catch(() => null)));
     }
 
@@ -74,8 +74,8 @@ function dismissButton(position: 'top' | 'bottom'): Mithril.Children {
   const label = currentSort() === 'unread' ? t('gaps.dismiss.unread') : t('gaps.dismiss.new');
 
   return (
-    <div className={`CanelaDismiss CanelaDismiss--${position}`}>
-      <Button className="Button CanelaDismiss-button" icon="fas fa-check" loading={busy} onclick={() => dismiss()}>
+    <div className={`LcoyDismiss LcoyDismiss--${position}`}>
+      <Button className="Button LcoyDismiss-button" icon="fas fa-check" loading={busy} onclick={() => dismiss()}>
         {label}
       </Button>
     </div>
@@ -86,9 +86,9 @@ export default function installDismiss(): void {
   extend(IndexPage.prototype, 'contentItems', function (items: ItemList<Mithril.Children>) {
     if (!shouldShow()) return;
 
-    // Entre a barra de ferramentas (100) e a lista (90); e depois da lista.
-    items.add('canelaDismissTop', dismissButton('top'), 95);
+    // 位于工具栏（100）和列表（90）之间；以及列表之后。
+    items.add('lcoyDismissTop', dismissButton('top'), 95);
 
-    if (!app.discussions.hasNext()) items.add('canelaDismissBottom', dismissButton('bottom'), 80);
+    if (!app.discussions.hasNext()) items.add('lcoyDismissBottom', dismissButton('bottom'), 80);
   });
 }

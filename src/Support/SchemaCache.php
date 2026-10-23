@@ -19,24 +19,22 @@ use Illuminate\Database\ConnectionInterface;
 use Throwable;
 
 /**
- * "Esta tabela/coluna existe?" sem ir ao information_schema a cada requisição.
+ * "这个表/列存在吗？"——无需每次请求都访问 information_schema。
  *
- * Os recursos do tema conferem o esquema antes de usar tabelas que podem não
- * existir ainda (migration não rodada, extensão desligada). Cada conferência do
- * construtor de esquema é uma consulta ao information_schema, e uma página
- * logada chegava a fazer quase vinte delas (~10 ms), em toda requisição.
+ * 主题的功能在使用可能尚不存在的表（迁移未运行、扩展已关闭）之前会检查
+ * 架构。每次架构构建器检查都是一次 information_schema 查询，而一个已登录
+ * 页面在每次请求中累计会做将近二十次（约 10 ms）。
  *
- * Aqui as colunas de cada tabela pedida ficam no cache do Flarum, numa chave
- * que leva o número de migrations já rodadas: o `migrate` (e o `migrate:reset`)
- * mudam esse número, então o esquema novo é lido de novo sem depender de um
- * `cache:clear`. Custa uma consulta barata (`count` na tabela `migrations`) por
- * processo, só quando alguém pergunta.
+ * 这里每个被请求表的列会保存在 Flarum 的缓存中，键里带上已运行迁移的数量：
+ * `migrate`（以及 `migrate:reset`）会改变这个数字，因此新的架构会被重新
+ * 读取，无需依赖 `cache:clear`。每个进程只在有人询问时执行一次廉价的查询
+ * （对 `migrations` 表做 `count`）。
  */
 final class SchemaCache
 {
     private const TTL = 7 * 24 * 3600;
 
-    /** @var array<string, list<string>|null>|null tabela => colunas (minúsculas), null = não existe */
+    /** @var array<string, list<string>|null>|null 表 => 列（小写），null = 不存在 */
     private static ?array $tables = null;
 
     private static ?string $key = null;
@@ -58,7 +56,7 @@ final class SchemaCache
     }
 
     /**
-     * As colunas da tabela (em minúsculas), ou null se ela não existe.
+     * 表的列（小写），若表不存在则为 null。
      *
      * @return list<string>|null
      */
@@ -89,7 +87,7 @@ final class SchemaCache
             self::$key = 'lcoy-roselle.schema.'.$this->db->table('migrations')->count();
             $cached = $this->cache->get(self::$key);
         } catch (Throwable) {
-            // Sem a tabela de migrations ou sem cache: só a memória do processo.
+            // 没有 migrations 表或没有缓存：只使用进程内存。
             self::$key = null;
             $cached = null;
         }
@@ -107,7 +105,7 @@ final class SchemaCache
         try {
             $this->cache->put(self::$key, $tables, self::TTL);
         } catch (Throwable) {
-            // O cache é só atalho: sem ele, a próxima requisição confere de novo.
+            // 缓存只是捷径：没有它，下次请求会再次检查。
         }
     }
 }

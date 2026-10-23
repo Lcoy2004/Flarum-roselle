@@ -20,14 +20,12 @@ use Flarum\Search\SearchState;
 use Illuminate\Database\Query\Builder;
 
 /**
- * A aba "Lidos" do perfil: os tópicos que a pessoa leu, do mais recente para
- * o mais antigo (`discussion_user.last_read_at`).
+ * 个人资料页的"已读"选项卡：列出用户读过的主题，按 `discussion_user.last_read_at`
+ * 从新到旧排序。
  *
- * O que alguém leu é pessoal: para quem não é a própria pessoa nem
- * administrador, a lista sai vazia. A ordem vem de uma subconsulta, e não de
- * um JOIN, para as colunas de `discussion_user` (como `user_id`) não
- * sobrescreverem as do tópico. Os filtros rodam antes da ordenação do core,
- * então esta fica como a principal.
+ * 阅读记录属于个人隐私：对于既不是本人也不是管理员的用户，列表返回为空。
+ * 排序通过子查询而非 JOIN 实现，以免 `discussion_user` 的列（如 `user_id`）
+ * 覆盖主题自身的列。这些过滤器在核心排序之前执行，因此该排序成为主导排序。
  *
  * @implements FilterInterface<DatabaseSearchState>
  */
@@ -41,7 +39,7 @@ final class ReadByFilter implements FilterInterface
     #[\Override]
     public function getFilterKey(): string
     {
-        return 'canelaReadBy';
+        return 'lcoyReadBy';
     }
 
     #[\Override]

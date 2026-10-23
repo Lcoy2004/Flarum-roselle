@@ -11,11 +11,11 @@
  */
 
 /*
- * Subabas de "Atividade" do perfil que precisam do servidor, como no
- * Discourse: Lidos (só a própria pessoa e administradores), Reações
- * (curtidas e reações do fof/reactions numa lista só) e Votos (fof/polls). "Resolvido" usa o filtro `solution`
- * do próprio fof/best-answer. Cada parte só existe com a extensão dela; as
- * abas ligam e desligam no card "Página de perfil" do admin.
+ * 个人资料中需要服务端支持的 "活动" 子标签，与 Discourse 一致：
+ * 已读（仅本人和管理员）、回应（fof/reactions 的点赞与回应合并为一个列表）
+ * 和投票（fof/polls）。"已解决" 使用 fof/best-answer 自带的 `solution` 过滤器。
+ * 每一部分都只在对应扩展存在时才生效；这些标签在管理员的
+ * "个人资料页" 卡片中开关。
  */
 
 use Flarum\Api\Resource\ForumResource;
@@ -36,10 +36,9 @@ return [
         ->fields(ForumActivityFields::class),
 
     (new Extend\Routes('api'))
-        ->get('/canela-user-reactions', 'canela.activity.reactions', ListReactionsController::class),
+        ->get('/lcoy-user-reactions', 'lcoy.activity.reactions', ListReactionsController::class),
 
-    // As classes do fof só são citadas dentro das closures: com a extensão
-    // desligada, nada disso é avaliado.
+    // fof 的类只会在闭包内部被引用：扩展关闭时，这些内容都不会被求值。
     (new Extend\Conditional())
         ->whenExtensionEnabled('fof-polls', static fn (): array => [
             (new Extend\SearchDriver(DatabaseSearchDriver::class))

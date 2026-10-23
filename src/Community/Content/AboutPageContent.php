@@ -21,9 +21,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Lcoy\Roselle\Community\AboutPages;
 
 /**
- * A rota /about/{id-slug} no servidor: o título da aba é o da página, e uma
- * página fora da lista do admin (ou invisível para quem pede) é 404 já no
- * documento, como as outras páginas de comunidade.
+ * 服务端的 /about/{id-slug} 路由：选项卡标题取自页面，而管理员列表之外
+ * 的页面（或对请求者不可见的页面）在文档层就返回 404，与其他社区页面
+ * 一致。
  */
 final class AboutPageContent
 {

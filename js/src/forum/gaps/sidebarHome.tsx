@@ -1,16 +1,13 @@
 /*
- * A seção do topo da barra lateral do Discourse logado: "⌂ Início",
- * "Tópicos •", "Minhas postagens", "Minhas mensagens (N)" e "Mais".
+ * 已登录时 Discourse 侧栏顶部的区域：“⌂ 首页”、“主题 •”、“我的帖子”、
+ * “我的消息 (N)”和“更多”。
  *
- * - "Início" leva à página inicial escolhida no admin (a lista, as
- *   categorias ou um endereço). Quando Início e Tópicos dariam no mesmo
- *   lugar, "Tópicos" passa a ser a lista de Recentes explícita
- *   (/?sort=latest), para os dois nunca ficarem ativos juntos.
- * - "Minhas mensagens" (flarum/messages) ganha a contagem de conversas não
- *   lidas e fica ativa também dentro de uma conversa; o link "Mensagens" que
- *   o flarum/messages põe na navegação some daqui, porque repetiria o mesmo.
- * - O ponto de novidades ao lado de cada categoria com tópicos novos ou não
- *   lidos (o de "Tópicos" é do recurso de estatísticas).
+ * - “首页”跳到管理后台选定的主页（列表、分类或某个地址）。当首页与“主题”
+ *   指向同一处时，“主题”改为显式的“最新”列表（/?sort=latest），
+ *   以免两者同时处于激活状态。
+ * - “我的消息”（flarum/messages）获得未读会话计数，并在会话内也保持激活；
+ *   flarum/messages 放在导航中的“消息”链接会从这里移除，因为内容重复。
+ * - 有新主题或未读主题的每个分类旁的新内容圆点（“主题”的圆点来自统计功能）。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -20,7 +17,7 @@ import type Discussion from 'flarum/common/models/Discussion';
 import type ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 
-import CanelaSidebar from '../components/CanelaSidebar';
+import LcoySidebar from '../components/LcoySidebar';
 import { forumString } from './settings';
 import { forumBool, isExtensionEnabled, t } from '../utils/settings';
 import { categoriesRouteName, categoriesUrl, currentTag, isTagsEnabled } from '../utils/tags';
@@ -29,10 +26,10 @@ import { draftCount, draftsOn } from '../features/composer/drafts/fofDrafts';
 type HomeTarget = 'index' | 'categories' | 'url';
 
 function homeTarget(): HomeTarget {
-  const value = forumString('canelaSidebarHome');
+  const value = forumString('lcoySidebarHome');
 
   if (value === 'categories' && isTagsEnabled()) return 'categories';
-  if (value === 'url' && forumString('canelaSidebarHomeUrl')) return 'url';
+  if (value === 'url' && forumString('lcoySidebarHomeUrl')) return 'url';
 
   return 'index';
 }
@@ -46,7 +43,7 @@ function homeLink(): Mithril.Children {
   const sort = app.search.state.params().sort;
 
   if (target === 'url') {
-    const href = forumString('canelaSidebarHomeUrl');
+    const href = forumString('lcoySidebarHomeUrl');
 
     return (
       <LinkButton href={href} icon="fas fa-house" external={true}>
@@ -65,7 +62,7 @@ function homeLink(): Mithril.Children {
   );
 }
 
-/** Os filhos de um vnode como lista, para acrescentar mais um. */
+/** 把 vnode 的子节点当列表处理，以便再追加一个。 */
 function withChild(vnode: any, child: Mithril.Children): any {
   const children = Array.isArray(vnode.children) ? vnode.children : vnode.children == null ? [] : [vnode.children];
 
@@ -73,9 +70,9 @@ function withChild(vnode: any, child: Mithril.Children): any {
 }
 
 /**
- * Tags com tópicos novos ou não lidos entre os que o leitor já tem
- * carregados. O Flarum não manda contagem por tag; o servidor do tema manda
- * `canelaHasUnread` quando o backend dos recursos está ligado (gaps.php).
+ * 读者已加载的主题中，拥有新主题或未读主题的标签。Flarum 不提供按标签的
+ * 计数；功能后端开启时（gaps.php），主题的服务器会下发
+ * `lcoyHasUnread`。
  */
 function tagsWithNews(): Set<string> {
   const ids = new Set<string>();
@@ -98,18 +95,18 @@ function tagsWithNews(): Set<string> {
   });
 
   app.store.all<any>('tags').forEach((tag) => {
-    if (tag.attribute('canelaHasUnread')) ids.add(String(tag.id()));
+    if (tag.attribute('lcoyHasUnread')) ids.add(String(tag.id()));
   });
 
   return ids;
 }
 
 export default function installSidebarHome(): void {
-  extend(CanelaSidebar.prototype, 'communityItems', function (items: ItemList<Mithril.Children>) {
-    if (forumBool('canelaSidebarHomeLink', true)) {
-      items.add('canelaHome', homeLink(), 110);
+  extend(LcoySidebar.prototype, 'communityItems', function (items: ItemList<Mithril.Children>) {
+    if (forumBool('lcoySidebarHomeLink', true)) {
+      items.add('lcoyHome', homeLink(), 110);
 
-      // Início e "Todas as Discussões" levariam à mesma lista: fica só o Início.
+      // 首页与“所有讨论”会指向同一列表：只保留首页。
       if (homeTarget() === 'index' && items.has('topics')) items.remove('topics');
     }
 
@@ -126,41 +123,41 @@ export default function installSidebarHome(): void {
 
         items.setContent(
           'myMessages',
-          m(vnode.tag, attrs, unread > 0 ? [...children, <span className="CanelaSidebar-suffix CanelaSidebar-count">{unread}</span>] : children)
+          m(vnode.tag, attrs, unread > 0 ? [...children, <span className="LcoySidebar-suffix LcoySidebar-count">{unread}</span>] : children)
         );
       }
     } else if (isExtensionEnabled('flarum-messages') && items.has('messages')) {
-      // Sem o item do tema, o do flarum/messages fica com o nome do Discourse.
+      // 没有主题的条目时，flarum/messages 的条目沿用 Discourse 的名称。
       const vnode = items.get('messages') as any;
 
       if (vnode && vnode.attrs) items.setContent('messages', m(vnode.tag, vnode.attrs, t('gaps.sidebar.my_messages')));
     }
   });
 
-  // "Meus rascunhos" na barra lateral, como o Discourse, logo abaixo de Tópicos
-  // (100): sempre à mão com o fof/drafts, e com a contagem quando há algum.
-  extend(CanelaSidebar.prototype, 'communityItems', function (items: ItemList<Mithril.Children>) {
+  // 侧栏中的“我的草稿”，与 Discourse 一致，紧跟在主题（100）之后：
+  // 安装 fof/drafts 后始终可用，有草稿时显示计数。
+  extend(LcoySidebar.prototype, 'communityItems', function (items: ItemList<Mithril.Children>) {
     const user = app.session.user;
     const count = draftCount();
 
     if (!user || !draftsOn()) return;
 
     items.add(
-      'canelaDrafts',
+      'lcoyDrafts',
       <LinkButton
         icon="fas fa-pen-ruler"
         href={app.route('user.drafts', { username: user.slug() })}
         active={app.current.get('routeName') === 'user.drafts'}
       >
         {t('composer.drafts.sidebar')}
-        {count > 0 && <span className="CanelaSidebar-suffix CanelaSidebar-count">{count}</span>}
+        {count > 0 && <span className="LcoySidebar-suffix LcoySidebar-count">{count}</span>}
       </LinkButton>,
       99
     );
   });
 
-  extend(CanelaSidebar.prototype, 'categoryItems', function (items: ItemList<Mithril.Children>) {
-    if (!app.session.user || !forumBool('canelaSidebarCategoryDots', true)) return;
+  extend(LcoySidebar.prototype, 'categoryItems', function (items: ItemList<Mithril.Children>) {
+    if (!app.session.user || !forumBool('lcoySidebarCategoryDots', true)) return;
 
     const fresh = tagsWithNews();
 
@@ -177,7 +174,7 @@ export default function installSidebarHome(): void {
 
       items.setContent(
         key,
-        withChild(vnode, <span className="CanelaStatsDot CanelaSidebar-newDot" title={t('gaps.sidebar.new_in_category')} aria-hidden="true" />)
+        withChild(vnode, <span className="LcoyStatsDot LcoySidebar-newDot" title={t('gaps.sidebar.new_in_category')} aria-hidden="true" />)
       );
     });
   });

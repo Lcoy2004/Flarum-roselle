@@ -1,15 +1,13 @@
 /*
- * O more-topics do Discourse no fim do tópico: as abas "Sugestões" e
- * "✨ Relacionado(a)" no lugar do título, numa tabela compacta com respostas,
- * visualizações e atividade. Com uma lista só, ela ganha o título.
+ * 主题末尾的 Discourse more-topics：在标题位置放“推荐”和“✨ 相关”两个标签页，
+ * 用紧凑表格展示回复数、浏览量和活跃时间。只有一份列表时，它直接带标题。
  *
- * - Sugestões: os mais recentes da mesma categoria (ou do fórum, sem tags).
- * - Relacionado(a): os tópicos semânticos do recurso de IA (embeddings),
- *   quando ligado; senão, os que dividem alguma etiqueta com este, os mais
- *   comentados primeiro. Sem nenhum, a aba some.
+ * - 推荐：同分类（没有标签时则是整个论坛）的最新主题。
+ * - 相关：开启 AI 功能（embeddings）时，使用该功能给出的语义相关主题；
+ *   否则是与本主题共享某个标签的主题，评论最多的排前面。一个都没有时该标签页隐藏。
  *
- * As classes são próprias (.CanelaSuggested*): a lista principal tem outro
- * dono e outro ritmo de mudança, e as duas não devem quebrar juntas.
+ * 类名是独立的（.LcoySuggested*）：主列表另有归属，变化节奏也不同，
+ * 两者不应一起坏掉。
  */
 import app from 'flarum/forum/app';
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
@@ -27,7 +25,7 @@ import { forumBool, forumInt, t } from '../../utils/settings';
 import { viewsHeat, viewsNumber } from '../../utils/views';
 import { discussionViews } from '../../list/metrics';
 
-/** Uma linha da tabela, venha de um modelo do store ou da API de IA. */
+/** 表格中的一行，可能来自 store 的模型，也可能来自 AI API。 */
 interface Row {
   id: string;
   title: string;
@@ -47,8 +45,8 @@ interface Lists {
 type Tab = keyof Lists;
 
 /**
- * Listas já buscadas, por tópico: a linha do fim aparece e some conforme o
- * stream carrega posts, e cada vez seria uma requisição nova.
+ * 已按主题缓存的列表：末尾这一行会随 stream 加载帖子而出现和消失，
+ * 否则每次都会发一次新请求。
  */
 const cache = new Map<string, Lists>();
 
@@ -68,8 +66,8 @@ function fromDiscussion(topic: Discussion): Row {
     title: topic.title(),
     href: app.route.discussion(topic, unread ? (topic.lastReadPostNumber() || 0) + 1 : undefined),
     replies: topic.replyCount(),
-    // O mesmo número da lista: o do tema quando é ele quem conta, ou o que o
-    // fof/discussion-views publica (`views`) quando a extensão está ligada.
+    // 与列表中是同一个数字：主题自己计数时用它自己的值，或扩展启用后
+    // fof/discussion-views 发布的 `views`。
     views: discussionViews(topic),
     last: topic.lastPostedAt() || topic.createdAt() || null,
     unread,
@@ -90,7 +88,7 @@ export default class SuggestedTopics extends Component<SuggestedTopicsAttrs> {
   load() {
     const discussion = this.attrs.discussion;
     const id = discussion.id()!;
-    const limit = forumInt('canelaSuggestedCount', 5);
+    const limit = forumInt('lcoySuggestedCount', 5);
 
     this.loading = true;
 
@@ -109,7 +107,7 @@ export default class SuggestedTopics extends Component<SuggestedTopicsAttrs> {
 
   loadSuggested(discussion: Discussion, limit: number): Promise<Row[]> {
     const { categories } = splitDiscussionTags(discussion);
-    // A mais específica: a filha, quando o tópico está numa subcategoria.
+    // 最具体的一个：主题位于子分类时取子分类。
     const category = categories[categories.length - 1];
 
     const params: Record<string, unknown> = { sort: '-lastPostedAt', page: { limit: limit + 1 }, include: include() };
@@ -128,7 +126,7 @@ export default class SuggestedTopics extends Component<SuggestedTopicsAttrs> {
   }
 
   loadRelated(discussion: Discussion, limit: number): Promise<Row[]> {
-    // Os que dividem uma etiqueta (o filtro do tags junta por "ou").
+    // 与它共享某个标签的主题（tags 过滤按“或”合并）。
     const { labels } = splitDiscussionTags(discussion);
 
     if (!labels.length) return Promise.resolve([]);
@@ -152,7 +150,7 @@ export default class SuggestedTopics extends Component<SuggestedTopicsAttrs> {
   view() {
     if (this.loading) {
       return (
-        <section className="CanelaSuggested">
+        <section className="LcoySuggested">
           <LoadingIndicator display="block" />
         </section>
       );
@@ -169,27 +167,27 @@ export default class SuggestedTopics extends Component<SuggestedTopicsAttrs> {
     const single = tabs.length === 1;
 
     return (
-      <section className="CanelaSuggested" aria-labelledby="canela-suggested-title">
+      <section className="LcoySuggested" aria-labelledby="lcoy-suggested-title">
         {single && (
-          <h2 className="CanelaSuggested-title" id="canela-suggested-title">
+          <h2 className="LcoySuggested-title" id="lcoy-suggested-title">
             {tab === 'related' && <Icon name="fas fa-wand-magic-sparkles" />} {t(`topic.suggested.${tab === 'related' ? 'related_title' : 'title'}`)}
           </h2>
         )}
-        <table className="CanelaSuggested-table">
+        <table className="LcoySuggested-table">
           <thead>
             <tr>
-              <th scope="col" className="CanelaSuggested-topicHead">
+              <th scope="col" className="LcoySuggested-topicHead">
                 {single ? (
                   t('topic.suggested.topic')
                 ) : (
-                  <ul className="CanelaSuggested-tabs" role="tablist" id="canela-suggested-title">
+                  <ul className="LcoySuggested-tabs" role="tablist" id="lcoy-suggested-title">
                     {tabs.map((key) => (
                       <li>
                         <button
                           type="button"
                           role="tab"
                           aria-selected={key === tab ? 'true' : 'false'}
-                          className={classList('CanelaSuggested-tab', { active: key === tab })}
+                          className={classList('LcoySuggested-tab', { active: key === tab })}
                           onclick={() => (this.tab = key)}
                         >
                           {key === 'related' && <Icon name="fas fa-wand-magic-sparkles" />}
@@ -200,15 +198,15 @@ export default class SuggestedTopics extends Component<SuggestedTopicsAttrs> {
                   </ul>
                 )}
               </th>
-              <th scope="col" className="CanelaSuggested-num">
+              <th scope="col" className="LcoySuggested-num">
                 {t('topic.suggested.replies')}
               </th>
               {views && (
-                <th scope="col" className="CanelaSuggested-num">
+                <th scope="col" className="LcoySuggested-num">
                   {t('topic.suggested.views')}
                 </th>
               )}
-              <th scope="col" className="CanelaSuggested-num">
+              <th scope="col" className="LcoySuggested-num">
                 {t('topic.suggested.activity')}
               </th>
             </tr>
@@ -221,27 +219,27 @@ export default class SuggestedTopics extends Component<SuggestedTopicsAttrs> {
 
   row(row: Row, views: boolean) {
     return (
-      <tr className={classList('CanelaSuggested-row', { 'CanelaSuggested-row--unread': row.unread > 0 })}>
-        <td className="CanelaSuggested-topic">
-          <Link className="CanelaSuggested-link" href={row.href}>
+      <tr className={classList('LcoySuggested-row', { 'LcoySuggested-row--unread': row.unread > 0 })}>
+        <td className="LcoySuggested-topic">
+          <Link className="LcoySuggested-link" href={row.href}>
             {row.title}
           </Link>
-          {row.unread > 0 && <span className="CanelaSuggested-unread">{abbreviateNumber(row.unread)}</span>}
-          <div className="CanelaSuggested-badges">{row.badges}</div>
+          {row.unread > 0 && <span className="LcoySuggested-unread">{abbreviateNumber(row.unread)}</span>}
+          <div className="LcoySuggested-badges">{row.badges}</div>
         </td>
-        <td className="CanelaSuggested-num CanelaSuggested-replies">{abbreviateNumber(row.replies)}</td>
+        <td className="LcoySuggested-num LcoySuggested-replies">{abbreviateNumber(row.replies)}</td>
         {views && this.viewsCell(row.views || 0)}
-        <td className="CanelaSuggested-num CanelaSuggested-activity" title={row.last ? fullDate(row.last) : ''}>
+        <td className="LcoySuggested-num LcoySuggested-activity" title={row.last ? fullDate(row.last) : ''}>
           {row.last ? shortAge(row.last) : ''}
         </td>
       </tr>
     );
   }
 
-  /** Como a coluna da lista: o número do Discourse, o title por extenso e o calor (`heatmap-*`). */
+  /** 与列表中的该列一致：Discourse 的数字、完整写法的 title 以及热度（`heatmap-*`）。 */
   viewsCell(count: number) {
-    const heat = forumBool('canelaListHeat', true) ? viewsHeat(count) : null;
+    const heat = forumBool('lcoyListHeat', true) ? viewsHeat(count) : null;
 
-    return <td className={classList('CanelaSuggested-num CanelaSuggested-views', heat && `heatmap-${heat}`)}>{viewsNumber(count)}</td>;
+    return <td className={classList('LcoySuggested-num LcoySuggested-views', heat && `heatmap-${heat}`)}>{viewsNumber(count)}</td>;
   }
 }

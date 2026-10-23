@@ -1,8 +1,7 @@
 /*
- * Componentes em chunk próprio (import() sob demanda): o código só desce
- * quando o componente aparece pela primeira vez, em vez de pesar no forum.js
- * da primeira carga. O chunk é pedido uma vez só; as próximas instâncias
- * desenham na hora.
+ * 放在独立 chunk 中的组件（按需 import()）：代码只在
+ * 组件首次出现时下载，而不是拖累首次加载的 forum.js。
+ * chunk 只会请求一次；后续实例会立即绘制。
  */
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
 import type Mithril from 'mithril';
@@ -10,9 +9,9 @@ import type Mithril from 'mithril';
 type Loaded = Mithril.ComponentTypes<any, any>;
 
 /**
- * Um componente que desenha `placeholder` até o chunk chegar e, daí em
- * diante, o componente de verdade com os mesmos atributos e filhos.
- * Se o download falhar, tenta de novo na próxima vez que aparecer.
+ * 一个在 chunk 到达前绘制 `placeholder`、之后使用相同 attrs 和子节点
+ * 绘制真实组件的组件。如果下载失败，下次出现时
+ * 会重试。
  */
 export function lazyComponent<Attrs extends ComponentAttrs = any>(
   load: () => Promise<Loaded>,

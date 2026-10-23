@@ -5,9 +5,9 @@ import RulesPage, { type RulesPayload } from './RulesPage';
 import { t } from '../../utils/settings';
 
 /**
- * Uma aba extra da área Sobre (/about/{id-slug}): uma página do fof/pages
- * escolhida no admin, no mesmo layout das Diretrizes. O id vem na frente do
- * parâmetro, como no /d/{id} do core; o slug é só enfeite.
+ * “关于”区域中的一个额外标签（/about/{id-slug}）：在管理后台选定的
+ * fof/pages 页面，采用与“准则”相同的布局。参数前部为 id，与核心的
+ * /d/{id} 一致；slug 仅用于美化。
  */
 export default class AboutExtraPage extends RulesPage {
   pageId(): number {
@@ -21,16 +21,16 @@ export default class AboutExtraPage extends RulesPage {
   }
 
   className(): string {
-    return 'CanelaAboutExtraPage';
+    return 'LcoyAboutExtraPage';
   }
 
-  /** Só as páginas da lista do admin que o fof/pages deixa a pessoa ver. */
+  /** 仅限管理员列表中 fof/pages 允许当前用户查看的页面。 */
   enabled(): boolean {
     return !!findAboutPage(this.pageId());
   }
 
   endpoint(): string {
-    return `/canela-about-pages/${this.pageId()}`;
+    return `/lcoy-about-pages/${this.pageId()}`;
   }
 
   activeTab(): string {

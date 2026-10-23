@@ -6,10 +6,10 @@
 // （js/src/forum/thirdparty/fofWidgets.tsx）。
 //
 // 这里只做一件事：把 widget 自带的卡片样式去掉，让它在 280px 的侧栏里成立。
-// 选择器都关在 .CanelaSidebar-fofWidget 内 —— 主题侧栏关掉时，同一批 widget 仍
+// 选择器都关在 .LcoySidebar-fofWidget 内 —— 主题侧栏关掉时，同一批 widget 仍
 // 由扩展画在内容区，那边不该受影响。
 
-.CanelaSidebar-fofWidget {
+.LcoySidebar-fofWidget {
   // 分区标题已经写了名字，widget 自己那行标题（带图标）就不用再来一次。
   .FofWidgets-Widget-title {
     display: none;
@@ -24,8 +24,8 @@
     padding: 0;
     border-radius: 0;
     background: transparent;
-    color: var(--cn-primary-high);
-    font-size: var(--cn-font-down-1);
+    color: var(--lcoy-primary-high);
+    font-size: var(--lcoy-font-down-1);
   }
 
   // ── 公告（fof/news-widget）────────────────────────────────────────
@@ -35,9 +35,9 @@
 
   .FoF-NewsWidget-icon {
     flex: none;
-    margin: 2px var(--cn-space-2) 0 2px;
-    color: var(--cn-accent);
-    font-size: var(--cn-font-down-2);
+    margin: 2px var(--lcoy-space-2) 0 2px;
+    color: var(--lcoy-accent);
+    font-size: var(--lcoy-font-down-2);
   }
 
   .FoF-NewsWidget-line-container {
@@ -47,7 +47,7 @@
 
   // ── 在线用户（fof/online-users-widget）───────────────────────────
   .FoF-OnlineUsersWidget-users-message {
-    font-size: var(--cn-font-down-1);
+    font-size: var(--lcoy-font-down-1);
   }
 
   .FoF-OnlineUsersWidget-users-list {
@@ -63,29 +63,29 @@
 
     .Avatar {
       --size: 22px;
-      font-size: var(--cn-font-down-3);
+      font-size: var(--lcoy-font-down-3);
     }
   }
 
   // ── 论坛统计（fof/forum-stats-widget）───────────────────────────
-  // A extensão usa três colunas num cartão largo; aqui são duas, cada número
-  // com o rótulo em cima.
+  // 扩展在宽卡片中使用三列；这里是两列，每个数字
+  // 的标签在上方。
   .FoF-ForumStatsWidget-grid {
     grid-template-columns: 1fr 1fr;
-    gap: var(--cn-space-1) var(--cn-space-2);
+    gap: var(--lcoy-space-1) var(--lcoy-space-2);
   }
 
   .FoF-ForumStatsWidget-grid-item {
     flex-direction: row;
     justify-content: flex-start;
-    gap: var(--cn-space-1);
-    font-size: var(--cn-font-down-1);
+    gap: var(--lcoy-space-1);
+    font-size: var(--lcoy-font-down-1);
   }
 
   .FoF-ForumStatsWidget-grid-item-icon {
     flex: 0 0 14px;
-    font-size: var(--cn-font-down-2);
-    color: var(--cn-primary-high);
+    font-size: var(--lcoy-font-down-2);
+    color: var(--lcoy-primary-high);
   }
 
   .FoF-ForumStatsWidget-grid .FieldSet,
@@ -97,8 +97,8 @@
 
     > legend {
       padding: 0;
-      color: var(--cn-primary-high);
-      font-size: var(--cn-font-down-2);
+      color: var(--lcoy-primary-high);
+      font-size: var(--lcoy-font-down-2);
     }
   }
 }
@@ -109,19 +109,19 @@
 // 普通分区是「标题 + 列表」，公告要抢眼一点：带主色渐变的浅卡片、左侧
 // 强调线、主色标题，喇叭图标放进实心圆里并带一圈缓慢扩散的光环。
 // ---------------------------------------------------------------------
-.CanelaSidebar-sections > .CanelaSidebar-section--fof-news {
+.LcoySidebar-sections > .LcoySidebar-section--fof-news {
   position: relative;
   margin: 8px 0 12px;
   padding: 11px 12px 13px;
-  border: 1px solid ~"oklch(from var(--cn-accent) l c h / 0.28)";
+  border: 1px solid ~"oklch(from var(--lcoy-accent) l c h / 0.28)";
   border-radius: 12px;
   background:
-    radial-gradient(140% 130% at 0% 0%, ~"oklch(from var(--cn-accent) l c h / 0.16)" 0%, transparent 62%),
-    var(--cn-surface);
-  box-shadow: 0 4px 16px ~"oklch(from var(--cn-accent) l c h / 0.12)";
+    radial-gradient(140% 130% at 0% 0%, ~"oklch(from var(--lcoy-accent) l c h / 0.16)" 0%, transparent 62%),
+    var(--lcoy-surface);
+  box-shadow: 0 4px 16px ~"oklch(from var(--lcoy-accent) l c h / 0.12)";
   overflow: hidden;
 
-  // A linha vertical na borda esquerda, do mesmo tom do título.
+  // 左边框上的竖线，与标题同色调。
   &::before {
     content: '';
     position: absolute;
@@ -130,35 +130,35 @@
     left: 0;
     width: 3px;
     border-radius: 0 3px 3px 0;
-    background: linear-gradient(180deg, var(--cn-accent), transparent);
+    background: linear-gradient(180deg, var(--lcoy-accent), transparent);
   }
 
-  .CanelaSidebar-sectionHead {
+  .LcoySidebar-sectionHead {
     margin-bottom: 7px;
   }
 
-  .CanelaSidebar-sectionHeader {
+  .LcoySidebar-sectionHeader {
     height: auto;
     padding: 0;
-    color: var(--cn-accent);
+    color: var(--lcoy-accent);
     font-size: 0.7895rem;
     letter-spacing: 0.08em;
 
     &:focus-visible {
       background: transparent;
-      box-shadow: 0 0 0 2px ~"oklch(from var(--cn-accent) l c h / 0.35)";
+      box-shadow: 0 0 0 2px ~"oklch(from var(--lcoy-accent) l c h / 0.35)";
     }
   }
 
-  .CanelaSidebar-sectionTitle {
+  .LcoySidebar-sectionTitle {
     font-weight: 700;
   }
 
-  .CanelaSidebar-sectionCaret {
-    color: var(--cn-accent);
+  .LcoySidebar-sectionCaret {
+    color: var(--lcoy-accent);
   }
 
-  .CanelaSidebar-sectionContent {
+  .LcoySidebar-sectionContent {
     margin-top: 2px;
   }
 
@@ -167,7 +167,7 @@
     gap: 10px;
   }
 
-  // O ícone vira um selo redondo na cor de destaque, com o pulso suave.
+  // 图标变为高亮色的圆形徽章，带柔和脉冲。
   .FoF-NewsWidget-icon {
     position: relative;
     display: inline-flex;
@@ -178,19 +178,19 @@
     height: 26px;
     margin: 0;
     border-radius: 50%;
-    background: var(--cn-accent);
-    color: var(--cn-accent-text);
+    background: var(--lcoy-accent);
+    color: var(--lcoy-accent-text);
     font-size: 12px;
     line-height: 1;
-    box-shadow: 0 2px 7px ~"oklch(from var(--cn-accent) l c h / 0.35)";
+    box-shadow: 0 2px 7px ~"oklch(from var(--lcoy-accent) l c h / 0.35)";
 
     &::after {
       content: '';
       position: absolute;
       inset: -3px;
-      border: 2px solid ~"oklch(from var(--cn-accent) l c h / 0.45)";
+      border: 2px solid ~"oklch(from var(--lcoy-accent) l c h / 0.45)";
       border-radius: 50%;
-      animation: canela-news-pulse 2.6s ease-out infinite;
+      animation: lcoy-news-pulse 2.6s ease-out infinite;
       pointer-events: none;
     }
   }
@@ -202,13 +202,13 @@
   }
 
   .FoF-NewsWidget-line {
-    color: var(--cn-primary);
-    font-size: var(--cn-font-down-1);
+    color: var(--lcoy-primary);
+    font-size: var(--lcoy-font-down-1);
     font-weight: 500;
   }
 }
 
-@keyframes canela-news-pulse {
+@keyframes lcoy-news-pulse {
   0% {
     transform: scale(0.85);
     opacity: 0.75;
@@ -222,7 +222,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .CanelaSidebar-sections > .CanelaSidebar-section--fof-news .FoF-NewsWidget-icon::after {
+  .LcoySidebar-sections > .LcoySidebar-section--fof-news .FoF-NewsWidget-icon::after {
     animation: none;
     opacity: 0;
   }

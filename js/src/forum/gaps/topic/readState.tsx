@@ -1,14 +1,14 @@
 /*
- * O que o Discourse mostra sobre a leitura dentro do tópico:
+ * Discourse 在主题内显示的阅读状态：
  *
- * - o pontinho azul de "postagem não lida" no canto do cabeçalho do post
- *   (.read-state), que some devagar quando o post é lido;
- * - a linha vermelha "último acesso" (.topic-post-visited) logo depois do
- *   último post que o leitor tinha lido na visita anterior.
+ * - 帖子头部角落的“帖子未读”蓝色小圆点（.read-state），
+ *   帖子被读取后慢慢消失；
+ * - 读者上次访问时最后读过的帖子之后的“最后访问”红线
+ *  （.topic-post-visited）。
  *
- * As duas dependem de onde o leitor parou QUANDO abriu o tópico; o core vai
- * avançando o lastReadPostNumber enquanto se lê, então o valor de entrada é
- * guardado à parte, por tópico, no momento em que a página o mostra.
+ * 两者都取决于读者打开主题时停在哪里；核心会在阅读过程中推进
+ * lastReadPostNumber，因此进入时的值会按主题单独保存，
+ * 在页面显示它的时刻记录。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -24,7 +24,7 @@ import type Mithril from 'mithril';
 import { gaps } from '../settings';
 import { t } from '../../utils/settings';
 
-/** Último post lido quando o tópico foi aberto, por id do tópico. */
+/** 打开主题时最后已读的帖子，按主题 id 索引。 */
 const visitedAtOpen = new Map<string, number>();
 
 export function visitedNumber(discussion: Discussion | null | undefined): number | null {
@@ -44,7 +44,7 @@ function readState(post: Post): 'unread' | 'read' | null {
   return (discussion.lastReadPostNumber() || 0) >= post.number() ? 'read' : 'unread';
 }
 
-/** Os filhos de um vnode como lista, para acrescentar mais um. */
+/** 把 vnode 的子节点当列表处理，以便再追加一个。 */
 function childrenOf(vnode: any): any[] {
   if (Array.isArray(vnode.children)) return vnode.children;
 
@@ -55,16 +55,16 @@ function childrenOf(vnode: any): any[] {
 
 export default function installReadState(): void {
   extend(DiscussionPage.prototype, 'show', function (this: any, _result: unknown, discussion: Discussion) {
-    if (!discussion || this.canelaVisitedFor === discussion.id()) return;
+    if (!discussion || this.lcoyVisitedFor === discussion.id()) return;
 
-    this.canelaVisitedFor = discussion.id();
+    this.lcoyVisitedFor = discussion.id();
 
-    // Um tópico nunca aberto conta como "lido até 0": tudo nele é novo, mas
-    // aí a linha "último acesso" não faz sentido (não houve acesso).
+    // 从未打开过的主题算作“已读到 0”：其中一切都是新的，但这样
+    // “最后访问”线就没有意义（没有发生过访问）。
     visitedAtOpen.set(String(discussion.id()), discussion.lastReadPostNumber() || 0);
   });
 
-  // O pontinho muda sem o post mudar: o retainer do post precisa saber.
+  // 圆点会在帖子未变的情况下变化：帖子的 retainer 需要知道。
   extend(CommentPost.prototype, 'oninit', function (this: any) {
     this.subtree?.check(() => (gaps.readState() ? readState(this.attrs.post) : null));
   });
@@ -77,9 +77,9 @@ export default function installReadState(): void {
     if (!state) return;
 
     items.add(
-      'canelaReadState',
+      'lcoyReadState',
       <span
-        className={classList('CanelaReadState', { 'CanelaReadState--read': state === 'read' })}
+        className={classList('LcoyReadState', { 'LcoyReadState--read': state === 'read' })}
         title={t('gaps.read_state.unread')}
         aria-hidden="true"
       >
@@ -89,9 +89,8 @@ export default function installReadState(): void {
     );
   });
 
-  // A linha "último acesso" entra dentro do item do post lido por último:
-  // os itens do stream têm key, e um irmão novo no meio deles teria de ter
-  // key também — dentro do item, os filhos não têm.
+  // “最后访问”线放进最后已读帖子的项内部：stream 的项都有 key，
+  // 在它们中间新增兄弟节点也必须带 key——在项内部，子节点没有 key。
   extend('flarum/forum/components/PostStream', 'view', function (this: any, vdom: any) {
     if (!gaps.readState() || !vdom || !Array.isArray(vdom.children)) return;
 
@@ -102,21 +101,30 @@ export default function installReadState(): void {
     if (!visited || visited >= last) return;
 
     const items: any[] = vdom.children;
+    // 第一楼与主题地图一起出现在一个片段中。
+    const itemOf = (child: any) => (child && child.tag === '[' && Array.isArray(child.children) ? child.children[0] : child);
+
+    // 一次遍历找出最后绘制的项：按项调用 slice() 在屏幕上有
+    // 数百篇帖子时是二次复杂度。
+    let lastShown = -1;
 
     items.forEach((child: any, index: number) => {
-      // O primeiro post vem num fragmento junto do mapa do tópico.
-      const item = child && child.tag === '[' && Array.isArray(child.children) ? child.children[0] : child;
+      const item = itemOf(child);
+
+      if (item && item.attrs && item.attrs['data-number']) lastShown = index;
+    });
+
+    items.forEach((child: any, index: number) => {
+      const item = itemOf(child);
 
       if (!item || !item.attrs || Number(item.attrs['data-number']) !== visited) return;
 
-      // No último post desenhado a linha não diz nada (não há o que vem depois).
-      const isLastShown = !items.slice(index + 1).some((next: any) => next && next.attrs && next.attrs['data-number']);
-
-      if (isLastShown) return;
+      // 在最后绘制的帖子处这条线说明不了什么（后面没有内容了）。
+      if (index === lastShown) return;
 
       childrenOf(item).push(
-        <div className="CanelaVisitedLine" role="separator">
-          <span className="CanelaVisitedLine-message" role="heading" aria-level="2">
+        <div className="LcoyVisitedLine" role="separator">
+          <span className="LcoyVisitedLine-message" role="heading" aria-level="2">
             {t('gaps.read_state.last_visit')}
           </span>
         </div>

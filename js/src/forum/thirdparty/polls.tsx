@@ -1,7 +1,7 @@
 /*
- * fof/polls no jeito do poll do Discourse: a contagem grande de votos na
- * coluna da direita ("0 / votos"), sempre visível, e as instruções da
- * extensão embaixo dela. A grade em si (opções | informações / botões) é CSS.
+ * fof/polls 按照 Discourse 投票的方式呈现：右栏中较大的投票计数
+ * （"0 / 票"），始终可见，扩展的说明文字在其下方。
+ * 网格本身（选项 | 信息 / 按钮）由 CSS 负责。
  */
 import { extend } from 'flarum/common/extend';
 import type ItemList from 'flarum/common/utils/ItemList';
@@ -17,25 +17,25 @@ export default function installPolls(): void {
     const poll = this.attrs.poll;
     const count = Number(poll?.voteCount?.());
 
-    // Sem permissão para ver a contagem, a extensão não a manda.
+    // 没有查看计数的权限时，扩展不会发送该数字。
     if (!Number.isFinite(count) || this.state?.canSeeVoteCount === false) return;
 
-    // A frase "N votos no total" da extensão vira o número grande.
+    // 扩展的 "共 N 票" 句子变成较大的数字。
     items.remove('total-vote-count');
 
     items.add(
-      'canelaVotes',
-      <span className="CanelaPollCount">
-        <span className="CanelaPollCount-number">{count}</span>
-        <span className="CanelaPollCount-label">{t('thirdparty.polls.votes', { count })}</span>
+      'lcoyVotes',
+      <span className="LcoyPollCount">
+        <span className="LcoyPollCount-number">{count}</span>
+        <span className="LcoyPollCount-label">{t('thirdparty.polls.votes', { count })}</span>
       </span>,
       1000
     );
   });
 
-  // Como no Discourse, a porcentagem (e a barra, que depende dela no CSS) só
-  // aparece depois de votar ou quando a enquete termina: antes disso, as
-  // opções são só os círculos de escolher.
+  // 与 Discourse 相同，百分比（以及 CSS 中依赖它的进度条）只在
+  // 投票后或投票结束时出现：在此之前，选项只有
+  // 选择用的圆圈。
   extend('ext:fof/polls/forum/components/Poll/PollOption', 'textItems', function (this: any, items: ItemList<Mithril.Children>) {
     if (!thirdParty.polls()) return;
 

@@ -1,13 +1,13 @@
 // ---------------------------------------------------------------------
-// fof/reactions no jeito do discourse-reactions
-// (css-discourse-reactions.css do Meta)
+// fof/reactions，采用 discourse-reactions 风格
+// （Meta 的 css-discourse-reactions.css）
 // ---------------------------------------------------------------------
 
-// O resumo à esquerda (`.discourse-reactions-counter`): até três emojis de
-// 1em, colados (gap .15em), e o total em cinza claro.
-.CanelaReactions {
-  &.Button.CanelaPostAction,
-  &.CanelaReactions--static {
+// 左侧摘要（`.discourse-reactions-counter`）：最多三个 1em 的
+// emoji，紧贴（gap .15em），总数用浅灰色。
+.LcoyReactions {
+  &.Button.LcoyPostAction,
+  &.LcoyReactions--static {
     display: inline-flex;
     align-items: center;
     gap: 0;
@@ -15,11 +15,11 @@
     padding: 1px 6px;
   }
 
-  &.CanelaReactions--static {
+  &.LcoyReactions--static {
     cursor: default;
   }
 
-  // O Button do core embrulha os filhos num rótulo: emojis e total na mesma linha.
+  // 核心的 Button 把子元素包在标签中：emoji 和总数在同一行。
   .Button-label,
   .Button-labelText {
     display: inline-flex;
@@ -27,23 +27,23 @@
     margin: 0;
   }
 
-  // Sem fundo no hover (pedido do usuário): só o número escurece.
+  // 悬停无背景（用户要求）：只有数字变深。
   &.Button:hover,
   &.Button:focus-visible,
   &.Button.active {
     background: none;
     box-shadow: none;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 }
 
-.CanelaReactions-list {
+.LcoyReactions-list {
   display: flex;
   align-items: center;
   gap: 0.15em;
 }
 
-.CanelaReactions-emoji {
+.LcoyReactions-emoji {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -61,24 +61,24 @@
   }
 }
 
-.CanelaReactions-count {
+.LcoyReactions-count {
   margin-left: 0.5em;
   padding: 8px 0;
-  color: var(--cn-primary-low-mid);
+  color: var(--lcoy-primary-low-mid);
 }
 
-// Na barra: o resumo vem depois do de curtidas e antes de "N respostas"; o
-// último do grupo da esquerda empurra o resto para a direita.
-.Post-actions:has(.CanelaPostAction) {
-  .item-canelaReactions {
+// 操作栏中：摘要在点赞摘要之后、"N 条回复"之前；左侧
+// 组的最后一项把其余推到右侧。
+.Post-actions:has(.LcoyPostAction) {
+  .item-lcoyReactions {
     order: -15;
   }
 
-  &:has(.item-canelaReactions) .item-canelaLikeCount {
+  &:has(.item-lcoyReactions) .item-lcoyLikeCount {
     margin-right: 0;
   }
 
-  .item-canelaReactions:not(:has(~ .item-canelaReplies)) {
+  .item-lcoyReactions:not(:has(~ .item-lcoyReplies)) {
     margin-right: auto;
   }
 
@@ -87,7 +87,7 @@
   }
 }
 
-// O botão de reagir da extensão no tamanho dos ícones do tema.
+// 扩展的回应按钮采用主题图标的尺寸。
 .item-react .Reactions {
   display: inline-flex;
   align-items: center;
@@ -102,8 +102,8 @@
   height: 38px;
   margin: 0;
   padding: 8px 0;
-  border-radius: var(--cn-radius-pill);
-  color: var(--cn-primary-low-mid);
+  border-radius: var(--lcoy-radius-pill);
+  color: var(--lcoy-primary-low-mid);
   text-decoration: none;
 
   .Button-label {
@@ -111,7 +111,7 @@
     margin: 0 !important;
   }
 
-  // O SVG da extensão traz a cor fixa (#667c99): passa a seguir o texto.
+  // 扩展的 SVG 带有固定颜色（#667c99）：改为跟随文字。
   .button-react {
     width: 18px;
     height: 18px;
@@ -124,12 +124,12 @@
 
   &:hover,
   &:focus-visible {
-    background: var(--cn-topic-love-low, var(--cn-hover));
-    color: var(--cn-topic-love, var(--cn-love));
+    background: var(--lcoy-topic-love-low, var(--lcoy-hover));
+    color: var(--lcoy-topic-love, var(--lcoy-love));
   }
 
-  // Já reagiu: o emoji escolhido no lugar do ícone (`has-reacted`).
-  &.CanelaReactions-mine {
+  // 已回应：所选 emoji 取代图标（`has-reacted`）。
+  &.LcoyReactions-mine {
     .emoji,
     .icon {
       width: 1.25em;
@@ -140,14 +140,14 @@
 
     &:hover,
     &:focus-visible {
-      background: var(--cn-primary-low);
-      color: var(--cn-primary);
+      background: var(--lcoy-primary-low);
+      color: var(--lcoy-primary);
     }
   }
 }
 
-// O seletor (`.discourse-reactions-picker`): cartão com a sombra do Discourse,
-// raio de 8px e os emojis em grade, crescendo 1,5× no hover.
+// 选择器（`.discourse-reactions-picker`）：带 Discourse 阴影的卡片，
+// 8px 圆角，emoji 网格，悬停时放大 1.5×。
 .Reactions .CommentPost--Reactions {
   left: 50% !important;
   transform: translateX(-50%);
@@ -155,10 +155,10 @@
   margin: 0 0 4px;
   padding: 0;
   border-radius: 8px;
-  background: var(--cn-secondary);
-  // O mesmo cartão do seletor dos posts (.CanelaReactPicker-container).
-  box-shadow: ~"0 2px 6px oklch(from var(--cn-accent) l c h / 0.24)";
-  color: var(--cn-primary);
+  background: var(--lcoy-secondary);
+  // 与帖子选择器相同的卡片（.LcoyReactPicker-container）。
+  box-shadow: ~"0 2px 6px oklch(from var(--lcoy-accent) l c h / 0.24)";
+  color: var(--lcoy-primary);
   font-size: 16px;
   line-height: 1;
 
@@ -187,7 +187,7 @@
         margin: 0.25em;
         padding: 0.25em;
         border: 1px solid transparent;
-        border-radius: var(--cn-radius);
+        border-radius: var(--lcoy-radius);
         background: none;
         transition: transform 0.15s;
 
@@ -214,46 +214,46 @@
   }
 }
 
-// Quem reagiu (ReactionsModal): os grupos como as abas do Discourse.
+// 谁回应了（ReactionsModal）：分组如 Discourse 的标签页。
 .ReactionsModal {
   &-groupHeader {
-    padding: var(--cn-space-2) var(--cn-space-3);
-    border-radius: var(--cn-radius);
-    background: var(--cn-primary-very-low);
+    padding: var(--lcoy-space-2) var(--lcoy-space-3);
+    border-radius: var(--lcoy-radius);
+    background: var(--lcoy-primary-very-low);
   }
 
   &-reactionCount {
-    background: var(--cn-primary-low);
-    color: var(--cn-primary-high);
+    background: var(--lcoy-primary-low);
+    color: var(--lcoy-primary-high);
   }
 
   &-users {
-    border-left: 1px solid var(--cn-primary-low);
+    border-left: 1px solid var(--lcoy-primary-low);
   }
 
   &-user:hover {
-    background: var(--cn-hover);
+    background: var(--lcoy-hover);
   }
 }
 
 // ---------------------------------------------------------------------
-// Curtida + reações num botão só (`.discourse-reactions-actions`): o
-// coração da barra e, acima dele, o seletor (`.discourse-reactions-picker`).
+// 点赞 + 回应合并为一个按钮（`.discourse-reactions-actions`）：操作栏的
+// 心形，以及其上的选择器（`.discourse-reactions-picker`）。
 // ---------------------------------------------------------------------
-.CanelaReact {
+.LcoyReact {
   position: relative;
   display: flex;
   touch-action: pan-y;
 }
 
-.CanelaReact-button.Button {
+.LcoyReact-button.Button {
   -webkit-touch-callout: none;
   user-select: none;
 }
 
-// Já reagiu com um emoji: ele no lugar do coração; o hover é o cinza de
-// "desfazer" (`has-reacted.can-toggle-reaction`).
-.CanelaReact-button--emoji.Button {
+// 已用 emoji 回应：它取代心形；悬停为"取消"的
+// 灰色（`has-reacted.can-toggle-reaction`）。
+.LcoyReact-button--emoji.Button {
   width: 38.78px;
   padding: 8px 0;
   justify-content: center;
@@ -274,33 +274,33 @@
 
   &:hover,
   &:focus-visible {
-    background: var(--cn-primary-low);
-    color: var(--cn-primary);
+    background: var(--lcoy-primary-low);
+    color: var(--lcoy-primary);
   }
 }
 
-// O cinza de "desfazer" também no coração já curtido, como no Meta.
-.CanelaReact.has-reacted .CanelaLike-toggle.Button:not([disabled]):hover {
-  background: var(--cn-primary-low);
-  color: var(--cn-primary-low-mid);
+// 已点赞的心形也使用"取消"的灰色，与 Meta 一致。
+.LcoyReact.has-reacted .LcoyLike-toggle.Button:not([disabled]):hover {
+  background: var(--lcoy-primary-low);
+  color: var(--lcoy-primary-low-mid);
 }
 
-.CanelaReactPicker {
+.LcoyReactPicker {
   position: absolute;
   bottom: 100%;
   left: 50%;
   z-index: 399;
   width: max-content;
-  // Centrado no coração, ~14px acima dele (medido no Meta). O padding é a
-  // ponte invisível entre o botão e o cartão: o mouse atravessa sem fechar.
+  // 在心形上居中，位于其上方约 14px（在 Meta 上测量）。内边距是按钮与
+  // 卡片之间不可见的桥：鼠标可以穿过而不关闭。
   padding: 15px 0 10px;
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
-  transform: translateX(calc(-50% + var(--cn-react-shift, 0px)));
+  transform: translateX(calc(-50% + var(--lcoy-react-shift, 0px)));
   transition: visibility 0s linear 0.15s, opacity 0.15s;
 
-  .CanelaReact.is-open > & {
+  .LcoyReact.is-open > & {
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
@@ -308,15 +308,15 @@
   }
 }
 
-.CanelaReactPicker-container {
+.LcoyReactPicker-container {
   display: grid;
-  grid-template-columns: repeat(var(--cn-react-cols, 7), 1fr);
+  grid-template-columns: repeat(var(--lcoy-react-cols, 7), 1fr);
   gap: 0.25em;
   margin: 0.25em;
   border-radius: 8px;
-  background: var(--cn-secondary);
-  // A sombra do cartão no Meta: 0 2px 6px na cor do tema, a 24%.
-  box-shadow: ~"0 2px 6px oklch(from var(--cn-accent) l c h / 0.24)";
+  background: var(--lcoy-secondary);
+  // Meta 上卡片的阴影：0 2px 6px，主题色，24%。
+  box-shadow: ~"0 2px 6px oklch(from var(--lcoy-accent) l c h / 0.24)";
   font-size: 16px;
   line-height: 1;
 
@@ -325,21 +325,21 @@
   }
 }
 
-.CanelaReactPicker-item {
+.LcoyReactPicker-item {
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0.25em;
   padding: 0.25em;
   border: 1px solid transparent;
-  border-radius: var(--cn-radius);
+  border-radius: var(--lcoy-radius);
   background: none;
   font-size: inherit;
   line-height: 1;
   cursor: pointer;
   transition: transform 0.15s;
 
-  // 1,2em da fonte do cartão (18px), como `.pickable-reaction .emoji`.
+  // 卡片字号的 1.2em（18px），与 `.pickable-reaction .emoji` 一致。
   .emoji,
   .icon {
     width: 1.2em;
@@ -364,15 +364,15 @@
   }
 
   &.is-used {
-    border-color: var(--cn-selected);
-    background: var(--cn-selected);
+    border-color: var(--lcoy-selected);
+    background: var(--lcoy-selected);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .Reactions .CommentPost--Reactions ul.Reactions--Ul li .Button,
-  .CanelaReactPicker,
-  .CanelaReactPicker-item {
+  .LcoyReactPicker,
+  .LcoyReactPicker-item {
     transition: none;
   }
 }

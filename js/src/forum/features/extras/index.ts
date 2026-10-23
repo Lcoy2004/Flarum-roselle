@@ -1,18 +1,15 @@
 /*
- * Recursos "extras" do Discourse: página de busca avançada, seleção em massa,
- * "Melhores" por período, tamanho do texto, imprimir tópico e histórico de
- * edições.
+ * Discourse 的“额外”功能：高级搜索页面、批量选择、
+ * 按时间段的“最佳”、文本大小以及打印主题。
  *
- * Cada um confere a própria configuração (`canela*Enabled`) na hora de
- * desenhar — no initializer o fórum ainda não carregou as configurações —,
- * então todos são instalados sempre e somem sozinhos quando desligados.
+ * 每项在渲染时检查自身配置（`lcoy*Enabled`）——initializer 阶段
+ * 论坛尚未加载配置——因此始终全部安装，并在关闭时自动消失。
  */
 import installSearchPage from './search';
 import installBulkSelect from './bulk';
 import installTopPeriods from './topPeriods';
 import installTextSize from './textSize';
 import installPrint from './print';
-import installPostHistory from './history';
 
 export function installExtras(): void {
   installSearchPage();
@@ -20,7 +17,6 @@ export function installExtras(): void {
   installTopPeriods();
   installTextSize();
   installPrint();
-  installPostHistory();
 }
 
 export default installExtras;

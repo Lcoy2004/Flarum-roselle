@@ -18,20 +18,19 @@ use Flarum\Settings\SettingsRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
- * Liga/desliga dos marcadores (`canela.bookmarks_enabled`).
+ * 书签功能的开关（`lcoy.bookmarks_enabled`）。
  *
- * O recurso continua registrado com a opção desligada — as rotas da API são
- * montadas uma vez no boot, sem acesso às configurações — e cada ponto de
- * entrada pergunta aqui. Desligado, a API responde 404, como se o recurso não
- * existisse, e os atributos dos posts somem.
+ * 即使关闭该选项，资源仍会注册——API 路由在 boot 时一次性挂载，当时无法
+ * 访问设置——因此每个入口都来这里询问。关闭后，API 返回 404，就像该资源
+ * 不存在一样，帖子上的属性也会消失。
  */
 final class BookmarksFeature
 {
-    public const ENABLED = 'canela.bookmarks_enabled';
+    public const ENABLED = 'lcoy.bookmarks_enabled';
 
-    public const TOPIC_BUTTON = 'canela.bookmarks_topic_button';
+    public const TOPIC_BUTTON = 'lcoy.bookmarks_topic_button';
 
-    public const USER_MENU = 'canela.bookmarks_user_menu';
+    public const USER_MENU = 'lcoy.bookmarks_user_menu';
 
     public static function enabled(): bool
     {

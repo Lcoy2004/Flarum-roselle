@@ -9,11 +9,11 @@ import { communityGroups, groupsEnabled, groupSlug, groupUrl, memberCount } from
 import { t } from '../../utils/settings';
 
 /**
- * A lista de grupos do Discourse (/g): um cartão por grupo, com o símbolo, o
- * nome e quantos membros tem.
+ * Discourse 的用户组列表（/g）：每个组一张卡片，显示符号、
+ * 名称和成员数。
  *
- * Os grupos já vêm no payload do fórum — só os que o ator pode ver —, então a
- * página não faz requisição nenhuma.
+ * 用户组已在论坛 payload 中下发——仅当前用户可见的组——因此
+ * 该页面不发起任何请求。
  */
 export default class GroupsPage extends CommunityPage {
   title(): string {
@@ -21,14 +21,14 @@ export default class GroupsPage extends CommunityPage {
   }
 
   className(): string {
-    return 'CanelaGroupsPage';
+    return 'LcoyGroupsPage';
   }
 
   enabled(): boolean {
     return groupsEnabled();
   }
 
-  /** O filtro por nome do topo (`groups-header-filters`), só no navegador. */
+  /** 顶部按名称筛选（`groups-header-filters`），仅在浏览器端生效。 */
   filter = '';
 
   content(): Mithril.Children {
@@ -38,11 +38,11 @@ export default class GroupsPage extends CommunityPage {
     );
 
     return (
-      <div className="CanelaGroups">
+      <div className="LcoyGroups">
         <h1 className="sr-only">{t('community.groups.title')}</h1>
-        <div className="CanelaGroups-header">
+        <div className="LcoyGroups-header">
           <input
-            className="FormControl CanelaGroups-filter"
+            className="FormControl LcoyGroups-filter"
             type="search"
             placeholder={t('community.groups.filter_placeholder')}
             aria-label={t('community.groups.filter_placeholder')}
@@ -51,45 +51,44 @@ export default class GroupsPage extends CommunityPage {
           />
         </div>
         {groups.length ? (
-          <ul className="CanelaGroups-grid">{groups.map((group) => this.card(group))}</ul>
+          <ul className="LcoyGroups-grid">{groups.map((group) => this.card(group))}</ul>
         ) : (
-          <p className="CanelaCommunity-empty">{t('community.groups.empty')}</p>
+          <p className="LcoyCommunity-empty">{t('community.groups.empty')}</p>
         )}
       </div>
     );
   }
 
   /**
-   * O `group-box` do Discourse: o flair redondo, o nome grande com o
-   * @endereço embaixo, os membros no canto e, no pé, a situação de entrada —
-   * no Flarum só a administração põe gente nos grupos, então todos são
-   * "Fechado".
+   * Discourse 的 `group-box`：圆形 flair、大号名称及其下方的 @地址、
+   * 角落中的成员数，以及底部的加入状态——在 Flarum 中只有管理员
+   * 能把用户加入用户组，因此所有组均为“关闭”。
    */
   card(group: Group): Mithril.Children {
     const count = memberCount(group);
 
     return (
-      <li key={group.id()} className="CanelaGroups-item">
-        <Link className="CanelaGroupCard" href={groupUrl(group)} style={group.color() ? { '--group-color': group.color() } : undefined}>
-          <span className="CanelaGroupCard-inner">
-            <span className="CanelaGroupCard-infoWrapper">
+      <li key={group.id()} className="LcoyGroups-item">
+        <Link className="LcoyGroupCard" href={groupUrl(group)} style={group.color() ? { '--group-color': group.color() } : undefined}>
+          <span className="LcoyGroupCard-inner">
+            <span className="LcoyGroupCard-infoWrapper">
               {group.icon() && <GroupFlair group={group} />}
-              <span className="CanelaGroupCard-info">
-                <span className="CanelaGroupCard-details">
-                  <span className="CanelaGroupCard-name">{group.namePlural()}</span>
-                  <span className="CanelaGroupCard-mention">@{groupSlug(group)}</span>
+              <span className="LcoyGroupCard-info">
+                <span className="LcoyGroupCard-details">
+                  <span className="LcoyGroupCard-name">{group.namePlural()}</span>
+                  <span className="LcoyGroupCard-mention">@{groupSlug(group)}</span>
                 </span>
                 {count !== null && (
-                  <span className="CanelaGroupCard-count" title={t('community.groups.members', { count })}>
+                  <span className="LcoyGroupCard-count" title={t('community.groups.members', { count })}>
                     <Icon name="far fa-user" />
                     {count}
                   </span>
                 )}
               </span>
             </span>
-            <span className="CanelaGroupCard-membership">
+            <span className="LcoyGroupCard-membership">
               {group.isHidden() ? (
-                <span className="CanelaGroupCard-hidden">
+                <span className="LcoyGroupCard-hidden">
                   <Icon name="far fa-eye-slash" /> {t('community.groups.hidden')}
                 </span>
               ) : (

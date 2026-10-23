@@ -9,8 +9,8 @@ export interface GroupFlairAttrs extends ComponentAttrs {
 }
 
 /**
- * O "flair" do grupo no Discourse: um quadrado arredondado na cor do grupo
- * com o ícone dele. Sem ícone, a inicial do nome; sem cor, o cinza do tema.
+ * Discourse 中的用户组“flair”：一个使用用户组颜色的圆角方块，
+ * 内含该组的图标。无图标时显示名称首字母；无颜色时使用主题灰色。
  */
 export default class GroupFlair extends Component<GroupFlairAttrs> {
   view(): Mithril.Children {
@@ -20,11 +20,11 @@ export default class GroupFlair extends Component<GroupFlairAttrs> {
 
     return (
       <span
-        className={`CanelaGroupFlair CanelaGroupFlair--${size}${color ? ' CanelaGroupFlair--colored' : ''}`}
+        className={`LcoyGroupFlair LcoyGroupFlair--${size}${color ? ' LcoyGroupFlair--colored' : ''}`}
         style={color ? { '--group-color': color } : undefined}
         aria-hidden="true"
       >
-        {icon ? <Icon name={icon} /> : <span className="CanelaGroupFlair-initial">{(group.namePlural() || '?').charAt(0).toUpperCase()}</span>}
+        {icon ? <Icon name={icon} /> : <span className="LcoyGroupFlair-initial">{(group.namePlural() || '?').charAt(0).toUpperCase()}</span>}
       </span>
     );
   }

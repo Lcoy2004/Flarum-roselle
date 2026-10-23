@@ -18,8 +18,8 @@ use Flarum\User\User;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * `Bookmark::whereVisibleTo($actor)`: só os do próprio ator. Um visitante não
- * tem marcadores, e a condição impossível evita consultar por `user_id` nulo.
+ * `Bookmark::whereVisibleTo($actor)`：只返回当前操作者自己的书签。访客
+ * 没有书签，而这条不可能成立的条件可避免用 null 的 `user_id` 查询。
  */
 final class ScopeBookmarkVisibility
 {
@@ -31,6 +31,6 @@ final class ScopeBookmarkVisibility
             return;
         }
 
-        $query->where('canela_bookmarks.user_id', $actor->id);
+        $query->where('lcoy_bookmarks.user_id', $actor->id);
     }
 }

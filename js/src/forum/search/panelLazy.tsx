@@ -1,7 +1,7 @@
 /*
- * O chunk do painel do menu de busca (SearchPanel + motor da busca). O campo
- * do cabeçalho está no pacote principal; o painel desce no ocioso do boot, no
- * hover/toque/foco do campo, ou quando o painel abre — o que vier primeiro.
+ * 搜索菜单面板的 chunk（SearchPanel + 搜索引擎）。页头字段
+ * 位于主包中；面板会在启动空闲时、字段悬停/触摸/聚焦时，
+ * 或面板打开时下载——以先发生者为准。
  */
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
 import type Mithril from 'mithril';
@@ -23,7 +23,7 @@ const load = once(() =>
 
 let idleQueued = false;
 
-/** `idle`: espera o navegador ficar ocioso (fora da primeira pintura); senão, já. */
+/** `idle`：等待浏览器空闲（不在首次绘制期间）；否则立即执行。 */
 export function preloadSearchPanel(opts?: { idle?: boolean } | Event): void {
   if (loaded) return;
 
@@ -43,7 +43,7 @@ export function preloadSearchPanel(opts?: { idle?: boolean } | Event): void {
   load().catch(() => {});
 }
 
-/** Roda já se o chunk chegou (sem perder o redesenho do evento); senão, quando chegar. */
+/** chunk 已到达时立即运行（不丢失事件的重绘）；否则到达时运行。 */
 export function withSearchPanel(run: (panel: Panel) => void): void {
   if (loaded) {
     run(loaded);
@@ -62,7 +62,7 @@ export interface SearchPanelSlotAttrs extends ComponentAttrs {
   menu: SearchMenu;
 }
 
-/** O painel, se o chunk já chegou; senão nada até ele chegar (normalmente já chegou). */
+/** 面板，如果 chunk 已到达；否则在到达前什么也不显示（通常已经到达）。 */
 export class SearchPanelSlot extends Component<SearchPanelSlotAttrs> {
   oninit(vnode: Mithril.Vnode<SearchPanelSlotAttrs, this>) {
     super.oninit(vnode);

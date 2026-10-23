@@ -1,15 +1,15 @@
 // =====================================================================
-// Recursos do Discourse que faltavam (js/src/forum/gaps): botões
-// do código, âncoras dos títulos, tabelas, spoilers, leitura no tópico,
-// "Voltar" na linha do tempo, título editável, compartilhar, "último
-// acesso" e "Descartar" na lista, barra de tópicos novos do realtime.
-// Medidas do css-common.css do meta.discourse.org.
+// Discourse 中此前缺失的功能（js/src/forum/gaps）：代码
+// 按钮、标题锚点、表格、折叠剧透、话题内阅读进度、
+// 时间线上的"返回"、可编辑标题、分享、列表中的"最后
+// 访问"和"忽略"，以及 realtime 的新话题栏。
+// 数值取自 meta.discourse.org 的 css-common.css。
 // =====================================================================
 
 // ---------------------------------------------------------------------
-// Blocos de código: "copiar" e "tela cheia" (.codeblock-buttons)
+// 代码块："复制"和"全屏"（.codeblock-buttons）
 // ---------------------------------------------------------------------
-pre.CanelaCodeBlock {
+pre.LcoyCodeBlock {
   position: relative;
   overflow: visible;
 
@@ -18,17 +18,17 @@ pre.CanelaCodeBlock {
   }
 }
 
-.CanelaCodeBlock-buttons {
+.LcoyCodeBlock-buttons {
   position: absolute;
   top: 0;
   right: 0;
   z-index: 1;
   display: flex;
-  font-family: var(--cn-font);
+  font-family: var(--lcoy-font);
   white-space: normal;
 }
 
-.CanelaCodeButton.Button {
+.LcoyCodeButton.Button {
   min-height: 0;
   width: 2em;
   height: 2em;
@@ -36,15 +36,15 @@ pre.CanelaCodeBlock {
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: var(--cn-primary-high);
-  font-size: var(--cn-font-down-2);
+  color: var(--lcoy-primary-high);
+  font-size: var(--lcoy-font-down-2);
   opacity: 0.7;
   cursor: pointer;
 
   &:hover,
   &:focus-visible {
     background: transparent;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     opacity: 1;
   }
 
@@ -55,22 +55,22 @@ pre.CanelaCodeBlock {
 
   &--done,
   &--done:hover {
-    color: var(--cn-accent);
+    color: var(--lcoy-accent);
     opacity: 1;
     cursor: auto;
   }
 }
 
-// No computador os botões só aparecem com o mouse sobre o bloco.
+// 在电脑上，按钮仅在鼠标悬停于代码块时出现。
 @media @tablet-up {
-  .CanelaCodeButton:not(.CanelaCodeButton--done) {
+  .LcoyCodeButton:not(.LcoyCodeButton--done) {
     visibility: hidden;
     opacity: 0;
     transition: 0.2s;
   }
 
-  pre.CanelaCodeBlock:hover .CanelaCodeButton,
-  pre.CanelaCodeBlock:focus-within .CanelaCodeButton {
+  pre.LcoyCodeBlock:hover .LcoyCodeButton,
+  pre.LcoyCodeBlock:focus-within .LcoyCodeButton {
     visibility: visible;
     opacity: 0.7;
 
@@ -81,7 +81,7 @@ pre.CanelaCodeBlock {
 }
 
 // ---------------------------------------------------------------------
-// Âncoras dos títulos (a.anchor)
+// 标题锚点（a.anchor）
 // ---------------------------------------------------------------------
 .Post-body {
   h1,
@@ -91,11 +91,11 @@ pre.CanelaCodeBlock {
   h5,
   h6 {
     position: relative;
-    scroll-margin-top: calc(var(--cn-header-height, 52px) + 16px);
+    scroll-margin-top: calc(var(--lcoy-header-height, 52px) + 16px);
   }
 }
 
-.CanelaAnchor {
+.LcoyAnchor {
   position: absolute;
   left: -1.1em;
   top: 50%;
@@ -112,8 +112,8 @@ pre.CanelaCodeBlock {
     display: block;
     width: 0.7em;
     height: 0.7em;
-    background: var(--cn-primary-medium);
-    // O mesmo ícone de corrente do Discourse, como máscara para seguir a cor.
+    background: var(--lcoy-primary-medium);
+    // 与 Discourse 相同的链条图标，作为遮罩以跟随颜色。
     -webkit-mask: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512'%3E%3Cpath d='M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z'/%3E%3C/svg%3E") center / contain no-repeat;
     mask: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512'%3E%3Cpath d='M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z'/%3E%3C/svg%3E") center / contain no-repeat;
   }
@@ -123,7 +123,7 @@ pre.CanelaCodeBlock {
     opacity: 1;
 
     &::before {
-      background: var(--cn-primary);
+      background: var(--lcoy-primary);
     }
   }
 }
@@ -134,83 +134,83 @@ pre.CanelaCodeBlock {
 .Post-body h4:hover,
 .Post-body h5:hover,
 .Post-body h6:hover {
-  .CanelaAnchor {
+  .LcoyAnchor {
     opacity: 1;
   }
 }
 
-// No celular não há hover: a âncora fica escondida (o Discourse faz igual).
+// 手机端没有悬停：锚点保持隐藏（Discourse 也如此）。
 @media @phone {
-  .CanelaAnchor {
+  .LcoyAnchor {
     display: none;
   }
 }
 
 // ---------------------------------------------------------------------
-// Tabelas largas: "Expandir tabela"
+// 宽表格："展开表格"
 // ---------------------------------------------------------------------
-.CanelaTableExpand {
+.LcoyTableExpand {
   position: sticky;
   left: 0;
   caption-side: top;
   text-align: left;
-  padding: 0 0 var(--cn-space-1);
+  padding: 0 0 var(--lcoy-space-1);
 
-  .CanelaTableExpand-button.Button {
+  .LcoyTableExpand-button.Button {
     display: inline-flex;
     gap: 0.35em;
     width: auto;
     height: auto;
     padding: 0.2em 0.6em;
-    border-radius: var(--cn-radius);
-    font-size: var(--cn-font-down-1);
+    border-radius: var(--lcoy-radius);
+    font-size: var(--lcoy-font-down-1);
     opacity: 0;
     visibility: visible;
     transition: 0.25s ease-in-out opacity;
   }
 }
 
-.Post-body table:hover .CanelaTableExpand-button,
-.CanelaTableExpand-button:focus-visible {
+.Post-body table:hover .LcoyTableExpand-button,
+.LcoyTableExpand-button:focus-visible {
   opacity: 1;
 }
 
 @media @phone {
-  .CanelaTableExpand .CanelaTableExpand-button.Button {
+  .LcoyTableExpand .LcoyTableExpand-button.Button {
     opacity: 1;
   }
 }
 
-// No computador o botão flutua sobre a tabela (absoluto, como o
-// .fullscreen-table-wrapper__buttons do Discourse): invisível, não pode
-// empurrar a tabela para baixo e deixar um buraco acima dela.
+// 在电脑上按钮浮于表格之上（绝对定位，与 Discourse 的
+// .fullscreen-table-wrapper__buttons 一致）：不可见，不能
+// 把表格向下推而在其上方留下空洞。
 @media @tablet-up {
-  .CanelaTableExpand {
+  .LcoyTableExpand {
     height: 0;
     padding: 0;
 
-    .CanelaTableExpand-button.Button {
+    .LcoyTableExpand-button.Button {
       position: absolute;
       top: 0.5rem;
       left: 0.5rem;
       z-index: 1;
-      // Por cima do cabeçalho da tabela: precisa de fundo (o botão herda o
-      // transparente dos botões de código), como o btn-default do Discourse.
-      border: 1px solid var(--cn-border);
-      background: var(--cn-surface);
-      color: var(--cn-primary-high);
-      box-shadow: var(--cn-shadow-dropdown);
+      // 位于表格头部之上：需要背景（按钮继承代码按钮的
+      // 透明），与 Discourse 的 btn-default 一致。
+      border: 1px solid var(--lcoy-border);
+      background: var(--lcoy-surface);
+      color: var(--lcoy-primary-high);
+      box-shadow: var(--lcoy-shadow-dropdown);
 
       &:hover,
       &:focus-visible {
-        background: var(--cn-primary-low);
-        color: var(--cn-primary);
+        background: var(--lcoy-primary-low);
+        color: var(--lcoy-primary);
       }
     }
   }
 }
 
-.CanelaFullscreenModal {
+.LcoyFullscreenModal {
   .Modal-dialog {
     max-width: ~"min(1400px, 95vw)";
   }
@@ -231,12 +231,12 @@ pre.CanelaCodeBlock {
 }
 
 // ---------------------------------------------------------------------
-// Spoilers borrados (spoiler-alert)
+// 模糊剧透（spoiler-alert）
 // ---------------------------------------------------------------------
-.CanelaSpoiler {
+.LcoySpoiler {
   transform: translateZ(0);
 
-  // O spoiler do Litedown pinta um bloco escuro; o do Discourse é um borrão.
+  // Litedown 的剧透绘制为深色块；Discourse 的是模糊。
   &.spoiler,
   &.spoiler * {
     background: none;
@@ -278,29 +278,29 @@ pre.CanelaCodeBlock {
   }
 }
 
-details.CanelaSpoiler {
+details.LcoySpoiler {
   padding: 0;
   background: none;
 
-  > .CanelaSpoiler-summary {
+  > .LcoySpoiler-summary {
     display: none;
   }
 }
 
 // ---------------------------------------------------------------------
-// Leitura no tópico: o pontinho de não lido e a linha "último acesso"
+// 话题内阅读进度：未读小圆点和"最后访问"线
 // ---------------------------------------------------------------------
-.Post-header li.item-canelaReadState {
-  // Os itens do cabeçalho do post têm `order` (área do tópico): o pontinho
-  // vai depois da data, no canto, como o .read-state do Discourse.
+.Post-header li.item-lcoyReadState {
+  // 帖子头部各项有 `order`（话题区域）：小圆点
+  // 位于日期之后、角落处，与 Discourse 的 .read-state 一致。
   order: 99;
   margin-left: 0.4em;
 }
 
-.CanelaReadState {
+.LcoyReadState {
   display: inline-flex;
   align-items: center;
-  color: var(--cn-accent);
+  color: var(--lcoy-accent);
   font-size: 0.571em;
 
   &--read {
@@ -312,37 +312,37 @@ details.CanelaSpoiler {
   }
 }
 
-.CanelaVisitedLine {
+.LcoyVisitedLine {
   position: relative;
   z-index: 3;
-  margin: var(--cn-space-4) 0 -1px;
-  border-bottom: 1px solid var(--cn-danger);
+  margin: var(--lcoy-space-4) 0 -1px;
+  border-bottom: 1px solid var(--lcoy-danger);
   line-height: 0;
   text-align: center;
-  color: var(--cn-danger);
-  font-size: var(--cn-font-down-1);
+  color: var(--lcoy-danger);
+  font-size: var(--lcoy-font-down-1);
 
   &-message {
     padding: 0 0.5em;
-    background: var(--cn-surface);
+    background: var(--lcoy-surface);
   }
 }
 
-// O post selecionado com j/k (.topic-post.selected): a barra à esquerda.
-.PostStream-item.CanelaPostSelected > .Post,
-.PostStream-item.CanelaPostSelected > .CommentPost,
-.PostStream-item.CanelaPostSelected > .EventPost {
-  box-shadow: -3px 0 0 var(--cn-accent);
+// 用 j/k 选中的帖子（.topic-post.selected）：左侧的竖条。
+.PostStream-item.LcoyPostSelected > .Post,
+.PostStream-item.LcoyPostSelected > .CommentPost,
+.PostStream-item.LcoyPostSelected > .EventPost {
+  box-shadow: -3px 0 0 var(--lcoy-accent);
 }
 
 // ---------------------------------------------------------------------
-// Linha do tempo: o "Voltar" para o ponto lido (.timeline-last-read)
+// 时间线：回到已读位置的"返回"（.timeline-last-read）
 // ---------------------------------------------------------------------
 .Scrubber-scrollbar {
   position: relative;
 }
 
-.CanelaTimelineBack {
+.LcoyTimelineBack {
   position: absolute;
   left: -0.35em;
   z-index: 3;
@@ -356,22 +356,22 @@ details.CanelaSpoiler {
   &-button.Button {
     min-height: 0;
     padding: 0.25em 0.65em;
-    font-size: var(--cn-font-down-1);
+    font-size: var(--lcoy-font-down-1);
     white-space: nowrap;
   }
 }
 
-// A folha da linha do tempo do celular não tem lugar para o botão.
+// 手机端时间线面板没有按钮的位置。
 @media @phone {
-  .CanelaTimelineBack {
+  .LcoyTimelineBack {
     display: none !important;
   }
 }
 
 // ---------------------------------------------------------------------
-// Título editável no cabeçalho do tópico (#topic-title .edit-topic-title)
+// 话题页头中的可编辑标题（#topic-title .edit-topic-title）
 // ---------------------------------------------------------------------
-.CanelaTitleEditor-display {
+.LcoyTitleEditor-display {
   display: inline;
 
   .DiscussionHero-title {
@@ -379,10 +379,10 @@ details.CanelaSpoiler {
   }
 }
 
-.CanelaTitleEditor-edit.Button {
+.LcoyTitleEditor-edit.Button {
   margin-left: 0.25em;
   vertical-align: middle;
-  color: var(--cn-primary-medium);
+  color: var(--lcoy-primary-medium);
   opacity: 0;
   transition: opacity 0.15s;
 
@@ -392,19 +392,19 @@ details.CanelaSpoiler {
   }
 
   &:hover {
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 }
 
 @media (hover: none) {
-  .CanelaTitleEditor-edit.Button {
+  .LcoyTitleEditor-edit.Button {
     opacity: 1;
   }
 }
 
-// O campo do título fica na mesma linha dos ícones (estrela, cadeado); os
-// botões (Tags, salvar, cancelar) vão para a linha de baixo.
-.CanelaTitleEditor {
+// 标题字段与图标（星标、锁）在同一行；按钮
+// （Tags、保存、取消）位于下一行。
+.LcoyTitleEditor {
   display: flex;
   flex: 1 1 auto;
   flex-wrap: wrap;
@@ -416,7 +416,7 @@ details.CanelaSpoiler {
     flex: 1 1 100%;
     width: auto;
     min-width: 0;
-    font-size: var(--cn-font-up-2);
+    font-size: var(--lcoy-font-up-2);
     font-weight: 600;
   }
 
@@ -430,17 +430,17 @@ details.CanelaSpoiler {
 }
 
 // ---------------------------------------------------------------------
-// Compartilhar e "Pular para…"
+// 分享与"跳到…"
 // ---------------------------------------------------------------------
-.CanelaShareModal {
+.LcoyShareModal {
   &-instructions {
-    margin: 0 0 var(--cn-space-3);
-    color: var(--cn-primary-high);
+    margin: 0 0 var(--lcoy-space-3);
+    color: var(--lcoy-primary-high);
   }
 
   &-link {
     display: flex;
-    gap: var(--cn-space-2);
+    gap: var(--lcoy-space-2);
 
     .FormControl {
       flex: 1;
@@ -449,16 +449,16 @@ details.CanelaSpoiler {
   }
 
   &-copied {
-    margin: var(--cn-space-2) 0 0;
-    color: var(--cn-success);
-    font-size: var(--cn-font-down-1);
+    margin: var(--lcoy-space-2) 0 0;
+    color: var(--lcoy-success);
+    font-size: var(--lcoy-font-down-1);
   }
 
   &-networks {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--cn-space-2);
-    margin-top: var(--cn-space-4);
+    gap: var(--lcoy-space-2);
+    margin-top: var(--lcoy-space-4);
   }
 
   &-network.Button {
@@ -469,11 +469,11 @@ details.CanelaSpoiler {
   }
 }
 
-.CanelaJumpModal {
+.LcoyJumpModal {
   &-row {
     display: flex;
     align-items: center;
-    gap: var(--cn-space-3);
+    gap: var(--lcoy-space-3);
 
     .FormControl {
       width: 8em;
@@ -481,86 +481,86 @@ details.CanelaSpoiler {
   }
 
   &-of {
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
   }
 }
 
 // ---------------------------------------------------------------------
-// Lista: "último acesso", "Descartar" e os tópicos novos do realtime
+// 列表："最后访问"、"忽略"和 realtime 的新话题
 // ---------------------------------------------------------------------
-.DiscussionList-discussions > li.CanelaLastVisit {
+.DiscussionList-discussions > li.LcoyLastVisit {
   display: block;
   height: 0;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--cn-danger);
+  border-top: 1px solid var(--lcoy-danger);
   line-height: 0;
   text-align: center;
   list-style: none;
 }
 
-.CanelaLastVisit-label {
+.LcoyLastVisit-label {
   position: relative;
-  padding: 0 var(--cn-space-2);
-  background: var(--cn-surface);
-  color: var(--cn-danger);
-  font-size: var(--cn-font-down-1);
+  padding: 0 var(--lcoy-space-2);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-danger);
+  font-size: var(--lcoy-font-down-1);
 }
 
-.CanelaDismiss {
+.LcoyDismiss {
   display: flex;
   justify-content: flex-end;
 
   &--top {
-    margin-bottom: var(--cn-space-2);
+    margin-bottom: var(--lcoy-space-2);
   }
 
   &--bottom {
-    margin-top: var(--cn-space-4);
+    margin-top: var(--lcoy-space-4);
   }
 }
 
 @media @phone {
-  // No celular o Discourse deixa o "Descartar" flutuando no pé da tela.
-  .CanelaDismiss--top {
+  // 手机端 Discourse 让"忽略"浮在屏幕底部。
+  .LcoyDismiss--top {
     position: fixed;
     right: 50%;
-    bottom: calc(env(safe-area-inset-bottom) + var(--cn-space-4));
+    bottom: calc(env(safe-area-inset-bottom) + var(--lcoy-space-4));
     z-index: 2;
     margin: 0;
     transform: translateX(50%);
 
     .Button {
-      box-shadow: var(--cn-shadow-dropdown);
+      box-shadow: var(--lcoy-shadow-dropdown);
     }
   }
 
-  .CanelaDismiss--bottom {
+  .LcoyDismiss--bottom {
     display: none;
   }
 }
 
-// "Há N tópicos novos ou atualizados" (.show-more .alert.alert-info.clickable).
+// "有 N 个新话题或已更新话题"（.show-more .alert.alert-info.clickable）。
 .IndexPage .DiscussionList-update.Button {
   display: flex;
   width: fit-content;
-  margin: 0 auto var(--cn-space-3);
-  padding: var(--cn-space-2) var(--cn-space-4);
+  margin: 0 auto var(--lcoy-space-3);
+  padding: var(--lcoy-space-2) var(--lcoy-space-4);
   border: 0;
-  border-radius: var(--cn-radius-large);
-  background: var(--cn-accent-low);
-  color: var(--cn-accent);
-  font-size: var(--cn-font-down-1);
-  animation: CanelaFloatDown 250ms ease-in-out forwards;
+  border-radius: var(--lcoy-radius-large);
+  background: var(--lcoy-accent-low);
+  color: var(--lcoy-accent);
+  font-size: var(--lcoy-font-down-1);
+  animation: LcoyFloatDown 250ms ease-in-out forwards;
 
   &:hover,
   &:focus-visible {
-    background: var(--cn-accent-low);
-    color: var(--cn-accent-hover);
+    background: var(--lcoy-accent-low);
+    color: var(--lcoy-accent-hover);
   }
 }
 
-@keyframes CanelaFloatDown {
+@keyframes LcoyFloatDown {
   from {
     opacity: 0;
     transform: translateY(-10px);
@@ -574,30 +574,30 @@ details.CanelaSpoiler {
 }
 
 // ---------------------------------------------------------------------
-// Barra lateral: o número de sinalizações em "Revisar"
+// 侧边栏："审核"中的举报数量
 // ---------------------------------------------------------------------
-.CanelaSidebar-count {
+.LcoySidebar-count {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 1.6em;
   padding: 0 0.45em;
-  border-radius: var(--cn-radius-pill);
-  background: var(--cn-accent);
-  color: var(--cn-accent-text);
-  font-size: var(--cn-font-down-2);
+  border-radius: var(--lcoy-radius-pill);
+  background: var(--lcoy-accent);
+  color: var(--lcoy-accent-text);
+  font-size: var(--lcoy-font-down-2);
   font-weight: 600;
   line-height: 1.6;
 }
 
-// A contagem presa à ponta direita do item, como no Discourse, sem mexer no
-// layout do rótulo (que corta o texto com reticências): o item reserva o
-// espaço dela à direita.
-.CanelaSidebar a:has(.CanelaSidebar-count) {
+// 计数固定在条目右端，与 Discourse 一致，不影响
+// 不影响标签的布局（它会用省略号截断文字）：条目在右侧
+// 为其预留空间。
+.LcoySidebar a:has(.LcoySidebar-count) {
   position: relative;
   padding-right: 2.1em;
 
-  .CanelaSidebar-count {
+  .LcoySidebar-count {
     position: absolute;
     top: 50%;
     right: 0.4em;
@@ -606,16 +606,16 @@ details.CanelaSpoiler {
 }
 
 // ---------------------------------------------------------------------
-// Datas locais ([date=…], discourse-local-dates)
+// 本地日期（[date=…]，discourse-local-dates）
 // ---------------------------------------------------------------------
-.CanelaLocalDate {
+.LcoyLocalDate {
   display: inline-flex;
   align-items: baseline;
   gap: 0.3em;
   padding: 0 0.25em;
-  border-radius: var(--cn-radius);
-  background: var(--cn-primary-very-low);
-  color: var(--cn-link);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-primary-very-low);
+  color: var(--lcoy-link);
   white-space: nowrap;
   cursor: help;
 
@@ -624,105 +624,22 @@ details.CanelaSpoiler {
   }
 }
 
-// ---------------------------------------------------------------------
-// Convites
-// ---------------------------------------------------------------------
-.CanelaShareModal-invite {
-  margin-top: var(--cn-space-4);
-  padding-top: var(--cn-space-4);
-  border-top: 1px solid var(--cn-border);
-}
-
-.CanelaInviteModal {
-  &-help,
-  &-warning {
-    margin: 0 0 var(--cn-space-3);
-    color: var(--cn-primary-high);
-  }
-
-  &-warning {
-    padding: var(--cn-space-2) var(--cn-space-3);
-    border-radius: var(--cn-radius);
-    background: var(--cn-highlight);
-    color: var(--cn-primary);
-  }
-
-  &-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--cn-space-4);
-    margin-bottom: var(--cn-space-3);
-
-    label {
-      display: flex;
-      flex-direction: column;
-      gap: var(--cn-space-1);
-      font-weight: 600;
-      font-size: var(--cn-font-down-1);
-    }
-
-    .FormControl {
-      width: 9em;
-    }
-  }
-
-  &-listTitle {
-    margin: var(--cn-space-6) 0 var(--cn-space-2);
-    font-size: var(--cn-font-up-1);
-  }
-
-  &-empty {
-    color: var(--cn-primary-medium);
-  }
-
-  &-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-
-    li {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      align-items: center;
-      gap: var(--cn-space-2);
-      padding: var(--cn-space-2) 0;
-      border-bottom: 1px solid var(--cn-border);
-    }
-
-    .FormControl {
-      grid-column: 1;
-      min-width: 0;
-    }
-  }
-
-  &-meta {
-    grid-column: 1;
-    grid-row: 2;
-    color: var(--cn-primary-medium);
-    font-size: var(--cn-font-down-1);
-  }
-
-  &-item--used {
-    opacity: 0.6;
-  }
-}
-
-// O sino da categoria (fof/follow-tags) na barra de navegação: redondo,
-// como o do tópico na linha do tempo.
-.CanelaNav .CanelaCategoryNotifications > .Dropdown-toggle {
+// 导航栏中的分类铃铛（fof/follow-tags）：圆形，
+// 与时间线中话题的一致。
+.LcoyNav .LcoyCategoryNotifications > .Dropdown-toggle {
   width: 38px;
   height: 38px;
   border-radius: 50%;
 }
 
-.CanelaCategoryNotifications.CanelaNotifications--watching > .Dropdown-toggle,
-.CanelaCategoryNotifications.CanelaNotifications--watching_first_post > .Dropdown-toggle {
-  color: var(--cn-accent);
+.LcoyCategoryNotifications.LcoyNotifications--watching > .Dropdown-toggle,
+.LcoyCategoryNotifications.LcoyNotifications--watching_first_post > .Dropdown-toggle {
+  color: var(--lcoy-accent);
 }
 
-// Editando o título: os ícones (estrela, cadeado, alfinete) e o campo na
-// mesma linha; as tags, se houver, continuam embaixo.
-.DiscussionHero-items:has(.CanelaTitleEditor) {
+// 编辑标题时：图标（星标、锁、图钉）和字段在
+// 同一行；标签（如有）仍在下方。
+.DiscussionHero-items:has(.LcoyTitleEditor) {
   display: flex;
   flex-wrap: wrap;
   align-items: center;

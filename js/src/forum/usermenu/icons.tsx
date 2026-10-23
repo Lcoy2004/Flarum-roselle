@@ -1,21 +1,21 @@
 /*
- * Os ícones das abas e do rodapé do menu do usuário. O Meta (Horizon) os
- * desenha com o Lucide — traço de 2px, pontas redondas —, que o Font Awesome
- * do Flarum não tem com o mesmo traço. A classe base `.CanelaIcon` (da casca,
- * Header.less) dá o traço; o tamanho vem do UserMenu.less.
+ * 用户菜单标签页和底部的图标。Meta（Horizon）用 Lucide 绘制它们——
+ * 2px 描边、圆头——而 Flarum 的 Font Awesome 没有相同描边的图标。
+ * 基类 `.LcoyIcon`（来自外壳的 Header.less）提供描边；尺寸来自
+ * UserMenu.less。
  */
 import type Mithril from 'mithril';
 
 import { lucideSvg } from '../icons';
 
-// Nome da aba → desenho do Lucide (icons/glyphs.ts, os mesmos do sprite do Meta).
+// 标签页名称 → Lucide 图形（icons/glyphs.ts，与 Meta 的 sprite 相同）。
 const PATHS: Record<string, string> = {
   bell: 'bell',
   reply: 'reply',
   heart: 'heart',
   mail: 'mail',
   bookmark: 'bookmark',
-  // O "discourse-other-tab" do Discourse: uma grade 2×2.
+  // Discourse 的 “discourse-other-tab”：一个 2×2 网格。
   other: 'grid-2x2',
   flag: 'flag',
   user: 'user',
@@ -26,5 +26,5 @@ const PATHS: Record<string, string> = {
 export function menuIcon(name: string): Mithril.Children {
   const glyph = PATHS[name];
 
-  return glyph ? lucideSvg(`CanelaIcon CanelaIcon--${name}`, glyph) : null;
+  return glyph ? lucideSvg(`LcoyIcon LcoyIcon--${name}`, glyph) : null;
 }

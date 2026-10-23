@@ -1,12 +1,11 @@
 /*
- * Notificações no formato do menu do usuário do Discourse.
+ * 采用 Discourse 用户菜单格式的通知。
  *
- * O Flarum não agrupa as notificações por tipo no servidor (não há filtro
- * `type` na API), então as abas filtram no cliente, pelo `contentType()`, o
- * que o `app.notifications` já carregou. Os textos vêm dos componentes que
- * cada extensão registra (`app.notificationComponents`): o tema só muda a
- * forma — avatar de quem gerou com o ícone do tipo num selo, nome em negrito
- * e o título do tópico, como o `.user-menu.show-avatars` do Discourse.
+ * Flarum 不在服务端按类型分组通知（API 中没有 `type` 过滤），因此各标签页
+ * 在客户端按 `contentType()` 过滤 `app.notifications` 已加载的内容。文本来自
+ * 各扩展注册的组件（`app.notificationComponents`）：主题只改变形式——
+ * 产生者头像带类型图标的小徽章、加粗的名字以及主题标题，类似 Discourse 的
+ * `.user-menu.show-avatars`。
  */
 import app from 'flarum/forum/app';
 import Avatar from 'flarum/common/components/Avatar';
@@ -20,21 +19,21 @@ import type Mithril from 'mithril';
 
 import { userMenu } from './state';
 
-/** As abas que filtram notificações: "Respostas" é o `replies` do Discourse (mencionado, citado, respondido, postado). */
+/** 过滤通知的标签页：“回复”对应 Discourse 的 `replies`（被提及、被引用、被回复、新帖）。 */
 export const REPLY_TYPES = ['newPost', 'postMentioned', 'userMentioned', 'groupMentioned'];
-/** `postReacted` é o tipo das reações (fof/reactions), que o Discourse também põe em Curtidas. */
+/** `postReacted` 是反应类型（fof/reactions），Discourse 也把它放在点赞中。 */
 export const LIKE_TYPES = ['postLiked', 'postReacted'];
 export const MESSAGE_TYPES = ['messageReceived'];
-export const BOOKMARK_TYPES = ['canelaBookmarkReminder'];
+export const BOOKMARK_TYPES = ['lcoyBookmarkReminder'];
 
 export interface NotificationFilter {
-  /** Só estes tipos; sem a lista, todos. */
+  /** 仅这些类型；没有列表时为全部。 */
   types?: string[] | null;
-  /** Todos menos estes (a aba "Outras notificações"). */
+  /** 除这些之外的全部（“其他通知”标签页）。 */
   exclude?: string[] | null;
 }
 
-/** Tudo o que o `app.notifications` já carregou, na ordem da API (mais novas primeiro). */
+/** `app.notifications` 已加载的全部内容，按 API 顺序（最新在前）。 */
 export function loadedNotifications(): Notification[] {
   const state: any = app.notifications;
 
@@ -55,7 +54,7 @@ export function matches(notification: Notification, filter: NotificationFilter):
   if (filter.types && !filter.types.includes(type)) return false;
   if (filter.exclude && filter.exclude.includes(type)) return false;
 
-  // Sem componente registrado (extensão desligada) não há como desenhar.
+  // 没有注册组件（扩展已关闭）就无法绘制。
   return !!(app as any).notificationComponents?.[type];
 }
 
@@ -63,12 +62,12 @@ export function filteredNotifications(filter: NotificationFilter): Notification[
   return loadedNotifications().filter((notification) => matches(notification, filter));
 }
 
-/** O número da bolha de uma aba: as não lidas daquele grupo entre as carregadas. */
+/** 标签页气泡上的数字：已加载项中该组的未读数。 */
 export function unreadCount(filter: NotificationFilter): number {
   return filteredNotifications(filter).filter((notification) => !notification.isRead()).length;
 }
 
-/** Como o `Notification.markAsRead()` do core, para itens que não são o componente dele. */
+/** 与核心的 `Notification.markAsRead()` 一致，用于不是它组件的条目。 */
 export function markNotificationRead(notification: Notification): Promise<unknown> {
   if (notification.isRead()) return Promise.resolve();
 
@@ -80,9 +79,9 @@ export function markNotificationRead(notification: Notification): Promise<unknow
 }
 
 /**
- * "Descartar": sem filtro, o POST /notifications/read do core (todas). Com
- * filtro, só as não lidas daquele grupo, uma a uma — o Flarum não tem o
- * `dismiss_types` do Discourse.
+ * “忽略”：无过滤时使用核心的 POST /notifications/read（全部）。有过滤时
+ * 只逐个处理该组的未读通知——Flarum 没有 Discourse 的
+ * `dismiss_types`。
  */
 export function dismissNotifications(filter: NotificationFilter | null): Promise<unknown> {
   if (!filter || (!filter.types && !filter.exclude)) {
@@ -113,19 +112,18 @@ export interface NotificationView {
 }
 
 /**
- * O que o Discourse mostra numa notificação: quem gerou (`item-label`, em
- * negrito) e o título do tópico (`item-description`), com o tipo só no ícone.
- * Sem tópico ou sem outra pessoa (um emblema ganho, uma suspensão), o texto
- * do próprio componente vira a descrição, sem rótulo — como o "Ganhou
- * 'Primeira curtida'" do Meta. A frase inteira fica no `title`.
+ * Discourse 在通知中显示的内容：产生者（`item-label`，加粗）和主题标题
+ *（`item-description`），类型只通过图标表示。没有主题或没有其他人时
+ *（获得徽章、被暂停），组件自身的文本成为描述，不带标签——类似 Meta 的
+ * “获得‘首次点赞’”。整句话放在 `title` 中。
  */
 export function describeNotification(notification: Notification): NotificationView | null {
   const Component = (app as any).notificationComponents?.[notification.contentType() || ''];
 
   if (!Component) return null;
 
-  // Os métodos dos componentes só leem `this.attrs.notification`: dá para
-  // usá-los sem montar o componente (e sem o HeaderListItem dele).
+  // 组件的方法只读 `this.attrs.notification`：可以在不挂载组件的情况下
+  // 使用它们（也不用它的 HeaderListItem）。
   const instance: any = new Component();
   instance.attrs = { notification };
 
@@ -153,19 +151,19 @@ export function describeNotification(notification: Notification): NotificationVi
   };
 }
 
-/** Sem pessoa (o "system" do Discourse): o ícone do fórum no lugar do avatar. */
+/** 没有人员（Discourse 的 “system”）：用论坛图标代替头像。 */
 function systemAvatar(): Mithril.Children {
   const src = app.forum.attribute<string | null>('faviconUrl') || app.forum.attribute<string | null>('logoUrl');
 
-  return src ? <img className="Avatar CanelaUserMenu-systemAvatar" src={src} alt="" loading="lazy" /> : <Avatar user={null} />;
+  return src ? <img className="Avatar LcoyUserMenu-systemAvatar" src={src} alt="" loading="lazy" /> : <Avatar user={null} />;
 }
 
-/** O `.icon-avatar` do Discourse: avatar de 2em com o ícone do tipo num selo redondo no canto. */
+/** Discourse 的 `.icon-avatar`：2em 头像，角落的圆形徽章中带类型图标。 */
 export function IconAvatar(user: User | null | false | undefined, icon: string, system = false): Mithril.Children {
   return (
-    <span className={classList('CanelaUserMenu-iconAvatar', system || !user ? 'system-avatar' : 'user-avatar')}>
+    <span className={classList('LcoyUserMenu-iconAvatar', system || !user ? 'system-avatar' : 'user-avatar')}>
       {user ? <Avatar user={user} /> : systemAvatar()}
-      <span className="CanelaUserMenu-iconWrapper">
+      <span className="LcoyUserMenu-iconWrapper">
         <Icon name={icon} />
       </span>
     </span>
@@ -183,29 +181,29 @@ export interface MenuItemAttrs {
   onclick?: (e: MouseEvent) => void;
 }
 
-/** O `<li>` do `menu-item` do Discourse. Fecha o menu ao seguir o link. */
+/** Discourse `menu-item` 的 `<li>`。跟随链接时关闭菜单。 */
 export function MenuItem(attrs: MenuItemAttrs): Mithril.Children {
   const external = attrs.href.includes('://');
 
   const content = [
     attrs.avatar,
-    <div className="CanelaUserMenu-itemText">
-      {attrs.label ? <span className="CanelaUserMenu-label">{attrs.label}</span> : null}
-      {attrs.description ? <span className="CanelaUserMenu-description">{attrs.description}</span> : null}
+    <div className="LcoyUserMenu-itemText">
+      {attrs.label ? <span className="LcoyUserMenu-label">{attrs.label}</span> : null}
+      {attrs.description ? <span className="LcoyUserMenu-description">{attrs.description}</span> : null}
     </div>,
   ];
 
   const onclick = (e: MouseEvent) => {
     attrs.onclick?.(e);
 
-    // Abrir em outra aba não fecha nada.
+    // 在新标签页打开不会关闭任何东西。
     if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) return;
 
     userMenu.close();
   };
 
   return (
-    <li className={classList('CanelaUserMenu-item', attrs.className, attrs.unread ? 'unread' : 'read')}>
+    <li className={classList('LcoyUserMenu-item', attrs.className, attrs.unread ? 'unread' : 'read')}>
       {attrs.href ? (
         <Link href={attrs.href} external={external} title={attrs.title} onclick={onclick}>
           {content}
@@ -225,7 +223,7 @@ export function NotificationItem(notification: Notification): Mithril.Children {
   if (!view) return null;
 
   return MenuItem({
-    className: `CanelaUserMenu-item--notification Notification--${notification.contentType()}`,
+    className: `LcoyUserMenu-item--notification Notification--${notification.contentType()}`,
     unread: !notification.isRead(),
     href: view.href,
     title: view.title,

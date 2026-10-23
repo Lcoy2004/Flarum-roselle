@@ -1,9 +1,8 @@
 /*
- * A página /notifications com a lista do menu do usuário (o
- * `.user-notifications-list` do Discourse usa o mesmo CSS do
- * `.quick-access-panel`) e as abas de notificações do menu como abas
- * horizontais (`?filter=replies`, `likes`, `other`). A mesma vista
- * serve à aba "Notificações" do perfil (`/u/:username/notifications`).
+ * /notifications 页面，使用用户菜单的列表（Discourse 的
+ * `.user-notifications-list` 使用与 `.quick-access-panel` 相同的 CSS）
+ * 以及菜单中的通知标签页作为横向标签页（`?filter=replies`、`likes`、`other`）。
+ * 同一视图也用于资料的“通知”标签页（`/u/:username/notifications`）。
  */
 import app from 'flarum/forum/app';
 import Button from 'flarum/common/components/Button';
@@ -16,7 +15,7 @@ import { NotificationItem, dismissNotifications, filteredNotifications, type Not
 import { EmptyState, NotificationSkeleton, preferencesLink, um, umText, neverLoaded } from './panels';
 import { menuIcon } from './icons';
 
-/** As abas do menu que são só notificações filtradas, com o nome usado na URL. */
+/** 仅用于过滤通知的菜单标签页，以及 URL 中使用的名称。 */
 function pageTabs(): { key: string; tab: UserMenuTab }[] {
   const menu: any = Object.create(UserMenu.prototype);
   menu.attrs = {};
@@ -29,15 +28,15 @@ function pageTabs(): { key: string; tab: UserMenuTab }[] {
   return (menu.resolvedTopTabs() as UserMenuTab[]).filter((tab) => !!tab.filter).map((tab) => ({ key: tab.id in keys ? keys[tab.id] : tab.id, tab }));
 }
 
-/** Quantas páginas a mais buscar para encher uma aba filtrada (como no menu). */
+/** 为填满一个过滤标签页还要额外请求多少页（与菜单中一致）。 */
 const MAX_EXTRA_PAGES = 3;
 const MIN_ITEMS = 10;
 let extraPages = 0;
 
 /**
- * Numa aba filtrada com poucos itens, busca as próximas páginas, como o
- * painel do menu: sem isso a aba do menu (que busca) mostrava notificações que
- * a página e a aba "Todas" ainda não tinham carregado.
+ * 在条目很少的过滤标签页中，继续请求后续页面，与菜单面板一致：
+ * 否则菜单标签页（会请求）显示的某些通知，页面和“全部”标签页
+ * 还没有加载。
  */
 function fill(filter: NotificationFilter, count: number): void {
   const state: any = app.notifications;
@@ -50,7 +49,7 @@ function fill(filter: NotificationFilter, count: number): void {
   setTimeout(() => Promise.resolve(state.loadNext()).catch(() => {}), 0);
 }
 
-/** O endereço de cada aba: /notifications ou, no perfil, /u/:username/notifications. */
+/** 各标签页的地址：/notifications；在资料中则是 /u/:username/notifications。 */
 export type NotificationsHref = (filter: string) => string;
 
 const defaultHref: NotificationsHref = (filter) => app.route('notifications', filter ? { filter } : {});
@@ -69,7 +68,7 @@ export default function NotificationsPageView(href: NotificationsHref = defaultH
   let list: Mithril.Children;
 
   if (notifications.length) {
-    list = <ul className="CanelaUserMenu-list">{notifications.map((notification) => NotificationItem(notification))}</ul>;
+    list = <ul className="LcoyUserMenu-list">{notifications.map((notification) => NotificationItem(notification))}</ul>;
   } else if (state.isLoading() || neverLoaded(state)) {
     list = NotificationSkeleton(8);
   } else if (!active || active.key === '') {
@@ -82,11 +81,11 @@ export default function NotificationsPageView(href: NotificationsHref = defaultH
   }
 
   return (
-    <div className="CanelaNotificationsPage-body">
-      <div className="CanelaNotificationsPage-controls">
-        <ul className="CanelaNotificationsPage-tabs" role="tablist">
+    <div className="LcoyNotificationsPage-body">
+      <div className="LcoyNotificationsPage-controls">
+        <ul className="LcoyNotificationsPage-tabs" role="tablist">
           {tabs.map((entry) => (
-            <li className={classList('CanelaNotificationsPage-tab', { active: entry === active })}>
+            <li className={classList('LcoyNotificationsPage-tab', { active: entry === active })}>
               <Link href={href(entry.key)} role="tab" aria-selected={entry === active ? 'true' : 'false'}>
                 {entry.tab.pageLabel || entry.tab.title}
               </Link>
@@ -96,18 +95,18 @@ export default function NotificationsPageView(href: NotificationsHref = defaultH
         {anyUnread ? (
           <button
             type="button"
-            className="Button CanelaUserMenu-dismiss"
+            className="Button LcoyUserMenu-dismiss"
             title={umText('dismiss_notifications_tooltip')}
             onclick={() => dismissNotifications(filter)}
           >
             {menuIcon('check')}
-            <span className="CanelaUserMenu-dismissLabel">{um('dismiss')}</span>
+            <span className="LcoyUserMenu-dismissLabel">{um('dismiss')}</span>
           </button>
         ) : null}
       </div>
-      <div className="CanelaNotificationsList user-notifications-list show-avatars">{list}</div>
+      <div className="LcoyNotificationsList user-notifications-list show-avatars">{list}</div>
       {state.hasNext() ? (
-        <div className="CanelaNotificationsPage-more">
+        <div className="LcoyNotificationsPage-more">
           <Button className="Button" loading={state.isLoadingNext()} onclick={() => state.loadNext()}>
             {app.translator.trans('core.forum.discussion_list.load_more_button')}
           </Button>

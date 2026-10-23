@@ -13,11 +13,11 @@
 use Flarum\Database\Migration;
 
 /*
- * Sal do hash que identifica visitantes nas visualizações. Sem ele, o hash de
- * um IPv4 se desfaz por força bruta em minutos (são só 4 bilhões de IPs); com
- * um sal aleatório por fórum, a tabela não revela de onde vieram os acessos.
- * Gerado uma vez, na migração, e nunca enviado ao navegador.
+ * 用于标识浏览量的访客哈希的盐。没有它，一个 IPv4 的哈希
+ * 几分钟内就会被暴力破解（IP 总共只有 40 亿个）；有了
+ * 每个论坛随机的盐，数据表就不会暴露访问来自何处。
+ * 在迁移中生成一次，永不发送到浏览器。
  */
 return Migration::addSettings([
-    'canela.stats_visitor_salt' => bin2hex(random_bytes(16)),
+    'lcoy.stats_visitor_salt' => bin2hex(random_bytes(16)),
 ]);

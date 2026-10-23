@@ -10,16 +10,15 @@ use Flarum\User\User;
 use Illuminate\Database\ConnectionInterface;
 
 /**
- * Os números do resumo do perfil do Discourse: dias visitados, tempo de
- * leitura (total e dos últimos 60 dias), postagens lidas e curtidas dadas/recebidas.
+ * Discourse 资料摘要中的数字：访问天数、阅读时长（总计和最近 60 天）、
+ * 已读帖子数以及给出/收到的点赞数。
  *
- * Calculados de uma vez por usuário e guardados até o fim da requisição: o
- * recurso da API pede cada atributo separadamente, e sem a memória seriam
- * cinco idas ao banco em vez de três.
+ * 每个用户只计算一次，并保存到请求结束：API 资源会分别请求各个属性，
+ * 若没有这层记忆，就会变成五次数据库往返而不是三次。
  */
 final class UserActivity
 {
-    /** O "tempo de leitura recente" do Discourse conta os últimos 60 dias. */
+    /** Discourse 的"近期阅读时长"统计最近 60 天。 */
     public const RECENT_DAYS = 60;
 
     /** @var array<int, array<string, int|null>> */
@@ -37,8 +36,8 @@ final class UserActivity
     }
 
     /**
-     * @return array<string, int|null> curtidas valem null sem o flarum-likes,
-     *                                 para o perfil esconder a estatística em vez de mostrar 0
+     * @return array<string, int|null> 未启用 flarum-likes 时点赞数为 null，
+     *                                 以便资料页隐藏该项统计而不是显示 0
      */
     public function summary(User $user): array
     {
@@ -53,7 +52,7 @@ final class UserActivity
             ->selectRaw('COUNT(*) AS days, COALESCE(SUM(time_read), 0) AS time_read, COALESCE(SUM(posts_read), 0) AS posts_read')
             ->first();
 
-        // A tabela já é por dia: o recente é a mesma soma com a data de corte.
+        // 该表本身按天存储：近期数据就是加上截止日期后的同一求和。
         $recent = $this->db->table(VisitRecorder::TABLE)
             ->where('user_id', $id)
             ->where('visited_at', '>=', Carbon::now()->subDays(self::RECENT_DAYS)->toDateString())
@@ -73,7 +72,7 @@ final class UserActivity
             $summary['likesReceived'] = $this->db->table('post_likes')
                 ->join('posts', 'posts.id', '=', 'post_likes.post_id')
                 ->where('posts.user_id', $id)
-                // Curtir a própria postagem não é reconhecimento de ninguém.
+                // 点赞自己的帖子不算他人的认可。
                 ->where('post_likes.user_id', '!=', $id)
                 ->count();
         }

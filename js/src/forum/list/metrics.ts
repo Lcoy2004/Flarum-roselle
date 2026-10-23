@@ -1,7 +1,7 @@
 /*
- * Números da linha da lista: visualizações (quando alguma extensão as conta),
- * as faixas de "calor" das contagens e o "frio" da atividade, como o heatmap
- * e o coldmap do Discourse.
+ * 列表行中的数字：浏览量（当某个扩展负责计数时）、
+ * 计数的 "热度" 区间，以及活动的 "冷度"，对应 Discourse 的 heatmap
+ * 和 coldmap。
  */
 import type Discussion from 'flarum/common/models/Discussion';
 import type DiscussionListState from 'flarum/forum/states/DiscussionListState';
@@ -9,19 +9,19 @@ import type DiscussionListState from 'flarum/forum/states/DiscussionListState';
 import { isExtensionEnabled } from '../utils/settings';
 
 /**
- * O fof/discussion-views conta as visualizações por conta própria e publica o
- * número no atributo `views`. Ligado, o tema continua desenhando a coluna dele,
- * mas lê esse número e descarta o "👁" que a extensão põe na linha — assim a
- * lista tem uma coluna só, com o dado vivo da extensão.
+ * fof/discussion-views 自行统计浏览量，并在 `views` 属性中发布该
+ * 数字。启用后，主题仍绘制自己的列，
+ * 但读取该数字并丢弃扩展放在行中的 "👁" —— 这样
+ * 列表只有一列，使用扩展提供的实时数据。
  */
 export function pluginProvidesViews(): boolean {
   return isExtensionEnabled('fof-discussion-views');
 }
 
 /**
- * O core não conta visualizações. Quem conta é o fof/discussion-views, que
- * publica o número no atributo `views`; `view_count` é o nome da coluna, para
- * o caso de alguma serialização expor o campo sem o mapeamento.
+ * 核心不统计浏览量。计数由 fof/discussion-views 负责，它
+ * 在 `views` 属性中发布数字；`view_count` 是列名，用于
+ * 某些序列化在没有映射的情况下暴露该字段的情况。
  */
 const VIEW_ATTRIBUTES = ['views', 'view_count'];
 
@@ -36,7 +36,7 @@ export function discussionViews(discussion: Discussion): number | null {
   return null;
 }
 
-/** A coluna inteira só aparece se ao menos uma discussão da lista trouxer o número. */
+/** 只有当列表中至少一个讨论带有该数字时，整列才会显示。 */
 export function listHasViews(state: DiscussionListState): boolean {
   return state.getPages().some((page) => (page.items as Discussion[]).some((discussion) => discussionViews(discussion) !== null));
 }
@@ -52,9 +52,9 @@ function band(value: number, low: number, med: number, high: number): Heat {
 }
 
 /**
- * Faixas das respostas. O Discourse mede o calor pela razão curtidas/posts,
- * que o Flarum não tem sem extensão; o volume de respostas é o sinal mais
- * próximo de "conversa animada" que todo fórum tem.
+ * 回复数的区间。Discourse 依据点赞/帖子比率衡量热度，
+ * Flarum 没有这个比率，除非安装扩展；回复量是所有论坛都具备的、
+ * 最接近 "热烈讨论" 的信号。
  */
 export function repliesHeat(count: number): Heat {
   return band(count, 10, 25, 50);
@@ -63,9 +63,9 @@ export function repliesHeat(count: number): Heat {
 const DAY = 24 * 60 * 60 * 1000;
 
 /**
- * O coldmap do Discourse: quanto mais tempo entre a criação e a última
- * resposta, mais "frio" o tópico — uma conversa antiga ressuscitada aparece
- * em tom diferente de uma que acabou de começar.
+ * Discourse 的 coldmap：从创建到最后回复的时间越长，
+ * 主题越 "冷" —— 被重新翻出的旧对话会以
+ * 与刚刚开始的对话不同的色调显示。
  */
 export function activityCold(discussion: Discussion): Heat {
   const created = discussion.createdAt()?.getTime();

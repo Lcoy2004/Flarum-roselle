@@ -1,4 +1,4 @@
-{{-- Cópia da página 404 do core, para quando a do tema está desligada. --}}
+{{-- 核心 404 页面的副本，用于主题的 404 页面被关闭时。 --}}
 @extends('flarum.forum::layouts.basic')
 
 @section('content')

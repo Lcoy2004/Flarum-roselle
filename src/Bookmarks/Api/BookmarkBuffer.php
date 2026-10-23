@@ -19,22 +19,20 @@ use Illuminate\Database\QueryException;
 use Lcoy\Roselle\Bookmarks\Bookmark;
 
 /**
- * Carrega em lote os marcadores do ator para os posts de uma resposta.
+ * 为一次响应中的多个帖子批量加载当前操作者的书签。
  *
- * Os posts chegam à API por muitos caminhos (a página do tópico, o post
- * incluído numa notificação, a busca…), e uma relação do Eloquent precisaria
- * de um eager load em cada endpoint para não virar N+1. O serializador do
- * Flarum adia valores que são closures e resolve um nível inteiro de uma vez:
- * cada post só anota o próprio id aqui, e a primeira closure resolvida busca
- * os marcadores de todos os anotados numa consulta só — o mesmo truque do
- * EloquentBuffer do core.
+ * 帖子进入 API 的途径很多（主题页、通知中附带的帖子、搜索……），而 Eloquent
+ * 关联需要在每个端点都做 eager load，否则就会变成 N+1。Flarum 的序列化器
+ * 会延迟解析闭包类型的值，并一次性处理整个层级：每个帖子只在这里登记
+ * 自己的 id，第一个被解析的闭包用一次查询取出所有已登记帖子的书签——
+ * 这与核心 EloquentBuffer 的技巧相同。
  */
 final class BookmarkBuffer
 {
-    /** @var array<int, array<int, true>> ator => ids de posts à espera */
+    /** @var array<int, array<int, true>> 操作者 => 待处理的帖子 id */
     private static array $pending = [];
 
-    /** @var array<int, array<int, Bookmark|null>> ator => post => marcador (ou nenhum) */
+    /** @var array<int, array<int, Bookmark|null>> 操作者 => 帖子 => 书签（或 null） */
     private static array $loaded = [];
 
     /**
@@ -53,7 +51,7 @@ final class BookmarkBuffer
         };
     }
 
-    /** Esquece um par já carregado, para a próxima leitura ir ao banco. */
+    /** 遗忘一个已加载的键值对，使下次读取回到数据库。 */
     public static function forget(int $actorId, int $postId): void
     {
         unset(self::$loaded[$actorId][$postId]);
@@ -76,9 +74,9 @@ final class BookmarkBuffer
                 ->get()
                 ->keyBy('post_id');
         } catch (QueryException $error) {
-            // Tabela ainda não migrada (o tema atualizado antes do `migrate`):
-            // os posts saem sem marcador em vez de derrubar a página do tópico.
-            error_log('[lcoy/roselle] marcadores indisponíveis: '.$error->getMessage());
+            // 数据表尚未迁移（主题先于 `migrate` 更新）：
+            // 帖子在无书签的状态下返回，而不是让主题页崩溃。
+            error_log('[lcoy/roselle] 书签不可用: '.$error->getMessage());
             $found = Bookmark::query()->getModel()->newCollection();
         }
 

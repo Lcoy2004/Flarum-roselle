@@ -1,8 +1,8 @@
 /*
- * "O que deseja fazer com a sua postagem?" — a pergunta do Discourse ao
- * fechar um composer com texto: descartar, guardar para depois ou continuar
- * escrevendo. Com rascunho no servidor, fechar não precisa mais significar
- * perder o texto, que era o que o confirm() do core perguntava.
+ * “你想如何处理你的帖子？”——Discourse 在关闭含文本的 composer
+ * 时提出的问题：丢弃、稍后保存或继续编辑。由于服务端有草稿，
+ * 关闭不再意味着丢失文本，而这正是核心 confirm() 原先询问的
+ * 内容。
  */
 import Modal, { type IInternalModalAttrs } from 'flarum/common/components/Modal';
 import Button from 'flarum/common/components/Button';
@@ -16,7 +16,7 @@ export interface DraftCloseModalAttrs extends IInternalModalAttrs {
 
 export default class DraftCloseModal extends Modal<DraftCloseModalAttrs> {
   className() {
-    return 'Modal--small CanelaDraftCloseModal';
+    return 'Modal--small LcoyDraftCloseModal';
   }
 
   title() {
@@ -27,7 +27,7 @@ export default class DraftCloseModal extends Modal<DraftCloseModalAttrs> {
     return (
       <div className="Modal-body">
         <p className="helpText">{t('composer.drafts.close_text')}</p>
-        <div className="CanelaDraftCloseModal-actions">
+        <div className="LcoyDraftCloseModal-actions">
           <Button
             className="Button Button--danger"
             icon="far fa-trash-can"

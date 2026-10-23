@@ -1,11 +1,11 @@
-// ─── Painel do tema ─────────────────────────────────────────────────────────────
-// Grupos numa coluna à esquerda (grudada, para trocar de grupo sem voltar ao
-// topo), cards à direita. As cores saem das variáveis do admin do Flarum
-// (--body-bg, --control-bg, --text-color, --muted-color, --primary-color), que
-// já mudam no modo escuro; as bordas misturam o texto com transparente, para
-// valerem nos dois modos sem um par de cores para cada um.
+// ─── 主题面板 ─────────────────────────────────────────────────────────────
+// 左侧一列分组（吸顶，切换分组时无需回到
+// 顶部），右侧是卡片。颜色取自 Flarum 后台的变量
+// (--body-bg, --control-bg, --text-color, --muted-color, --primary-color)，它们
+// 在深色模式下会自动变化；边框由文字色与透明色混合而成，使其
+// 在两种模式下都适用，而无需为每种模式各配一组颜色。
 
-.CanelaAdmin {
+.LcoyAdmin {
   --cna-accent: var(--primary-color);
   --cna-surface: var(--body-bg, #fff);
   --cna-subtle: var(--control-bg, #f2f3f5);
@@ -25,8 +25,8 @@
   color: var(--text-color);
 }
 
-// ─── Coluna dos grupos ──────────────────────────────────────────────────────────
-.CanelaAdmin-side {
+// ─── 分组列 ──────────────────────────────────────────────────────────
+.LcoyAdmin-side {
   position: sticky;
   top: 72px;
   display: flex;
@@ -34,7 +34,7 @@
   gap: 12px;
 }
 
-.CanelaAdmin-search {
+.LcoyAdmin-search {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -57,7 +57,7 @@
   }
 }
 
-.CanelaAdmin-searchInput {
+.LcoyAdmin-searchInput {
   flex: 1;
   min-width: 0;
   max-width: none !important;
@@ -69,11 +69,11 @@
   color: var(--text-color);
 
   &::placeholder { color: var(--muted-color); }
-  // O X nativo do type=search duplicaria o botão de limpar ao lado.
+  // type=search 自带的 X 会与旁边的清除按钮重复。
   &::-webkit-search-cancel-button { display: none; }
 }
 
-.CanelaAdmin-searchClear {
+.LcoyAdmin-searchClear {
   border: 0;
   background: none;
   padding: 0 2px;
@@ -84,13 +84,13 @@
   &:hover { color: var(--text-color); }
 }
 
-.CanelaAdmin-nav {
+.LcoyAdmin-nav {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.CanelaAdmin-navItem {
+.LcoyAdmin-navItem {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -130,13 +130,13 @@
 
     > i { color: var(--cna-accent); }
 
-    .CanelaAdmin-navCount {
+    .LcoyAdmin-navCount {
       background: var(--cna-surface);
       color: var(--cna-accent);
     }
   }
 
-  &.CanelaAdmin-navMore {
+  &.LcoyAdmin-navMore {
     margin-top: 6px;
     padding-top: 9px;
     border-top: 1px solid var(--cna-border);
@@ -148,13 +148,13 @@
   }
 }
 
-.CanelaAdmin-navLabel {
+.LcoyAdmin-navLabel {
   flex: 1;
   min-width: 0;
 }
 
-// Quantos recursos do grupo estão ativos, dos que o grupo tem.
-.CanelaAdmin-navCount {
+// 该分组中已启用的功能数量，占分组功能总数。
+.LcoyAdmin-navCount {
   flex-shrink: 0;
   padding: 1px 7px;
   border-radius: 999px;
@@ -165,12 +165,12 @@
   font-variant-numeric: tabular-nums;
 }
 
-// ─── Cabeçalho do grupo + indicador de gravação ─────────────────────────────────
-.CanelaAdmin-main {
+// ─── 分组标题 + 保存指示器 ─────────────────────────────────
+.LcoyAdmin-main {
   min-width: 0;
 }
 
-.CanelaAdmin-head {
+.LcoyAdmin-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -178,7 +178,7 @@
   margin-bottom: 16px;
 }
 
-.CanelaAdmin-headTitle {
+.LcoyAdmin-headTitle {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -193,13 +193,13 @@
   }
 }
 
-.CanelaAdmin-headDesc {
+.LcoyAdmin-headDesc {
   margin: 4px 0 0;
   font-size: 13px;
   color: var(--muted-color);
 }
 
-.CanelaAdmin-save {
+.LcoyAdmin-save {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -227,7 +227,7 @@
   }
 }
 
-.CanelaAdmin-empty {
+.LcoyAdmin-empty {
   margin: 8px 0;
   padding: 24px;
   border: 1px dashed var(--cna-border);
@@ -237,42 +237,42 @@
   font-size: 13px;
 }
 
-// ─── Cards ──────────────────────────────────────────────────────────────────────
-.CanelaAdmin-cards {
+// ─── 卡片 ──────────────────────────────────────────────────────────────────────
+.LcoyAdmin-cards {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.CanelaAdmin-card {
+.LcoyAdmin-card {
   border: 1px solid var(--cna-border);
   border-radius: var(--cna-radius);
   background: var(--cna-surface);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: box-shadow 0.3s, border-color 0.3s;
   scroll-margin-top: 90px;
-  // Sem `overflow: hidden`: um menu absoluto dentro do card precisa poder
-  // escapar dele.
+  // 不加 `overflow: hidden`：卡片内的绝对定位菜单需要能够
+  // 溢出到卡片之外。
 
-  // Chegada por um link "precisa de…": um anel rápido mostra qual é o card.
+  // 通过"需要…"链接跳转到达时：一圈快速闪烁标出是哪张卡片。
   &[data-flash] {
     border-color: var(--cna-accent);
     box-shadow: 0 0 0 4px var(--cna-tint);
   }
 }
 
-.CanelaAdmin-card-header {
+.LcoyAdmin-card-header {
   display: flex;
   align-items: flex-start;
   gap: 12px;
   padding: 14px 18px;
 
-  .CanelaAdmin-card:not(.is-empty) > & {
+  .LcoyAdmin-card:not(.is-empty) > & {
     border-bottom: 1px solid var(--cna-border-soft);
   }
 }
 
-.CanelaAdmin-card-icon {
+.LcoyAdmin-card-icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -286,13 +286,13 @@
   transition: background 0.2s, color 0.2s;
 }
 
-.CanelaAdmin-card-heading {
+.LcoyAdmin-card-heading {
   flex: 1;
   min-width: 0;
   padding-top: 1px;
 }
 
-.CanelaAdmin-card-title {
+.LcoyAdmin-card-title {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -304,8 +304,8 @@
   color: var(--text-color);
 }
 
-// O grupo do card, nos resultados da busca.
-.CanelaAdmin-card-group {
+// 卡片所属的分组，显示在搜索结果中。
+.LcoyAdmin-card-group {
   padding: 1px 8px;
   border-radius: 999px;
   background: var(--cna-subtle);
@@ -314,7 +314,7 @@
   font-weight: 600;
 }
 
-.CanelaAdmin-card-desc {
+.LcoyAdmin-card-desc {
   margin: 3px 0 0;
   max-width: 72ch;
   font-size: 12.5px;
@@ -322,7 +322,7 @@
   color: var(--muted-color);
 }
 
-.CanelaAdmin-card-master {
+.LcoyAdmin-card-master {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -330,18 +330,18 @@
   padding-top: 4px;
 }
 
-.CanelaAdmin-card-state {
+.LcoyAdmin-card-state {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--muted-color);
 
-  .CanelaAdmin-card.is-feature:not(.is-off) & { color: var(--cna-accent); }
+  .LcoyAdmin-card.is-feature:not(.is-off) & { color: var(--cna-accent); }
 }
 
-// "Salvo": aparece no card em que se mexeu e some sozinho (util.ts, flashCard).
-.CanelaAdmin-card-saved {
+// "已保存"：出现在被改动的卡片上并自动消失（util.ts，flashCard）。
+.LcoyAdmin-card-saved {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -355,30 +355,30 @@
   transition: opacity 0.2s, transform 0.2s;
   pointer-events: none;
 
-  .CanelaAdmin-card[data-saved] & {
+  .LcoyAdmin-card[data-saved] & {
     opacity: 1;
     transform: none;
   }
 }
 
-// Recurso desligado: só o cabeçalho, com o ícone apagado.
-.CanelaAdmin-card.is-off {
+// 功能已关闭：只显示头部，图标变暗。
+.LcoyAdmin-card.is-off {
   box-shadow: none;
 
-  .CanelaAdmin-card-icon {
+  .LcoyAdmin-card-icon {
     background: var(--cna-subtle);
     color: var(--muted-color);
   }
 }
 
-// Trancado por uma extensão (ou outro requisito): o motivo no lugar do miolo.
-.CanelaAdmin-card.is-locked {
-  .CanelaAdmin-card-header { padding-bottom: 10px; }
-  .CanelaAdmin-card-title,
-  .CanelaAdmin-card-desc { opacity: 0.75; }
+// 被扩展（或其他依赖）锁定：以原因替代主体内容。
+.LcoyAdmin-card.is-locked {
+  .LcoyAdmin-card-header { padding-bottom: 10px; }
+  .LcoyAdmin-card-title,
+  .LcoyAdmin-card-desc { opacity: 0.75; }
 }
 
-.CanelaAdmin-card-lock {
+.LcoyAdmin-card-lock {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -395,19 +395,19 @@
   > span { flex: 1; min-width: 160px; }
 }
 
-.CanelaAdmin-card-lockLink {
+.LcoyAdmin-card-lockLink {
   font-weight: 600;
   color: var(--cna-accent);
 }
 
-.CanelaAdmin-card-body {
+.LcoyAdmin-card-body {
   display: flex;
   flex-direction: column;
   padding: 6px 18px 16px 62px;
 
-  // O espaçamento entre as opções é do card, não da margem do Form-group.
-  // O core alinha os filhos do Form-group no começo (flex-start), o que
-  // encolheria a linha da opção e afastaria a chave da margem direita.
+  // 选项之间的间距由卡片负责，而不是 Form-group 的 margin。
+  // 核心会把 Form-group 的子元素对齐到起始位置（flex-start），这会
+  // 压缩选项行的宽度，并把开关推离右边距。
   .Form-group {
     align-items: stretch;
     gap: 0;
@@ -423,8 +423,8 @@
   }
 }
 
-// ─── A chave liga/desliga ───────────────────────────────────────────────────────
-.CanelaSwitch {
+// ─── 开关 ───────────────────────────────────────────────────────
+.LcoySwitch {
   position: relative;
   flex-shrink: 0;
   width: 40px;
@@ -449,7 +449,7 @@
   }
 }
 
-.CanelaSwitch-thumb {
+.LcoySwitch-thumb {
   position: absolute;
   top: 3px;
   left: 3px;
@@ -460,33 +460,33 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
   transition: transform 0.18s;
 
-  .CanelaSwitch.is-on & { transform: translateX(18px); }
-  .CanelaSwitch.is-saving & { animation: canela-switch-pulse 0.8s ease-in-out infinite; }
+  .LcoySwitch.is-on & { transform: translateX(18px); }
+  .LcoySwitch.is-saving & { animation: lcoy-switch-pulse 0.8s ease-in-out infinite; }
 }
 
-@keyframes canela-switch-pulse {
+@keyframes lcoy-switch-pulse {
   50% { box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.35); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .CanelaSwitch,
-  .CanelaSwitch-thumb { transition: none; }
-  .CanelaSwitch.is-saving .CanelaSwitch-thumb { animation: none; }
+  .LcoySwitch,
+  .LcoySwitch-thumb { transition: none; }
+  .LcoySwitch.is-saving .LcoySwitch-thumb { animation: none; }
 }
 
-// ─── Opção liga/desliga ─────────────────────────────────────────────────────────
-.CanelaAdmin-toggle + .CanelaAdmin-toggle {
+// ─── 开关选项 ─────────────────────────────────────────────────────────
+.LcoyAdmin-toggle + .LcoyAdmin-toggle {
   border-top: 1px solid var(--cna-border-soft);
 }
 
-.CanelaAdmin-toggleRow {
+.LcoyAdmin-toggleRow {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
 }
 
-.CanelaAdmin-toggleLabel {
+.LcoyAdmin-toggleLabel {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -499,18 +499,18 @@
   color: var(--text-color);
   cursor: pointer;
 
-  .is-locked > .CanelaAdmin-toggleRow > & {
+  .is-locked > .LcoyAdmin-toggleRow > & {
     cursor: default;
     color: var(--muted-color);
   }
 }
 
-.CanelaAdmin-toggle .helpText {
+.LcoyAdmin-toggle .helpText {
   max-width: 68ch;
-  padding-right: 56px; // não passa por baixo da chave
+  padding-right: 56px; // 不会从开关下方穿过
 }
 
-.CanelaAdmin-extBadge {
+.LcoyAdmin-extBadge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -522,15 +522,15 @@
   font-weight: 600;
 }
 
-// ─── Blocos do miolo ────────────────────────────────────────────────────────────
-.CanelaAdmin-subDivider {
+// ─── 主体区块 ────────────────────────────────────────────────────────────
+.LcoyAdmin-subDivider {
   height: 1px;
   margin: 6px 0;
   background: var(--cna-border-soft);
 }
 
-// Opções que só valem com a de cima: recuadas num bloco.
-.CanelaAdmin-subGroup {
+// 仅在上方选项启用时才生效的选项：缩进到同一个块中。
+.LcoyAdmin-subGroup {
   display: flex;
   flex-direction: column;
   margin: 2px 0 8px;
@@ -539,13 +539,13 @@
   border-left: 3px solid var(--cna-tint);
   background: var(--cna-subtle);
 
-  // Campos claros: sobre o cinza do bloco, um campo cinza pareceria desativado.
+  // 浅色字段：在块的灰色背景上，灰色字段会显得像被禁用。
   .FormControl {
     background: var(--cna-surface) !important;
   }
 }
 
-.CanelaAdmin-subTitle {
+.LcoyAdmin-subTitle {
   margin: 14px 0 4px;
   font-size: 12px;
   font-weight: 700;
@@ -554,8 +554,8 @@
   color: var(--muted-color);
 }
 
-// ─── Ocultos (dependem de algo desligado) ───────────────────────────────────────
-.CanelaAdmin-hidden {
+// ─── 隐藏项（依赖某个已关闭的功能） ───────────────────────────────────────
+.LcoyAdmin-hidden {
   margin-top: 16px;
   padding: 12px 16px;
   border: 1px dashed var(--cna-border);
@@ -581,7 +581,7 @@
   }
 }
 
-.CanelaAdmin-hidden-title {
+.LcoyAdmin-hidden-title {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -590,7 +590,7 @@
   color: var(--text-color);
 }
 
-.CanelaAdmin-hidden-link {
+.LcoyAdmin-hidden-link {
   padding: 0;
   border: 0;
   background: none;
@@ -603,8 +603,8 @@
   &:hover { text-decoration: underline; }
 }
 
-// Card oculto nos resultados da busca: o aviso e o atalho.
-.CanelaAdmin-stub {
+// 在搜索结果中隐藏的卡片：提示与快捷链接。
+.LcoyAdmin-stub {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -612,13 +612,13 @@
   border: 1px dashed var(--cna-border);
   border-radius: var(--cna-radius);
 
-  .CanelaAdmin-card-icon {
+  .LcoyAdmin-card-icon {
     background: var(--cna-subtle);
     color: var(--muted-color);
   }
 }
 
-.CanelaAdmin-stub-text {
+.LcoyAdmin-stub-text {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -628,20 +628,20 @@
   font-size: 13.5px;
 }
 
-.CanelaAdmin-stub-reason {
+.LcoyAdmin-stub-reason {
   flex-basis: 100%;
   font-size: 12.5px;
   color: var(--muted-color);
 }
 
-.CanelaAdmin-stub-go {
+.LcoyAdmin-stub-go {
   flex-shrink: 0;
   color: var(--cna-accent) !important;
   font-weight: 600;
 }
 
-// ─── Rótulos e campos ───────────────────────────────────────────────────────────
-.CanelaAdmin-label {
+// ─── 标签与字段 ───────────────────────────────────────────────────────────
+.LcoyAdmin-label {
   display: block;
   font-size: 13px;
   font-weight: 600;
@@ -649,7 +649,7 @@
   margin-bottom: 6px;
 }
 
-.CanelaAdmin-select-wrap {
+.LcoyAdmin-select-wrap {
   position: relative;
   align-self: flex-start;
   display: inline-flex;
@@ -658,15 +658,15 @@
   width: 100%;
 }
 
-.CanelaAdmin-select {
+.LcoyAdmin-select {
   width: 100%;
-  padding-right: 32px !important; // espaço para a seta
+  padding-right: 32px !important; // 为箭头留出空间
   appearance: none;
   -webkit-appearance: none;
   cursor: pointer;
 }
 
-.CanelaAdmin-select-chevron {
+.LcoyAdmin-select-chevron {
   position: absolute;
   right: 11px;
   font-size: 11px;
@@ -674,24 +674,24 @@
   pointer-events: none;
 }
 
-.CanelaAdmin-numberWrap {
+.LcoyAdmin-numberWrap {
   display: inline-flex;
   align-self: flex-start;
   align-items: center;
   gap: 8px;
 }
 
-.CanelaAdmin-numberInput {
+.LcoyAdmin-numberInput {
   width: 110px;
 }
 
-.CanelaAdmin-numberSuffix {
+.LcoyAdmin-numberSuffix {
   font-size: 13px;
   color: var(--muted-color);
 }
 
-// ─── Avisos ─────────────────────────────────────────────────────────────────────
-.CanelaAdmin-notice {
+// ─── 提示 ─────────────────────────────────────────────────────────────────────
+.LcoyAdmin-notice {
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -709,23 +709,23 @@
   }
 }
 
-.CanelaAdmin-actions {
+.LcoyAdmin-actions {
   margin: 12px 0 4px;
 }
 
-// ─── Telas estreitas ────────────────────────────────────────────────────────────
-// Abaixo de 900px a coluna dos grupos vira uma faixa rolável acima dos cards.
+// ─── 窄屏 ────────────────────────────────────────────────────────────
+// 低于 900px 时，分组列变成卡片上方的一条可滚动横带。
 @media (max-width: 899px) {
-  .CanelaAdmin {
+  .LcoyAdmin {
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
   }
 
-  .CanelaAdmin-side {
+  .LcoyAdmin-side {
     position: static;
   }
 
-  .CanelaAdmin-nav {
+  .LcoyAdmin-nav {
     flex-direction: row;
     gap: 6px;
     overflow-x: auto;
@@ -733,7 +733,7 @@
     scrollbar-width: thin;
   }
 
-  .CanelaAdmin-navItem {
+  .LcoyAdmin-navItem {
     width: auto;
     flex-shrink: 0;
     border: 1px solid var(--cna-border);
@@ -741,47 +741,47 @@
     white-space: nowrap;
   }
 
-  .CanelaAdmin-card-body {
+  .LcoyAdmin-card-body {
     padding-left: 18px;
   }
 
-  .CanelaAdmin-card-lock {
+  .LcoyAdmin-card-lock {
     margin-left: 18px;
   }
 }
 
 @media (max-width: 560px) {
-  .CanelaAdmin-head {
+  .LcoyAdmin-head {
     flex-direction: column;
     gap: 8px;
   }
 
-  .CanelaAdmin-card-header {
+  .LcoyAdmin-card-header {
     flex-wrap: wrap;
   }
 
-  .CanelaAdmin-card-state {
+  .LcoyAdmin-card-state {
     display: none;
   }
 
-  .CanelaAdmin-toggle .helpText {
+  .LcoyAdmin-toggle .helpText {
     padding-right: 0;
   }
 }
 
-// ─── Cores: a cor primária e a paleta derivada ─────────────────────────────────
-.CanelaAdmin-colorCurrent {
+// ─── 颜色：主色与派生调色板 ─────────────────────────────────
+.LcoyAdmin-colorCurrent {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 4px;
 
-  .CanelaAdmin-label {
+  .LcoyAdmin-label {
     margin: 0;
   }
 }
 
-.CanelaAdmin-colorChip {
+.LcoyAdmin-colorChip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -796,25 +796,25 @@
   }
 }
 
-.CanelaAdmin-colorDot {
+.LcoyAdmin-colorDot {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--cn-preview-accent);
+  background: var(--lcoy-preview-accent);
 }
 
-// As fórmulas abaixo são cópia de less/common/tokens.less (o admin não carrega
-// os tokens do fórum, que redefiniriam as cores do próprio admin). Mudou lá,
-// muda aqui — senão a prévia mente. A cor chega pelo `style` do PalettePreview;
-// a do CSS é só o recuo se o valor gravado não for um hexadecimal.
-.CanelaAdmin-palette {
-  --cn-preview-accent: var(--primary-color);
+// 下面的公式复制自 less/common/tokens.less（后台不加载
+// 论坛的令牌，否则会重定义后台自身的颜色）。那边改了，
+// 这里也要改——否则预览会失真。颜色通过 PalettePreview 的 `style` 传入；
+// CSS 里的只是回退值，用于已保存的值不是十六进制的情况。
+.LcoyAdmin-palette {
+  --lcoy-preview-accent: var(--primary-color);
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.CanelaAdmin-paletteRow {
+.LcoyAdmin-paletteRow {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -826,12 +826,12 @@
     background: #fff;
     color: #646464;
 
-    [data-swatch='accent'] .CanelaAdmin-swatchColor { background: var(--cn-preview-accent); }
-    [data-swatch='background'] .CanelaAdmin-swatchColor { background: ~"oklch(from var(--cn-preview-accent) 96% calc(c * 0.125) h)"; }
-    [data-swatch='selected'] .CanelaAdmin-swatchColor { background: ~"oklch(from var(--cn-preview-accent) 92% calc(c * 0.5) h)"; }
-    [data-swatch='accent-low'] .CanelaAdmin-swatchColor { background: ~"oklch(from var(--cn-preview-accent) 95% calc(c * 0.3) h)"; }
-    [data-swatch='ring'] .CanelaAdmin-swatchColor { background: ~"oklch(from var(--cn-preview-accent) calc(l * 1.5) calc(c * 0.35) h)"; }
-    [data-swatch='link'] .CanelaAdmin-swatchColor { background: var(--cn-preview-accent); }
+    [data-swatch='accent'] .LcoyAdmin-swatchColor { background: var(--lcoy-preview-accent); }
+    [data-swatch='background'] .LcoyAdmin-swatchColor { background: ~"oklch(from var(--lcoy-preview-accent) 96% calc(c * 0.125) h)"; }
+    [data-swatch='selected'] .LcoyAdmin-swatchColor { background: ~"oklch(from var(--lcoy-preview-accent) 92% calc(c * 0.5) h)"; }
+    [data-swatch='accent-low'] .LcoyAdmin-swatchColor { background: ~"oklch(from var(--lcoy-preview-accent) 95% calc(c * 0.3) h)"; }
+    [data-swatch='ring'] .LcoyAdmin-swatchColor { background: ~"oklch(from var(--lcoy-preview-accent) calc(l * 1.5) calc(c * 0.35) h)"; }
+    [data-swatch='link'] .LcoyAdmin-swatchColor { background: var(--lcoy-preview-accent); }
   }
 
   &--dark {
@@ -839,18 +839,18 @@
     border-color: #2e2e2e;
     color: #b5b5b5;
 
-    .CanelaAdmin-swatchColor { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }
+    .LcoyAdmin-swatchColor { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }
 
-    [data-swatch='accent'] .CanelaAdmin-swatchColor { background: var(--cn-preview-accent); }
-    [data-swatch='background'] .CanelaAdmin-swatchColor { background: ~"oklch(from var(--cn-preview-accent) 10% 0.025 h)"; }
-    [data-swatch='selected'] .CanelaAdmin-swatchColor { background: ~"oklch(from var(--cn-preview-accent) calc(l * 0.7) calc(c * 0.25) h)"; }
-    [data-swatch='accent-low'] .CanelaAdmin-swatchColor { background: ~"oklch(from var(--cn-preview-accent) 25% calc(c * 0.4) h)"; }
-    [data-swatch='ring'] .CanelaAdmin-swatchColor { background: ~"oklch(from var(--cn-preview-accent) calc(l * 0.75) calc(c * 0.5) h)"; }
-    [data-swatch='link'] .CanelaAdmin-swatchColor { background: ~"oklch(from var(--cn-preview-accent) calc(l * 1.2) c h)"; }
+    [data-swatch='accent'] .LcoyAdmin-swatchColor { background: var(--lcoy-preview-accent); }
+    [data-swatch='background'] .LcoyAdmin-swatchColor { background: ~"oklch(from var(--lcoy-preview-accent) 10% 0.025 h)"; }
+    [data-swatch='selected'] .LcoyAdmin-swatchColor { background: ~"oklch(from var(--lcoy-preview-accent) calc(l * 0.7) calc(c * 0.25) h)"; }
+    [data-swatch='accent-low'] .LcoyAdmin-swatchColor { background: ~"oklch(from var(--lcoy-preview-accent) 25% calc(c * 0.4) h)"; }
+    [data-swatch='ring'] .LcoyAdmin-swatchColor { background: ~"oklch(from var(--lcoy-preview-accent) calc(l * 0.75) calc(c * 0.5) h)"; }
+    [data-swatch='link'] .LcoyAdmin-swatchColor { background: ~"oklch(from var(--lcoy-preview-accent) calc(l * 1.2) c h)"; }
   }
 }
 
-.CanelaAdmin-paletteScheme {
+.LcoyAdmin-paletteScheme {
   flex: 0 0 56px;
   font-size: 11px;
   font-weight: 800;
@@ -858,13 +858,13 @@
   text-transform: uppercase;
 }
 
-.CanelaAdmin-swatches {
+.LcoyAdmin-swatches {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
 }
 
-.CanelaAdmin-swatch {
+.LcoyAdmin-swatch {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -872,21 +872,21 @@
   width: 64px;
 }
 
-.CanelaAdmin-swatchColor {
+.LcoyAdmin-swatchColor {
   width: 40px;
   height: 40px;
   border-radius: 10px;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
 }
 
-.CanelaAdmin-swatchLabel {
+.LcoyAdmin-swatchLabel {
   font-size: 11px;
   line-height: 1.25;
   text-align: center;
 }
 
 @media (max-width: 767px) {
-  .CanelaAdmin-paletteRow {
+  .LcoyAdmin-paletteRow {
     flex-direction: column;
     align-items: flex-start;
   }

@@ -5,7 +5,7 @@ import type Mithril from 'mithril';
 import { t } from '../utils/settings';
 import { SHORTCUT_GROUPS, type Shortcut } from '../shell/shortcuts';
 
-/** Os nomes das teclas como o `d-shortcut` do Discourse os escreve. */
+/** 按键名称，与 Discourse 的 `d-shortcut` 写法一致。 */
 const KEY_NAMES: Record<string, string> = {
   shift: 'Shift',
   ctrl: 'Ctrl',
@@ -17,7 +17,7 @@ const KEY_NAMES: Record<string, string> = {
   esc: 'Esc',
 };
 
-/** "g h" → ["G", "H"]; "shift+j" → ["Shift", "J"]. */
+/** "g h" → ["G", "H"]；"shift+j" → ["Shift", "J"]。 */
 function keyParts(combo: string): string[] {
   return combo
     .split(/[\s+]+/)
@@ -26,16 +26,16 @@ function keyParts(combo: string): string[] {
 }
 
 /**
- * A janela de atalhos do Discourse (`keyboard-shortcuts-modal`), aberta pela
- * tecla "?": o campo de busca no topo e, em duas colunas, uma caixa por grupo
- * com a descrição à esquerda e as teclas em pílulas à direita. O corpo rola
- * dentro do modal (80% da altura), em vez de empurrar a página.
+ * Discourse 的快捷键弹窗（`keyboard-shortcuts-modal`），按 “?”
+ * 键打开：顶部有搜索框，下方分两列，每个分组一个框，
+ * 左侧是描述，右侧是胶囊状的按键。主体在弹窗内部滚动
+ * （高度的 80%），而不是把页面撑高。
  */
 export default class KeyboardShortcutsModal extends Modal {
   filter = Stream('');
 
   className() {
-    return 'CanelaShortcutsModal Modal--large';
+    return 'LcoyShortcutsModal Modal--large';
   }
 
   title() {
@@ -43,7 +43,7 @@ export default class KeyboardShortcutsModal extends Modal {
   }
 
   onready() {
-    this.$('.CanelaShortcuts-filter').trigger('focus');
+    this.$('.LcoyShortcuts-filter').trigger('focus');
   }
 
   matches(shortcut: Shortcut, needle: string): boolean {
@@ -64,27 +64,27 @@ export default class KeyboardShortcutsModal extends Modal {
 
     return (
       <div className="Modal-body">
-        <div className="CanelaShortcuts-search">
-          <input className="FormControl CanelaShortcuts-filter" type="search" bidi={this.filter} placeholder={t('shortcuts.search_placeholder')} />
+        <div className="LcoyShortcuts-search">
+          <input className="FormControl LcoyShortcuts-filter" type="search" bidi={this.filter} placeholder={t('shortcuts.search_placeholder')} />
         </div>
         {groups.length ? (
-          <div className="CanelaShortcuts">
+          <div className="LcoyShortcuts">
             {groups.map((group) => (
-              <section className="CanelaShortcuts-group">
+              <section className="LcoyShortcuts-group">
                 <h4>{t(`shortcuts.groups.${group.name}`)}</h4>
                 <table>
                   <tbody>
                     {group.shortcuts.map((shortcut) => (
                       <tr>
-                        <td className="CanelaShortcuts-label">{t(`shortcuts.actions.${shortcut.action}`)}</td>
-                        <td className="CanelaShortcuts-keys">
+                        <td className="LcoyShortcuts-label">{t(`shortcuts.actions.${shortcut.action}`)}</td>
+                        <td className="LcoyShortcuts-keys">
                           {shortcut.keys.map((combo, index) => [
                             index > 0 && (
-                              <span className="CanelaShortcuts-or">{/next_prev|first_last/.test(shortcut.action) ? '/' : t('shortcuts.or')}</span>
+                              <span className="LcoyShortcuts-or">{/next_prev|first_last/.test(shortcut.action) ? '/' : t('shortcuts.or')}</span>
                             ),
-                            <kbd className="CanelaShortcuts-kbd">
+                            <kbd className="LcoyShortcuts-kbd">
                               {keyParts(combo).map((key) => (
-                                <span className="CanelaShortcuts-key">{key}</span>
+                                <span className="LcoyShortcuts-key">{key}</span>
                               ))}
                             </kbd>,
                           ])}
@@ -97,7 +97,7 @@ export default class KeyboardShortcutsModal extends Modal {
             ))}
           </div>
         ) : (
-          <p className="CanelaShortcuts-empty">{t('shortcuts.no_results')}</p>
+          <p className="LcoyShortcuts-empty">{t('shortcuts.no_results')}</p>
         )}
       </div>
     );

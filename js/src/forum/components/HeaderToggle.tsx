@@ -5,8 +5,8 @@ import { menuIcon } from '../utils/shellIcons';
 import { isSidebarOpen, toggleSidebar } from '../utils/sidebarState';
 
 /**
- * O hambúrguer do Discourse: à esquerda do logo no tablet e no desktop, onde
- * abre e fecha a barra encaixada, e à direita no celular, onde abre o painel.
+ * Discourse 的汉堡菜单：在平板和桌面端位于徽标左侧，用于
+ * 打开和关闭内嵌侧栏；在手机上位于右侧，用于打开面板。
  */
 export default class HeaderToggle extends Component {
   view() {
@@ -15,11 +15,11 @@ export default class HeaderToggle extends Component {
     return (
       <button
         type="button"
-        className="CanelaHeader-toggle Button Button--icon Button--flat"
+        className="LcoyHeader-toggle Button Button--icon Button--flat"
         aria-label={t('sidebar.toggle')}
         title={t('sidebar.toggle')}
         aria-expanded={open ? 'true' : 'false'}
-        aria-controls="canela-sidebar"
+        aria-controls="lcoy-sidebar"
         onclick={() => toggleSidebar()}
       >
         {menuIcon()}

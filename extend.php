@@ -22,164 +22,162 @@ use Lcoy\Roselle\Theme\Logo\SvgLogoServiceProvider;
 use Lcoy\Roselle\Support\RouteConflictGuard;
 
 /*
- * Cada configuração do tema: chave => [atributo no fórum, padrão, conversão].
+ * 每个主题配置项：键 => [论坛中的属性, 默认值, 转换]。
  *
- * Uma tabela só porque as três listas (padrões, serializeToForum e o admin)
- * precisam andar juntas — uma chave esquecida em uma delas não dá erro, só
- * faz a opção sumir em silêncio.
+ * 只用一张表，因为三个列表（默认值、serializeToForum 和管理端）
+ * 必须保持一致 —— 在其中一处遗漏某个键不会报错，
+ * 只会让该选项悄无声息地消失。
  */
 $forumSettings = [
-    // Aparência
-    'canela.tinted_background' => ['canelaTintedBackground', true, 'boolval'],
-    'canela.colored_accents' => ['canelaColoredAccents', true, 'boolval'],
-    'canela.logo_colored' => ['canelaLogoColored', false, 'boolval'],
-    'canela.content_card' => ['canelaContentCard', true, 'boolval'],
-    'canela.show_title_with_logo' => ['canelaShowTitleWithLogo', false, 'boolval'],
-    'canela.pill_buttons' => ['canelaPillButtons', true, 'boolval'],
-    'canela.lucide_icons' => ['canelaLucideIcons', true, 'boolval'],
+    // 外观
+    'lcoy.tinted_background' => ['lcoyTintedBackground', true, 'boolval'],
+    'lcoy.colored_accents' => ['lcoyColoredAccents', true, 'boolval'],
+    'lcoy.content_card' => ['lcoyContentCard', true, 'boolval'],
+    'lcoy.show_title_with_logo' => ['lcoyShowTitleWithLogo', false, 'boolval'],
+    'lcoy.pill_buttons' => ['lcoyPillButtons', true, 'boolval'],
+    'lcoy.lucide_icons' => ['lcoyLucideIcons', true, 'boolval'],
 
-    // Barra lateral
-    'canela.sidebar_enabled' => ['canelaSidebarEnabled', true, 'boolval'],
-    'canela.sidebar_open_default' => ['canelaSidebarOpenDefault', true, 'boolval'],
-    'canela.sidebar_new_topic' => ['canelaSidebarNewTopic', true, 'boolval'],
-    'canela.sidebar_categories' => ['canelaSidebarCategories', true, 'boolval'],
-    'canela.sidebar_tags' => ['canelaSidebarTags', true, 'boolval'],
-    'canela.sidebar_tags_limit' => ['canelaSidebarTagsLimit', 6, 'intval'],
-    'canela.sidebar_footer' => ['canelaSidebarFooter', true, 'boolval'],
+    // 侧边栏
+    'lcoy.sidebar_enabled' => ['lcoySidebarEnabled', true, 'boolval'],
+    'lcoy.sidebar_open_default' => ['lcoySidebarOpenDefault', true, 'boolval'],
+    'lcoy.sidebar_new_topic' => ['lcoySidebarNewTopic', true, 'boolval'],
+    'lcoy.sidebar_categories' => ['lcoySidebarCategories', true, 'boolval'],
+    'lcoy.sidebar_tags' => ['lcoySidebarTags', true, 'boolval'],
+    'lcoy.sidebar_tags_limit' => ['lcoySidebarTagsLimit', 6, 'intval'],
+    'lcoy.sidebar_footer' => ['lcoySidebarFooter', true, 'boolval'],
 
-    // Cabeçalho
-    'canela.header_search' => ['canelaHeaderSearch', true, 'boolval'],
+    // 页眉
+    'lcoy.header_search' => ['lcoyHeaderSearch', true, 'boolval'],
 
-    // Atalhos
-    'canela.keyboard_shortcuts' => ['canelaKeyboardShortcuts', true, 'boolval'],
-    'canela.loading_slider' => ['canelaLoadingSlider', true, 'boolval'],
-    'canela.toast_auto_close' => ['canelaToastAutoClose', true, 'boolval'],
+    // 快捷键
+    'lcoy.keyboard_shortcuts' => ['lcoyKeyboardShortcuts', true, 'boolval'],
+    'lcoy.loading_slider' => ['lcoyLoadingSlider', true, 'boolval'],
+    'lcoy.toast_auto_close' => ['lcoyToastAutoClose', true, 'boolval'],
 
-    // Página inicial
-    'canela.welcome_banner' => ['canelaWelcomeBanner', false, 'boolval'],
-    'canela.welcome_banner_guests_only' => ['canelaWelcomeBannerGuestsOnly', false, 'boolval'],
-    'canela.welcome_banner_search' => ['canelaWelcomeBannerSearch', true, 'boolval'],
-    'canela.category_hero' => ['canelaCategoryHero', true, 'boolval'],
-    'canela.category_hero_children' => ['canelaCategoryHeroChildren', true, 'boolval'],
+    // 首页
+    'lcoy.welcome_banner' => ['lcoyWelcomeBanner', false, 'boolval'],
+    'lcoy.welcome_banner_guests_only' => ['lcoyWelcomeBannerGuestsOnly', false, 'boolval'],
+    'lcoy.welcome_banner_search' => ['lcoyWelcomeBannerSearch', true, 'boolval'],
+    'lcoy.category_hero' => ['lcoyCategoryHero', true, 'boolval'],
+    'lcoy.category_hero_children' => ['lcoyCategoryHeroChildren', true, 'boolval'],
 
-    // Navegação da lista
-    'canela.nav_hot' => ['canelaNavHot', true, 'boolval'],
-    'canela.hot_days' => ['canelaHotDays', 7, 'intval'],
-    'canela.nav_unread' => ['canelaNavUnread', true, 'boolval'],
-    'canela.nav_categories_link' => ['canelaNavCategoriesLink', true, 'boolval'],
-    'canela.nav_dropdowns' => ['canelaNavDropdowns', true, 'boolval'],
-    'canela.nav_sticky' => ['canelaNavSticky', false, 'boolval'],
-    'canela.list_infinite_scroll' => ['canelaListInfiniteScroll', true, 'boolval'],
+    // 列表导航
+    'lcoy.nav_hot' => ['lcoyNavHot', true, 'boolval'],
+    'lcoy.hot_days' => ['lcoyHotDays', 7, 'intval'],
+    'lcoy.nav_unread' => ['lcoyNavUnread', true, 'boolval'],
+    'lcoy.nav_categories_link' => ['lcoyNavCategoriesLink', true, 'boolval'],
+    'lcoy.nav_dropdowns' => ['lcoyNavDropdowns', true, 'boolval'],
+    'lcoy.nav_sticky' => ['lcoyNavSticky', false, 'boolval'],
+    'lcoy.list_infinite_scroll' => ['lcoyListInfiniteScroll', true, 'boolval'],
 
-    // Lista de tópicos
-    'canela.list_header' => ['canelaListHeader', true, 'boolval'],
-    'canela.list_posters' => ['canelaListPosters', true, 'boolval'],
-    'canela.list_views' => ['canelaListViews', true, 'boolval'],
-    'canela.list_heat' => ['canelaListHeat', true, 'boolval'],
-    'canela.list_excerpts' => ['canelaListExcerpts', true, 'boolval'],
+    // 主题列表
+    'lcoy.list_header' => ['lcoyListHeader', true, 'boolval'],
+    'lcoy.list_posters' => ['lcoyListPosters', true, 'boolval'],
+    'lcoy.list_views' => ['lcoyListViews', true, 'boolval'],
+    'lcoy.list_heat' => ['lcoyListHeat', true, 'boolval'],
+    'lcoy.list_excerpts' => ['lcoyListExcerpts', true, 'boolval'],
 
-    // Página de categorias
-    'canela.categories_layout' => ['canelaCategoriesLayout', 'boxes', null],
+    // 分类页
+    'lcoy.categories_layout' => ['lcoyCategoriesLayout', 'boxes', null],
 
-    // Tópico
-    'canela.topic_map' => ['canelaTopicMap', true, 'boolval'],
-    'canela.topic_event_posts' => ['canelaTopicEventPosts', true, 'boolval'],
-    // O avatar acompanha a rolagem nos posts longos (como o "fixedAvatar" do avocado).
-    'canela.topic_sticky_avatar' => ['canelaTopicStickyAvatar', false, 'boolval'],
-    // Largura máxima do cartão de conteúdo (px); aplicada antes da pintura no
-    // PreBootShell, sem atributo no fórum (null no primeiro item).
-    'canela.content_width' => [null, '1110', null],
-    'canela.topic_timeline' => ['canelaTopicTimeline', true, 'boolval'],
-    'canela.topic_footer' => ['canelaTopicFooter', true, 'boolval'],
-    'canela.suggested_topics' => ['canelaSuggestedTopics', true, 'boolval'],
-    'canela.suggested_count' => ['canelaSuggestedCount', 5, 'intval'],
-    'canela.user_card' => ['canelaUserCard', true, 'boolval'],
-    'canela.user_menu' => ['canelaUserMenu', true, 'boolval'],
-    'canela.post_actions' => ['canelaPostActions', true, 'boolval'],
-    'canela.embedded_replies' => ['canelaEmbeddedReplies', true, 'boolval'],
-    'canela.new_replies_bar' => ['canelaNewRepliesBar', true, 'boolval'],
-    // Estilo das postagens: 'discourse' (padrão) ou 'direct' (o mesmo post com
-    // a linha do tempo do avocado ligando os avatares: less/forum/PostDirect.less).
-    'canela.post_style' => ['canelaPostStyle', 'discourse', null],
-    // O "em resposta a" do post: 'discourse' (↩ nome à direita do cabeçalho)
-    // ou 'avocado' (uma linha embaixo do nome: "↳ Em resposta a [avatar] Fulano").
-    'canela.topic_reply_to_style' => ['canelaTopicReplyToStyle', 'discourse', null],
+    // 主题
+    'lcoy.topic_map' => ['lcoyTopicMap', true, 'boolval'],
+    'lcoy.topic_event_posts' => ['lcoyTopicEventPosts', true, 'boolval'],
+    // 头像随长帖滚动而跟随（类似 avocado 的 "fixedAvatar"）。
+    'lcoy.topic_sticky_avatar' => ['lcoyTopicStickyAvatar', false, 'boolval'],
+    // 内容卡片的最大宽度（px）；在 PreBootShell 中于首次绘制前应用，
+    // 论坛中没有对应属性（首项为 null）。
+    'lcoy.content_width' => [null, '1110', null],
+    'lcoy.topic_timeline' => ['lcoyTopicTimeline', true, 'boolval'],
+    'lcoy.topic_footer' => ['lcoyTopicFooter', true, 'boolval'],
+    'lcoy.suggested_topics' => ['lcoySuggestedTopics', true, 'boolval'],
+    'lcoy.suggested_count' => ['lcoySuggestedCount', 5, 'intval'],
+    'lcoy.user_card' => ['lcoyUserCard', true, 'boolval'],
+    'lcoy.user_menu' => ['lcoyUserMenu', true, 'boolval'],
+    'lcoy.post_actions' => ['lcoyPostActions', true, 'boolval'],
+    'lcoy.embedded_replies' => ['lcoyEmbeddedReplies', true, 'boolval'],
+    'lcoy.new_replies_bar' => ['lcoyNewRepliesBar', true, 'boolval'],
+    // 帖子样式：'discourse'（默认）或 'direct'（同样的帖子，但用 avocado 的
+    // 时间线连接各头像：less/forum/PostDirect.less）。
+    'lcoy.post_style' => ['lcoyPostStyle', 'discourse', null],
+    // 帖子的 "回复给"：'discourse'（↩ 名字位于页眉右侧）
+    // 或 'avocado'（名字下方一行："↳ 回复给 [头像] 张三"）。
+    'lcoy.topic_reply_to_style' => ['lcoyTopicReplyToStyle', 'discourse', null],
 
-    // Extensões de terceiros (visual do Discourse)
-    'canela.thirdparty_solved' => ['canelaThirdPartySolved', true, 'boolval'],
-    'canela.thirdparty_reactions' => ['canelaThirdPartyReactions', true, 'boolval'],
-    'canela.thirdparty_polls' => ['canelaThirdPartyPolls', true, 'boolval'],
-    'canela.thirdparty_links_sidebar' => ['canelaThirdPartyLinksSidebar', true, 'boolval'],
-    'canela.thirdparty_upload_progress' => ['canelaThirdPartyUploadProgress', true, 'boolval'],
-    'canela.thirdparty_thumbnails' => ['canelaThirdPartyThumbnails', true, 'boolval'],
-    // forumaker/profile-cover no lugar da capa interna (thirdparty/profileCover).
-    'canela.thirdparty_profile_cover' => ['canelaThirdPartyProfileCover', true, 'boolval'],
+    // 第三方扩展（Discourse 外观）
+    'lcoy.thirdparty_solved' => ['lcoyThirdPartySolved', true, 'boolval'],
+    'lcoy.thirdparty_reactions' => ['lcoyThirdPartyReactions', true, 'boolval'],
+    'lcoy.thirdparty_polls' => ['lcoyThirdPartyPolls', true, 'boolval'],
+    'lcoy.thirdparty_links_sidebar' => ['lcoyThirdPartyLinksSidebar', true, 'boolval'],
+    'lcoy.thirdparty_upload_progress' => ['lcoyThirdPartyUploadProgress', true, 'boolval'],
+    'lcoy.thirdparty_thumbnails' => ['lcoyThirdPartyThumbnails', true, 'boolval'],
+    // forumaker/profile-cover 取代内置封面（thirdparty/profileCover）。
+    'lcoy.thirdparty_profile_cover' => ['lcoyThirdPartyProfileCover', true, 'boolval'],
 
-    // Perfil
-    'canela.user_cover' => ['canelaUserCover', true, 'boolval'],
-    'canela.user_stats' => ['canelaUserStats', true, 'boolval'],
-    'canela.user_summary' => ['canelaUserSummary', true, 'boolval'],
-    'canela.user_default_tab' => ['canelaUserDefaultTab', 'summary', null],
-    // Subabas de "Atividade" (extend/activity.php), cada uma com a sua extensão.
-    'canela.user_activity_read' => ['canelaUserActivityRead', true, 'boolval'],
-    'canela.user_activity_reactions' => ['canelaUserActivityReactions', true, 'boolval'],
-    'canela.user_activity_votes' => ['canelaUserActivityVotes', true, 'boolval'],
-    'canela.user_activity_solved' => ['canelaUserActivitySolved', true, 'boolval'],
+    // 个人资料
+    'lcoy.user_cover' => ['lcoyUserCover', true, 'boolval'],
+    'lcoy.user_stats' => ['lcoyUserStats', true, 'boolval'],
+    'lcoy.user_summary' => ['lcoyUserSummary', true, 'boolval'],
+    'lcoy.user_default_tab' => ['lcoyUserDefaultTab', 'summary', null],
+    // "活动" 子标签（extend/activity.php），每个都依赖各自的扩展。
+    'lcoy.user_activity_read' => ['lcoyUserActivityRead', true, 'boolval'],
+    'lcoy.user_activity_reactions' => ['lcoyUserActivityReactions', true, 'boolval'],
+    'lcoy.user_activity_votes' => ['lcoyUserActivityVotes', true, 'boolval'],
+    'lcoy.user_activity_solved' => ['lcoyUserActivitySolved', true, 'boolval'],
 
-    // Recursos do Discourse que faltavam (js/src/forum/gaps)
-    'canela.post_shortcuts' => ['canelaPostShortcuts', true, 'boolval'],
-    'canela.code_buttons' => ['canelaCodeButtons', true, 'boolval'],
-    'canela.heading_anchors' => ['canelaHeadingAnchors', true, 'boolval'],
-    'canela.table_expand' => ['canelaTableExpand', true, 'boolval'],
-    'canela.spoiler_blur' => ['canelaSpoilerBlur', true, 'boolval'],
-    'canela.mention_cards' => ['canelaMentionCards', true, 'boolval'],
-    'canela.post_read_state' => ['canelaPostReadState', true, 'boolval'],
-    'canela.timeline_back' => ['canelaTimelineBack', true, 'boolval'],
-    'canela.inline_title_editor' => ['canelaInlineTitleEditor', true, 'boolval'],
-    'canela.share_modal' => ['canelaShareModal', true, 'boolval'],
-    'canela.share_networks' => ['canelaShareNetworks', 'x,facebook,whatsapp,email', null],
-    'canela.list_last_visit' => ['canelaListLastVisit', true, 'boolval'],
-    'canela.list_dismiss' => ['canelaListDismiss', true, 'boolval'],
-    'canela.sidebar_faq_url' => ['canelaSidebarFaqUrl', '', null],
-    'canela.sidebar_tos_url' => ['canelaSidebarTosUrl', '', null],
-    'canela.sidebar_privacy_url' => ['canelaSidebarPrivacyUrl', '', null],
-    'canela.sidebar_custom_title' => ['canelaSidebarCustomTitle', '', null],
-    'canela.sidebar_custom_links' => ['canelaSidebarCustomLinks', '', null],
-    'canela.sidebar_home_link' => ['canelaSidebarHomeLink', true, 'boolval'],
-    'canela.sidebar_home' => ['canelaSidebarHome', 'index', null],
-    'canela.sidebar_home_url' => ['canelaSidebarHomeUrl', '', null],
-    'canela.sidebar_category_dots' => ['canelaSidebarCategoryDots', true, 'boolval'],
+    // 补齐 Discourse 缺失的功能（js/src/forum/gaps）
+    'lcoy.post_shortcuts' => ['lcoyPostShortcuts', true, 'boolval'],
+    'lcoy.code_buttons' => ['lcoyCodeButtons', true, 'boolval'],
+    'lcoy.heading_anchors' => ['lcoyHeadingAnchors', true, 'boolval'],
+    'lcoy.table_expand' => ['lcoyTableExpand', true, 'boolval'],
+    'lcoy.spoiler_blur' => ['lcoySpoilerBlur', true, 'boolval'],
+    'lcoy.mention_cards' => ['lcoyMentionCards', true, 'boolval'],
+    'lcoy.post_read_state' => ['lcoyPostReadState', true, 'boolval'],
+    'lcoy.timeline_back' => ['lcoyTimelineBack', true, 'boolval'],
+    'lcoy.inline_title_editor' => ['lcoyInlineTitleEditor', true, 'boolval'],
+    'lcoy.share_modal' => ['lcoyShareModal', true, 'boolval'],
+    'lcoy.share_networks' => ['lcoyShareNetworks', 'x,facebook,whatsapp,email', null],
+    'lcoy.list_last_visit' => ['lcoyListLastVisit', true, 'boolval'],
+    'lcoy.list_dismiss' => ['lcoyListDismiss', true, 'boolval'],
+    'lcoy.sidebar_faq_url' => ['lcoySidebarFaqUrl', '', null],
+    'lcoy.sidebar_tos_url' => ['lcoySidebarTosUrl', '', null],
+    'lcoy.sidebar_privacy_url' => ['lcoySidebarPrivacyUrl', '', null],
+    'lcoy.sidebar_custom_title' => ['lcoySidebarCustomTitle', '', null],
+    'lcoy.sidebar_custom_links' => ['lcoySidebarCustomLinks', '', null],
+    'lcoy.sidebar_home_link' => ['lcoySidebarHomeLink', true, 'boolval'],
+    'lcoy.sidebar_home' => ['lcoySidebarHome', 'index', null],
+    'lcoy.sidebar_home_url' => ['lcoySidebarHomeUrl', '', null],
+    'lcoy.sidebar_category_dots' => ['lcoySidebarCategoryDots', true, 'boolval'],
 
-    // Entrar e cadastrar: páginas próprias (/login, /signup) ou os modais do core.
-    'canela.auth_pages' => ['canelaAuthPages', true, 'boolval'],
+    // 登录和注册：独立页面（/login、/signup）或核心的弹窗。
+    'lcoy.auth_pages' => ['lcoyAuthPages', true, 'boolval'],
 ];
 
-// As cores não têm configuração própria: o tema deriva a paleta inteira da cor
-// primária do Flarum (Aparência), como o Horizon do Discourse faz com a
-// "tertiary". Só a fonte vira variável do LESS — e o default dela mora aqui,
-// não no LESS: as variáveis de config entram antes das folhas das extensões, e
-// um default declarado na folha sobrescreveria o valor escolhido no admin.
+// 颜色没有自己的配置项：主题从 Flarum 的主色（外观）派生整套调色板，
+// 就像 Discourse 的 Horizon 使用其 "tertiary" 一样。只有字体变成 LESS 变量，
+// 它的默认值放在这里而不是 LESS 中：配置变量在扩展的样式表之前加载，
+// 而在样式表中声明的默认值会覆盖管理员选择的值。
 $settings = (new Extend\Settings())
     ->default(FontFamily::SETTING, FontFamily::INTER)
-    ->registerLessConfigVar('config-canela-font', FontFamily::SETTING, FontFamily::class)
-    // Indicador de carregamento com SVG (less/forum/Loader.less): o desenho vai
-    // na folha como `data:`, e cada uma das chaves recompila a folha ao mudar.
-    // Os valores saem de LoaderLess, que devolve o padrão do Flarum se algo
-    // estiver fora do esperado (um valor quebrado derrubaria a folha inteira).
+    ->registerLessConfigVar('config-lcoy-font', FontFamily::SETTING, FontFamily::class)
+    // 使用 SVG 的加载指示器（less/forum/Loader.less）：图形以 `data:` 形式
+    // 写入样式表，每个键都会在变更时重新编译该样式表。
+    // 取值来自 LoaderLess，若出现意外情况则回退到 Flarum 的默认值
+    // （一个坏值会让整个样式表崩溃）。
     ->default(LoaderLess::STYLE, LoaderPresets::DEFAULT)
     ->default(LoaderLess::CUSTOM, '')
     ->default(LoaderLess::TINT, true)
     ->default(LoaderLess::COLOR, '')
     ->default(LoaderLess::SIZE, 100)
-    ->registerLessConfigVar('config-canela-loader-on', LoaderLess::STYLE, static fn ($value): string => LoaderLess::on($value))
-    ->registerLessConfigVar('config-canela-loader-image', LoaderLess::CUSTOM, static fn (): string => LoaderLess::image())
-    ->registerLessConfigVar('config-canela-loader-still', LoaderLess::CUSTOM, static fn (): string => LoaderLess::still())
-    ->registerLessConfigVar('config-canela-loader-tint', LoaderLess::TINT, static fn ($value): string => LoaderLess::tint($value))
-    ->registerLessConfigVar('config-canela-loader-color', LoaderLess::COLOR, static fn ($value): string => LoaderLess::color($value))
-    ->registerLessConfigVar('config-canela-loader-scale', LoaderLess::SIZE, static fn ($value): string => LoaderLess::scale($value))
-    // `registerLessConfigVar` só lê a chave: quem manda recompilar a folha é o
-    // `resetJsCacheFor`. Sem ele, trocar a fonte ou o indicador gravava o valor
-    // e o CSS continuava com o antigo até alguém recompilar à mão.
+    ->registerLessConfigVar('config-lcoy-loader-on', LoaderLess::STYLE, static fn ($value): string => LoaderLess::on($value))
+    ->registerLessConfigVar('config-lcoy-loader-image', LoaderLess::CUSTOM, static fn (): string => LoaderLess::image())
+    ->registerLessConfigVar('config-lcoy-loader-still', LoaderLess::CUSTOM, static fn (): string => LoaderLess::still())
+    ->registerLessConfigVar('config-lcoy-loader-tint', LoaderLess::TINT, static fn ($value): string => LoaderLess::tint($value))
+    ->registerLessConfigVar('config-lcoy-loader-color', LoaderLess::COLOR, static fn ($value): string => LoaderLess::color($value))
+    ->registerLessConfigVar('config-lcoy-loader-scale', LoaderLess::SIZE, static fn ($value): string => LoaderLess::scale($value))
+    // `registerLessConfigVar` 只读取该键：真正触发样式表重新编译的是
+    // `resetJsCacheFor`。没有它，更换字体或指示器时虽然写入了值，
+    // 但 CSS 仍保持旧内容，直到有人手动重新编译。
     ->resetJsCacheFor(FontFamily::SETTING)
     ->resetJsCacheFor(LoaderLess::STYLE)
     ->resetJsCacheFor(LoaderLess::CUSTOM)
@@ -190,37 +188,35 @@ $settings = (new Extend\Settings())
 foreach ($forumSettings as $key => [$attributeName, $default, $cast]) {
     $settings->default($key, $default);
 
-    // Sem atributo: a chave é lida no servidor (PreBootShell), não no JS.
+    // 没有对应属性：该键在服务端（PreBootShell）读取，而不是在 JS 中。
     if ($attributeName !== null) {
         $settings->serializeToForum($attributeName, $key, $cast);
     }
 }
 
 /*
- * Os recursos com backend (marcadores, visualizações, emblemas, diretório…)
- * moram cada um em extend/<recurso>.php, que devolve a própria lista de
- * extenders. Assim cada recurso fica inteiro num lugar, e o tema base não
- * precisa saber deles.
+ * 带后端的资源（书签、浏览量、徽章、成员目录……）各自位于
+ * extend/<resource>.php 中，各自返回自己的 extender 列表。这样每个资源
+ * 都完整地放在一个地方，基础主题不需要了解它们。
  */
 $features = [];
 
-// O require roda numa closure estática para cada arquivo ter o próprio escopo:
-// direto aqui, um `$settings = …` num recurso sobrescreveria o `$settings` do
-// tema base, que então seria registrado duas vezes (e perderia os padrões).
+// require 在静态闭包中执行，让每个文件拥有自己的作用域：
+// 若直接写在这里，某个资源中的 `$settings = …` 会覆盖基础主题的
+// `$settings`，后者随后会被注册两次（并丢失默认值）。
 $requireFeature = static fn (string $file): array => require $file;
 
-// Só carregam os recursos listados em extend/.enabled (um por linha): um
-// recurso novo entra na lista depois de testado, e o fórum nunca cai por causa
-// de um que ainda está em construção.
+// 只有列在 extend/.enabled 中的资源才会被加载（每行一个）：新资源
+// 经过测试后才加入列表，论坛绝不会因为它仍在开发中而崩溃。
 //
-// Para testar um recurso sem afetar quem usa o site, a requisição manda o
-// cabeçalho `X-Canela-Probe: <recurso>[,<recurso>…]`, que vale só para ela.
+// 为了在不影响站点用户的情况下测试某个资源，请求可以带上
+// `X-Lcoy-Probe: <resource>[,<resource>…]` 请求头，仅对该请求生效。
 $readList = static fn (string $text): array => array_values(array_filter(array_map('trim', preg_split('/[\s,]+/', $text) ?: [])));
 $enabledFile = __DIR__.'/extend/.enabled';
 $enabled = is_file($enabledFile) ? $readList((string) file_get_contents($enabledFile)) : [];
 
-if (isset($_SERVER['HTTP_X_CANELA_PROBE'])) {
-    $enabled = $readList((string) $_SERVER['HTTP_X_CANELA_PROBE']);
+if (isset($_SERVER['HTTP_X_LCOY_PROBE'])) {
+    $enabled = $readList((string) $_SERVER['HTTP_X_LCOY_PROBE']);
 }
 
 $featureFiles = array_filter(
@@ -229,12 +225,12 @@ $featureFiles = array_filter(
 );
 
 foreach ($featureFiles as $featureFile) {
-    // Um recurso que falha ao carregar fica de fora, e o fórum continua no ar
-    // com o resto: melhor um recurso a menos do que um erro 500 no site todo.
+    // 加载失败的资源会被排除在外，论坛与其余部分继续运行：
+    // 少一个资源总好过整站报 500。
     try {
         $features = array_merge($features, $requireFeature($featureFile));
     } catch (\Throwable $error) {
-        error_log(sprintf('[lcoy/roselle] recurso %s desligado: %s', basename($featureFile), $error->getMessage()));
+        error_log(sprintf('[lcoy/roselle] 功能 %s 已停用：%s', basename($featureFile), $error->getMessage()));
     }
 }
 
@@ -243,17 +239,17 @@ return [
 
     (new Extend\Frontend('forum'))
         ->js(__DIR__.'/js/dist/forum.js')
-        // Os chunks carregados sob demanda (páginas, modais): sem o diretório
-        // registrado, o import() não teria de onde baixar o arquivo.
+        // 按需加载的 chunk（页面、弹窗）：若不注册该目录，
+        // import() 就无处下载文件。
         ->jsDirectory(__DIR__.'/js/dist/forum')
         ->css(__DIR__.'/less/forum.less')
-        // Com os ícones do Lucide (o padrão), o `far` (fa-regular, 20 KB) só
-        // desenha o ícone de copiar dos blocos de código; o core o pré-carrega
-        // em toda página. Sem o preload a fonte desce quando o ícone aparece.
-        // O fa-solid continua: ícones de tag/grupo e do wardrobe o usam em toda
-        // página. Roda depois do conteúdo do core (prioridade 160), que os põe.
+        // 使用 Lucide 图标（默认）时，`far`（fa-regular，20 KB）只
+        // 用于绘制代码块中的复制图标；核心会在每个页面预加载它。
+        // 没有预加载时，字体要等图标出现才下载。
+        // fa-solid 仍然保留：标签/群组图标和 wardrobe 的图标在每个页面
+        // 都会用到。它在核心内容之后运行（优先级 160），由核心放置它们。
         ->content(static function (\Flarum\Frontend\Document $document): void {
-            $lucide = resolve(\Flarum\Settings\SettingsRepositoryInterface::class)->get('canela.lucide_icons');
+            $lucide = resolve(\Flarum\Settings\SettingsRepositoryInterface::class)->get('lcoy.lucide_icons');
 
             if ($lucide !== null && ! (bool) $lucide) {
                 return;
@@ -267,25 +263,25 @@ return [
 
     (new Extend\Frontend('admin'))
         ->js(__DIR__.'/js/dist/admin.js')
-        // O painel do tema é um chunk (js/src/admin/panel.tsx).
+        // 主题的管理面板是一个 chunk（js/src/admin/panel.tsx）。
         ->jsDirectory(__DIR__.'/js/dist/admin')
         ->css(__DIR__.'/less/admin.less')
-        // A prévia dos indicadores de carregamento prontos no card do admin.
+        // 管理员卡片中加载指示器的现成预览。
         ->content(LoaderAdminPayload::class),
 
     new Extend\Locales(__DIR__.'/locale'),
 
-    // O campo de logo padrão do Flarum aceita SVG (limpo antes de salvar).
+    // Flarum 的默认 logo 字段接受 SVG（保存前会先清理）。
     (new Extend\ServiceProvider())->register(SvgLogoServiceProvider::class),
 
-    // O SVG próprio do indicador de carregamento é limpo antes de ir ao banco.
+    // 加载指示器自带的 SVG 在写入数据库前会先被清理。
     (new Extend\Event())->listen(\Flarum\Settings\Event\Saving::class, SanitizeLoaderSetting::class),
 
-    // Rota do tema que outra extensão já ocupa (/chat, /search…) sai, em vez
-    // de derrubar o fórum com BadRouteException.
+    // 已被其他扩展占用的主题路由（/chat、/search……）会被移除，
+    // 而不是用 BadRouteException 让论坛崩溃。
     (new Extend\ServiceProvider())->register(RouteConflictGuard::class),
 
-    // Wardrobe: só o tema padrão é aquecido a cada recompilação (ver LazyThemeAssets).
+    // Wardrobe：每次重新编译时只预热默认主题（见 LazyThemeAssets）。
     (new Extend\Conditional())->whenExtensionEnabled('ernestdefoe-wardrobe', static fn (): array => [
         (new Extend\ServiceProvider())->register(\Lcoy\Roselle\Support\WardrobeServiceProvider::class),
     ]),

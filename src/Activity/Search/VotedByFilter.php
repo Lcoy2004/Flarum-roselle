@@ -22,18 +22,18 @@ use FoF\Polls\Poll;
 use Illuminate\Database\ConnectionInterface;
 
 /**
- * A aba "Votos" do perfil: as postagens com enquetes do fof/polls em que a
- * pessoa votou, em `/api/posts?filter[canelaVoter]=slug`.
+ * 个人资料页的"投票"选项卡：列出用户在 fof/polls 的投票中投过票的那些帖子，
+ * 通过 `/api/posts?filter[lcoyVoter]=slug` 访问。
  *
- * Em quem alguém votou só é público quando a enquete mostra os votantes: a
- * regra é a do próprio fof (`seeVoters`), enquete por enquete. A própria
- * pessoa vê todas as suas. A visibilidade das postagens continua a do core.
+ * 某人投票给谁，只有在投票公开投票者时才是公开信息：规则由 fof 自身提供
+ * （`seeVoters`），逐个投票判断。本人可以看到自己的全部投票。
+ * 帖子的可见性仍沿用核心规则。
  *
  * @implements FilterInterface<DatabaseSearchState>
  */
 final class VotedByFilter implements FilterInterface
 {
-    /** Teto de enquetes avaliadas por pedido: folgado para um perfil. */
+    /** 每次请求最多评估的投票数：对单个资料页而言足够宽松。 */
     private const MAX_POLLS = 500;
 
     public function __construct(
@@ -45,7 +45,7 @@ final class VotedByFilter implements FilterInterface
     #[\Override]
     public function getFilterKey(): string
     {
-        return 'canelaVoter';
+        return 'lcoyVoter';
     }
 
     #[\Override]

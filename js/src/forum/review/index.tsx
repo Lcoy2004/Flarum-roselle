@@ -1,11 +1,11 @@
 /*
- * "Revisar": a página /flags do flarum/flags vira a fila de revisão do
- * Discourse (/review), dentro do cartão do tema.
+ * "审核"：flarum/flags 的 /flags 页面变成 Discourse 的审核队列
+ * （/review），位于主题的卡片内。
  *
- * Pelo nome do módulo, como o modal de sinalizar: o tema não importa nada do
- * flarum/flags, que pode estar desligado. O `oninit` original também é
- * trocado: ele carregaria o `app.flags` (só posts e autores), e a fila faz a
- * própria requisição, com o post inteiro.
+ * 通过模块名处理，与举报弹窗相同：主题不导入 flarum/flags
+ * 的任何内容，它可能被关闭。原始的 `oninit` 也会被
+ * 替换：它会加载 `app.flags`（只含帖子和作者），而队列会
+ * 自己发起请求，获取完整帖子。
  */
 import app from 'flarum/forum/app';
 import { override } from 'flarum/common/extend';
@@ -16,7 +16,7 @@ import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import { lazyComponent } from '../utils/lazy';
 import { isExtensionEnabled, t } from '../utils/settings';
 
-// A fila vai num chunk próprio: só a moderação abre o /flags.
+// 队列放在独立的 chunk 中：只有版主会打开 /flags。
 const ReviewQueue = lazyComponent(
   () => import('./ReviewQueue').then((module) => module.default),
   () => <LoadingIndicator />
@@ -36,12 +36,12 @@ export default function installReview(): void {
     app.setTitle(title);
     app.setTitleCount(0);
 
-    this.bodyClass = 'App--flags App--canelaReview';
+    this.bodyClass = 'App--flags App--lcoyReview';
   });
 
   override(FLAGS_PAGE as any, 'view', function () {
     return (
-      <PageStructure className="FlagsPage CanelaReviewPage">
+      <PageStructure className="FlagsPage LcoyReviewPage">
         <ReviewQueue />
       </PageStructure>
     );

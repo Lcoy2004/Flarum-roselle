@@ -9,16 +9,16 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Paridade das traduções: toda chave do en.yml existe em cada idioma, e vice-versa.
+ * 翻译的一致性：en.yml 中的每个键都存在于每种语言中，反之亦然。
  *
- * Uma chave esquecida num idioma aparece crua (ou em inglês) para quem usa o
- * outro, e o build do JS não acusa isso. O en.yml é a referência.
+ * 某种语言中遗漏的键会以原始形式（或英文）显示给使用
+ * 另一种语言的用户，而 JS 构建不会报告这一点。en.yml 是基准。
  */
 final class LocaleParityTest extends TestCase
 {
     private const LOCALES = ['en', 'zh-Hans'];
 
-    /** @return array<string, array{string}> idiomas comparados com o en */
+    /** @return array<string, array{string}> 与 en 比较的语言 */
     public static function translations(): array
     {
         $out = [];
@@ -32,13 +32,13 @@ final class LocaleParityTest extends TestCase
         return $out;
     }
 
-    /** @return array<string, string> chave pontuada => texto, de todas as folhas */
+    /** @return array<string, string> 带点的键 => 文本，来自所有叶子节点 */
     private function entriesOf(string $locale): array
     {
         return $this->flatten((array) Yaml::parseFile(dirname(__DIR__, 2)."/locale/$locale.yml"));
     }
 
-    /** @return list<string> chaves pontuadas de todas as folhas, em ordem */
+    /** @return list<string> 所有叶子节点的带点键，按顺序排列 */
     private function keysOf(string $locale): array
     {
         $keys = array_keys($this->entriesOf($locale));
@@ -69,18 +69,18 @@ final class LocaleParityTest extends TestCase
     }
 
     /**
-     * Variáveis (`{name}`, `{count, plural…`) e tags (`<a>`) de um texto.
+     * 文本中的变量（`{name}`、`{count, plural…`）和标签（`<a>`）。
      *
-     * O tradutor reescreve a frase, mas um placeholder trocado some na tela (ou
-     * quebra o ICU). Os ramos do plural (`one {…}`) podem variar: o japonês só usa `other`.
+     * 译者会重写句子，但被改掉的占位符会从界面上消失（或
+     * 破坏 ICU）。复数的分支（`one {…}`）可以不同：日语只用 `other`。
      *
      * @return list<string>
      */
     private function placeholdersOf(string $text): array
     {
-        // o texto dos ramos ("one {…}", "=0 {…}") é traduzido: não conta como variável
+        // 分支文本（"one {…}"、"=0 {…}"）会被翻译：不算作变量
         $text = (string) preg_replace('/(?:\b(?:zero|one|two|few|many|other)|=\d+)\s*\{/', '(', $text);
-        // só o nome conta: "{count}" no en e "{count, plural…}" noutro idioma valem igual
+        // 只算名称：en 中的 "{count}" 和另一种语言中的 "{count, plural…}" 视为相同
         preg_match_all('/\{\s*([A-Za-z_]\w*)\s*[,}]|<(\/?(?:a|b|i|em|strong|code|kbd|br|span))\b/', $text, $m);
         $tokens = array_values(array_unique(array_map(static fn (string $var, string $tag): string => $var !== '' ? '{'.$var : '<'.$tag, $m[1], $m[2])));
         sort($tokens);
@@ -93,7 +93,7 @@ final class LocaleParityTest extends TestCase
     {
         $missing = array_values(array_diff($this->keysOf('en'), $this->keysOf($locale)));
 
-        self::assertSame([], $missing, "Faltam em $locale.yml:\n  - ".implode("\n  - ", $missing));
+        self::assertSame([], $missing, "$locale.yml 中缺少：\n  - ".implode("\n  - ", $missing));
     }
 
     #[DataProvider('translations')]
@@ -101,7 +101,7 @@ final class LocaleParityTest extends TestCase
     {
         $extra = array_values(array_diff($this->keysOf($locale), $this->keysOf('en')));
 
-        self::assertSame([], $extra, "Sobram em $locale.yml (faltam em en.yml):\n  - ".implode("\n  - ", $extra));
+        self::assertSame([], $extra, "$locale.yml 中多出（en.yml 中缺少）：\n  - ".implode("\n  - ", $extra));
     }
 
     #[DataProvider('translations')]
@@ -116,13 +116,13 @@ final class LocaleParityTest extends TestCase
             }
         }
 
-        self::assertSame([], $diff, "Placeholders diferentes do en em $locale.yml:\n  - ".implode("\n  - ", $diff));
+        self::assertSame([], $diff, "$locale.yml 中的占位符与 en 不同：\n  - ".implode("\n  - ", $diff));
     }
 
     public function test_todos_os_idiomas_sao_lidos(): void
     {
         foreach (self::LOCALES as $locale) {
-            self::assertNotEmpty($this->keysOf($locale), "$locale.yml não tem nenhuma chave");
+            self::assertNotEmpty($this->keysOf($locale), "$locale.yml 没有任何键");
         }
     }
 }

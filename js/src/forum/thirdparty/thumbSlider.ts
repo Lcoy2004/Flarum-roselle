@@ -15,8 +15,8 @@
  */
 const extensions = (window as any).flarum?.extensions;
 
-// Sem a lista de extensões (carregamento inesperado) marca de qualquer forma:
-// o pior caso é a extensão deixar de aplicar a própria grelha.
+// 没有扩展列表（意外的加载方式）时也照样标记：
+// 最坏的情况是该扩展不再应用自己的网格。
 if (!extensions || 'tryhackx-thumb-sliders' in extensions) {
   const global = window as any;
 

@@ -21,9 +21,9 @@ use Flarum\Post\Post;
 use Flarum\User\User;
 
 /**
- * "Fulano editou sua postagem" — o `edited` do Discourse: alguém da moderação
- * (ou outra pessoa com permissão) mudou o texto de uma postagem sua. Edições
- * seguidas da mesma pessoa caem na mesma notificação (o blueprint é igual).
+ * "某某编辑了你的帖子"——即 Discourse 的 `edited`：管理团队（或其他有权限
+ * 的人）修改了你帖子的内容。同一人连续编辑会归并到同一条通知中
+ * （blueprint 相同）。
  */
 final class PostEditedBlueprint implements BlueprintInterface, AlertableInterface
 {
@@ -54,7 +54,7 @@ final class PostEditedBlueprint implements BlueprintInterface, AlertableInterfac
     #[\Override]
     public static function getType(): string
     {
-        return 'canelaPostEdited';
+        return 'lcoyPostEdited';
     }
 
     #[\Override]

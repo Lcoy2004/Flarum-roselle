@@ -1,70 +1,70 @@
 // =====================================================================
-// Barra lateral do Discourse (.sidebar-wrapper), medida no
-// meta.discourse.org: fundo da superfície, linhas de 2,3rem com o ícone numa
-// coluna de 24px, cinza neutro, hover tingido do destaque e o ativo em
-// cinza claro.
+// Discourse 的侧边栏（.sidebar-wrapper），在
+// meta.discourse.org 上测量：表面色背景，2.3rem 高的行，图标位于
+// 24px 的列中，中性灰色，悬停为高亮色的淡染，激活项为
+// 浅灰色。
 // =====================================================================
 
-.CanelaSidebar {
+.LcoySidebar {
   font-size: 16px;
   line-height: 1.4;
-  color: var(--cn-primary-high);
+  color: var(--lcoy-primary-high);
 }
 
-// A barra global: fixa à esquerda, abaixo do cabeçalho.
-#canela-sidebar {
+// 全局侧边栏：固定在左侧，页头下方。
+#lcoy-sidebar {
   position: fixed;
-  top: var(--cn-header-height);
+  top: var(--lcoy-header-height);
   bottom: 0;
   left: 0;
-  width: var(--cn-sidebar-width);
+  width: var(--lcoy-sidebar-width);
   box-sizing: border-box;
-  background: var(--cn-surface);
-  border-right: 1px solid var(--cn-primary-low);
+  background: var(--lcoy-surface);
+  border-right: 1px solid var(--lcoy-primary-low);
   z-index: calc(~"var(--zindex-header) - 1");
   transform: translateX(-100%);
   visibility: hidden;
-  // O Discourse abre e fecha a barra encaixada sem animação (o desktop_theme
-  // do Meta zera a transição do .sidebar-animate).
+  // Discourse 在侧边栏吸附状态下打开和关闭时没有动画（Meta 的 desktop_theme
+  // 将 .sidebar-animate 的过渡归零）。
   transition: none;
 
-  .Canela--sidebarOpen & {
+  .Lcoy--sidebarOpen & {
     transform: none;
     visibility: visible;
   }
 }
 
-// O fundo "por trás" do painel do celular (.header-cloak).
-.CanelaSidebar-backdrop {
+// 手机端面板"背后"的背景（.header-cloak）。
+.LcoySidebar-backdrop {
   display: none;
 }
 
-.CanelaSidebar-inner {
+.LcoySidebar-inner {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.CanelaSidebar-sections {
+.LcoySidebar-sections {
   flex: 1 1 auto;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 0 var(--cn-space-2) var(--cn-space-4);
-  // A barra de rolagem só aparece com o mouse em cima: some 0,5s depois de
-  // sair, como o .sidebar-sections do Discourse.
+  padding: 0 var(--lcoy-space-2) var(--lcoy-space-4);
+  // 滚动条仅在鼠标悬停时出现：移出 0.5s 后
+  // 消失，与 Discourse 的 .sidebar-sections 一致。
   scrollbar-color: transparent transparent;
   transition: scrollbar-color 0.25s ease-in-out 0.5s;
 
   &:hover {
-    scrollbar-color: var(--cn-primary-100) transparent;
+    scrollbar-color: var(--lcoy-primary-100) transparent;
     transition-delay: 0s;
   }
 }
 
-// "Novo tópico" em largura total, no topo (só para quem está logado, como
-// no Discourse).
-.CanelaSidebar-newTopic {
-  margin: var(--cn-space-2) 0 var(--cn-space-4);
+// 全宽的"新话题"位于顶部（仅登录用户可见，与
+// Discourse 一致）。
+.LcoySidebar-newTopic {
+  margin: var(--lcoy-space-2) 0 var(--lcoy-space-4);
 
   .Button {
     width: 100%;
@@ -75,27 +75,27 @@
   }
 }
 
-// Com rascunhos (fof/drafts): o botão dividido do Discourse — "✎ Novo
-// tópico" e o "⌄" grudados, da mesma cor, com uma linha fina entre eles.
-.CanelaSidebar-newTopic--split {
+// 有草稿时（fof/drafts）：Discourse 的拆分按钮——"✎ 新
+// 话题"和"⌄"紧贴，颜色相同，二者之间有一条细线。
+.LcoySidebar-newTopic--split {
   position: relative;
   display: flex;
   align-items: stretch;
 
-  > .CanelaSidebar-newTopicButton {
+  > .LcoySidebar-newTopicButton {
     flex: 1;
     min-width: 0;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
 
-  .CanelaDraftsMenu {
+  .LcoyDraftsMenu {
     position: static;
     display: flex;
     flex: none;
   }
 
-  .CanelaDraftsMenu-toggle.Button {
+  .LcoyDraftsMenu-toggle.Button {
     width: 38px;
     padding: 0;
     border-top-left-radius: 0;
@@ -113,14 +113,14 @@
   }
 }
 
-// Seções (.sidebar-section-wrapper): 4px em cima e embaixo e uma linha entre
-// elas; a primeira encosta no topo e a última não tem linha.
-.CanelaSidebar-section {
+// 分区（.sidebar-section-wrapper）：上下各 4px，分区之间有
+// 一条线；第一个贴顶，最后一个没有线。
+.LcoySidebar-section {
   padding: 4px 0;
-  border-bottom: 1px solid var(--cn-primary-low);
+  border-bottom: 1px solid var(--lcoy-primary-low);
 
   &:first-child,
-  .CanelaSidebar-newTopic + & {
+  .LcoySidebar-newTopic + & {
     padding-top: 0;
   }
 
@@ -129,20 +129,20 @@
   }
 }
 
-// Cabeçalho da seção: da altura de um link, seta numa coluna de 24px e o
-// título em versalete pequeno.
-.CanelaSidebar-sectionHeader {
+// 分区标题：高度与链接一致，箭头位于 24px 的列中，
+// 标题为小型大写字母。
+.LcoySidebar-sectionHeader {
   display: flex;
   align-items: center;
-  gap: var(--cn-space-2);
+  gap: var(--lcoy-space-2);
   flex: 1 1 auto;
   min-width: 0;
-  height: var(--cn-row-height);
+  height: var(--lcoy-row-height);
   padding: 0 4px;
   border: 0;
-  border-radius: var(--cn-radius);
+  border-radius: var(--lcoy-radius);
   background: none;
-  color: var(--cn-primary-high);
+  color: var(--lcoy-primary-high);
   font-size: 0.7579rem;
   font-weight: 600;
   line-height: normal;
@@ -151,18 +151,18 @@
   cursor: pointer;
 
   &:focus-visible {
-    background: var(--cn-hover-accent);
+    background: var(--lcoy-hover-accent);
     outline: 0;
   }
 }
 
-.CanelaSidebar-sectionTitle {
+.LcoySidebar-sectionTitle {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.CanelaSidebar-sectionCaret {
+.LcoySidebar-sectionCaret {
   display: flex;
   justify-content: center;
   flex: 0 0 24px;
@@ -175,7 +175,7 @@
   }
 }
 
-.CanelaSidebar-sectionContent {
+.LcoySidebar-sectionContent {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -184,31 +184,31 @@
   list-style: none;
 }
 
-// Recolhida, a seção esconde o conteúdo mas o mantém montado: os widgets das
-// extensões só carregam os dados no `oncreate`, e desmontar ao recolher os
-// deixaria vazios ao reabrir.
-.CanelaSidebar-section.collapsed > .CanelaSidebar-sectionContent {
+// 收起时，分区隐藏内容但保持挂载：扩展的
+// 小组件只在 `oncreate` 时加载数据，收起时卸载会导致
+// 重新打开时内容为空。
+.LcoySidebar-section.collapsed > .LcoySidebar-sectionContent {
   display: none;
 }
 
-// Links: o LinkButton do core (seção da comunidade e itens de extensões) e os
-// links de categoria/etiqueta têm a mesma cara.
-.CanelaSidebar-sectionContent > li {
+// 链接：核心的 LinkButton（社区分区和扩展条目）与
+// 分类/标签链接外观相同。
+.LcoySidebar-sectionContent > li {
   > .LinkButton,
   > .Button,
   > a,
   > .Dropdown > .Dropdown-toggle {
     display: flex;
     align-items: center;
-    gap: var(--cn-space-2);
+    gap: var(--lcoy-space-2);
     width: 100%;
-    height: var(--cn-row-height);
+    height: var(--lcoy-row-height);
     padding: 0 4px;
     box-sizing: border-box;
     border: 0;
-    border-radius: var(--cn-radius-pill);
+    border-radius: var(--lcoy-radius-pill);
     background: transparent;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
     font-size: 16px;
     font-weight: 400;
     line-height: 1.4;
@@ -218,16 +218,16 @@
     white-space: nowrap;
     transition: none;
 
-    // O ícone mora numa coluna de 24px, centralizado (.sidebar-section-link-prefix).
+    // 图标位于 24px 的列中并居中（.sidebar-section-link-prefix）。
     > .Button-icon,
     > .icon,
-    > .CanelaSidebar-linkIcon:not(.CanelaCategorySymbol) {
+    > .LcoySidebar-linkIcon:not(.LcoyCategorySymbol) {
       flex: 0 0 24px;
       width: 24px;
       margin: 0;
       font-size: 16px;
       text-align: center;
-      color: var(--cn-primary-high);
+      color: var(--lcoy-primary-high);
     }
 
     .Button-label {
@@ -240,39 +240,39 @@
       display: none;
     }
 
-    // Contagens que as extensões põem nos links (ex.: não lidas).
+    // 扩展放在链接上的计数（例如未读数）。
     .Button-badge,
     .Badge {
       margin-left: auto;
-      color: var(--cn-sidebar-suffix);
+      color: var(--lcoy-sidebar-suffix);
       font-size: 13px;
       font-weight: 500;
       background: none;
     }
 
-    // Hover (--d-sidebar-highlight-*): fundo tingido e texto na cor do destaque.
+    // 悬停（--d-sidebar-highlight-*）：淡染背景，文字为高亮色。
     &:hover,
     &:focus-visible {
-      background: var(--cn-hover-accent);
-      color: var(--cn-hover-accent-text);
+      background: var(--lcoy-hover-accent);
+      color: var(--lcoy-hover-accent-text);
       outline: 0;
 
       > .Button-icon,
-      > .icon:not(.CanelaCategorySymbol) {
-        color: var(--cn-hover-accent-text);
+      > .icon:not(.LcoyCategorySymbol) {
+        color: var(--lcoy-hover-accent-text);
       }
     }
 
-    // Ativo (--d-sidebar-active-*): cinza claro e semi-negrito.
+    // 激活（--d-sidebar-active-*）：浅灰色，半粗体。
     &[active='true'],
     &.active {
-      background: var(--cn-primary-100);
-      color: var(--cn-primary-very-high);
+      background: var(--lcoy-primary-100);
+      color: var(--lcoy-primary-very-high);
       font-weight: 600;
 
       > .Button-icon,
-      > .icon:not(.CanelaCategorySymbol) {
-        color: var(--cn-primary-very-high);
+      > .icon:not(.LcoyCategorySymbol) {
+        color: var(--lcoy-primary-very-high);
       }
     }
   }
@@ -283,8 +283,8 @@
   }
 }
 
-// "Todas as categorias" e "Todas as etiquetas" em letra menor (font-down-1).
-.CanelaSidebar-sectionContent > li > .CanelaSidebar-link--all {
+// "所有分类"和"所有标签"使用较小字号（font-down-1）。
+.LcoySidebar-sectionContent > li > .LcoySidebar-link--all {
   font-size: 0.8706rem;
   line-height: 1.4;
 
@@ -293,9 +293,9 @@
   }
 }
 
-// Ícone da etiqueta (o do Flarum, ou a etiqueta genérica), centrado na
-// coluna de 24px; na cor da etiqueta quando ela tem uma.
-.CanelaSidebar-sectionContent > li > .CanelaSidebar-tagLink > .CanelaTagSymbol {
+// 标签图标（Flarum 的，或通用标签），居中于
+// 24px 列中；标签有颜色时使用其颜色。
+.LcoySidebar-sectionContent > li > .LcoySidebar-tagLink > .LcoyTagSymbol {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -309,14 +309,14 @@
   }
 }
 
-// Símbolo da categoria: o ícone na cor dela, ou o quadradinho de 0,8em.
-.CanelaSidebar-tagLink .CanelaCategorySymbol {
+// 分类符号：其颜色的图标，或 0.8em 的小方块。
+.LcoySidebar-tagLink .LcoyCategorySymbol {
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 24px;
   width: 24px;
-  color: var(--category-color, var(--cn-primary-medium));
+  color: var(--category-color, var(--lcoy-primary-medium));
   font-size: 16px;
 
   .icon {
@@ -331,34 +331,34 @@
       width: 0.8em;
       height: 0.8em;
       border-radius: 2px;
-      background: var(--category-color, var(--cn-primary-medium));
+      background: var(--category-color, var(--lcoy-primary-medium));
     }
   }
 }
 
-// "Mais": dropdown aberto para a direita, a partir do item.
-.CanelaSidebar-more {
+// "更多"：从该项开始向右展开的下拉菜单。
+.LcoySidebar-more {
   display: block;
 
   .Dropdown-menu {
-    left: var(--cn-space-2);
+    left: var(--lcoy-space-2);
     right: auto;
     min-width: 220px;
   }
 }
 
-// Rodapé (.sidebar-footer-wrapper): grudado no pé, sem linha, com um degradê
-// em cima que mostra que a lista rola; os botões à direita.
-.CanelaSidebar-footer {
+// 页脚（.sidebar-footer-wrapper）：吸附底部，无分隔线，上方有渐变
+// 表示列表可滚动；按钮在右侧。
+.LcoySidebar-footer {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 0;
   min-height: 45.9px;
-  padding: var(--cn-space-2);
+  padding: var(--lcoy-space-2);
   box-sizing: border-box;
-  background: var(--cn-surface);
+  background: var(--lcoy-surface);
 
   &::before {
     content: '';
@@ -368,13 +368,13 @@
     top: -1.5em;
     height: 1.5em;
     pointer-events: none;
-    background: linear-gradient(to bottom, transparent, var(--cn-surface));
+    background: linear-gradient(to bottom, transparent, var(--lcoy-surface));
   }
 
-  // .sidebar-footer-actions-button: pílula pequena com o ícone em font-down-1.
+  // .sidebar-footer-actions-button：小胶囊，图标为 font-down-1。
   .Button--icon,
   .ThemeSwitcher > .Dropdown-toggle,
-  .CanelaColorMode > .Dropdown-toggle {
+  .LcoyColorMode > .Dropdown-toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -383,9 +383,9 @@
     min-width: 0;
     padding: 0.25em 0.4em;
     border: 0;
-    border-radius: var(--cn-radius-pill);
+    border-radius: var(--lcoy-radius-pill);
     background: transparent;
-    color: var(--cn-primary-very-high);
+    color: var(--lcoy-primary-very-high);
     box-shadow: none;
     font-size: 16px;
     line-height: 1;
@@ -402,56 +402,56 @@
       font-size: 0.8706rem;
       line-height: 1;
       text-align: center;
-      color: var(--cn-primary-high);
-      // O ícone (SVG) é o alvo do clique: quem recebe o evento é ele, não o
-      // botão. Sem `pointer-events: none` o clique no desenho não abre o menu.
+      color: var(--lcoy-primary-high);
+      // 图标（SVG）是点击目标：接收事件的是它，而不是
+      // 按钮。没有 `pointer-events: none` 时点击图形不会打开菜单。
       pointer-events: none;
     }
 
-    // `.sidebar-footer-actions-button:hover`: cinza leve, não a cor do tema.
+    // `.sidebar-footer-actions-button:hover`：浅灰色，而非主题色。
     &:hover,
     &:focus-visible,
     .open > & {
-      background: var(--cn-hover);
+      background: var(--lcoy-hover);
 
       .Button-icon {
-        color: var(--cn-primary);
+        color: var(--lcoy-primary);
       }
     }
   }
 
-  // Os menus do rodapé abrem para cima, como os do Discourse.
-  .CanelaColorMode .Dropdown-menu,
-  .CanelaPaletteSelector .Dropdown-menu {
+  // 页脚菜单向上展开，与 Discourse 一致。
+  .LcoyColorMode .Dropdown-menu,
+  .LcoyPaletteSelector .Dropdown-menu {
     top: auto;
     bottom: 100%;
-    margin-bottom: var(--cn-space-1);
+    margin-bottom: var(--lcoy-space-1);
     min-width: 12em;
     padding: 4px;
   }
 
-  // Os menus se posicionam pelo rodapé (e não pelo botão): ancorados no
-  // botão, o do modo de cor passava da borda esquerda da barra e era cortado.
-  .CanelaColorMode,
-  .CanelaPaletteSelector {
+  // 菜单以页脚（而非按钮）定位：若锚定在
+  // 按钮上，颜色模式菜单会超出侧边栏左边缘并被裁切。
+  .LcoyColorMode,
+  .LcoyPaletteSelector {
     position: static;
   }
 
-  .CanelaColorMode .Dropdown-menu,
-  .CanelaPaletteSelector .Dropdown-menu {
+  .LcoyColorMode .Dropdown-menu,
+  .LcoyPaletteSelector .Dropdown-menu {
     right: auto;
-    left: var(--cn-space-2);
-    max-width: ~"calc(100% - (2 * var(--cn-space-2)))";
+    left: var(--lcoy-space-2);
+    max-width: ~"calc(100% - (2 * var(--lcoy-space-2)))";
   }
 
-  // A paleta, em texto, ocupa a sobra à esquerda ("Meta Branded ⌄").
-  .CanelaPaletteSelector {
+  // 文字形式的调色板占据左侧剩余空间（"Meta Branded ⌄"）。
+  .LcoyPaletteSelector {
     flex: 1 1 auto;
     min-width: 0;
     margin-right: auto;
   }
 
-  .CanelaPaletteSelector-toggle.Button {
+  .LcoyPaletteSelector-toggle.Button {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -459,11 +459,11 @@
     height: auto;
     padding: 0.25em 0.5em;
     border: 0;
-    border-radius: var(--cn-radius);
+    border-radius: var(--lcoy-radius);
     background: transparent;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
     box-shadow: none;
-    font-size: var(--cn-font-down-1);
+    font-size: var(--lcoy-font-down-1);
 
     .Button-label {
       min-width: 0;
@@ -476,41 +476,41 @@
       flex: 0 0 auto;
       margin: 0;
       font-size: 0.75em;
-      color: var(--cn-primary-medium);
+      color: var(--lcoy-primary-medium);
     }
 
     &:hover,
     &:focus-visible,
     .open > & {
-      background: var(--cn-hover) !important;
-      color: var(--cn-primary);
+      background: var(--lcoy-hover) !important;
+      color: var(--lcoy-primary);
     }
   }
 
-  .open > .CanelaColorMode-toggle.Button {
-    background: var(--cn-hover);
+  .open > .LcoyColorMode-toggle.Button {
+    background: var(--lcoy-hover);
   }
 
-  .Dropdown-menu > li > .CanelaColorMode-option,
-  .Dropdown-menu > li > .CanelaPaletteSelector-option {
+  .Dropdown-menu > li > .LcoyColorMode-option,
+  .Dropdown-menu > li > .LcoyPaletteSelector-option {
     display: flex !important;
     flex-direction: row;
     align-items: center;
     gap: 10px;
     width: 100%;
     padding: 0.5em 0.75em;
-    border-radius: var(--cn-radius);
-    font-size: var(--cn-font-0);
+    border-radius: var(--lcoy-radius);
+    font-size: var(--lcoy-font-0);
 
     .Button-icon,
-    .CanelaPaletteSelector-dot {
+    .LcoyPaletteSelector-dot {
       margin: 0 10px 0 0 !important;
     }
 
     .Button-icon {
       width: 1em;
       font-size: 1rem;
-      color: var(--cn-primary-high);
+      color: var(--lcoy-primary-high);
     }
 
     .Button-label {
@@ -519,60 +519,60 @@
       gap: 10px;
     }
 
-    // `--d-selected` do Discourse: um cinza leve, não a cor de destaque.
+    // Discourse 的 `--d-selected`：浅灰色，而非高亮色。
     &.active,
     &.active:hover {
-      background: var(--cn-primary-very-low, var(--cn-hover));
-      color: var(--cn-primary);
+      background: var(--lcoy-primary-very-low, var(--lcoy-hover));
+      color: var(--lcoy-primary);
       font-weight: 400;
     }
 
     &:hover {
-      background: var(--cn-hover);
-      color: var(--cn-primary);
+      background: var(--lcoy-hover);
+      color: var(--lcoy-primary);
     }
   }
 
-  .CanelaPaletteSelector-dot {
+  .LcoyPaletteSelector-dot {
     display: inline-block;
     flex: 0 0 auto;
     width: 0.9em;
     height: 0.9em;
     border-radius: 50%;
-    background: var(--cn-accent);
+    background: var(--lcoy-accent);
 
     &--hc {
       background: linear-gradient(90deg, #000 50%, #fff 50%);
-      box-shadow: inset 0 0 0 1px var(--cn-primary-medium);
+      box-shadow: inset 0 0 0 1px var(--lcoy-primary-medium);
     }
   }
 
-  // Com o Wardrobe: "🖌 Canela ⌄", como o "🖌 Meta Branded ⌄" do Meta.
-  .CanelaPaletteSelector-label {
+  // 使用 Wardrobe 时："🖌 Lcoy ⌄"，与 Meta 的 "🖌 Meta Branded ⌄" 一致。
+  .LcoyPaletteSelector-label {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     min-width: 0;
   }
 
-  .CanelaPaletteSelector-brush {
+  .LcoyPaletteSelector-brush {
     flex: 0 0 auto;
     font-size: 0.9em;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
   }
 
-  // Título de cada seção do menu (Tema / Paleta de cores).
-  .Dropdown-menu > li > .CanelaPaletteSelector-heading {
+  // 菜单各分区的标题（主题 / 调色板）。
+  .Dropdown-menu > li > .LcoyPaletteSelector-heading {
     display: block;
     padding: 0.5em 0.75em 0.25em;
-    color: var(--cn-primary-medium);
-    font-size: var(--cn-font-down-2);
+    color: var(--lcoy-primary-medium);
+    font-size: var(--lcoy-font-down-2);
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
 
-  // O ThemeSwitcher do core vira só o ícone, abrindo para cima.
+  // 核心的 ThemeSwitcher 只保留图标，向上展开。
   .ThemeSwitcher {
     .Button-label,
     .Button-caret {
@@ -584,164 +584,164 @@
       bottom: 100%;
       right: 0;
       left: auto;
-      margin-bottom: var(--cn-space-1);
+      margin-bottom: var(--lcoy-space-1);
     }
   }
 }
 
-// Cabeçalho da seção com o lápis de personalizar, que só aparece no hover.
-.CanelaSidebar-sectionHead {
+// 分区标题带自定义铅笔，仅在悬停时显示。
+.LcoySidebar-sectionHead {
   position: relative;
   display: flex;
   align-items: center;
   padding-right: 4px;
-  border-radius: var(--cn-radius);
+  border-radius: var(--lcoy-radius);
 
-  &:hover .CanelaSidebar-sectionEdit,
-  .CanelaSidebar-sectionEdit:focus-visible {
+  &:hover .LcoySidebar-sectionEdit,
+  .LcoySidebar-sectionEdit:focus-visible {
     opacity: 1;
   }
 }
 
-.CanelaSidebar-sectionEdit {
+.LcoySidebar-sectionEdit {
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
   padding: 4px;
   border: 0;
-  border-radius: var(--cn-radius);
+  border-radius: var(--lcoy-radius);
   background: none;
-  color: var(--cn-primary-high);
+  color: var(--lcoy-primary-high);
   font-size: 0.8706rem;
   opacity: 0;
   cursor: pointer;
   transition: opacity 0.25s, background 0.25s;
 
   &:hover {
-    color: var(--cn-hover-accent-text);
+    color: var(--lcoy-hover-accent-text);
   }
 
   &:focus-visible {
-    background: var(--cn-primary-300);
+    background: var(--lcoy-primary-300);
     outline: 0;
   }
 }
 
 // ---------------------------------------------------------------------
-// Celular: o painel do hambúrguer (.menu-panel), por cima de tudo, com o
-// fundo escurecido atrás.
+// 手机端：汉堡菜单的面板（.menu-panel），位于一切之上，背后为
+// 暗色背景。
 // ---------------------------------------------------------------------
 @media @phone {
-  #canela-sidebar {
+  #lcoy-sidebar {
     top: 0;
     width: ~"min(360px, 80vw)";
-    padding: var(--cn-space-2);
-    border: 1px solid var(--cn-primary-low);
-    box-shadow: var(--cn-panel-shadow);
+    padding: var(--lcoy-space-2);
+    border: 1px solid var(--lcoy-primary-low);
+    box-shadow: var(--lcoy-panel-shadow);
     overflow-y: auto;
     overscroll-behavior: contain;
     z-index: calc(~"var(--zindex-header) + 2");
 
-    // Abre deslizando da esquerda em 200ms (ease-out), como o .menu-panel do
-    // Discourse; fecha na hora.
-    .Canela--sidebarOverlay & {
-      animation: canela-panel-in 0.2s ease-out both;
+    // 以 200ms（ease-out）从左侧滑入，与 Discourse 的 .menu-panel
+    // 一致；关闭时立即完成。
+    .Lcoy--sidebarOverlay & {
+      animation: lcoy-panel-in 0.2s ease-out both;
     }
 
-    .CanelaSidebar-inner {
+    .LcoySidebar-inner {
       height: auto;
     }
 
-    .CanelaSidebar-sections {
+    .LcoySidebar-sections {
       overflow: visible;
       padding: 0;
     }
 
-    .CanelaSidebar-newTopic {
-      margin: 0 0 var(--cn-space-2);
+    .LcoySidebar-newTopic {
+      margin: 0 0 var(--lcoy-space-2);
     }
 
-    // No painel as seções não têm linha entre elas, só o respiro. A do
-    // anúncio é um cartão (FofWidgets.less) e mantém o padding próprio —
-    // sem ele o ícone encostava na borda e o anel do pulso era cortado.
-    .CanelaSidebar-section:not(.CanelaSidebar-section--fof-news) {
+    // 面板中各分区之间没有分隔线，只有间距。公告分区
+    // 是一张卡片（FofWidgets.less），保留自己的内边距——
+    // 没有它，图标会贴到边框，脉冲光环也会被裁切。
+    .LcoySidebar-section:not(.LcoySidebar-section--fof-news) {
       padding: 0;
       margin-bottom: 1.2rem;
       border-bottom: 0;
     }
 
-    .CanelaSidebar-section--fof-news {
+    .LcoySidebar-section--fof-news {
       margin-bottom: 1.2rem;
     }
 
-    .CanelaSidebar-footer {
-      padding: var(--cn-space-2);
+    .LcoySidebar-footer {
+      padding: var(--lcoy-space-2);
 
       &::before {
         display: none;
       }
     }
 
-    // O teclado não tem atalhos no celular.
-    .CanelaSidebar-footerShortcuts {
+    // 手机端键盘没有快捷键。
+    .LcoySidebar-footerShortcuts {
       display: none;
     }
   }
 
-  .Canela--sidebarOverlay ~ .CanelaSidebar-backdrop,
-  .Canela--sidebarOverlay .CanelaSidebar-backdrop {
+  .Lcoy--sidebarOverlay ~ .LcoySidebar-backdrop,
+  .Lcoy--sidebarOverlay .LcoySidebar-backdrop {
     display: block;
     position: fixed;
     inset: 0;
-    background: var(--cn-cloak);
+    background: var(--lcoy-cloak);
     z-index: calc(~"var(--zindex-header) + 1");
-    animation: canela-fade-in 0.2s ease-out both;
+    animation: lcoy-fade-in 0.2s ease-out both;
   }
 }
 
-@keyframes canela-panel-in {
+@keyframes lcoy-panel-in {
   from { transform: translateX(-100%); }
   to { transform: none; }
 }
 
-@keyframes canela-fade-in {
+@keyframes lcoy-fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-// Quem pede menos movimento recebe o painel já aberto (o Discourse faz a
-// animação durar 0ms nesse caso).
+// 偏好减少动效的用户会直接得到已打开的面板（此时 Discourse 让
+// 动画时长为 0ms）。
 @media (prefers-reduced-motion: reduce) {
-  #canela-sidebar,
-  .CanelaSidebar-backdrop {
+  #lcoy-sidebar,
+  .LcoySidebar-backdrop {
     animation-duration: 0s !important;
   }
 }
 
-// Janela de personalizar a seção.
-.CanelaSidebarCustomize-list {
+// 自定义分区的窗口。
+.LcoySidebarCustomize-list {
   max-height: 50vh;
-  margin: 0 0 var(--cn-space-4);
+  margin: 0 0 var(--lcoy-space-4);
   padding: 0;
   overflow-y: auto;
   list-style: none;
 
   li {
-    border-bottom: 1px solid var(--cn-border);
+    border-bottom: 1px solid var(--lcoy-border);
   }
 
   label {
     display: flex;
     align-items: center;
-    gap: var(--cn-space-2);
+    gap: var(--lcoy-space-2);
     margin: 0;
-    padding: var(--cn-space-2) var(--cn-space-1);
+    padding: var(--lcoy-space-2) var(--lcoy-space-1);
     cursor: pointer;
 
-    // O checkbox do core tem `margin-left: -20px; float: left`, pensado para
-    // o label com `padding-left: 20px`. Aqui o label é flex e mais estreito,
-    // então o input saía pela esquerda e era cortado pelo `overflow-y: auto`.
+    // 核心的复选框有 `margin-left: -20px; float: left`，是为
+    // 带 `padding-left: 20px` 的 label 设计的。这里 label 是 flex 且更窄，
+    // 因此 input 会从左侧溢出并被 `overflow-y: auto` 裁切。
     input[type='checkbox'] {
       flex: none;
       margin: 0;
@@ -749,50 +749,50 @@
     }
   }
 
-  .CanelaSidebarCustomize-item--child label {
-    padding-left: var(--cn-space-6);
+  .LcoySidebarCustomize-item--child label {
+    padding-left: var(--lcoy-space-6);
   }
 }
 
-.CanelaSidebarCustomize-actions {
+.LcoySidebarCustomize-actions {
   display: flex;
-  gap: var(--cn-space-2);
+  gap: var(--lcoy-space-2);
 }
 
-// O menu do "Mais" sai da barra (position: fixed, posto no JS): acima de tudo.
-.CanelaSidebar-more .Dropdown-menu {
+// "更多"菜单移出侧边栏（position: fixed，由 JS 设置）：位于一切之上。
+.LcoySidebar-more .Dropdown-menu {
   z-index: 1100;
   max-height: calc(100vh - 16px);
   overflow-y: auto;
 }
 
-// Ao lado do botão, a setinha apontando para ele (como um submenu). O menu
-// não pode cortar a seta: ela fica fora da caixa, então o overflow volta ao
-// normal e a altura máxima garante que caiba na tela.
-.CanelaSidebar-more .Dropdown-menu.CanelaSidebar-moreMenu--side {
+// 位于按钮旁边，小箭头指向它（如同子菜单）。菜单
+// 不能裁切箭头：箭头在盒子之外，因此 overflow 恢复为
+// normal，最大高度确保其能容纳在屏幕内。
+.LcoySidebar-more .Dropdown-menu.LcoySidebar-moreMenu--side {
   overflow: visible;
 
   &::before,
   &::after {
     content: '';
     position: absolute;
-    top: var(--canela-more-arrow, 22px);
+    top: var(--lcoy-more-arrow, 22px);
     width: 0;
     height: 0;
     border-style: solid;
     transform: translateY(-50%);
   }
 
-  // A borda da seta (cor da borda do menu) e, por cima, o preenchimento.
+  // 箭头的边框（菜单边框色），以及其上的填充。
   &::before {
     left: -9px;
     border-width: 8px 9px 8px 0;
-    border-color: transparent var(--cn-border) transparent transparent;
+    border-color: transparent var(--lcoy-border) transparent transparent;
   }
 
   &::after {
     left: -8px;
     border-width: 7px 8px 7px 0;
-    border-color: transparent var(--cn-surface) transparent transparent;
+    border-color: transparent var(--lcoy-surface) transparent transparent;
   }
 }

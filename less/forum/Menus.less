@@ -1,23 +1,23 @@
 // =====================================================================
-// Menus do cabeçalho como o menu do usuário do Discourse: painéis com
-// sombra e raio de 8px, notificações com o avatar e o ícone do tipo num
-// selo sobre ele, não lidas com fundo tingido. E a página de notificações
-// (o mesmo HeaderList, fora do painel).
+// 页头菜单与 Discourse 的用户菜单一致：面板带
+// 阴影和 8px 圆角，通知显示头像以及位于其上的
+// 类型图标徽章，未读项带着色背景。还有通知页
+// （同一个 HeaderList，位于面板之外）。
 //
-// O botão de cada menu (sino, avatar) é da casca (Header.less); aqui só o
-// que abre.
+// 每个菜单的按钮（铃铛、头像）属于外壳（Header.less）；这里只处理
+// 展开后的内容。
 // =====================================================================
 
 // ---------------------------------------------------------------------
-// Painel
+// 面板
 // ---------------------------------------------------------------------
 @media @tablet-up {
-  // `.menu-panel`: a sombra própria dele (mais curta que a dos dropdowns) e
-  // a mesma entrada descendo, 250ms (a animação vem de Components.less).
+  // `.menu-panel`：它自己的阴影（比下拉菜单的更短），以及
+  // 相同的下落进场动画，250ms（动画来自 Components.less）。
   .HeaderDropdown .Dropdown-menu {
     width: 400px;
     padding: 0;
-    border-radius: var(--cn-radius);
+    border-radius: var(--lcoy-radius);
     overflow: hidden;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 
@@ -33,24 +33,24 @@
 }
 
 // ---------------------------------------------------------------------
-// HeaderList (notificações; as mensagens do flarum/messages usam o mesmo)
+// HeaderList（通知；flarum/messages 的私信也使用同一套）
 // ---------------------------------------------------------------------
 .HeaderList {
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
 }
 
 @media @tablet-up {
   .HeaderList-header,
   .HeaderList-footer {
     padding: 10px 12px 10px 16px;
-    border-color: var(--cn-border);
+    border-color: var(--lcoy-border);
 
     h4 {
       font-size: 15px;
       font-weight: 600;
       text-transform: none;
       letter-spacing: 0;
-      color: var(--cn-primary);
+      color: var(--lcoy-primary);
     }
   }
 }
@@ -62,13 +62,13 @@
     height: 32px;
     padding: 0;
     border-radius: 50%;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
     justify-content: center;
 
     &:hover,
     &:focus-visible {
-      background: var(--cn-hover) !important;
-      color: var(--cn-primary);
+      background: var(--lcoy-hover) !important;
+      color: var(--lcoy-primary);
     }
   }
 
@@ -81,19 +81,19 @@
 .HeaderList-footer {
   a,
   .Button--link {
-    color: var(--cn-link);
+    color: var(--lcoy-link);
   }
 }
 
 .HeaderList-empty {
-  color: var(--cn-primary-medium);
+  color: var(--lcoy-primary-medium);
   font-size: 15px;
   padding: 48px 16px;
 }
 
-// Grupo por tópico
+// 按话题分组
 .HeaderListGroup {
-  border-top-color: var(--cn-border);
+  border-top-color: var(--lcoy-border);
 
   &:not(:last-child) {
     margin-bottom: 0;
@@ -101,27 +101,27 @@
 
   &-header {
     padding: 10px 16px 4px;
-    font-size: var(--cn-font-down-1);
+    font-size: var(--lcoy-font-down-1);
     font-weight: 600;
 
     &,
     a {
-      color: var(--cn-primary-high) !important;
+      color: var(--lcoy-primary-high) !important;
     }
 
     a:hover {
-      color: var(--cn-link) !important;
+      color: var(--lcoy-link) !important;
       text-decoration: none;
     }
   }
 
   &-badges .Badge {
-    box-shadow: 0 0 0 2px var(--cn-surface);
+    box-shadow: 0 0 0 2px var(--lcoy-surface);
   }
 }
 
-// Item: avatar de 32px com o ícone do tipo num selo redondo no canto, o
-// texto ao lado e o resumo cinza embaixo.
+// 条目：32px 头像，角上的圆形徽章内有类型图标，
+// 文字在旁，灰色摘要在下。
 .HeaderListItem {
   position: relative;
   grid-template-columns: 32px minmax(0, 1fr) auto;
@@ -132,19 +132,19 @@
   column-gap: 12px;
   row-gap: 2px;
   padding: 10px 16px;
-  color: var(--cn-primary) !important;
+  color: var(--lcoy-primary) !important;
   font-size: 15px;
   line-height: 1.35;
 
   &.unread {
-    background: var(--cn-hover);
+    background: var(--lcoy-hover);
     box-shadow: none;
   }
 
   &:hover,
   &:focus,
   &:focus-within {
-    background: var(--cn-selected);
+    background: var(--lcoy-selected);
   }
 
   .Avatar {
@@ -161,16 +161,16 @@
   &-icon {
     position: absolute;
     top: 6px;
-    left: 36px; // canto superior direito do avatar (16 + 32 - 12)
+    left: 36px; // 头像右上角（16 + 32 - 12）
     display: flex;
     align-items: center;
     justify-content: center;
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    border: 2px solid var(--cn-surface);
-    background: var(--cn-accent);
-    color: var(--cn-accent-text);
+    border: 2px solid var(--lcoy-surface);
+    background: var(--lcoy-accent);
+    color: var(--lcoy-accent-text);
     font-size: 9px !important;
     box-sizing: border-box;
   }
@@ -184,7 +184,7 @@
   &-content {
     margin-right: 0;
     line-height: 1.35;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
 
     .username {
       font-weight: 600;
@@ -196,24 +196,24 @@
   }
 
   &-time {
-    font-size: var(--cn-font-down-2);
+    font-size: var(--lcoy-font-down-2);
     font-weight: 400;
     text-transform: none;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
     white-space: nowrap;
   }
 
   &-excerpt {
-    font-size: var(--cn-font-down-1);
-    color: var(--cn-primary-medium);
+    font-size: var(--lcoy-font-down-1);
+    color: var(--lcoy-primary-medium);
   }
 
   &-actions > .Button {
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
   }
 }
 
-// Sem avatar (notificação do sistema): o ícone vira o próprio avatar.
+// 无头像（系统通知）：图标本身充当头像。
 .HeaderListItem:not(:has(.Avatar)) .HeaderListItem-icon {
   position: static;
   grid-area: avatar;
@@ -224,7 +224,7 @@
 }
 
 // ---------------------------------------------------------------------
-// Menu da sessão
+// 会话菜单
 // ---------------------------------------------------------------------
 @media @tablet-up {
   .SessionDropdown .Dropdown-menu {
@@ -232,7 +232,7 @@
   }
 }
 
-.CanelaSessionIdentity {
+.LcoySessionIdentity {
   display: flex !important;
   align-items: center;
   gap: 10px !important;
@@ -254,28 +254,28 @@
 
   &-name {
     font-weight: 600;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   &-username {
-    font-size: var(--cn-font-down-1);
-    color: var(--cn-primary-medium);
+    font-size: var(--lcoy-font-down-1);
+    color: var(--lcoy-primary-medium);
     overflow: hidden;
     text-overflow: ellipsis;
   }
 }
 
-// No celular o menu da sessão fica no drawer, e o cabeçalho já mostra o nome.
+// 手机端会话菜单位于抽屉中，页头已显示名称。
 @media @phone {
-  .CanelaSessionIdentity {
+  .LcoySessionIdentity {
     padding: 15px 20px !important;
   }
 }
 
 // ---------------------------------------------------------------------
-// Página de notificações (/notifications) e a lista dentro do drawer
+// 通知页（/notifications）以及抽屉内的列表
 // ---------------------------------------------------------------------
 .NotificationsPage {
   .HeaderList {
@@ -288,23 +288,23 @@
   }
 
   .HeaderListItem {
-    border-radius: var(--cn-radius);
+    border-radius: var(--lcoy-radius);
   }
 
   .HeaderListGroup {
     border-top: 0;
-    margin-bottom: var(--cn-space-2);
+    margin-bottom: var(--lcoy-space-2);
   }
 }
 
 @media @tablet-up {
   .NotificationsPage .HeaderList-header {
-    padding: 0 0 var(--cn-space-3);
-    border-bottom: 1px solid var(--cn-border);
-    margin-bottom: var(--cn-space-2);
+    padding: 0 0 var(--lcoy-space-3);
+    border-bottom: 1px solid var(--lcoy-border);
+    margin-bottom: var(--lcoy-space-2);
 
     h4 {
-      font-size: var(--cn-font-up-2);
+      font-size: var(--lcoy-font-up-2);
       font-weight: 700;
     }
   }

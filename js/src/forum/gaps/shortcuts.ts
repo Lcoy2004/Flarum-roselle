@@ -1,19 +1,18 @@
 /*
- * Os atalhos de teclado do Discourse que a casca ainda não tinha
- * (services/keyboard-shortcuts.js): andar pelos POSTS do tópico com j/k e
- * agir sobre o post selecionado (l curtir, b marcador, s compartilhar,
- * e editar, r responder, q citar, d excluir, ! sinalizar, t tópico
- * vinculado), # pular para um post, Home/End, shift+l para a primeira não
- * lida, shift+r responder ao tópico, shift+s compartilhar o tópico, shift+p
- * fixar, shift+a menu do tópico, f marcador do tópico, m w/t/r/m o nível de
- * notificação, shift+j/k entre as abas da lista, x/shift+b a seleção em
- * massa, shift+d "Descartar", "." os tópicos novos do realtime, p o menu do
- * usuário, shift+c o editor, ctrl+alt+f a busca, ctrl+p imprimir e g n/g u/
- * g b/g m/g d/g j/g k/g s.
+ * 外壳尚未实现的 Discourse 键盘快捷键
+ *（services/keyboard-shortcuts.js）：用 j/k 在主题的帖子间移动，并对
+ * 选中的帖子执行操作（l 点赞，b 收藏，s 分享，e 编辑，r 回复，q 引用，
+ * d 删除，! 举报，t 关联合并主题），# 跳转到某篇帖子，Home/End，
+ * shift+l 到第一条未读，shift+r 回复主题，shift+s 分享主题，shift+p 置顶，
+ * shift+a 主题菜单，f 收藏主题，m w/t/r/m 通知级别，
+ * shift+j/k 在列表标签页之间切换，x/shift+b 批量选择，
+ * shift+d“忽略”，“.”实时新主题，p 用户菜单，shift+c 编辑器，
+ * ctrl+alt+f 搜索，ctrl+p 打印，以及 g n/g u/
+ * g b/g m/g d/g j/g k/g s。
  *
- * O ouvinte roda na CAPTURA do documento, antes do da casca (shell/
- * shortcuts.ts): quando uma tecla é daqui, ele para o evento ali; quando não
- * é, deixa passar e a casca faz o dela. Assim a casca não precisa mudar.
+ * 监听器运行在 document 的捕获阶段，先于外壳的监听器（shell/
+ * shortcuts.ts）：如果按键属于这里，它就在此停止事件；如果不属于，
+ * 就放行，由外壳处理自己的。这样外壳无需改动。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -36,10 +35,10 @@ import { bookmarksEnabled, createBookmark, deleteBookmark, firstPostOf, postBook
 import { bulkAvailable, selection } from '../features/extras/bulk/selection';
 import { draftsOn } from '../features/composer/drafts/fofDrafts';
 
-const SELECTED = 'CanelaPostSelected';
-const LIST_SELECTED = 'CanelaSelected';
+const SELECTED = 'LcoyPostSelected';
+const LIST_SELECTED = 'LcoySelected';
 const SEQUENCE_TIMEOUT_MS = 1000;
-/** Duas teclas j/k mais rápidas que isto: anda sem a rolagem suave. */
+/** 两次 j/k 快于此值：不启用平滑滚动。 */
 const FAST_MS = 150;
 
 let pending: string | null = null;
@@ -47,7 +46,7 @@ let pendingTimer: number | undefined;
 let lastMove = 0;
 
 // ---------------------------------------------------------------------------
-// Ajuda ("?"): os atalhos novos entram nos grupos que a janela já desenha.
+// 帮助（“?”）：新快捷键加入窗口已绘制的分组。
 // ---------------------------------------------------------------------------
 
 function addHelp(): void {
@@ -113,7 +112,7 @@ function addHelp(): void {
 }
 
 // ---------------------------------------------------------------------------
-// Utilidades
+// 工具函数
 // ---------------------------------------------------------------------------
 
 function headerOffset(): number {
@@ -140,7 +139,7 @@ function click(selector: string, scope: ParentNode = document): boolean {
   return true;
 }
 
-/** Roda o onclick de um item de ItemList (Button) sem desenhá-lo. */
+/** 执行 ItemList 条目（Button）的 onclick，而不绘制它。 */
 function runItem(item: any): boolean {
   const onclick = item?.attrs?.onclick;
 
@@ -152,7 +151,7 @@ function runItem(item: any): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// Seleção de posts (j/k no tópico)
+// 帖子选择（主题中的 j/k）
 // ---------------------------------------------------------------------------
 
 function articles(): HTMLElement[] {
@@ -179,7 +178,7 @@ function scrollToTop(element: HTMLElement, fast: boolean): void {
   window.scrollTo({ top: Math.max(0, top), behavior: fast ? 'auto' : 'smooth' });
 }
 
-/** O _moveSelection do Discourse: posts longos rolam por página antes de trocar. */
+/** Discourse 的 _moveSelection：长帖子先按页滚动，再切换。 */
 function movePostSelection(direction: number, scrollWithinPosts: boolean): void {
   const now = Date.now();
   const fast = now - lastMove < FAST_MS;
@@ -192,7 +191,7 @@ function movePostSelection(direction: number, scrollWithinPosts: boolean): void 
   const offset = headerOffset();
   let selected = list.find((item) => item.classList.contains(SELECTED)) || null;
 
-  // Uma seleção fora da tela é descartada: o teclado combina com a rolagem do mouse.
+  // 屏幕外的选择会被丢弃：键盘行为与鼠标滚动保持一致。
   if (selected && !fast) {
     const rect = selected.getBoundingClientRect();
 
@@ -233,7 +232,7 @@ function movePostSelection(direction: number, scrollWithinPosts: boolean): void 
 }
 
 // ---------------------------------------------------------------------------
-// Ações
+// 操作
 // ---------------------------------------------------------------------------
 
 function mentionsReply(post: Post, quote?: string): boolean {
@@ -268,7 +267,7 @@ function setSubscription(discussion: Discussion, value: 'follow' | 'ignore' | nu
   discussion.save({ subscription: value } as any).then(() => m.redraw());
 }
 
-/** g j / g k: o tópico seguinte ou anterior da última lista vista. */
+/** g j / g k：上次所看列表中的下一个或上一个主题。 */
 function adjacentTopic(step: number): void {
   const discussion = currentDiscussion();
   const list: Discussion[] = app.discussions.getPages().flatMap((page: any) => page.items as Discussion[]);
@@ -282,7 +281,7 @@ function adjacentTopic(step: number): void {
 }
 
 function changeSection(step: number): void {
-  const tabs = Array.from(document.querySelectorAll<HTMLElement>('.CanelaNav-tabs > .CanelaNav-tab:not(.CanelaNav-tab--more)'));
+  const tabs = Array.from(document.querySelectorAll<HTMLElement>('.LcoyNav-tabs > .LcoyNav-tab:not(.LcoyNav-tab--more)'));
   const active = tabs.findIndex((tab) => tab.classList.contains('active'));
   const target = tabs[active + step];
 
@@ -296,16 +295,16 @@ function selectedListDiscussion(): Discussion | null {
 }
 
 function openSearch(): void {
-  const field = Array.from(document.querySelectorAll<HTMLElement>('.Search-input, .CanelaHeaderSearch')).find((el) => el.offsetParent !== null);
+  const field = Array.from(document.querySelectorAll<HTMLElement>('.Search-input, .LcoyHeaderSearch')).find((el) => el.offsetParent !== null);
 
   field?.click();
 }
 
 // ---------------------------------------------------------------------------
-// Teclas
+// 按键
 // ---------------------------------------------------------------------------
 
-/** As sequências "g …" e "m …" que a casca não conhece. Devolve se tratou. */
+/** 外壳不认识的那些“g …”和“m …”序列。返回是否已处理。 */
 function runSequence(prefix: string, key: string, shift: boolean): boolean {
   const user = app.session.user;
   const discussion = currentDiscussion();
@@ -334,10 +333,8 @@ function runSequence(prefix: string, key: string, shift: boolean): boolean {
         adjacentTopic(-1);
         return true;
       case 's': {
-        // No tópico, o primeiro sugerido (Discourse); fora dele, a casca leva às configurações.
-        const link = discussion
-          ? document.querySelector<HTMLAnchorElement>('.CanelaSuggested a[href*="/d/"], .SuggestedTopics a[href*="/d/"]')
-          : null;
+        // 在主题中跳到第一个推荐主题（Discourse）；不在主题中时，外壳会带到设置。
+        const link = discussion ? document.querySelector<HTMLAnchorElement>('.LcoySuggested a[href*="/d/"], .SuggestedTopics a[href*="/d/"]') : null;
 
         if (!link) return false;
 
@@ -366,7 +363,7 @@ function runSequence(prefix: string, key: string, shift: boolean): boolean {
   return false;
 }
 
-/** Atalhos do tópico. Devolve se tratou a tecla. */
+/** 主题内的快捷键。返回是否已处理该按键。 */
 function topicKey(event: KeyboardEvent, discussion: Discussion): boolean {
   const stream = currentStream();
   const key = event.key;
@@ -407,7 +404,7 @@ function topicKey(event: KeyboardEvent, discussion: Discussion): boolean {
     case 'P':
       return runItem(DiscussionControls.moderationControls(discussion).get('sticky'));
     case 'A':
-      return click('.CanelaTopicFooter-more > .Dropdown-toggle, .DiscussionPage-nav .ButtonGroup .Dropdown-toggle');
+      return click('.LcoyTopicFooter-more > .Dropdown-toggle, .DiscussionPage-nav .ButtonGroup .Dropdown-toggle');
     case 'f':
       if (!bookmarksEnabled() || !app.session.user) return false;
       toggleTopicBookmark(discussion).catch(() => {});
@@ -424,9 +421,9 @@ function topicKey(event: KeyboardEvent, discussion: Discussion): boolean {
 
   switch (key) {
     case 'l':
-      return click('.item-like button, .CanelaPostAction--like', element);
+      return click('.item-like button, .LcoyPostAction--like', element);
     case 'b':
-      return click('.CanelaBookmarkButton', element);
+      return click('.LcoyBookmarkButton', element);
     case 's':
       openShare(discussion, post);
       return true;
@@ -455,7 +452,7 @@ function topicKey(event: KeyboardEvent, discussion: Discussion): boolean {
   return false;
 }
 
-/** Atalhos da lista. Devolve se tratou a tecla. */
+/** 列表中的快捷键。返回是否已处理该按键。 */
 function listKey(event: KeyboardEvent): boolean {
   switch (event.key) {
     case 'J':
@@ -465,9 +462,9 @@ function listKey(event: KeyboardEvent): boolean {
     case '.':
       return click('.DiscussionList-update');
     case 'D':
-      return click('.CanelaDismiss--top .CanelaDismiss-button');
+      return click('.LcoyDismiss--top .LcoyDismiss-button');
     case 'B':
-      if (!forumBool('canelaBulkSelectEnabled', true) || !bulkAvailable()) return false;
+      if (!forumBool('lcoyBulkSelectEnabled', true) || !bulkAvailable()) return false;
       selection.setActive(!selection.active);
       m.redraw();
       return true;
@@ -496,7 +493,7 @@ function listKey(event: KeyboardEvent): boolean {
 function onKeydown(event: KeyboardEvent): void {
   if (!gaps.postShortcuts()) return;
 
-  // ctrl+alt+f vale até digitando, como no Discourse (é global).
+  // ctrl+alt+f 在输入时也生效，与 Discourse 一致（它是全局的）。
   if (event.ctrlKey && event.altKey && event.key.toLowerCase() === 'f') {
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -504,11 +501,11 @@ function onKeydown(event: KeyboardEvent): void {
     return;
   }
 
-  // ctrl+p (cmd+p) no tópico: a versão para imprimir do tema, em vez da página crua.
+  // 主题中的 ctrl+p（cmd+p）：使用主题的打印版本，而不是原始页面。
   if ((event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === 'p') {
     const discussion = currentDiscussion();
 
-    if (discussion && forumBool('canelaPrintTopicEnabled', true)) {
+    if (discussion && forumBool('lcoyPrintTopicEnabled', true)) {
       event.preventDefault();
       event.stopImmediatePropagation();
       printDiscussion(discussion).catch(() => {});
@@ -537,8 +534,8 @@ function onKeydown(event: KeyboardEvent): void {
 
   const key = event.key;
 
-  // Começo de sequência: "g" a casca também ouve (e trata g h, g l…); "m" e
-  // "shift+z" são só daqui.
+  // 序列开头：“g”外壳也会监听（并处理 g h、g l…）；“m”和
+  // “shift+z”只属于这里。
   if (key === 'g' || (key === 'm' && currentDiscussion()) || key === 'Z') {
     pending = key;
     pendingTimer = window.setTimeout(() => (pending = null), SEQUENCE_TIMEOUT_MS);
@@ -580,12 +577,12 @@ function onKeydown(event: KeyboardEvent): void {
 }
 
 export default function installGapShortcuts(): void {
-  // No mount, e não aqui: só então as configurações do fórum estão carregadas,
-  // e a janela "?" não deve listar atalhos desligados.
+  // 在 mount 中注册，而不是这里：只有那时论坛配置才已加载，
+  // 且“?”窗口不应列出已关闭的快捷键。
   extend(app as any, 'mount', () => {
     if (gaps.postShortcuts()) addHelp();
   });
 
-  // Na captura: roda antes do ouvinte da casca, que fica na fase de bolha.
+  // 在捕获阶段：先于外壳的监听器运行，后者处于冒泡阶段。
   document.addEventListener('keydown', onKeydown, true);
 }

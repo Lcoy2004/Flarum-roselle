@@ -17,12 +17,12 @@ use Lcoy\Roselle\Stats\StatsSettings;
 use Lcoy\Roselle\Stats\TopicCounter;
 
 /**
- * GET /api/canela-counts — as contagens de "Novos" e "Não lidos" sem refazer o
- * documento inteiro do fórum. O front-end chama ao voltar para a lista, para o
- * "(N)" das abas acompanhar o que a pessoa acabou de ler.
+ * GET /api/lcoy-counts——不重新生成整个论坛文档就能得到"新帖"和"未读"
+ * 计数。前端在返回列表时调用它，使选项卡上的"(N)"跟得上用户刚读过的
+ * 内容。
  *
- * Com `?tag=slug`, conta só o que está na tag e nas filhas dela: na página de
- * uma categoria, as abas mostram os números dela, como no Discourse.
+ * 带 `?tag=slug` 时，只统计该标签及其子标签中的内容：在分类页面上，
+ * 选项卡显示该分类的数字，与 Discourse 一致。
  */
 final class ShowTopicCountsController implements RequestHandlerInterface
 {
@@ -46,7 +46,7 @@ final class ShowTopicCountsController implements RequestHandlerInterface
 
         $tagIds = $this->tagIds((string) Arr::get($request->getQueryParams(), 'tag', ''));
 
-        // Tag pedida mas inexistente: nada a contar ali.
+        // 请求了标签但它不存在：那里没有可统计的内容。
         if ($tagIds === []) {
             return new JsonResponse(['new' => 0, 'unread' => 0, 'limit' => TopicCounter::LIMIT]);
         }
@@ -59,7 +59,7 @@ final class ShowTopicCountsController implements RequestHandlerInterface
     }
 
     /**
-     * A tag e as filhas dela; null quando nenhuma tag foi pedida (conta tudo).
+     * 该标签及其子标签；未请求标签时为 null（统计全部）。
      *
      * @return int[]|null
      */

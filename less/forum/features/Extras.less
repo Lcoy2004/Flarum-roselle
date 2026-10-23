@@ -1,46 +1,46 @@
 // =====================================================================
-// Recursos "extras": página de busca, seleção em massa, Melhores por
-// período, tamanho do texto, banner de anúncio, imprimir e histórico.
-// Medidas da página de busca tiradas do print do meta.discourse.org
-// (p4-g_search.png, escala 1:1) e de common/base/search.scss.
+// "附加"功能：搜索页、批量选择、按时段最佳、
+// 文字大小、公告横幅、打印和历史记录。
+// 搜索页数值取自 meta.discourse.org 的印刷稿
+// （p4-g_search.png，1:1 比例）以及 common/base/search.scss。
 // =====================================================================
 
-// ── Página de busca ──────────────────────────────────────────────────
-// Medidas do CSS do Meta (common/base/search.scss + Horizon): 16px de base,
-// a página com 10% de respiro dos lados (nada abaixo de 1024px), abas em
-// `nav-pills`, campo de 38px com canto de 8px, botão e "Filtros avançados"
-// em pílula, a faixa de ordenação entre bordas e os resultados com 2em entre
-// eles. Sem transições: o Horizon zera a dos botões e abas, e o painel de
-// filtros abre na hora, sem animação.
+// ── 搜索页 ──────────────────────────────────────────────────
+// 数值取自 Meta 的 CSS（common/base/search.scss + Horizon）：基准 16px，
+// 页面两侧 10% 间距（1024px 以下无），标签页为
+// `nav-pills`，38px 字段、8px 圆角，按钮和"高级筛选"
+// 为胶囊，排序横带贯穿边缘，结果之间 2em
+// 间距。无过渡：Horizon 将按钮和标签页的过渡归零，筛选
+// 面板立即展开，无动画。
 
-.CanelaSearchPage .Page-sidebar {
+.LcoySearchPage .Page-sidebar {
   display: none;
 }
 
-.CanelaSearchPage .Page-container {
+.LcoySearchPage .Page-container {
   font-size: 16px;
   line-height: 1.4;
 }
 
-.CanelaSearch {
+.LcoySearch {
   max-width: none;
   margin: 0;
   padding: 1rem 10% 0;
 }
 
 @media (max-width: 1023px) {
-  .CanelaSearch {
+  .LcoySearch {
     padding: 0;
   }
 }
 
-// As fontes (Tópicos, Postagens, Etiquetas e categorias) como `.nav-pills`.
-.CanelaSearch-tabs {
+// 来源（话题、帖子、标签和分类）如 `.nav-pills`。
+.LcoySearch-tabs {
   display: flex;
   flex-wrap: nowrap;
   gap: 0.5em;
   margin: 0 0 12px;
-  // Como a `horizontal-overflow-nav`: no estreito rola de lado, sem quebrar.
+  // 与 `horizontal-overflow-nav` 一致：窄屏时横向滚动，不换行。
   overflow-x: auto;
   scrollbar-width: none;
 
@@ -49,16 +49,16 @@
   }
 }
 
-.CanelaSearch-tab {
+.LcoySearch-tab {
   position: relative;
   display: flex;
   align-items: center;
   min-height: 30px;
   padding: 0.65em 0.75em;
   border: 0;
-  border-radius: var(--cn-radius);
+  border-radius: var(--lcoy-radius);
   background: transparent;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
   font: inherit;
   font-size: 1em;
   line-height: 1;
@@ -69,7 +69,7 @@
 
   &:hover,
   &.active {
-    color: var(--cn-link);
+    color: var(--lcoy-link);
 
     &::after {
       content: "";
@@ -78,24 +78,24 @@
       right: 0;
       bottom: 0;
       height: 0.125em;
-      background: var(--cn-link);
+      background: var(--lcoy-link);
     }
   }
 
   &:focus-visible {
-    outline: 2px solid var(--cn-accent);
+    outline: 2px solid var(--lcoy-accent);
     outline-offset: -2px;
   }
 }
 
-.CanelaSearch-form {
+.LcoySearch-form {
   display: flex;
   align-items: stretch;
   justify-content: space-between;
   gap: 0.5em 1em;
 }
 
-.CanelaSearch-field {
+.LcoySearch-field {
   position: relative;
   display: flex;
   align-items: center;
@@ -103,33 +103,33 @@
   min-width: 0;
 }
 
-.CanelaSearch .CanelaSearch-input {
+.LcoySearch .LcoySearch-input {
   width: 100%;
   height: 38px;
   margin: 0;
   padding: 8px 2em 8px 0.65em;
-  border: 1px solid var(--cn-primary-300);
-  border-radius: var(--cn-radius);
-  background: var(--cn-surface);
-  color: var(--cn-primary);
+  border: 1px solid var(--lcoy-primary-300);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
   font-size: 1em;
   box-shadow: none;
 
-  // O foco padrão do Discourse: borda e contorno de 2px por dentro.
+  // Discourse 的默认焦点：边框和内部 2px 轮廓。
   &:focus {
-    border-color: var(--cn-accent);
-    outline: 2px solid var(--cn-accent);
+    border-color: var(--lcoy-accent);
+    outline: 2px solid var(--lcoy-accent);
     outline-offset: -2px;
     box-shadow: none;
   }
 
-  // O "x" próprio substitui o do navegador.
+  // 自带的"x"取代浏览器的。
   &::-webkit-search-cancel-button {
     display: none;
   }
 }
 
-.CanelaSearch-clear.Button {
+.LcoySearch-clear.Button {
   position: absolute;
   top: 50%;
   right: 0.5em;
@@ -138,22 +138,22 @@
   height: auto;
   padding: 0;
   transform: translateY(-50%);
-  color: var(--cn-primary-medium);
+  color: var(--lcoy-primary-medium);
   font-size: 1em;
 }
 
-.CanelaSearch-submit.Button {
+.LcoySearch-submit.Button {
   flex: 1 1 0;
   justify-content: center;
   height: 38px;
   padding: 8px 0.65em;
-  border-radius: var(--cn-radius-pill);
+  border-radius: var(--lcoy-radius-pill);
   font-size: 1em;
   transition: none;
 }
 
-// `.search-filters`: 16px acima; 16px embaixo quando o painel está fechado.
-.CanelaSearch-controls {
+// `.search-filters`：上方 16px；面板关闭时下方 16px。
+.LcoySearch-controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -161,39 +161,39 @@
   margin: 0;
 }
 
-.CanelaSearch-advancedToggle.Button {
+.LcoySearch-advancedToggle.Button {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   height: 38px;
   padding: 8px 0.65em;
-  border: 1px solid var(--cn-primary-300);
-  border-radius: var(--cn-radius-pill);
-  background: var(--cn-surface);
-  color: var(--cn-primary-high);
+  border: 1px solid var(--lcoy-primary-300);
+  border-radius: var(--lcoy-radius-pill);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary-high);
   font-size: 1em;
   font-weight: 400;
   transition: none;
 
   &:hover,
   &.active {
-    background: var(--cn-primary-100);
-    color: var(--cn-primary);
+    background: var(--lcoy-primary-100);
+    color: var(--lcoy-primary);
   }
 }
 
-.CanelaSearch-advancedCaret {
+.LcoySearch-advancedCaret {
   margin-left: 4px;
   font-size: 0.8706em;
   color: inherit;
 }
 
-// A faixa de ordenação (`.search-info`): borda em cima e 16px de respiro.
-.CanelaSearch-divider {
+// 排序横带（`.search-info`）：上边框和 16px 间距。
+.LcoySearch-divider {
   display: none;
 }
 
-.CanelaSearch-sortRow {
+.LcoySearch-sortRow {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -201,94 +201,94 @@
   margin: 16px 0 0;
   padding: 16px 0;
   border: 0;
-  border-top: 1px solid var(--cn-border);
+  border-top: 1px solid var(--lcoy-border);
 }
 
-// Com o painel aberto, a borda de cima sai (`:has(.--is-expanded)`).
-.CanelaSearch:has(.CanelaSearchFilters) .CanelaSearch-sortRow {
+// 面板打开时，上边框消失（`:has(.--is-expanded)`）。
+.LcoySearch:has(.LcoySearchFilters) .LcoySearch-sortRow {
   border-top: 0;
 }
 
-.CanelaSearch-sort {
+.LcoySearch-sort {
   display: inline-flex;
   align-items: center;
   gap: 0;
   margin: 0 0 0 auto;
 }
 
-.CanelaSearch-sortLabel {
+.LcoySearch-sortLabel {
   margin: 0 8px 0 0;
-  color: var(--cn-primary-high);
+  color: var(--lcoy-primary-high);
   font-size: 1em;
   font-weight: 700;
   line-height: 1.2;
 }
 
-.CanelaSearch-selectWrap {
+.LcoySearch-selectWrap {
   position: relative;
   display: inline-block;
 }
 
-.CanelaSearch .CanelaSearch-select {
+.LcoySearch .LcoySearch-select {
   height: 38px;
   padding: 8px 2em 8px 8px;
-  border: 1px solid var(--cn-primary-300);
-  border-radius: var(--cn-radius);
-  background: var(--cn-surface);
-  color: var(--cn-primary);
+  border: 1px solid var(--lcoy-primary-300);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
   font-size: 1em;
   font-weight: 500;
   appearance: none;
 }
 
-.CanelaSearch-selectCaret {
+.LcoySearch-selectCaret {
   position: absolute;
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
   font-size: 0.7em;
-  color: var(--cn-primary-high);
+  color: var(--lcoy-primary-high);
   pointer-events: none;
 }
 
-// "50+ resultados para sidebar" (`.result-count`): font-up-2, seminegrito.
-.CanelaSearch .CanelaSearch-heading {
+// "sidebar 有 50+ 条结果"（`.result-count`）：font-up-2，半粗体。
+.LcoySearch .LcoySearch-heading {
   margin: 0;
   padding: 16px 0 0;
   font-size: 1.3195em;
   font-weight: 600;
   line-height: 1.4;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
 }
 
-.CanelaSearch-term {
+.LcoySearch-term {
   padding: 0;
-  background: var(--cn-accent-low);
+  background: var(--lcoy-accent-low);
   color: inherit;
 }
 
-.CanelaSearch-empty {
+.LcoySearch-empty {
   margin: 2em 0;
-  color: var(--cn-primary-high);
+  color: var(--lcoy-primary-high);
   text-align: center;
 }
 
-// `.fps-result-entries`: 16px acima da lista.
-.CanelaSearch-list {
+// `.fps-result-entries`：列表上方 16px。
+.LcoySearch-list {
   margin: 0;
   padding: 16px 0 0;
   list-style: none;
 }
 
-.CanelaSearch-more {
+.LcoySearch-more {
   display: flex;
   justify-content: center;
   margin: 0 0 2em;
 }
 
-// Um resultado (`.fps-result`): avatar de 48px, 1em até o texto, título em
-// font-up-1, categoria/etiquetas pequenas e o trecho cinza; 2em entre eles.
-.CanelaSearchResult {
+// 一条结果（`.fps-result`）：48px 头像，距文字 1em，标题为
+// font-up-1，小号分类/标签和灰色摘要；它们之间 2em。
+.LcoySearchResult {
   position: relative;
   display: flex;
   max-width: 100%;
@@ -307,7 +307,7 @@
   }
 }
 
-.CanelaSearchResult-avatar {
+.LcoySearchResult-avatar {
   flex-shrink: 0;
   margin-right: 1em;
   padding: 0.15em 0 0 0.15em;
@@ -321,38 +321,38 @@
   }
 }
 
-.CanelaSearchResult-main {
+.LcoySearchResult-main {
   flex: 1;
   min-width: 0;
   padding-bottom: 0.25em;
 }
 
-.CanelaSearchResult-titleLine {
+.LcoySearchResult-titleLine {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: 6px;
 }
 
-.CanelaSearchResult-title {
-  color: var(--cn-primary);
+.LcoySearchResult-title {
+  color: var(--lcoy-primary);
   font-size: 1.1487em;
   line-height: 1.2;
   overflow-wrap: anywhere;
 
   &:hover {
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     text-decoration: none;
   }
 
   &:visited {
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
   }
 }
 
-.CanelaSearchResult-status {
+.LcoySearchResult-status {
   flex-shrink: 0;
-  color: var(--cn-primary-medium);
+  color: var(--lcoy-primary-medium);
   font-size: 1.1em;
   line-height: 1.2;
 
@@ -361,21 +361,21 @@
   }
 }
 
-.CanelaSearchResult-number,
-.CanelaSearchResult-handle {
-  color: var(--cn-primary-medium);
+.LcoySearchResult-number,
+.LcoySearchResult-handle {
+  color: var(--lcoy-primary-medium);
   font-size: 0.8706em;
 }
 
-// `.search-category`: 0.25em acima, 0.5em entre categoria e etiquetas.
-.CanelaSearchResult-meta {
+// `.search-category`：上方 0.25em，分类与标签之间 0.5em。
+.LcoySearchResult-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0 0.5em;
   max-width: 100%;
   margin-top: 0.25em;
-  color: var(--cn-primary-high);
+  color: var(--lcoy-primary-high);
   font-size: 0.8706em;
 
   &:empty {
@@ -383,45 +383,45 @@
   }
 }
 
-// `.blurb`: cinza médio, a data e as palavras achadas um tom mais escuro.
-.CanelaSearchResult-blurb {
+// `.blurb`：中灰色，日期和命中的词稍深一档。
+.LcoySearchResult-blurb {
   margin-top: 0.25em;
-  color: var(--cn-primary-medium);
+  color: var(--lcoy-primary-medium);
   font-size: 1em;
   line-height: 1.4;
   overflow-wrap: anywhere;
 
   mark {
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
   }
 }
 
-.CanelaSearchResult-date {
-  color: var(--cn-primary-high);
+.LcoySearchResult-date {
+  color: var(--lcoy-primary-high);
 }
 
-.CanelaSearchResult-count {
+.LcoySearchResult-count {
   align-self: center;
-  color: var(--cn-primary-medium);
+  color: var(--lcoy-primary-medium);
   font-size: 0.8706em;
 }
 
-.CanelaSearchResult--tag {
+.LcoySearchResult--tag {
   align-items: flex-start;
 }
 
-// Filtros avançados (`.search-advanced-filters`): borda, canto de 8px, 1.5em
-// de respiro e as opções em duas colunas (column-count) a partir de 640px.
-.CanelaSearchFilters {
+// 高级筛选（`.search-advanced-filters`）：边框，8px 圆角，1.5em
+// 间距，从 640px 起选项分两列（column-count）。
+.LcoySearchFilters {
   min-width: 0;
   margin-top: 16px;
   padding: 1.5em;
-  border: 1px solid var(--cn-border);
-  border-radius: var(--cn-radius);
-  background: var(--cn-surface);
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
 }
 
-.CanelaSearchFilters-grid {
+.LcoySearchFilters-grid {
   column-count: 2;
   column-gap: 2em;
 
@@ -432,36 +432,36 @@
 }
 
 @media (min-width: 1024px) {
-  .CanelaSearchFilters-grid {
+  .LcoySearchFilters-grid {
     column-gap: 5em;
   }
 }
 
-.CanelaSearchFilters-label {
+.LcoySearchFilters-label {
   margin-bottom: 4px;
   font-weight: 700;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
 }
 
-.CanelaSearchFilters-field .FormControl {
+.LcoySearchFilters-field .FormControl {
   width: 100%;
   height: 38px;
-  border: 1px solid var(--cn-primary-300);
-  border-radius: var(--cn-radius);
-  background: var(--cn-surface);
+  border: 1px solid var(--lcoy-primary-300);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-surface);
 
   &:disabled {
     opacity: 0.5;
   }
 }
 
-.CanelaSearchFilters-checks {
+.LcoySearchFilters-checks {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.CanelaSearchFilters-check {
+.LcoySearchFilters-check {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -474,14 +474,14 @@
   }
 
   input {
-    accent-color: var(--cn-accent);
+    accent-color: var(--lcoy-accent);
   }
 }
 
-.CanelaSearchFilters-dates {
+.LcoySearchFilters-dates {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--cn-space-2);
+  gap: var(--lcoy-space-2);
 
   label {
     display: flex;
@@ -489,127 +489,127 @@
     gap: 2px;
     font-weight: normal;
     font-size: 0.8706em;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
   }
 }
 
-.CanelaSearchFilters .CanelaSearchFilters-number {
+.LcoySearchFilters .LcoySearchFilters-number {
   max-width: 120px;
 }
 
-.CanelaSearchFilters-tags {
+.LcoySearchFilters-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   align-items: center;
 }
 
-.CanelaSearchFilters-chip {
+.LcoySearchFilters-chip {
   display: inline-flex;
   align-items: center;
   gap: 2px;
   padding: 2px 2px 2px 10px;
-  background: var(--cn-primary-100);
-  border-radius: var(--cn-radius-pill);
+  background: var(--lcoy-primary-100);
+  border-radius: var(--lcoy-radius-pill);
   font-size: 0.8706em;
 }
 
-.CanelaSearchFilters-chipRemove.Button {
+.LcoySearchFilters-chipRemove.Button {
   width: 22px;
   height: 22px;
   padding: 0;
   font-size: 10px;
-  color: var(--cn-primary-high);
+  color: var(--lcoy-primary-high);
 }
 
-.CanelaSearchFilters .CanelaSearchFilters-tagAdd {
+.LcoySearchFilters .LcoySearchFilters-tagAdd {
   width: auto;
   flex: 1;
   min-width: 140px;
 }
 
-.CanelaSearchFilters-note {
+.LcoySearchFilters-note {
   display: flex;
   gap: 8px;
   align-items: baseline;
-  margin: var(--cn-space-3) 0 0;
+  margin: var(--lcoy-space-3) 0 0;
   font-size: 0.8706em;
-  color: var(--cn-primary-high);
+  color: var(--lcoy-primary-high);
 }
 
 @media (max-width: 639px) {
-  .CanelaSearch-form {
+  .LcoySearch-form {
     flex-direction: column;
   }
 
-  .CanelaSearch-field,
-  .CanelaSearch-submit.Button {
+  .LcoySearch-field,
+  .LcoySearch-submit.Button {
     flex: none;
     width: 100%;
   }
 
-  .CanelaSearchFilters-grid {
+  .LcoySearchFilters-grid {
     column-count: 1;
   }
 }
 
-// ── Seleção em massa ─────────────────────────────────────────────────
+// ── 批量选择 ─────────────────────────────────────────────────
 
-.CanelaBulk-toggle.active {
-  background: var(--cn-selected);
-  color: var(--cn-accent-active);
+.LcoyBulk-toggle.active {
+  background: var(--lcoy-selected);
+  color: var(--lcoy-accent-active);
 }
 
-// Gruda no topo do cartão ao rolar, logo abaixo do cabeçalho do site.
-.CanelaBulkBar {
+// 滚动时吸附在卡片顶部，紧贴站点头部下方。
+.LcoyBulkBar {
   position: sticky;
-  top: ~"calc(var(--cn-header-height) + 8px)";
+  top: ~"calc(var(--lcoy-header-height) + 8px)";
   z-index: 3;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--cn-space-2) var(--cn-space-4);
-  margin: var(--cn-space-2) 0;
+  gap: var(--lcoy-space-2) var(--lcoy-space-4);
+  margin: var(--lcoy-space-2) 0;
   padding: 8px 12px;
-  background: var(--cn-surface);
-  border: 1px solid var(--cn-border);
-  border-radius: var(--cn-radius);
-  box-shadow: var(--cn-shadow-card);
+  background: var(--lcoy-surface);
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  box-shadow: var(--lcoy-shadow-card);
 }
 
-.CanelaBulkBar-status,
-.CanelaBulkBar-actions {
+.LcoyBulkBar-status,
+.LcoyBulkBar-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--cn-space-2);
+  gap: var(--lcoy-space-2);
 }
 
-.CanelaBulkBar-count {
+.LcoyBulkBar-count {
   font-weight: 600;
 }
 
-.CanelaBulkBar-link.Button {
+.LcoyBulkBar-link.Button {
   padding: 0 4px;
-  color: var(--cn-link);
+  color: var(--lcoy-link);
 }
 
-.CanelaBulkBar-hint {
-  color: var(--cn-primary-medium);
-  font-size: var(--cn-font-down-1);
+.LcoyBulkBar-hint {
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
 }
 
-.CanelaBulkBar-action.Button {
+.LcoyBulkBar-action.Button {
   height: 32px;
-  font-size: var(--cn-font-down-1);
+  font-size: var(--lcoy-font-down-1);
 }
 
-.CanelaBulkBar-action--danger.Button {
-  color: var(--cn-danger);
+.LcoyBulkBar-action--danger.Button {
+  color: var(--lcoy-danger);
 }
 
-.CanelaBulkCheck {
+.LcoyBulkCheck {
   display: flex;
   align-items: center;
   align-self: center;
@@ -621,29 +621,29 @@
     width: 16px;
     height: 16px;
     margin: 0;
-    accent-color: var(--cn-accent);
+    accent-color: var(--lcoy-accent);
     cursor: pointer;
   }
 }
 
-.DiscussionListItem.CanelaBulk-selected {
-  background: var(--cn-selected);
+.DiscussionListItem.LcoyBulk-selected {
+  background: var(--lcoy-selected);
 }
 
-// ── Melhores por período ─────────────────────────────────────────────
+// ── 按时段最佳 ─────────────────────────────────────────────
 
-.CanelaTopPeriod-button.Button {
+.LcoyTopPeriod-button.Button {
   height: 32px;
-  border-radius: var(--cn-radius-pill);
+  border-radius: var(--lcoy-radius-pill);
 }
 
-// ── Tamanho do texto ─────────────────────────────────────────────────
-// A fonte base do tema (16px no body, como o Discourse) e a das postagens escalam juntas; o que
-// é medido em em/rem acompanha sozinho.
+// ── 文字大小 ─────────────────────────────────────────────────
+// 主题的基础字体（body 16px，与 Discourse 一致）和帖子字体会一起缩放；
+// 以 em/rem 计量的内容会自动跟随。
 
-.canela-text-size(@scale, @percent) {
+.lcoy-text-size(@scale, @percent) {
   font-size: @percent;
-  --cn-text-scale: @scale;
+  --lcoy-text-scale: @scale;
   --post-font-size: calc(16px * @scale);
 
   body {
@@ -651,75 +651,75 @@
   }
 }
 
-html.canela-text-smaller {
-  .canela-text-size(0.85, 85%);
+html.lcoy-text-smaller {
+  .lcoy-text-size(0.85, 85%);
 }
 
-html.canela-text-larger {
-  .canela-text-size(1.15, 115%);
+html.lcoy-text-larger {
+  .lcoy-text-size(1.15, 115%);
 }
 
-html.canela-text-largest {
-  .canela-text-size(1.3, 130%);
+html.lcoy-text-largest {
+  .lcoy-text-size(1.3, 130%);
 }
 
-.CanelaTextSize {
+.LcoyTextSize {
   max-width: 320px;
 }
 
-.CanelaTextSize-label {
+.LcoyTextSize-label {
   display: block;
   margin-bottom: 6px;
   font-weight: 600;
 }
 
-// ── Imprimir ─────────────────────────────────────────────────────────
+// ── 打印 ─────────────────────────────────────────────────────────
 
-// Na tela, a visão de impressão cobre a página (o diálogo do navegador
-// abre por cima dela, e o "Fechar" fica à mão se a pessoa cancelar).
-.CanelaPrint {
+// 屏幕上，打印视图覆盖页面（浏览器对话框
+// 在其上方打开，若用户取消，"关闭"触手可及）。
+.LcoyPrint {
   position: fixed;
   inset: 0;
   z-index: 10000;
   overflow: auto;
-  padding: var(--cn-space-6) ~"max(var(--cn-space-4), calc((100vw - 800px) / 2))";
-  background: var(--cn-surface);
-  color: var(--cn-primary);
+  padding: var(--lcoy-space-6) ~"max(var(--lcoy-space-4), calc((100vw - 800px) / 2))";
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
 }
 
-.CanelaPrint-toolbar {
+.LcoyPrint-toolbar {
   display: flex;
   justify-content: flex-end;
-  gap: var(--cn-space-2);
-  margin-bottom: var(--cn-space-4);
+  gap: var(--lcoy-space-2);
+  margin-bottom: var(--lcoy-space-4);
 }
 
-.CanelaPrint-title {
+.LcoyPrint-title {
   margin: 0 0 6px;
-  font-size: var(--cn-font-up-4);
+  font-size: var(--lcoy-font-up-4);
   line-height: 1.2;
 }
 
-.CanelaPrint-meta {
+.LcoyPrint-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px 12px;
-  color: var(--cn-primary-high);
-  font-size: var(--cn-font-down-1);
+  color: var(--lcoy-primary-high);
+  font-size: var(--lcoy-font-down-1);
 }
 
-.CanelaPrint-post {
-  padding: var(--cn-space-4) 0;
-  border-top: 1px solid var(--cn-border);
+.LcoyPrint-post {
+  padding: var(--lcoy-space-4) 0;
+  border-top: 1px solid var(--lcoy-border);
   break-inside: avoid-page;
 }
 
-.CanelaPrint-header {
-  padding-bottom: var(--cn-space-4);
+.LcoyPrint-header {
+  padding-bottom: var(--lcoy-space-4);
 }
 
-.CanelaPrint-postHeader {
+.LcoyPrint-postHeader {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -734,47 +734,47 @@ html.canela-text-largest {
   }
 }
 
-.CanelaPrint-date,
-.CanelaPrint-number {
-  color: var(--cn-primary-medium);
-  font-size: var(--cn-font-down-1);
+.LcoyPrint-date,
+.LcoyPrint-number {
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
 }
 
-.CanelaPrint-number {
+.LcoyPrint-number {
   margin-left: auto;
 }
 
-html.canela-printing {
+html.lcoy-printing {
   overflow: hidden;
 }
 
 @media print {
-  // Com a visão de impressão aberta, só ela vai para o papel.
-  html.canela-printing {
+  // 打印视图打开时，只有它进入纸张。
+  html.lcoy-printing {
     overflow: visible;
 
-    body > *:not(#canela-print) {
+    body > *:not(#lcoy-print) {
       display: none !important;
     }
 
-    .CanelaPrint {
+    .LcoyPrint {
       position: static;
       overflow: visible;
       padding: 0;
     }
 
-    .CanelaPrint-toolbar {
+    .LcoyPrint-toolbar {
       display: none;
     }
   }
 
-  // Ctrl+P direto na página do tópico: tira a casca, a barra lateral, a
-  // linha do tempo, o editor e os botões, e deixa as postagens.
+  // 在话题页直接按 Ctrl+P：去掉外壳、侧边栏、
+  // 时间线、编辑器和按钮，只保留帖子。
   .App-header,
   .App-navigation,
   .App-drawer,
-  #canela-sidebar,
-  .CanelaSidebar,
+  #lcoy-sidebar,
+  .LcoySidebar,
   .App-composer,
   .App-footer,
   .DiscussionPage .Page-sidebar,
@@ -782,9 +782,9 @@ html.canela-printing {
   .Post-actions,
   .Post-footer,
   .PostStream-item .ReplyPlaceholder,
-  .CanelaTopicFooter,
-  .CanelaSuggested,
-  .CanelaBulkBar,
+  .LcoyTopicFooter,
+  .LcoySuggested,
+  .LcoyBulkBar,
   #alerts,
   #modal {
     display: none !important;
@@ -806,7 +806,7 @@ html.canela-printing {
   }
 
   .PostStream-item,
-  .CanelaPrint-post {
+  .LcoyPrint-post {
     break-inside: avoid-page;
   }
 
@@ -818,135 +818,21 @@ html.canela-printing {
   }
 }
 
-// ── Histórico de edições ─────────────────────────────────────────────
+// ── 「已编辑」的铅笔 ─────────────────────────────────────────────
 
-.CanelaPostEdited {
+.LcoyPostEdited {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 2px 6px;
-  border-radius: var(--cn-radius);
-  color: var(--cn-primary-medium);
-  font-size: var(--cn-font-down-1);
+  border-radius: var(--lcoy-radius);
+  color: var(--lcoy-primary-medium);
+  font-size: var(--lcoy-font-down-1);
   cursor: pointer;
 
   &:hover,
   &:focus-visible {
-    background: var(--cn-primary-100);
-    color: var(--cn-primary);
-  }
-}
-
-.CanelaHistory-nav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--cn-space-3);
-  padding-bottom: var(--cn-space-3);
-  margin-bottom: var(--cn-space-3);
-  border-bottom: 1px solid var(--cn-border);
-}
-
-.CanelaHistory-pager {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.CanelaHistory-position {
-  min-width: 9em;
-  text-align: center;
-  font-weight: 600;
-}
-
-.CanelaHistory-editor {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--cn-primary-high);
-  font-size: var(--cn-font-down-1);
-}
-
-.CanelaHistory-avatar {
-  --size: 24px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-}
-
-.CanelaHistory-modes {
-  display: flex;
-  gap: 4px;
-}
-
-.CanelaHistory-mode.Button {
-  height: 30px;
-  font-size: var(--cn-font-down-1);
-
-  &.active {
-    background: var(--cn-selected);
-    color: var(--cn-accent-active);
-  }
-}
-
-.CanelaHistory-stats {
-  display: flex;
-  gap: var(--cn-space-3);
-  margin-bottom: var(--cn-space-2);
-  font-size: var(--cn-font-down-1);
-  font-weight: 600;
-}
-
-.CanelaHistory-added {
-  color: var(--cn-success);
-}
-
-.CanelaHistory-removed {
-  color: var(--cn-danger);
-}
-
-.CanelaHistory-text {
-  margin: 0;
-  padding: var(--cn-space-3);
-  max-height: 60vh;
-  overflow: auto;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  font-family: inherit;
-  font-size: var(--cn-font-0);
-  line-height: 1.6;
-  background: var(--cn-primary-very-low);
-  border: 1px solid var(--cn-border);
-  border-radius: var(--cn-radius);
-  color: var(--cn-primary);
-}
-
-.CanelaHistory-columns {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--cn-space-3);
-}
-
-// Verde e vermelho translúcidos: legíveis no claro e no escuro.
-.CanelaHistory-ins {
-  background: rgba(0, 153, 0, 0.18);
-  text-decoration: none;
-}
-
-.CanelaHistory-del {
-  background: rgba(200, 0, 1, 0.16);
-  text-decoration: line-through;
-}
-
-.CanelaHistory-empty {
-  margin: var(--cn-space-4) 0;
-  color: var(--cn-primary-high);
-  text-align: center;
-}
-
-@media @phone {
-  .CanelaHistory-columns {
-    grid-template-columns: minmax(0, 1fr);
+    background: var(--lcoy-primary-100);
+    color: var(--lcoy-primary);
   }
 }

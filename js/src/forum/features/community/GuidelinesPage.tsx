@@ -3,8 +3,8 @@ import RulesPage from './RulesPage';
 import { t } from '../../utils/settings';
 
 /**
- * As "Diretrizes" (/guidelines, e /faq como apelido): a página do fof/pages
- * escolhida no admin, ou o texto do tema, no layout de regras.
+ * “准则”（/guidelines，/faq 为别名）：在管理后台选定的
+ * fof/pages 页面，或主题自带文本，采用规则页布局。
  */
 export default class GuidelinesPage extends RulesPage {
   title(): string {
@@ -12,7 +12,7 @@ export default class GuidelinesPage extends RulesPage {
   }
 
   className(): string {
-    return 'CanelaGuidelinesPage';
+    return 'LcoyGuidelinesPage';
   }
 
   enabled(): boolean {
@@ -20,10 +20,10 @@ export default class GuidelinesPage extends RulesPage {
   }
 
   endpoint(): string {
-    return '/canela-guidelines';
+    return '/lcoy-guidelines';
   }
 
   activeTab(): string {
-    return 'canela.guidelines';
+    return 'lcoy.guidelines';
   }
 }

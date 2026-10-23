@@ -15,12 +15,12 @@ declare(strict_types=1);
 namespace Lcoy\Roselle\Preload;
 
 /**
- * A chave de um pedido pré-carregado: o caminho na API e os parâmetros
- * achatados ("page[limit]=20") em ordem alfabética, sem codificação de URL.
+ * 预加载请求的键：API 路径，以及按字母顺序展平、未做 URL 编码的参数
+ * （"page[limit]=20"）。
  *
- * O JS (`utils/preload.ts`) monta a mesma chave a partir dos parâmetros que
- * ia mandar; só quando as duas batem o dado pronto é usado. Um parâmetro a
- * mais ou a menos de um dos lados não quebra nada: a página faz o pedido.
+ * JS（`utils/preload.ts`）用即将发送的参数构建相同的键；只有两者匹配时
+ * 才使用预加载的数据。任意一方多一个或少一个参数都不会出问题：
+ * 页面会自行发出请求。
  */
 final class PreloadKey
 {
@@ -41,7 +41,7 @@ final class PreloadKey
     private static function flatten(array $value, string $prefix, array &$pairs): void
     {
         foreach ($value as $key => $item) {
-            // Como no JS: o Mithril deixa de fora o valor vazio.
+            // 与 JS 一致：Mithril 会省略空值。
             if ($item === null || $item === '') {
                 continue;
             }

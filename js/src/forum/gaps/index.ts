@@ -1,15 +1,13 @@
 /*
- * Recursos e comportamentos do Discourse que faltavam no tema (gaps):
- * botões dos blocos de código, âncoras dos títulos, tabelas expansíveis,
- * spoilers borrados, cartão nas menções, atalhos dos posts, leitura
- * (pontinho e "último acesso"), "Voltar" na linha do tempo, título editável
- * no cabeçalho, janela de compartilhar, "último acesso" e "Descartar" na
- * lista, e links novos na barra lateral.
+ * 主题中缺失的 Discourse 功能与行为（gaps）：代码块按钮、标题锚点、
+ * 可展开表格、毛玻璃剧透、提及卡片、帖子快捷键、阅读状态
+ *（小圆点和“最后访问”）、时间线中的“返回”、头部可编辑标题、
+ * 分享窗口、列表中的“最后访问”和“忽略”，以及侧栏的新链接。
  *
- * O lightbox não está aqui: quem amplia as imagens é o fof/photoswipe.
+ * lightbox 不在这里：放大图片由 fof/photoswipe 负责。
  *
- * Cada recurso confere a própria configuração na hora de agir, então todos
- * são instalados sempre e somem sozinhos quando desligados no admin.
+ * 每个功能都在执行时检查自己的配置，因此始终全部安装，在后台关闭后
+ * 会自动消失。
  */
 import app from 'flarum/forum/app';
 
@@ -25,17 +23,15 @@ import installSidebarGaps from './sidebar';
 import installSidebarHome from './sidebarHome';
 import installCategoryNotifications from './integrations/categoryNotifications';
 import installGapNotifications from './backend/notifications';
-import installInvites from './backend/invites';
 
 export function installGaps(): void {
   installMentionCards();
   installGapShortcuts();
   installLastVisit();
   installGapNotifications();
-  installInvites();
 
-  // Como o tópico do tema, no beforeMount: os extends registrados por último
-  // rodam por último e enxergam o que as outras extensões e áreas puseram.
+  // 与主题的 topic 一样在 beforeMount：最后注册的 extend 最后运行，
+  // 能看到其他扩展和区域放进去的内容。
   app.beforeMount(() => {
     installCookedDecorators();
     installReadState();

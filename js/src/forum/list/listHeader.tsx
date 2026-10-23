@@ -1,10 +1,10 @@
 /*
- * Cabeçalho de colunas da lista ("Tópico · Respostas · Visualizações ·
- * Atividade") e as classes que dizem à lista quais colunas existem.
+ * 列表的列标题（"主题 · 回复 · 浏览量 ·
+ * 活动"）以及告知列表有哪些列的类名。
  *
- * Entra no DiscussionList, e não em cada linha: as linhas guardam a árvore
- * (SubtreeRetainer) e não seriam redesenhadas quando a primeira discussão com
- * visualizações chegasse numa página nova.
+ * 它进入 DiscussionList，而不是每一行：各行会保留树结构
+ * （SubtreeRetainer），当新页面中出现第一个带浏览量的讨论时
+ * 不会重新绘制。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -21,46 +21,46 @@ import { activeSort } from './sorts';
 import listSkeleton from './listSkeleton';
 
 /**
- * Se a última lista carregada tinha a coluna de visualizações: enquanto a
- * próxima carrega não há discussões para decidir, e o cabeçalho (e o
- * skeleton) não pode perder a coluna e ganhá-la de volta.
+ * 上一次加载的列表是否带有浏览量列：在下一页加载期间
+ * 没有讨论可用于判断，页眉（以及骨架屏）不能丢掉该列
+ * 又重新加回来。
  */
 let lastShowViews = true;
 
 function sortableColumn(label: string, sort: string, enabled: boolean, className: string): Mithril.Children {
   if (!enabled || !(sort in app.discussions.sortMap())) {
-    return <span className={classList('CanelaListHeader-cell', className)}>{label}</span>;
+    return <span className={classList('LcoyListHeader-cell', className)}>{label}</span>;
   }
 
-  // Como no Discourse, a seta só aparece quando o leitor escolheu a ordem
-  // pela coluna (ou pela URL); a lista padrão não marca nenhuma.
+  // 与 Discourse 相同，只有在读者通过列（或 URL）选择了该顺序时
+  // 箭头才显示；默认列表不标记任何列。
   const active = !!app.search.state.params().sort && activeSort() === sort;
 
   return (
     <button
       type="button"
-      className={classList('Button--ua-reset CanelaListHeader-cell CanelaListHeader-sort', className, { active })}
+      className={classList('Button--ua-reset LcoyListHeader-cell LcoyListHeader-sort', className, { active })}
       aria-pressed={active ? 'true' : 'false'}
       onclick={() => app.search.state.changeSort(sort)}
     >
       {label}
-      {active && <Icon name="fas fa-chevron-down" className="CanelaListHeader-arrow" />}
+      {active && <Icon name="fas fa-chevron-down" className="LcoyListHeader-arrow" />}
     </button>
   );
 }
 
 function headerView(state: DiscussionListState, showViews: boolean): Mithril.Children {
-  // Só a lista da página inicial (e das tags/seguindo) reordena pela URL; a
-  // lista de discussões do perfil usa outro estado, e lá a coluna é só rótulo.
+  // 只有首页（以及标签/关注）的列表通过 URL 重新排序；个人资料的
+  // 讨论列表使用另一个状态，那里的列只是标签。
   const sortable = state === app.discussions && app.current.matches(IndexPage) && !state.isSearchResults();
 
   return (
-    <div className="CanelaListHeader" role="presentation">
-      <span className="CanelaListHeader-cell CanelaListHeader-cell--topic">{t('list.topic')}</span>
-      {forumBool('canelaListPosters', true) && <span className="CanelaListHeader-cell CanelaCell--posters" />}
-      {sortableColumn(t('list.replies'), 'top', sortable, 'CanelaCell--replies')}
-      {showViews && <span className="CanelaListHeader-cell CanelaCell--views">{t('list.views')}</span>}
-      {sortableColumn(t('list.activity'), 'latest', sortable, 'CanelaCell--activity')}
+    <div className="LcoyListHeader" role="presentation">
+      <span className="LcoyListHeader-cell LcoyListHeader-cell--topic">{t('list.topic')}</span>
+      {forumBool('lcoyListPosters', true) && <span className="LcoyListHeader-cell LcoyCell--posters" />}
+      {sortableColumn(t('list.replies'), 'top', sortable, 'LcoyCell--replies')}
+      {showViews && <span className="LcoyListHeader-cell LcoyCell--views">{t('list.views')}</span>}
+      {sortableColumn(t('list.activity'), 'latest', sortable, 'LcoyCell--activity')}
     </div>
   );
 }
@@ -71,20 +71,20 @@ export default function installListHeader(): void {
 
     if (!vdom || !state) return;
 
-    // Primeira página carregando (troca de filtro, categoria ou ordem): as
-    // linhas do skeleton no lugar do spinner, debaixo do cabeçalho.
+    // 第一页加载中（切换过滤器、分类或排序）：用骨架屏
+    // 行取代加载动画，位于页眉下方。
     const loadingFirst = state.isInitialLoading() && !state.hasItems();
 
     if (!loadingFirst) lastShowViews = listHasViews(state);
 
-    const showViews = forumBool('canelaListViews', true) && lastShowViews;
+    const showViews = forumBool('lcoyListViews', true) && lastShowViews;
 
-    vdom.attrs.className = classList(vdom.attrs.className, 'CanelaList', {
-      'CanelaList--views': showViews,
+    vdom.attrs.className = classList(vdom.attrs.className, 'LcoyList', {
+      'LcoyList--views': showViews,
     });
 
-    // A lista vazia devolve só o Placeholder: sem linhas, sem cabeçalho.
-    if (!forumBool('canelaListHeader', true) || state.isEmpty() || !Array.isArray(vdom.children)) return;
+    // 空列表只返回 Placeholder：没有行，也没有页眉。
+    if (!forumBool('lcoyListHeader', true) || state.isEmpty() || !Array.isArray(vdom.children)) return;
 
     if (loadingFirst) {
       const children = vdom.children as any[];
@@ -97,8 +97,8 @@ export default function installListHeader(): void {
       }
     }
 
-    // Os filhos do div (ul + "carregar mais") não têm key, então inserir um
-    // irmão sem key no começo é seguro para o Mithril.
+    // div 的子节点（ul + "加载更多"）没有 key，因此插入一个
+    // 无 key 的同级节点到开头对 Mithril 来说是安全的。
     vdom.children.unshift(headerView(state, showViews) as any);
   });
 }

@@ -1,12 +1,10 @@
 /*
- * O cartão de usuário do Discourse: abre no clique do avatar ou do nome do
- * autor, junto dele, com avatar grande, nomes, grupos, bio, "visto há…",
- * "membro desde" e os botões "Ver perfil"/"Mensagem". Fecha ao clicar fora,
- * com Esc ou ao navegar.
+ * Discourse 的用户卡片：点击作者头像或名字时在其旁边打开，含大头像、名字、
+ * 分组、简介、“最后活跃…”、“加入于”以及“查看个人资料”/“发消息”按钮。
+ * 点击外部、按 Esc 或导航时关闭。
  *
- * Há um cartão só para a página inteira, montado num <div> próprio no body:
- * dentro do post ele seria cortado pelo overflow do conteúdo e ficaria preso
- * ao SubtreeRetainer, que não redesenha o post à toa.
+ * 整个页面只有一个卡片，挂载在 body 中自己的 <div> 上：放在帖子内部会被
+ * 内容的 overflow 裁掉，并被 SubtreeRetainer 困住，而它不会无故重绘帖子。
  */
 import app from 'flarum/forum/app';
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
@@ -24,11 +22,11 @@ import type Mithril from 'mithril';
 
 import { fullDate, shortAge, shortDate } from '../../utils/dates';
 import { t } from '../../utils/settings';
-import { BirthdayFact, StatusLine, profileImageStyle, userTitle } from '../../features/profile';
+import { profileImageStyle } from '../../thirdparty/profileCover';
 import { AUTHOR_FILTER_MAX_POSTS, authorPostCount, filterByAuthor } from '../authorFilter';
 import { userIcons } from '../../utils/userIcons';
 
-/** Distância do cartão até o avatar e até as bordas da janela. */
+/** 卡片到头像的距离，以及到窗口边缘的距离。 */
 const GAP = 8;
 const EDGE = 16;
 
@@ -60,10 +58,10 @@ function ensureRoot() {
   if (root) return;
 
   root = document.createElement('div');
-  root.className = 'CanelaUserCardRoot';
+  root.className = 'LcoyUserCardRoot';
   document.body.appendChild(root);
 
-  m.mount(root, { view: () => (state ? <CanelaUserCard user={state.user} anchor={state.anchor} /> : null) });
+  m.mount(root, { view: () => (state ? <LcoyUserCard user={state.user} anchor={state.anchor} /> : null) });
 
   document.addEventListener('mousedown', onDocumentEvent, true);
   document.addEventListener('keydown', onDocumentEvent, true);
@@ -73,7 +71,7 @@ function ensureRoot() {
 export function openUserCard(user: User, anchor: HTMLElement): void {
   ensureRoot();
 
-  // Um segundo clique no mesmo avatar fecha, como no Discourse.
+  // 在同一头像上再次点击会关闭，与 Discourse 一致。
   if (state && state.user === user && state.anchor === anchor) {
     closeUserCard();
     return;
@@ -81,8 +79,8 @@ export function openUserCard(user: User, anchor: HTMLElement): void {
 
   state = { user, anchor };
 
-  // O usuário que vem junto do post pode não ter tudo (data de entrada,
-  // contagens): busca o perfil completo uma vez por sessão.
+  // 随帖子返回的用户可能信息不全（加入时间、
+  // 计数）：每个会话拉取一次完整资料。
   const id = user.id();
 
   if (id && !requested.has(id) && user.joinTime() === undefined) {
@@ -96,7 +94,7 @@ export function openUserCard(user: User, anchor: HTMLElement): void {
   m.redraw();
 }
 
-/** O tempo de leitura (segundos) no formato curto do Discourse: "35 d", "13 h", "8 min". */
+/** 阅读时长（秒）采用 Discourse 的短格式："35 d"、"13 h"、"8 min"。 */
 function readTime(seconds: number): string {
   const minutes = Math.round(seconds / 60);
 
@@ -113,18 +111,17 @@ export function closeUserCard(): void {
   m.redraw();
 }
 
-interface CanelaUserCardAttrs extends ComponentAttrs {
+interface LcoyUserCardAttrs extends ComponentAttrs {
   user: User;
   anchor: HTMLElement;
 }
 
-class CanelaUserCard extends Component<CanelaUserCardAttrs> {
+class LcoyUserCard extends Component<LcoyUserCardAttrs> {
   /**
-   * O cartão do Discourse (.user-card, 39em): o avatar de 8em subindo 3.3em
-   * acima do cartão, com o flair no canto; @nome enorme e, embaixo, o nome e
-   * o título; à direita "Mensagem" e "N postagens no tópico"; depois a bio
-   * do fof/user-bio (2 linhas), o aniversário, os metadados e os emblemas. O
-   * fundo é a imagem de fundo do perfil, sob um véu da cor do cartão.
+   * Discourse 的卡片（.user-card，39em）：8em 的头像向上探出卡片 3.3em，
+   * 角落带 flair；@用户名很大，下方是姓名和头衔；右侧是“发消息”和
+   * “该主题中有 N 篇帖子”；之后是 fof/user-bio 的简介（2 行）、元数据和徽章。
+   * 背景是个人资料的背景图，上面覆盖一层卡片颜色的薄纱。
    */
   view() {
     const user = this.attrs.user;
@@ -132,38 +129,35 @@ class CanelaUserCard extends Component<CanelaUserCardAttrs> {
     const flairGroup = groups.find((group) => group.icon());
     const lastSeen = user.lastSeenAt();
     const joined = user.joinTime();
-    const timeRead = user.attribute<number | null | undefined>('canelaTimeRead');
-    const recentRead = user.attribute<number | null | undefined>('canelaRecentTimeRead');
-    const likes = user.attribute<number | null | undefined>('canelaLikesReceived');
+    const timeRead = user.attribute<number | null | undefined>('lcoyTimeRead');
+    const recentRead = user.attribute<number | null | undefined>('lcoyRecentTimeRead');
+    const likes = user.attribute<number | null | undefined>('lcoyLikesReceived');
     const solutions = user.attribute<number | null | undefined>('bestAnswerCount');
-    // Só o título do perfil: o grupo já está no flair do avatar.
-    const title = userTitle(user);
     const showName = user.displayName() !== user.username();
 
-    // A "Mensagem" do flarum/messages vira o botão primário; o resto dos
-    // controles (moderação) vai para o "…".
+    // flarum/messages 的“发消息”变成主按钮；其余
+    // 控制项（管理操作）放进“…”里。
     const controls = UserControls.controls(user, this);
     const message = controls.has('sendMessage') ? (controls.get('sendMessage') as any) : null;
     if (message) controls.remove('sendMessage');
     const otherControls = controls.toArray().filter((item: any) => item && item.tag !== Separator);
 
-    // "N postagens no tópico", quando o cartão abre de dentro de um tópico.
+    // 卡片从主题内部打开时显示“该主题中有 N 篇帖子”。
     const discussion = app.current.get('discussion');
     const stream = app.current.get('stream');
     const inTopic = discussion && stream ? authorPostCount(discussion, user) : 0;
 
-    const facts = [BirthdayFact(user)].filter(Boolean);
     const meta1 = [
       lastSeen && !user.isOnline() && this.meta('seen', t('topic.user_card.last_seen'), shortAge(lastSeen), fullDate(lastSeen)),
-      // Online: só "online agora", em verde (o "Visto" sobra).
+      // 在线：只显示绿色的“当前在线”（省去“最后活跃”）。
       user.isOnline() && (
-        <span className="CanelaUserCard-meta CanelaUserCard-online">
-          <span className="CanelaUserCard-onlineNow">{t('user.stats.online')}</span>
+        <span className="LcoyUserCard-meta LcoyUserCard-online">
+          <span className="LcoyUserCard-onlineNow">{t('user.stats.online')}</span>
         </span>
       ),
       joined && this.meta('joined', t('topic.user_card.joined'), shortDate(joined), fullDate(joined)),
-      // "Lido 3 meses (1 d recentemente)": o tempo dos últimos 60 dias entre
-      // parênteses, como o `.metadata .time-read` do Discourse.
+      // “阅读 3 个月（最近 1 天）”：括号里是最近 60 天
+      // 的时长，与 Discourse 的 `.metadata .time-read` 一致。
       typeof timeRead === 'number' &&
         timeRead > 0 &&
         this.meta(
@@ -179,54 +173,51 @@ class CanelaUserCard extends Component<CanelaUserCardAttrs> {
       typeof solutions === 'number' && solutions > 0 && this.meta('solutions', t('topic.user_card.solutions'), abbreviateNumber(solutions)),
     ].filter(Boolean);
 
-    const status = StatusLine(user);
-    // HTML já escapado e formatado pelo fof/user-bio.
+    // 已由 fof/user-bio 转义并格式化的 HTML。
     const bio = user.attribute<string | null | undefined>('bioHtml') || null;
 
     return (
       <div
-        className={classList('CanelaUserCard', { 'CanelaProfile--hasCardBg': !!profileImageStyle(user)['--canela-user-card-bg'] })}
+        className={classList('LcoyUserCard', { 'LcoyProfile--hasCardBg': !!profileImageStyle(user)['--lcoy-user-card-bg'] })}
         role="dialog"
         aria-label={user.displayName()}
         style={{ '--usercard-color': user.color() || undefined, ...profileImageStyle(user) }}
       >
-        <div className="CanelaUserCard-content">
-          <div className="CanelaUserCard-first">
-            <div className="CanelaUserCard-avatarWrapper">
-              <Link className="CanelaUserCard-avatar" href={app.route.user(user)} onclick={closeUserCard}>
+        <div className="LcoyUserCard-content">
+          <div className="LcoyUserCard-first">
+            <div className="LcoyUserCard-avatarWrapper">
+              <Link className="LcoyUserCard-avatar" href={app.route.user(user)} onclick={closeUserCard}>
                 <Avatar user={user} loading="eager" />
               </Link>
               {flairGroup && (
-                <span className="CanelaUserCard-flair" title={flairGroup.nameSingular()} style={{ '--group-color': flairGroup.color() || undefined }}>
+                <span className="LcoyUserCard-flair" title={flairGroup.nameSingular()} style={{ '--group-color': flairGroup.color() || undefined }}>
                   <Icon name={flairGroup.icon()} />
                 </span>
               )}
             </div>
 
-            <div className="CanelaUserCard-names">
-              {/* O nome grande e, na mesma linha, os ícones (selo de verificado),
-                  fora do link: o popover do selo funciona sem levar ao perfil.
-                  O status fica só na pílula embaixo. */}
-              <div className="CanelaUserCard-nameLine">
-                <Link className="CanelaUserCard-name" href={app.route.user(user)} onclick={closeUserCard}>
-                  <span className="CanelaUserCard-username">{user.displayName() || user.username()}</span>
+            <div className="LcoyUserCard-names">
+              {/* 大号名称，同一行放图标（认证徽章），位于链接之外：
+                  这样徽章的 popover 可用，且不会跳转到资料页。状态只放在下方的胶囊里。 */}
+              <div className="LcoyUserCard-nameLine">
+                <Link className="LcoyUserCard-name" href={app.route.user(user)} onclick={closeUserCard}>
+                  <span className="LcoyUserCard-username">{user.displayName() || user.username()}</span>
                 </Link>
                 {userIcons(user, 'card')}
               </div>
-              {/* O apelido (flarum/nicknames) em destaque, como nos posts; o username embaixo. */}
-              {showName && <span className="CanelaUserCard-secondary">{user.username()}</span>}
-              {title && <span className="CanelaUserCard-secondary CanelaUserCard-title">{title}</span>}
+              {/* 昵称（flarum/nicknames）突出显示，与帖子中一致；下面一行是 username。 */}
+              {showName && <span className="LcoyUserCard-secondary">{user.username()}</span>}
             </div>
 
-            <div className="CanelaUserCard-controls">
+            <div className="LcoyUserCard-controls">
               {message && (
-                <Button {...message.attrs} className="Button Button--primary CanelaUserCard-message" icon="far fa-envelope">
+                <Button {...message.attrs} className="Button Button--primary LcoyUserCard-message" icon="far fa-envelope">
                   {message.children}
                 </Button>
               )}
               {inTopic > 1 && discussion.postIds().length <= AUTHOR_FILTER_MAX_POSTS && (
                 <Button
-                  className="Button CanelaUserCard-filter"
+                  className="Button LcoyUserCard-filter"
                   icon="fas fa-filter"
                   onclick={() => {
                     closeUserCard();
@@ -238,7 +229,7 @@ class CanelaUserCard extends Component<CanelaUserCardAttrs> {
               )}
               {otherControls.length > 0 && (
                 <Dropdown
-                  className="CanelaUserCard-more"
+                  className="LcoyUserCard-more"
                   buttonClassName="Button Button--icon"
                   menuClassName="Dropdown-menu--right"
                   icon="fas fa-ellipsis-h"
@@ -253,39 +244,37 @@ class CanelaUserCard extends Component<CanelaUserCardAttrs> {
             </div>
           </div>
 
-          {status && <div className="CanelaUserCard-row">{status}</div>}
-          {bio && <div className="CanelaUserCard-row CanelaUserCard-bio">{m.trust(bio)}</div>}
-          {facts.length > 0 && <div className="CanelaUserCard-row CanelaUserCard-facts">{dotted(facts)}</div>}
-          {meta1.length > 0 && <div className="CanelaUserCard-row CanelaUserCard-metadata">{dotted(meta1)}</div>}
-          {meta2.length > 0 && <div className="CanelaUserCard-row CanelaUserCard-metadata">{dotted(meta2)}</div>}
+          {bio && <div className="LcoyUserCard-row LcoyUserCard-bio">{m.trust(bio)}</div>}
+          {meta1.length > 0 && <div className="LcoyUserCard-row LcoyUserCard-metadata">{dotted(meta1)}</div>}
+          {meta2.length > 0 && <div className="LcoyUserCard-row LcoyUserCard-metadata">{dotted(meta2)}</div>}
         </div>
       </div>
     );
   }
 
-  /** "Rótulo valor" dos metadados do Discourse (.metadata .desc). */
+  /** Discourse 元数据的“标签 值”形式（.metadata .desc）。 */
   meta(key: string, label: string, value: string, title?: string, accent = false) {
     return (
-      <span className={`CanelaUserCard-meta CanelaUserCard-meta--${key}`} title={title}>
-        <span className="CanelaUserCard-metaLabel">{label}</span>{' '}
-        <span className={classList('CanelaUserCard-metaValue', { 'CanelaUserCard-metaValue--accent': accent })}>{value}</span>
+      <span className={`LcoyUserCard-meta LcoyUserCard-meta--${key}`} title={title}>
+        <span className="LcoyUserCard-metaLabel">{label}</span>{' '}
+        <span className={classList('LcoyUserCard-metaValue', { 'LcoyUserCard-metaValue--accent': accent })}>{value}</span>
       </span>
     );
   }
 
-  oncreate(vnode: Mithril.VnodeDOM<CanelaUserCardAttrs, this>) {
+  oncreate(vnode: Mithril.VnodeDOM<LcoyUserCardAttrs, this>) {
     super.oncreate(vnode);
     this.position();
   }
 
-  onupdate(vnode: Mithril.VnodeDOM<CanelaUserCardAttrs, this>) {
+  onupdate(vnode: Mithril.VnodeDOM<LcoyUserCardAttrs, this>) {
     super.onupdate(vnode);
     this.position();
   }
 
   /**
-   * Ao lado do avatar clicado; se não couber embaixo, em cima; e nunca fora
-   * da janela. No celular o CSS o centraliza.
+   * 位于被点击的头像旁边；下方放不下则放在上方；
+   * 且绝不超出窗口。在手机上由 CSS 居中。
    */
   position() {
     const card = this.element as HTMLElement;
@@ -308,9 +297,8 @@ class CanelaUserCard extends Component<CanelaUserCardAttrs> {
     const viewportWidth = document.documentElement.clientWidth;
     const viewportHeight = window.innerHeight;
 
-    // Como no Meta: o avatar grande do cartão (que sobe 3.3em acima dele,
-    // pela margem do CSS) fica à direita do avatar clicado, quase na mesma
-    // altura dele.
+    // 与 Meta 一致：卡片的大头像（靠 CSS 负边距向上探出卡片 3.3em）
+    // 位于被点击头像的右侧，高度几乎与它相同。
     let left = rect.right + GAP;
     let top = rect.top - 22;
 
@@ -320,27 +308,26 @@ class CanelaUserCard extends Component<CanelaUserCardAttrs> {
     card.style.left = `${left + window.scrollX}px`;
     card.style.top = `${top + window.scrollY}px`;
 
-    // A setinha à esquerda, apontando para o meio do avatar clicado; some se o
-    // cartão não ficou ao lado dele (sem espaço à direita ou virado para cima).
+    // 左侧小箭头，指向被点击头像的中心；如果卡片不在它旁边
+    // （右侧没空间或翻到了上方）则隐藏。
     const beside = left >= rect.right;
     const arrow = rect.top + rect.height / 2 - top;
 
-    card.classList.toggle('CanelaUserCard--arrow', beside && arrow > 16 && arrow < height - 16);
+    card.classList.toggle('LcoyUserCard--arrow', beside && arrow > 16 && arrow < height - 16);
     card.style.setProperty('--usercard-arrow', `${arrow}px`);
   }
 }
 
 /**
- * Intercala um "•" entre os itens. O separador é um elemento próprio, irmão dos
- * itens: como pseudo-elemento dentro de um item que é link, ele herdava o
- * sublinhado e o clique do link.
+ * 在各项之间交替插入“•”。分隔符是独立元素，与各项同级：
+ * 作为链接项内的伪元素时，它会继承链接的下划线并触发链接点击。
  */
 function dotted(items: Mithril.Children[]): Mithril.Children[] {
   return items.flatMap((item, index) =>
     index === 0
       ? [item]
       : [
-          <span className="CanelaUserCard-sep" aria-hidden="true">
+          <span className="LcoyUserCard-sep" aria-hidden="true">
             •
           </span>,
           item,

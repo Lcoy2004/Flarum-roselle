@@ -21,8 +21,8 @@ use Lcoy\Roselle\Gaps\GapsSettings;
 use Lcoy\Roselle\Gaps\UnreadTags;
 
 /**
- * `canelaHasUnread` na tag: o ponto de novidades da categoria na barra
- * lateral. A tag mãe acende junto com a filha, como no Discourse.
+ * 标签上的 `lcoyHasUnread`：侧边栏中分类的"有新内容"圆点。父标签会与
+ * 子标签一同点亮，与 Discourse 一致。
  */
 final class TagResourceFields
 {
@@ -35,7 +35,7 @@ final class TagResourceFields
     public function __invoke(): array
     {
         return [
-            Schema\Boolean::make('canelaHasUnread')
+            Schema\Boolean::make('lcoyHasUnread')
                 ->visible(fn (Tag $tag, Context $context) => ! $context->getActor()->isGuest() && $this->gaps->on(GapsSettings::CATEGORY_UNREAD))
                 ->get(fn (Tag $tag, Context $context) => isset($this->unread->for($context->getActor())[(int) $tag->id])),
         ];

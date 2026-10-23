@@ -1,8 +1,8 @@
 /*
- * Os endereços do Discourse: /latest, /hot, /top, /new, /unread (a lista na
- * ordenação correspondente) e /categories (a página de categorias). O
- * servidor responde as mesmas rotas (extend/listroutes.php); /c/<slug> é
- * redirecionado lá para /t/<slug>.
+ * Discourse 的地址：/latest、/hot、/top、/new、/unread（按对应
+ * 排序方式显示的列表）以及 /categories（分类页面）。
+ * 服务端会响应相同的路由（extend/listroutes.php）；/c/<slug> 在那里
+ * 重定向到 /t/<slug>。
  */
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
@@ -14,24 +14,24 @@ import setRouteWithForcedRefresh from 'flarum/common/utils/setRouteWithForcedRef
 import { isTagsEnabled } from '../utils/tags';
 import { HOT_SORT, UNREAD_SORT } from './sorts';
 
-/** Rota → ordenação. "Novos" do Discourse é a lista dos mais novos aqui. */
+/** 路由 → 排序方式。Discourse 的 "新帖" 在这里是最新列表。 */
 export const SORT_ROUTES: Record<string, string> = {
-  'canela.latest': 'latest',
-  'canela.hot': HOT_SORT,
-  'canela.top': 'top',
-  'canela.new': 'newest',
-  'canela.unread': UNREAD_SORT,
+  'lcoy.latest': 'latest',
+  'lcoy.hot': HOT_SORT,
+  'lcoy.top': 'top',
+  'lcoy.new': 'newest',
+  'lcoy.unread': UNREAD_SORT,
 };
 
 const PATHS: Record<string, `/${string}`> = {
-  'canela.latest': '/latest',
-  'canela.hot': '/hot',
-  'canela.top': '/top',
-  'canela.new': '/new',
-  'canela.unread': '/unread',
+  'lcoy.latest': '/latest',
+  'lcoy.hot': '/hot',
+  'lcoy.top': '/top',
+  'lcoy.new': '/new',
+  'lcoy.unread': '/unread',
 };
 
-/** A rota do Discourse para uma ordenação, se houver. */
+/** 某个排序方式对应的 Discourse 路由（如果存在）。 */
 export function routeForSort(sort: string): string | null {
   return Object.keys(SORT_ROUTES).find((name) => SORT_ROUTES[name] === sort) || null;
 }
@@ -47,20 +47,20 @@ export default function installRoutes(): void {
     app.routes[name] = { path: PATHS[name], component: IndexPage };
   });
 
-  // Sem o flarum/tags não há página de categorias: /categories mostra a lista.
+  // 没有 flarum/tags 就没有分类页：/categories 显示列表。
   const TagsPage = isTagsEnabled() ? flarum.reg.checkModule('flarum-tags', 'forum/components/TagsPage') : null;
 
-  app.routes['canela.categories'] = { path: '/categories', component: TagsPage || IndexPage };
+  app.routes['lcoy.categories'] = { path: '/categories', component: TagsPage || IndexPage };
 
-  // Em /top (e nas outras), a ordenação vem da rota quando a URL não traz `sort`.
+  // 在 /top（以及其他路由）上，URL 未带 `sort` 时排序来自路由。
   extend(GlobalSearchState.prototype, 'stickyParams', function (params: any) {
     const route = currentSortRoute();
 
     if (route && !params.sort) params.sort = SORT_ROUTES[route];
   });
 
-  // Trocar a ordenação numa dessas rotas leva à rota da nova ordenação (ou à
-  // lista com `?sort=`), e não à mesma rota com outro parâmetro.
+  // 在这些路由上切换排序会跳到新排序的路由（或带
+  // `?sort=` 的列表），而不是同一路由加另一个参数。
   override(GlobalSearchState.prototype, 'changeSort', function (this: GlobalSearchState, original: (sort: string) => void, sort: string) {
     if (!currentSortRoute()) return original(sort);
 
@@ -70,9 +70,9 @@ export default function installRoutes(): void {
     setRouteWithForcedRefresh(target ? app.route(target, params) : app.route('index', { ...params, sort }));
   });
 
-  // O servidor pré-carrega essas rotas como a lista padrão (Recentes): fora
-  // de Recentes, o documento pré-carregado não serve e a lista vai à API.
-  // loadPage é protegido no tipo; a extensão é a mesma de qualquer método.
+  // 服务端把这些路由预加载为默认列表（最新）：在最新之外，
+  // 预加载的文档不再适用，列表会请求 API。
+  // loadPage 在类型中是受保护的；扩展方式与其他方法相同。
   override(
     DiscussionListState.prototype as any,
     'loadPage' as any,

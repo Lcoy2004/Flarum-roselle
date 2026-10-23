@@ -1,16 +1,14 @@
 /*
- * Os enfeites que o Discourse põe no conteúdo dos posts (o "cooked"), depois
- * que o HTML entra na página:
+ * Discourse 在帖子内容（“cooked”）进入页面后添加的装饰：
  *
- * - blocos de código com os botões "copiar" e "tela cheia" (codeblock-buttons);
- * - títulos (h1–h6) com o link "#" que aparece ao passar o mouse (a.anchor);
- * - tabelas largas com o botão "Expandir tabela";
- * - spoilers borrados, revelados no clique (spoiler-alert).
+ * - 带“复制”和“全屏”按钮的代码块（codeblock-buttons）；
+ * - 悬停时出现 “#” 链接的标题（h1–h6）（a.anchor）；
+ * - 带“展开表格”按钮的宽表格；
+ * - 毛玻璃剧透，点击后显示（spoiler-alert）。
  *
- * Tudo acontece DENTRO de elementos que já existem (pre, h2, table…): o post
- * entra com m.trust, e o Mithril remove esse HTML contando os nós de cima —
- * embrulhar um bloco num <div> novo trocaria essa contagem e deixaria lixo
- * na página quando o post fosse editado.
+ * 一切都在已存在的元素内部完成（pre、h2、table…）：帖子通过 m.trust
+ * 插入，而 Mithril 按顶层节点数量移除这段 HTML——把块包进新的 <div>
+ * 会改变这个数量，在帖子被编辑时留下垃圾。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -20,14 +18,14 @@ import { gaps } from '../settings';
 import { t } from '../../utils/settings';
 import { copyText } from '../../utils/clipboard';
 
-const DONE = 'canelaDecorated';
-/** Quanto tempo o "copiado!" fica no botão. */
+const DONE = 'lcoyDecorated';
+/** “已复制！”在按钮上停留的时间。 */
 const COPIED_MS = 2000;
 
 function iconButton(className: string, icon: string, label: string, onclick: (button: HTMLButtonElement) => void): HTMLButtonElement {
   const button = document.createElement('button');
   button.type = 'button';
-  button.className = `Button Button--icon CanelaCodeButton ${className}`;
+  button.className = `Button Button--icon LcoyCodeButton ${className}`;
   button.title = label;
   button.setAttribute('aria-label', label);
   button.innerHTML = `<i aria-hidden="true" class="icon ${icon} Button-icon"></i>`;
@@ -49,23 +47,23 @@ function decorateCode(body: HTMLElement): void {
     const code = pre.querySelector('code') || pre;
 
     pre.dataset[DONE] = '1';
-    pre.classList.add('CanelaCodeBlock');
+    pre.classList.add('LcoyCodeBlock');
 
     const wrapper = document.createElement('div');
-    wrapper.className = 'CanelaCodeBlock-buttons';
+    wrapper.className = 'LcoyCodeBlock-buttons';
     wrapper.setAttribute('contenteditable', 'false');
 
     wrapper.appendChild(
-      iconButton('CanelaCodeButton--copy', 'far fa-copy', t('gaps.code.copy'), (button) => {
+      iconButton('LcoyCodeButton--copy', 'far fa-copy', t('gaps.code.copy'), (button) => {
         copyText(code.textContent || '').then((ok) => {
           if (!ok) return;
 
-          button.classList.add('CanelaCodeButton--done');
+          button.classList.add('LcoyCodeButton--done');
           button.innerHTML = `<i aria-hidden="true" class="icon fas fa-check Button-icon"></i>`;
           button.title = t('gaps.code.copied');
 
           window.setTimeout(() => {
-            button.classList.remove('CanelaCodeButton--done');
+            button.classList.remove('LcoyCodeButton--done');
             button.innerHTML = `<i aria-hidden="true" class="icon far fa-copy Button-icon"></i>`;
             button.title = t('gaps.code.copy');
           }, COPIED_MS);
@@ -74,9 +72,9 @@ function decorateCode(body: HTMLElement): void {
     );
 
     wrapper.appendChild(
-      iconButton('CanelaCodeButton--fullscreen', 'fas fa-up-right-and-down-left-from-center', t('gaps.code.fullscreen'), () => {
+      iconButton('LcoyCodeButton--fullscreen', 'fas fa-up-right-and-down-left-from-center', t('gaps.code.fullscreen'), () => {
         const copy = pre.cloneNode(true) as HTMLElement;
-        copy.querySelector('.CanelaCodeBlock-buttons')?.remove();
+        copy.querySelector('.LcoyCodeBlock-buttons')?.remove();
 
         app.modal.show(() => import('./FullscreenModal'), { title: t('gaps.code.view_code'), html: copy.outerHTML, kind: 'code' });
       })
@@ -86,7 +84,7 @@ function decorateCode(body: HTMLElement): void {
   });
 }
 
-/** O "nome" do título, como o markdown-it do Discourse: minúsculas, hífens, sem acento. */
+/** 标题的“名称”，与 Discourse 的 markdown-it 一致：小写、连字符、去掉重音。 */
 function slugify(text: string): string {
   return text
     .normalize('NFD')
@@ -105,7 +103,7 @@ function decorateHeadings(body: HTMLElement, postId: string): void {
   const used = new Set<string>();
 
   body.querySelectorAll<HTMLElement>('h1, h2, h3, h4, h5, h6').forEach((heading) => {
-    if (heading.dataset[DONE] || heading.closest('blockquote, .CanelaEmbeddedPost')) return;
+    if (heading.dataset[DONE] || heading.closest('blockquote, .LcoyEmbeddedPost')) return;
 
     const base = slugify(heading.textContent || '') || 'h';
     let slug = base;
@@ -113,29 +111,29 @@ function decorateHeadings(body: HTMLElement, postId: string): void {
     for (let i = 2; used.has(slug); i++) slug = `${base}-${i}`;
     used.add(slug);
 
-    // O id leva o post: dois posts com o mesmo título não disputam a âncora.
+    // id 带上帖子：两个标题相同的帖子不会争抢锚点。
     const id = `p-${postId}-${slug}`;
 
     heading.dataset[DONE] = '1';
     heading.id = id;
 
     const anchor = document.createElement('a');
-    anchor.className = 'CanelaAnchor';
+    anchor.className = 'LcoyAnchor';
     anchor.href = `#${id}`;
     anchor.title = t('gaps.heading_anchor');
     anchor.setAttribute('aria-label', t('gaps.heading_anchor'));
     anchor.addEventListener('click', (event) => {
       event.preventDefault();
 
-      // Sem trocar a rota do Mithril (o hash viraria uma navegação): o
-      // endereço ganha a âncora e a página rola até o título.
+      // 不切换 Mithril 路由（hash 会变成一次导航）：地址加上锚点，
+      // 页面滚动到标题。
       history.replaceState(history.state, '', `${window.location.pathname}${window.location.search}#${id}`);
       heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
     heading.insertBefore(anchor, heading.firstChild);
 
-    // Quem chega por um link com a âncora cai no título, e não no topo do post.
+    // 通过带锚点的链接进来的人会落在标题处，而不是帖子顶部。
     if (window.location.hash === `#${id}`) window.setTimeout(() => heading.scrollIntoView({ block: 'start' }), 300);
   });
 }
@@ -148,16 +146,16 @@ function decorateTables(body: HTMLElement): void {
 
     table.dataset[DONE] = '1';
 
-    // Só as tabelas que não cabem ganham o botão, como no Discourse.
+    // 只有放不下的表格才加按钮，与 Discourse 一致。
     if (table.scrollWidth <= table.clientWidth + 2) return;
 
     const caption = document.createElement('caption');
-    caption.className = 'CanelaTableExpand';
+    caption.className = 'LcoyTableExpand';
     caption.setAttribute('contenteditable', 'false');
 
-    const button = iconButton('CanelaTableExpand-button', 'fas fa-up-right-and-down-left-from-center', t('gaps.table.expand'), () => {
+    const button = iconButton('LcoyTableExpand-button', 'fas fa-up-right-and-down-left-from-center', t('gaps.table.expand'), () => {
       const copy = table.cloneNode(true) as HTMLElement;
-      copy.querySelector('.CanelaTableExpand')?.remove();
+      copy.querySelector('.LcoyTableExpand')?.remove();
 
       app.modal.show(() => import('./FullscreenModal'), { title: t('gaps.table.view_table'), html: copy.outerHTML, kind: 'table' });
     });
@@ -169,7 +167,7 @@ function decorateTables(body: HTMLElement): void {
 }
 
 function reveal(spoiler: HTMLElement): void {
-  spoiler.classList.remove('CanelaSpoiler--blurred');
+  spoiler.classList.remove('LcoySpoiler--blurred');
   spoiler.removeAttribute('aria-label');
   spoiler.removeAttribute('role');
   spoiler.removeAttribute('tabindex');
@@ -178,23 +176,23 @@ function reveal(spoiler: HTMLElement): void {
 function decorateSpoilers(body: HTMLElement): void {
   if (!gaps.spoilerBlur()) return;
 
-  // O spoiler em linha do Litedown (||texto||) e o de bloco (>! texto), que
-  // vem como <details> sem resumo: os dois viram o borrão do Discourse.
+  // Litedown 的行内剧透（||文本||）和块级剧透（>! 文本），后者以
+  // 没有摘要的 <details> 形式出现：两者都变成 Discourse 的模糊效果。
   body.querySelectorAll<HTMLElement>('span.spoiler, details.spoiler').forEach((spoiler) => {
     if (spoiler.dataset[DONE]) return;
 
     spoiler.dataset[DONE] = '1';
-    spoiler.classList.add('CanelaSpoiler', 'CanelaSpoiler--blurred');
+    spoiler.classList.add('LcoySpoiler', 'LcoySpoiler--blurred');
     spoiler.setAttribute('role', 'button');
     spoiler.setAttribute('tabindex', '0');
     spoiler.setAttribute('aria-label', t('gaps.spoiler.reveal'));
 
     if (spoiler.tagName === 'DETAILS') {
-      // Sem um <summary> do autor, o navegador desenha o "Detalhes" padrão,
-      // que o CSS não alcança; um vazio (escondido) toma o lugar dele.
+      // 作者没有提供 <summary> 时，浏览器会绘制默认的“详细信息”，
+      // CSS 触及不到；用一个空（隐藏的）summary 取代它。
       if (!spoiler.querySelector(':scope > summary')) {
         const summary = document.createElement('summary');
-        summary.className = 'CanelaSpoiler-summary';
+        summary.className = 'LcoySpoiler-summary';
         spoiler.insertBefore(summary, spoiler.firstChild);
       }
 
@@ -202,9 +200,9 @@ function decorateSpoilers(body: HTMLElement): void {
     }
 
     const onReveal = (event: Event) => {
-      if (!spoiler.classList.contains('CanelaSpoiler--blurred')) return;
+      if (!spoiler.classList.contains('LcoySpoiler--blurred')) return;
 
-      // O primeiro clique só revela: um link escondido não pode navegar.
+      // 第一次点击只做显示：隐藏的链接不能导航。
       event.preventDefault();
       event.stopPropagation();
       reveal(spoiler);
@@ -218,9 +216,9 @@ function decorateSpoilers(body: HTMLElement): void {
 }
 
 /**
- * As datas locais do Discourse ([date=2026-10-20 time=14:00 timezone=…]):
- * o servidor manda a data no fuso de quem escreveu; aqui ela vira a mesma
- * hora no fuso de quem lê, com o ícone de globo e a hora original no título.
+ * Discourse 的本地日期（[date=2026-10-20 time=14:00 timezone=…]）：
+ * 服务器按作者所在时区下发日期；这里把它转换成读者时区的同一时刻，
+ * 带地球图标，title 中保留原始时间。
  */
 function zonedToDate(date: string, time: string, zone: string): Date | null {
   const [year, month, day] = date.split('-').map(Number);
@@ -230,7 +228,7 @@ function zonedToDate(date: string, time: string, zone: string): Date | null {
   if (!zone) return time ? new Date(year, month - 1, day, hour || 0, minute || 0, second || 0) : new Date(utc);
 
   try {
-    // A diferença entre o fuso pedido e o UTC naquele instante (horário de verão incluso).
+    // 该时刻请求时区与 UTC 的差值（含夏令时）。
     const parts = new Intl.DateTimeFormat('en-US', {
       timeZone: zone,
       hourCycle: 'h23',
@@ -251,7 +249,7 @@ function zonedToDate(date: string, time: string, zone: string): Date | null {
 }
 
 function decorateLocalDates(body: HTMLElement): void {
-  body.querySelectorAll<HTMLElement>('span.canela-local-date').forEach((span) => {
+  body.querySelectorAll<HTMLElement>('span.lcoy-local-date').forEach((span) => {
     if (span.dataset[DONE]) return;
 
     span.dataset[DONE] = '1';
@@ -268,7 +266,7 @@ function decorateLocalDates(body: HTMLElement): void {
       ? { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }
       : { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' };
 
-    span.classList.add('CanelaLocalDate');
+    span.classList.add('LcoyLocalDate');
     span.title = [span.textContent || '', zone].filter(Boolean).join(': ');
     span.innerHTML = '<i aria-hidden="true" class="icon fas fa-globe"></i> ';
     span.appendChild(document.createTextNode(new Intl.DateTimeFormat(locale, options).format(moment)));

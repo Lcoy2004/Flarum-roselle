@@ -1,23 +1,23 @@
 /*
- * "Fulano está digitando…" do flarum-realtime com as reticências que ondulam
- * do `discourse-presence` (`.presence-users .wave .dot`, 1,8s): os três
- * pontos sobem um depois do outro, no lugar do ícone "…" pulsando.
+ * flarum-realtime 的“某某正在输入……”加上 `discourse-presence` 中
+ * 波浪跳动的省略号（`.presence-users .wave .dot`，1.8s）：三个
+ * 点依次升起，取代脉动的“…”图标。
  */
 import { extend } from 'flarum/common/extend';
 import type Mithril from 'mithril';
 
 function wave() {
   return (
-    <span className="CanelaWave" aria-hidden="true">
-      <span className="CanelaWave-dot">.</span>
-      <span className="CanelaWave-dot">.</span>
-      <span className="CanelaWave-dot">.</span>
+    <span className="LcoyWave" aria-hidden="true">
+      <span className="LcoyWave-dot">.</span>
+      <span className="LcoyWave-dot">.</span>
+      <span className="LcoyWave-dot">.</span>
     </span>
   );
 }
 
 export default function installTyping() {
-  // Só existe com o flarum-realtime; sem ele o onLoad nunca dispara.
+  // 只在 flarum-realtime 存在时有效；没有它，onLoad 永远不会触发。
   extend('ext:flarum/realtime/forum/components/TypingIndicator' as any, 'view', function (this: unknown, vdom: Mithril.Vnode<any, any>) {
     const className = String(vdom?.attrs?.className || '');
 
@@ -29,7 +29,7 @@ export default function installTyping() {
 
     if (!users || !Array.isArray(users.children)) return;
 
-    // O primeiro filho é o ícone; o texto vem depois e as reticências no fim.
+    // 第一个子节点是图标；文本在其后，省略号在末尾。
     users.children = users.children.slice(1).concat(wave());
   });
 }

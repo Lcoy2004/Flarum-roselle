@@ -1,8 +1,6 @@
 /*
- * A página do tópico no jeito do Discourse: título com os badges dentro do
- * cartão, posts com a barra de ações embaixo, a linha do tempo na coluna da
- * direita, o mapa do tópico depois do primeiro post, e no fim os botões do
- * tópico e os tópicos sugeridos.
+ * Discourse 风格的主题页面：标题和徽章位于卡片内，帖子下方带操作栏，
+ * 右侧栏为时间线，第一楼之后是主题地图，末尾是主题按钮和建议主题。
  */
 import app from 'flarum/forum/app';
 
@@ -17,14 +15,13 @@ import installEventPosts from './eventPosts';
 import installReplyToComposer from './replyToComposer';
 
 export default function installTopic(): void {
-  // O composer no "em resposta a" do avocado (extends por nome de módulo:
-  // os corpos do composer vêm em chunks).
+  // avocado 的“回复给”中的 composer（按模块名 extend：
+  // composer 的正文以 chunk 形式加载）。
   installReplyToComposer();
 
-  // Tudo é registrado no beforeMount, que roda depois de todos os
-  // initializers: o extend registrado por último roda por último, e é assim
-  // que o tema enxerga (e repagina) os itens que tags, likes e mentions põem
-  // nas mesmas listas, qualquer que seja a ordem de boot das extensões.
+  // 全部在 beforeMount 注册，它在所有 initializer 之后运行：
+  // 最后注册的 extend 最后运行，主题正是借此看到（并重新排版）
+  // tags、likes 和 mentions 放进同一批列表的项目，无论扩展的启动顺序如何。
   app.beforeMount(() => {
     installHero();
     installLayout();

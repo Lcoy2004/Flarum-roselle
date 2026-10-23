@@ -19,14 +19,13 @@ use Flarum\Settings\SettingsRepositoryInterface;
 use Throwable;
 
 /**
- * As abas "Termos de Serviço" e "Política de Privacidade" do Sobre (as rotas
- * /tos e /privacy do Discourse), e as outras políticas do fof/terms.
+ * "关于"页面中的"服务条款"和"隐私政策"选项卡（Discourse 的 /tos 和
+ * /privacy 路由），以及 fof/terms 中的其他政策。
  *
- * As políticas do fof/terms vêm primeiro — são as que o cadastro pede para
- * aceitar, e o link precisa ser o mesmo. Elas têm só nome e endereço, então o
- * tema reconhece qual é qual pelo nome ("Termos de uso", "Privacidade"…); as
- * que não se encaixam viram abas com o próprio nome. Sem política, valem os
- * endereços do admin do tema. Sem endereço, a aba não aparece.
+ * fof/terms 的政策优先——注册时要求用户接受的就是这些，链接必须一致。
+ * 它们只有名称和地址，因此主题根据名称判断哪个是哪个（"Termos de uso"、
+ * "Privacidade"……）；对不上的则按其自身名称作为选项卡。没有政策时，
+ * 使用主题后台设置的地址。没有地址时，该选项卡不显示。
  */
 final class LegalPages
 {
@@ -44,8 +43,8 @@ final class LegalPages
     }
 
     /**
-     * `key` é "tos", "privacy" ou "policy-<id>"; `title` vem só nas políticas
-     * extras (as duas fixas usam a tradução do fórum).
+     * `key` 为 "tos"、"privacy" 或 "policy-<id>"；`title` 只出现在额外的政策
+     * 中（两个固定项使用论坛的翻译）。
      *
      * @return list<array{key: string, title: string|null, url: string}>
      */
@@ -107,17 +106,17 @@ final class LegalPages
         }
 
         try {
-            // O repositório do fof/terms guarda as políticas em cache para sempre
-            // (e limpa ao salvar): não custa uma consulta por página.
+            // fof/terms 的仓库会永久缓存这些政策
+            // （保存时清除）：因此不会每个页面产生一次查询。
             return resolve($repository)->all();
         } catch (Throwable $error) {
-            error_log('[lcoy/roselle] políticas do fof/terms: '.$error->getMessage());
+            error_log('[lcoy/roselle] fof/terms 政策: '.$error->getMessage());
 
             return [];
         }
     }
 
-    /** Endereço completo (https://…) ou caminho do próprio fórum (/termos). */
+    /** 完整地址（https://…）或论坛自身的路径（/termos）。 */
     private function isUrl(string $url): bool
     {
         return $url !== '' && preg_match('#^(https?://[^\s]+|/[^\s/][^\s]*)$#i', $url) === 1;

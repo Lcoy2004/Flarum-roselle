@@ -1,114 +1,114 @@
 // ---------------------------------------------------------------------
-// fof/best-answer no jeito do discourse-solved
-// (css-discourse-solved.css + d-post-accordion do Meta)
+// fof/best-answer，采用 discourse-solved 风格
+// （css-discourse-solved.css + Meta 的 d-post-accordion）
 // ---------------------------------------------------------------------
 
-// "✓ Solução" na barra do post aceito: `.accepted-text`, verde, font-up-1.
-.CanelaSolved--accepted {
-  &.Button.CanelaPostAction,
-  &.CanelaSolved--static {
-    color: var(--cn-success);
+// 已采纳帖子操作栏中的"✓ 解决方案"：`.accepted-text`，绿色，font-up-1。
+.LcoySolved--accepted {
+  &.Button.LcoyPostAction,
+  &.LcoySolved--static {
+    color: var(--lcoy-success);
     white-space: nowrap;
 
     .Button-icon,
     .icon {
-      color: var(--cn-success);
+      color: var(--lcoy-success);
     }
   }
 
-  &.CanelaSolved--static {
+  &.LcoySolved--static {
     display: inline-flex;
     align-items: center;
     gap: 0.25em;
     height: 38px;
     padding: 0 0.5rem;
-    font-size: var(--cn-font-up-1);
+    font-size: var(--lcoy-font-up-1);
     line-height: 1;
   }
 
-  &.Button.CanelaPostAction {
-    font-size: var(--cn-font-up-1);
+  &.Button.LcoyPostAction {
+    font-size: var(--lcoy-font-up-1);
     gap: 0.25em;
 
     .Button-label {
       display: inline;
     }
 
-    // Quem pode desmarcar vê o fundo de hover, mas o verde fica.
+    // 有权取消标记者会看到悬停背景，但绿色保留。
     &:hover,
     &:focus-visible {
-      color: var(--cn-success);
+      color: var(--lcoy-success);
     }
   }
 }
 
-// O quadrado vazio de marcar: verde ao passar o mouse.
-.CanelaSolved.Button.CanelaPostAction:not(.CanelaSolved--accepted) {
+// 空的标记方块：鼠标悬停时变绿。
+.LcoySolved.Button.LcoyPostAction:not(.LcoySolved--accepted) {
   &:hover,
   &:focus-visible {
-    color: var(--cn-success);
+    color: var(--lcoy-success);
   }
 }
 
-// A resposta aceita sob o 1º post: `.accepted-answers.d-post-accordion`.
-// A melhor resposta no primeiro post e a própria resposta no fluxo: o mesmo
-// desenho do post sinalizado (borda de 2px e faixa no topo), em verde.
-.CanelaSolution {
-  --canela-solution-radius: var(--cn-radius);
-  margin: var(--cn-space-4) 0 0;
+// 第一个帖子下方的已采纳回复：`.accepted-answers.d-post-accordion`。
+// 第一个帖子中的最佳答案和流中的本人回复：相同的
+// 被标记帖子图形（2px 边框和顶部横带），绿色。
+.LcoySolution {
+  --lcoy-solution-radius: var(--lcoy-radius);
+  margin: var(--lcoy-space-4) 0 0;
   overflow: hidden;
-  border: 2px solid var(--cn-success);
-  border-radius: var(--canela-solution-radius);
-  background: var(--cn-surface);
+  border: 2px solid var(--lcoy-success);
+  border-radius: var(--lcoy-solution-radius);
+  background: var(--lcoy-surface);
 }
 
-.CanelaSolution-header {
+.LcoySolution-header {
   display: flex;
   align-items: center;
-  gap: var(--cn-space-2);
-  padding: 8px var(--cn-space-3);
-  background: var(--cn-success);
+  gap: var(--lcoy-space-2);
+  padding: 8px var(--lcoy-space-3);
+  background: var(--lcoy-success);
   color: #fff;
 }
 
-.CanelaSolution-title {
+.LcoySolution-title {
   margin: 0;
-  font-size: var(--cn-font-0);
+  font-size: var(--lcoy-font-0);
   font-weight: 600;
 }
 
-.CanelaSolution-item {
+.LcoySolution-item {
   overflow: hidden;
-  background: var(--cn-surface);
+  background: var(--lcoy-surface);
 }
 
-.CanelaSolution-itemHeader {
+.LcoySolution-itemHeader {
   display: flex;
   align-items: center;
-  gap: var(--cn-space-1);
-  padding: var(--cn-space-2) var(--cn-space-3);
-  border-top: 1px solid ~"color-mix(in srgb, var(--cn-success) 20%, var(--cn-border))";
+  gap: var(--lcoy-space-1);
+  padding: var(--lcoy-space-2) var(--lcoy-space-3);
+  border-top: 1px solid ~"color-mix(in srgb, var(--lcoy-success) 20%, var(--lcoy-border))";
   background: transparent;
-  color: var(--cn-primary-medium);
+  color: var(--lcoy-primary-medium);
 }
 
-.CanelaSolution-meta {
+.LcoySolution-meta {
   display: flex;
   align-items: center;
-  gap: var(--cn-space-1);
+  gap: var(--lcoy-space-1);
   min-width: 0;
 }
 
-.CanelaSolution-user {
+.LcoySolution-user {
   display: flex;
   align-items: center;
-  gap: var(--cn-space-1);
-  color: var(--cn-primary-high);
+  gap: var(--lcoy-space-1);
+  color: var(--lcoy-primary-high);
   font-weight: bold;
 
   &:hover,
   &:visited {
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
     text-decoration: none;
   }
 
@@ -117,7 +117,7 @@
   }
 }
 
-.CanelaSolution-controls {
+.LcoySolution-controls {
   display: flex;
   align-items: center;
   margin-left: auto;
@@ -125,41 +125,41 @@
   .Button.Button--icon {
     width: auto;
     height: auto;
-    padding: 0 0 0 var(--cn-space-2);
+    padding: 0 0 0 var(--lcoy-space-2);
     background: none;
-    color: var(--cn-primary-low-mid);
-    font-size: var(--cn-font-down-1);
+    color: var(--lcoy-primary-low-mid);
+    font-size: var(--lcoy-font-down-1);
 
     &:hover,
     &:focus-visible {
       background: none;
-      color: var(--cn-primary);
+      color: var(--lcoy-primary);
     }
   }
 }
 
-// Seis linhas e o degradê por cima do fim, como o `data-overflowing` do Discourse.
-.CanelaSolution-content.Post-body {
+// 六行加上末尾上方渐变，与 Discourse 的 `data-overflowing` 一致。
+.LcoySolution-content.Post-body {
   position: relative;
-  max-height: calc(var(--canela-solution-lines, 6) * 1.6em);
+  max-height: calc(var(--lcoy-solution-lines, 6) * 1.6em);
   margin: 0;
-  padding: var(--cn-space-2) var(--cn-space-3) 0;
+  padding: var(--lcoy-space-2) var(--lcoy-space-3) 0;
   overflow: hidden;
-  border-top: 1px solid var(--cn-primary-low);
-  font-size: var(--cn-font-0);
+  border-top: 1px solid var(--lcoy-primary-low);
+  font-size: var(--lcoy-font-0);
   line-height: 1.6;
 
-  .CanelaSolution-item--overflowing &::after {
+  .LcoySolution-item--overflowing &::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(transparent, 75%, var(--cn-surface));
+    background: linear-gradient(transparent, 75%, var(--lcoy-surface));
     pointer-events: none;
   }
 
-  .CanelaSolution-item--expanded & {
+  .LcoySolution-item--expanded & {
     max-height: none;
-    padding-bottom: var(--cn-space-3);
+    padding-bottom: var(--lcoy-space-3);
 
     &::after {
       display: none;
@@ -167,57 +167,57 @@
   }
 
   > :last-child {
-    margin-bottom: var(--cn-space-3);
+    margin-bottom: var(--lcoy-space-3);
   }
 }
 
-// Na lista: o selo de resolvido em verde (`.topic-status.--solved`).
+// 列表中：绿色的已解决徽章（`.topic-status.--solved`）。
 .Badge.Badge--bestAnswer {
-  background: var(--cn-success);
+  background: var(--lcoy-success);
   color: #fff;
 }
 
-.CanelaTopic-status .Badge.Badge--bestAnswer {
+.LcoyTopic-status .Badge.Badge--bestAnswer {
   background: none;
-  color: var(--cn-success);
+  color: var(--lcoy-success);
 }
 
-// O botão "Ir para a melhor resposta" que a extensão põe na coluna do tópico.
+// 扩展放在话题列中的"跳到最佳答案"按钮。
 .Button-jumpBestAnswer.Button {
-  color: var(--cn-success);
+  color: var(--lcoy-success);
 }
 
-// No título do tópico (o hero pinta os selos de cinza): o certo verde.
-.DiscussionHero.CanelaTopicHero .DiscussionHero-badges .Badge.Badge--bestAnswer {
-  color: var(--cn-success);
+// 话题标题中（hero 将徽章绘为灰色）：绿色对勾。
+.DiscussionHero.LcoyTopicHero .DiscussionHero-badges .Badge.Badge--bestAnswer {
+  color: var(--lcoy-success);
 }
 
-// A resposta escolhida no fluxo do tópico: a faixa "Solução aceita" vai de
-// ponta a ponta do cartão, acima do avatar (como a do post sinalizado).
-.CanelaTopic .CommentPost.CanelaPost--solution {
+// 话题流中选中的回复："已采纳解决方案"横带
+// 贯穿卡片两端，位于头像上方（与被标记帖子一致）。
+.LcoyTopic .CommentPost.LcoyPost--solution {
   position: relative;
   margin-left: -12px;
   padding: 48px 12px 4px;
-  border: 2px solid var(--cn-success);
-  border-radius: var(--cn-radius);
+  border: 2px solid var(--lcoy-success);
+  border-radius: var(--lcoy-radius);
 
   .Post-main {
     position: static;
   }
 }
 
-.CanelaPost-solutionBar {
+.LcoyPost-solutionBar {
   position: absolute;
   top: 0;
   right: 0;
   left: 0;
   display: flex;
   align-items: center;
-  gap: var(--cn-space-2);
+  gap: var(--lcoy-space-2);
   margin: 0;
   padding: 8px 12px;
-  border-radius: calc(var(--cn-radius) - 2px) calc(var(--cn-radius) - 2px) 0 0;
-  background: var(--cn-success);
+  border-radius: calc(var(--lcoy-radius) - 2px) calc(var(--lcoy-radius) - 2px) 0 0;
+  background: var(--lcoy-success);
   color: #fff;
   font-weight: 600;
 }

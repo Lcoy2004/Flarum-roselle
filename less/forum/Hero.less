@@ -1,27 +1,27 @@
 // =====================================================================
-// Topo da página inicial: o banner de boas-vindas do Horizon e o hero grande
-// da categoria. Os dois ficam fora do cartão, transparentes sobre o fundo
-// tingido, com um degradê radial decorativo.
+// 首页顶部：Horizon 的欢迎横幅和大尺寸的
+// 分类 hero。两者都位于卡片之外，在着色背景上透明，
+// 并带有一个装饰性的径向渐变。
 // =====================================================================
 
-.CanelaWelcome.Hero,
-.CanelaCategoryHero.Hero {
+.LcoyWelcome.Hero,
+.LcoyCategoryHero.Hero {
   margin: 0;
   text-align: left;
-  color: var(--cn-primary);
-  // Em rem, como a lista: o body do tema é 15px e o Discourse mede em 16px.
+  color: var(--lcoy-primary);
+  // 使用 rem，与列表一致：主题的 body 是 15px，而 Discourse 以 16px 计量。
   font-size: 1rem;
-  // Sem fundo próprio: as manchas de cor do fundo da página (Core.less) já
-  // passam por trás, e um fundo aqui desenharia um retângulo de bordas duras.
+  // 无自身背景：页面背景的彩色斑点（Core.less）已经
+  // 从后面经过，这里的背景会画出一个硬边矩形。
   background: none;
 
-  // A largura acompanha o cartão de conteúdo logo abaixo.
-  // `width: auto`: o .container do core tem larguras fixas por breakpoint
-  // (até 1500px), e com a largura do conteúdo em 90%/100% o hero ficava
-  // estreito e desalinhado do cartão.
+  // 宽度跟随正下方的内容卡片。
+  // `width: auto`：核心的 .container 各断点有固定宽度
+  // （最高 1500px），而内容宽度为 90%/100% 时 hero 会变得
+  // 偏窄并与卡片不对齐。
   .container {
     width: auto;
-    max-width: var(--cn-main-max);
+    max-width: var(--lcoy-main-max);
     margin: 0 auto;
     padding: 0;
   }
@@ -32,33 +32,33 @@
 }
 
 // ---------------------------------------------------------------------
-// Banner de boas-vindas
+// 欢迎横幅
 // ---------------------------------------------------------------------
-.CanelaWelcome.Hero {
-  padding: var(--cn-space-8) var(--cn-space-4);
+.LcoyWelcome.Hero {
+  padding: var(--lcoy-space-8) var(--lcoy-space-4);
 
   .container {
     display: flex;
     align-items: center;
-    gap: var(--cn-space-8);
+    gap: var(--lcoy-space-8);
   }
 }
-.CanelaWelcome-text {
+.LcoyWelcome-text {
   flex: 1 1 0;
   min-width: 0;
 }
-.CanelaWelcome.Hero .CanelaWelcome-title {
+.LcoyWelcome.Hero .LcoyWelcome-title {
   font-size: clamp(~"1.728rem, 4vw, 2.296rem");
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.01em;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
 }
-.CanelaWelcome-message {
-  margin-top: var(--cn-space-2);
-  font-size: var(--cn-font-0);
+.LcoyWelcome-message {
+  margin-top: var(--lcoy-space-2);
+  font-size: var(--lcoy-font-0);
   line-height: 1.5;
-  color: var(--cn-primary-high);
+  color: var(--lcoy-primary-high);
 
   p {
     margin: 0 0 0.5em;
@@ -69,7 +69,7 @@
   }
 }
 
-.CanelaWelcome-search {
+.LcoyWelcome-search {
   flex: 1 1 0;
   min-width: 0;
   max-width: 560px;
@@ -78,38 +78,38 @@
     width: 100%;
   }
 
-  // O mesmo botão do cabeçalho, em pílula grande: abre o SearchModal do core.
+  // 与页头相同的按钮，采用大胶囊：打开核心的 SearchModal。
   .Search-input {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: 10px;
     width: 100%;
-    // `.welcome-banner .search-input`: borda do campo e --d-border-radius.
+    // `.welcome-banner .search-input`：字段边框和 --d-border-radius。
     height: 42px;
     padding: 0 16px;
-    border: 1px solid var(--cn-primary-300);
-    border-radius: var(--cn-radius);
-    background: var(--cn-surface);
-    color: var(--cn-primary-medium);
-    font-size: var(--cn-font-0);
+    border: 1px solid var(--lcoy-primary-300);
+    border-radius: var(--lcoy-radius);
+    background: var(--lcoy-surface);
+    color: var(--lcoy-primary-medium);
+    font-size: var(--lcoy-font-0);
     text-align: left;
 
     &:hover,
     &:focus-visible {
-      border-color: var(--cn-accent);
-      background: var(--cn-surface);
-      color: var(--cn-primary-high);
+      border-color: var(--lcoy-accent);
+      background: var(--lcoy-surface);
+      color: var(--lcoy-primary-high);
     }
 
     &:focus-visible {
-      border-color: var(--cn-accent);
-      box-shadow: 0 0 0 1px var(--cn-accent);
+      border-color: var(--lcoy-accent);
+      box-shadow: 0 0 0 1px var(--lcoy-accent);
     }
 
     .Button-icon {
       margin: 0;
-      color: var(--cn-primary-medium);
+      color: var(--lcoy-primary-medium);
     }
 
     .Button-label {
@@ -124,42 +124,42 @@
   }
 
   .Search--active .Search-input {
-    color: var(--cn-link);
+    color: var(--lcoy-link);
   }
 }
 
 @media (max-width: 799px) {
-  .CanelaWelcome.Hero .container {
+  .LcoyWelcome.Hero .container {
     flex-direction: column;
     align-items: stretch;
-    gap: var(--cn-space-4);
+    gap: var(--lcoy-space-4);
   }
 
-  .CanelaWelcome-search {
+  .LcoyWelcome-search {
     max-width: none;
   }
 }
 
-// O Discourse esconde o banner abaixo de 640px (`viewport.until(sm)`).
+// Discourse 在 640px 以下隐藏该横幅（`viewport.until(sm)`）。
 @media (max-width: 639px) {
-  .CanelaWelcome.Hero {
+  .LcoyWelcome.Hero {
     display: none;
   }
 }
 
 // ---------------------------------------------------------------------
-// Hero da categoria (print p4-i)
+// 分类 hero（印刷稿 p4-i）
 // ---------------------------------------------------------------------
-// `.block-category-banner__content`: 24px em cima e embaixo, 8px entre o
-// título e a descrição, 24px até o cartão da lista. No Meta o texto começa
-// na borda do cartão, então o hero desfaz o padding lateral do .Page-hero.
-.CanelaCategoryHero.Hero {
+// `.block-category-banner__content`：上下各 24px，标题与描述之间 8px，
+// 到列表卡片 24px。在 Meta 上文字从卡片边框
+// 开始，因此 hero 抵消了 .Page-hero 的左右内边距。
+.LcoyCategoryHero.Hero {
   padding: 24px 0;
   margin-bottom: 8px;
 
   @media @tablet-up {
-    margin-left: calc(~"var(--cn-space-4) * -1");
-    margin-right: calc(~"var(--cn-space-4) * -1");
+    margin-left: calc(~"var(--lcoy-space-4) * -1");
+    margin-right: calc(~"var(--lcoy-space-4) * -1");
   }
 
   .container {
@@ -169,41 +169,41 @@
   }
 }
 
-// O Meta usa a fonte Kaio a 50.4px/700 (line-height 1.4); com a Inter, o
-// peso 800 e o tracking negativo dão a mesma mancha escura.
-.CanelaCategoryHero.Hero .CanelaCategoryHero-title {
+// Meta 使用 Kaio 字体 50.4px/700（行高 1.4）；改用 Inter 时，
+// 800 字重和负字距能形成同样的深色块面。
+.LcoyCategoryHero.Hero .LcoyCategoryHero-title {
   font-size: clamp(~"2.25rem, 4vw, 3.15rem");
   font-weight: 800;
   line-height: 1.4;
   letter-spacing: -0.03em;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
   overflow-wrap: anywhere;
 }
 
-// O ícone do Flarum de uma etiqueta, antes do nome, na cor dela.
-.CanelaCategoryHero-icon {
+// Flarum 标签的图标，位于名称之前，使用标签颜色。
+.LcoyCategoryHero-icon {
   display: inline-flex;
   margin-right: 0.3em;
   font-size: 0.7em;
   vertical-align: middle;
-  color: var(--tag-color, var(--cn-primary-medium));
+  color: var(--tag-color, var(--lcoy-primary-medium));
 
   .icon {
     color: inherit;
   }
 }
 
-// `__description`: 18px, line-height 1.5, até 900px, na cor do texto.
-.CanelaCategoryHero-description {
+// `__description`：18px，行高 1.5，最宽 900px，使用文字颜色。
+.LcoyCategoryHero-description {
   margin: 0;
   max-width: 900px;
   font-size: 1.125em;
   line-height: 1.5;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
 }
 
-// `__subcategories`: grade de 3 colunas, 20px de vão, 16px acima.
-.CanelaCategoryHero-children {
+// `__subcategories`：3 列网格，间距 20px，上方 16px。
+.LcoyCategoryHero-children {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
@@ -212,45 +212,45 @@
   list-style: none;
 }
 
-// `.category-card__layout`: cartão branco de raio grande, 12px de padding e
-// a sombra tingida do Horizon.
-.CanelaSubcategoryCard {
+// `.category-card__layout`：大圆角白色卡片，12px 内边距，
+// 以及 Horizon 的带色调阴影。
+.LcoySubcategoryCard {
   display: flex;
   align-items: center;
   height: 72px;
   box-sizing: border-box;
   padding: 12px;
-  border-radius: var(--cn-radius-large);
-  background: var(--cn-surface);
-  color: var(--cn-primary);
+  border-radius: var(--lcoy-radius-large);
+  background: var(--lcoy-surface);
+  color: var(--lcoy-primary);
   font-size: 1.125em;
   font-weight: 700;
   line-height: 1.4;
   text-decoration: none;
-  box-shadow: 0 2px 6px 0 ~"oklch(from var(--cn-accent) l c h / 0.24)";
+  box-shadow: 0 2px 6px 0 ~"oklch(from var(--lcoy-accent) l c h / 0.24)";
 
-  // No Meta o cartão não muda no hover (sem anel); só o foco do teclado
-  // ganha a borda fina na cor de destaque.
+  // 在 Meta 上卡片悬停时不变（无环）；只有键盘焦点
+  // 会获得高亮色的细边框。
   &:hover,
   &:focus-visible {
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     text-decoration: none;
   }
 
   &:focus-visible {
     outline: none;
     box-shadow:
-      0 0 0 1px var(--cn-accent),
-      0 2px 6px 0 ~"oklch(from var(--cn-accent) l c h / 0.24)";
+      0 0 0 1px var(--lcoy-accent),
+      0 2px 6px 0 ~"oklch(from var(--lcoy-accent) l c h / 0.24)";
   }
 }
-[data-theme^=dark] .CanelaSubcategoryCard {
-  box-shadow: 0 2px 6px 0 ~"oklch(from var(--cn-accent) l c h / 0.05)";
+[data-theme^=dark] .LcoySubcategoryCard {
+  box-shadow: 0 2px 6px 0 ~"oklch(from var(--lcoy-accent) l c h / 0.05)";
 }
 
-// `.category-card__logo`: 48px, raio 12px, a cor da categoria a 15%; o
-// quadradinho tem 15px e raio 3px.
-.CanelaSubcategoryCard-tile {
+// `.category-card__logo`：48px，圆角 12px，分类颜色 15% 透明度；小方块
+// 为 15px，圆角 3px。
+.LcoySubcategoryCard-tile {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -259,16 +259,16 @@
   height: 48px;
   margin-right: 16px;
   border-radius: 12px;
-  background: ~"color-mix(in srgb, var(--category-color, var(--cn-accent)) 15%, transparent)";
+  background: ~"color-mix(in srgb, var(--category-color, var(--lcoy-accent)) 15%, transparent)";
   font-size: 18px;
 
-  .CanelaCategorySymbol--square::before {
+  .LcoyCategorySymbol--square::before {
     width: 15px;
     height: 15px;
     border-radius: 3px;
   }
 }
-.CanelaSubcategoryCard-name {
+.LcoySubcategoryCard-name {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -276,32 +276,32 @@
 }
 
 @media (max-width: 999px) {
-  .CanelaCategoryHero-children {
+  .LcoyCategoryHero-children {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media @phone {
-  .CanelaCategoryHero.Hero {
+  .LcoyCategoryHero.Hero {
     padding: 16px 12px;
   }
 
-  .CanelaCategoryHero-description {
-    font-size: var(--cn-font-0);
+  .LcoyCategoryHero-description {
+    font-size: var(--lcoy-font-0);
   }
 
-  .CanelaCategoryHero-children {
+  .LcoyCategoryHero-children {
     grid-template-columns: minmax(0, 1fr);
     gap: 12px;
   }
 
-  .CanelaSubcategoryCard {
+  .LcoySubcategoryCard {
     height: 60px;
     padding: 8px;
-    font-size: var(--cn-font-0);
+    font-size: var(--lcoy-font-0);
   }
 
-  .CanelaSubcategoryCard-tile {
+  .LcoySubcategoryCard-tile {
     flex-basis: 44px;
     width: 44px;
     height: 44px;

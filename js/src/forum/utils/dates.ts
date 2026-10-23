@@ -1,8 +1,8 @@
 /*
- * Datas no formato curto do Discourse: "agora", "5 min", "4 h", "3 d", "8 jun",
- * "set 2025". Usa Intl com o idioma ativo do fórum em vez do dayjs: o core só
- * carrega os plugins de que ele mesmo precisa, e o formato abreviado não está
- * entre eles.
+ * Discourse 短格式的日期：“刚刚”、“5 分钟”、“4 小时”、“3 天”、“6月8日”、
+ * “2025年9月”。使用论坛当前语言的 Intl，而不是 dayjs：核心只
+ * 加载它自己需要的插件，而缩写格式不在
+ * 其中。
  */
 import app from 'flarum/forum/app';
 
@@ -10,23 +10,47 @@ const MINUTE = 60 * 1000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
-/** Até quantos dias a idade aparece em dias, antes de virar data. */
+/** 年龄以天显示直到多少天，之后变成日期。 */
 const DAYS_BEFORE_DATE = 30;
 
 function activeLocale(): string {
   return (app.data as any).locale || document.documentElement.lang || 'en';
 }
 
+/**
+ * 每种语言+格式一个 Intl.DateTimeFormat：每次调用都新建很
+ * 昂贵，而这些日期会在每个绘制的帖子和滚动的每一帧中
+ * 格式化（时间线的标签）。
+ */
+const formatters = new Map<string, Intl.DateTimeFormat>();
+
+function formatterFor(locale: string, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+  const key = `${locale}|${JSON.stringify(options)}`;
+  let formatter = formatters.get(key);
+
+  if (!formatter) {
+    try {
+      formatter = new Intl.DateTimeFormat(locale, options);
+    } catch {
+      // 浏览器不认识的语言代码：使用系统格式。
+      formatter = new Intl.DateTimeFormat(undefined, options);
+    }
+
+    formatters.set(key, formatter);
+  }
+
+  return formatter;
+}
+
 export function formatWith(date: Date, options: Intl.DateTimeFormatOptions): string {
   try {
-    return new Intl.DateTimeFormat(activeLocale(), options).format(date);
+    return formatterFor(activeLocale(), options).format(date);
   } catch {
-    // Código de idioma que o navegador não conhece: o formato do sistema serve.
     return date.toLocaleDateString(undefined, options);
   }
 }
 
-/** O Intl põe ponto e "de" no mês abreviado do pt-BR ("8 de jun."); o Discourse não. */
+/** Intl 会在 pt-BR 的缩写月份中加上句点和“de”（“8 de jun.”）；Discourse 不会。 */
 function compact(text: string): string {
   return text
     .replace(/\./g, '')
@@ -50,9 +74,9 @@ export function shortAge(date: Date | null | undefined, now = new Date()): strin
 }
 
 /**
- * A data "média" com "atrás" do Discourse (`relativeAgeMedium`, `leaveAgo`):
- * "5 minutos atrás", "2 horas atrás", "5 dias atrás" e, a partir de 6 dias, a
- * data ("11 out"). É a dos itens de atividade do perfil.
+ * Discourse 的带“之前”的“中等”日期（`relativeAgeMedium`、`leaveAgo`）：
+ * “5 分钟前”、“2 小时前”、“5 天前”，从 6 天起显示
+ * 日期（“10月11日”）。用于个人主页的活动条目。
  */
 export function mediumAge(date: Date | null | undefined, now = new Date()): string {
   if (!date) return '';
@@ -68,14 +92,14 @@ export function mediumAge(date: Date | null | undefined, now = new Date()): stri
   return shortDate(date, now);
 }
 
-/** Data completa para o title dos tempos curtos: "17 de outubro de 2026 14:05". */
+/** 短时间显示的 title 使用的完整日期：“2026年10月17日 14:05”。 */
 export function fullDate(date: Date | null | undefined): string {
   if (!date) return '';
 
   return formatWith(date, { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
-/** "8 jun" ou "8 jun 2024" — a data do mapa do tópico e da linha do tempo. */
+/** “6月8日”或“2024年6月8日”——主题信息和时间线的日期。 */
 export function shortDate(date: Date | null | undefined, now = new Date()): string {
   if (!date) return '';
 
@@ -85,13 +109,13 @@ export function shortDate(date: Date | null | undefined, now = new Date()): stri
   return compact(formatWith(date, options));
 }
 
-/** Intervalo `YYYY-MM-DD..YYYY-MM-DD` dos últimos dias, no formato do filtro `created` do core. */
+/** 最近几天的 `YYYY-MM-DD..YYYY-MM-DD` 区间，采用核心 `created` 筛选器的格式。 */
 export function lastDaysRange(days: number, now = new Date()): string {
   const toIsoDay = (date: Date) =>
     [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
 
-  // O fim é amanhã: o filtro compara com a meia-noite do último dia, e
-  // terminar hoje deixaria de fora tudo o que foi criado hoje.
+  // 结束是明天：筛选器与最后一天的午夜比较，若以今天结束，
+  // 今天创建的所有内容都会被排除在外。
   const from = new Date(now.getTime() - days * DAY);
   const to = new Date(now.getTime() + DAY);
 

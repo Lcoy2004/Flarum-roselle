@@ -11,9 +11,9 @@
  */
 
 /*
- * As seções do Resumo do perfil do Discourse que dependem de contas no banco:
- * "Mais respondidos(as)", "Mais curtido por", "Com mais curtidas" e "Melhores
- * categorias". Só leitura: nenhuma tabela nova, nenhuma migration.
+ * Discourse 个人资料摘要中依赖数据库中账号数据的部分：
+ * "被回复最多"、"被谁点赞最多"、"获赞最多" 和 "最佳分类"。
+ * 只读：没有新表，也没有迁移。
  */
 
 use Flarum\Extend;
@@ -21,5 +21,5 @@ use Lcoy\Roselle\UserSummary\ShowUserSummaryController;
 
 return [
     (new Extend\Routes('api'))
-        ->get('/canela-user-summary/{id:\d+}', 'canela.user_summary', ShowUserSummaryController::class),
+        ->get('/lcoy-user-summary/{id:\d+}', 'lcoy.user_summary', ShowUserSummaryController::class),
 ];

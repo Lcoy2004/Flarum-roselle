@@ -1,6 +1,6 @@
 /*
- * O topo da página de uma categoria no Horizon: o nome enorme, a descrição e
- * as subcategorias em cartões brancos com o símbolo colorido num quadrado.
+ * Horizon 中分类页的顶部：巨大的名称、描述，以及
+ * 以白色卡片展示、带彩色方块符号的子分类。
  */
 import Hero, { type IHeroAttrs } from 'flarum/forum/components/Hero';
 import Link from 'flarum/common/components/Link';
@@ -8,16 +8,16 @@ import ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 
 import { forumBool, t } from '../utils/settings';
-import { categorySymbol, sortTags, tagSymbol, tagUrl, type CanelaTag } from '../utils/tags';
+import { categorySymbol, sortTags, tagSymbol, tagUrl, type LcoyTag } from '../utils/tags';
 
 export interface CategoryHeroAttrs extends IHeroAttrs {
-  // "model", e não "tag": o atributo `tag` some no caminho até o componente.
-  model: CanelaTag;
+  // 用 "model" 而不是 "tag"：`tag` 属性在到达组件的过程中会丢失。
+  model: LcoyTag;
 }
 
 export default class CategoryHero extends Hero<CategoryHeroAttrs> {
   className(): string {
-    return 'CanelaCategoryHero';
+    return 'LcoyCategoryHero';
   }
 
   style(): Record<string, string> | undefined {
@@ -31,12 +31,12 @@ export default class CategoryHero extends Hero<CategoryHeroAttrs> {
     const tag = this.attrs.model;
     const description = tag.description();
 
-    // Etiqueta (tag secundária) com ícone no Flarum: o ícone antes do nome.
-    const icon = tag.position() === null ? tagSymbol(tag, 'CanelaCategoryHero-icon') : null;
+    // 在 Flarum 中带图标的标签（二级标签）：图标在名称之前。
+    const icon = tag.position() === null ? tagSymbol(tag, 'LcoyCategoryHero-icon') : null;
 
     items.add(
       'title',
-      <h1 className="CanelaCategoryHero-title">
+      <h1 className="LcoyCategoryHero-title">
         {icon}
         {tag.name()}
       </h1>,
@@ -44,20 +44,20 @@ export default class CategoryHero extends Hero<CategoryHeroAttrs> {
     );
 
     if (description) {
-      items.add('description', <p className="CanelaCategoryHero-description">{description}</p>, 90);
+      items.add('description', <p className="LcoyCategoryHero-description">{description}</p>, 90);
     }
 
-    const children = forumBool('canelaCategoryHeroChildren', true) ? this.children() : [];
+    const children = forumBool('lcoyCategoryHeroChildren', true) ? this.children() : [];
 
     if (children.length) {
       items.add(
         'children',
-        <ul className="CanelaCategoryHero-children" aria-label={t('hero.subcategories')}>
+        <ul className="LcoyCategoryHero-children" aria-label={t('hero.subcategories')}>
           {children.map((child) => (
             <li>
-              <Link className="CanelaSubcategoryCard" href={tagUrl(child)} style={child.color() ? { '--category-color': child.color() } : undefined}>
-                <span className="CanelaSubcategoryCard-tile">{categorySymbol(child)}</span>
-                <span className="CanelaSubcategoryCard-name">{child.name()}</span>
+              <Link className="LcoySubcategoryCard" href={tagUrl(child)} style={child.color() ? { '--category-color': child.color() } : undefined}>
+                <span className="LcoySubcategoryCard-tile">{categorySymbol(child)}</span>
+                <span className="LcoySubcategoryCard-name">{child.name()}</span>
               </Link>
             </li>
           ))}
@@ -69,11 +69,11 @@ export default class CategoryHero extends Hero<CategoryHeroAttrs> {
     return items;
   }
 
-  children(): CanelaTag[] {
+  children(): LcoyTag[] {
     const children = this.attrs.model.children();
 
-    // As filhas chegam com `include=children` no carregamento da tag; antes
-    // disso (ou para uma etiqueta) não há o que listar.
+    // 子标签在加载标签时通过 `include=children` 到达；在此之前
+    // （或对于标签）没有可列出的内容。
     if (!Array.isArray(children)) return [];
 
     return sortTags(children.filter(Boolean));

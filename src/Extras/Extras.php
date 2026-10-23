@@ -17,30 +17,27 @@ namespace Lcoy\Roselle\Extras;
 use Flarum\Settings\SettingsRepositoryInterface;
 
 /**
- * As chaves dos recursos "extras" (busca avançada, seleção em massa, melhores
- * por período, tamanho do texto, imprimir e histórico de edições).
+ * "扩展"功能的设置键（高级搜索、批量选择、按时间段查看最佳、字号以及
+ * 打印）。
  *
- * Num lugar só porque o extender, os controladores e o ouvinte precisam
- * concordar sobre o nome de cada uma — uma chave digitada errado num deles não
- * dá erro, só faz o recurso ligar ou desligar sem motivo aparente.
+ * 集中放在一处，是因为 extender、控制器和监听器必须对每个键名保持一致——
+ * 其中一方拼错键名不会报错，只会让功能无故开启或关闭。
  */
 final class Extras
 {
-    public const SEARCH_PAGE = 'canela.search_page_enabled';
+    public const SEARCH_PAGE = 'lcoy.search_page_enabled';
 
-    public const BULK_SELECT = 'canela.bulk_select_enabled';
+    public const BULK_SELECT = 'lcoy.bulk_select_enabled';
 
-    public const TOP_PERIODS = 'canela.top_periods_enabled';
+    public const TOP_PERIODS = 'lcoy.top_periods_enabled';
 
-    public const TEXT_SIZE = 'canela.text_size_enabled';
+    public const TEXT_SIZE = 'lcoy.text_size_enabled';
 
-    public const PRINT_TOPIC = 'canela.print_topic_enabled';
-
-    public const POST_HISTORY = 'canela.post_history_enabled';
+    public const PRINT_TOPIC = 'lcoy.print_topic_enabled';
 
     /**
-     * O repositório devolve strings ("1", "0") ou o padrão booleano do
-     * extender; os dois formatos precisam dar a mesma resposta.
+     * 仓库返回字符串（"1"、"0"）或 extender 的布尔默认值；
+     * 两种格式必须给出相同的答案。
      */
     public static function enabled(SettingsRepositoryInterface $settings, string $key): bool
     {

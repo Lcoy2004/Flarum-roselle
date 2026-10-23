@@ -1,6 +1,6 @@
 /*
- * Cards das estatísticas: o realce da coluna de visualizações, as contagens
- * de Novos/Não lidos (lista) e a atividade do resumo do perfil.
+ * 统计卡片：浏览列的高亮、新讨论/未读计数（列表）
+ * 以及个人主页摘要中的活动。
  */
 import { trans } from '../util';
 import { AdminNotice, AdminSubGroup } from '../components/AdminCard';
@@ -11,7 +11,7 @@ const KEY = 'lcoy-roselle.admin.settings.stats';
 
 const number = (name: string, range: { min: number; max: number; fallback: number }, label: string, help: string, suffix?: string) => (
   <AdminNumber
-    settingKey={`canela.${name}`}
+    settingKey={`lcoy.${name}`}
     min={range.min}
     max={range.max}
     fallback={range.fallback}
@@ -28,34 +28,31 @@ const STATS_CARDS: CardDef[] = [
     id: 'views',
     group: 'list',
     icon: 'far fa-eye',
-    title: () => trans(`${KEY}.section_views`, 'Realce das visualizações'),
-    description: help(
-      'stats_views_enabled',
-      'As cores de calor da coluna Visualizações da lista (heatmap do Discourse). O número em si vem do fof/discussion-views.'
-    ),
-    keywords: 'visualizações views calor heat heatmap realce highlight topic_views_heat',
+    title: () => trans(`${KEY}.section_views`, '浏览列高亮'),
+    description: help('stats_views_enabled', '列表「浏览」列的高亮颜色（Discourse 的热力图）。浏览数字本身来自 fof/discussion-views。'),
+    keywords: '浏览 views 热力 热度 heat heatmap 高亮 highlight topic_views_heat',
     body: () => (
       <AdminSubGroup>
         {number(
           'topic_views_heat_low',
           { min: 1, max: 100000000, fallback: 1000 },
-          'Realce leve a partir de',
-          'Após uma quantidade de visualizações, o campo de visualizações é levemente realçado. O Discourse usa 1000.',
-          trans(`${KEY}.views_suffix`, 'visualizações')
+          '轻度高亮起始值',
+          '浏览数超过该值后，浏览数字段会略微高亮。Discourse 使用 1000。',
+          trans(`${KEY}.views_suffix`, '次浏览')
         )}
         {number(
           'topic_views_heat_medium',
           { min: 1, max: 100000000, fallback: 2000 },
-          'Realce moderado a partir de',
-          'Após esta quantidade de visualizações, o campo de visualizações é moderadamente realçado. O Discourse usa 2000.',
-          trans(`${KEY}.views_suffix`, 'visualizações')
+          '中度高亮起始值',
+          '浏览数超过该值后，浏览数字段会中度高亮。Discourse 使用 2000。',
+          trans(`${KEY}.views_suffix`, '次浏览')
         )}
         {number(
           'topic_views_heat_high',
           { min: 1, max: 100000000, fallback: 3500 },
-          'Realce forte a partir de',
-          'Após esta quantidade de visualizações, o campo de visualizações é fortemente realçado. O Discourse usa 3500.',
-          trans(`${KEY}.views_suffix`, 'visualizações')
+          '强烈高亮起始值',
+          '浏览数超过该值后，浏览数字段会强烈高亮。Discourse 使用 3500。',
+          trans(`${KEY}.views_suffix`, '次浏览')
         )}
       </AdminSubGroup>
     ),
@@ -64,59 +61,33 @@ const STATS_CARDS: CardDef[] = [
     id: 'counts',
     group: 'list',
     icon: 'fas fa-circle-dot',
-    title: () => trans(`${KEY}.section_counts`, 'Contagem de novos e não lidos'),
-    description: help(
-      'stats_counts_enabled',
-      'Para quem entrou na conta: "Novos (3)" e "Não lidos (2)" nas abas da lista, e um ponto ao lado de Todas as Discussões na barra lateral quando há novidade.'
-    ),
-    keywords: 'novos new não lidos unread contagem count abas tabs ponto dot barra lateral sidebar tópicos topics',
-    master: 'canela.stats_counts_enabled',
+    title: () => trans(`${KEY}.section_counts`, '新讨论与未读计数'),
+    description: help('stats_counts_enabled', '对已登录用户：列表标签页上显示「新 (3)」和「未读 (2)」，侧栏中「全部讨论」旁在有新内容时显示小圆点。'),
+    keywords: '新帖 new 未读 unread 计数 count 标签页 tabs 圆点 dot 侧栏 sidebar 主题 topics',
+    master: 'lcoy.stats_counts_enabled',
     body: () =>
       number(
         'stats_new_days',
         { min: 0, max: 365, fallback: 2 },
-        'Dias em que uma discussão é nova',
-        'Discussões criadas nesse período que a pessoa ainda não abriu. 0 conta tudo desde o cadastro ou o último "marcar tudo como lido". De {min} a {max}; o Discourse usa 2.',
-        trans(`${KEY}.days_suffix`, 'dias')
+        '讨论保持为新帖的天数',
+        '指在该时段内创建、且本人尚未打开过的讨论。设为 0 时，统计自注册或上次「全部标记为已读」以来的全部内容。可选 {min} 到 {max}；Discourse 使用 2。',
+        trans(`${KEY}.days_suffix`, '天')
       ),
-  },
-  {
-    id: 'link-clicks',
-    group: 'topic',
-    icon: 'fas fa-link',
-    title: () => trans(`${KEY}.section_links`, 'Cliques em links'),
-    description: help(
-      'stats_links_enabled',
-      'Cada clique num link externo de uma postagem é contado, como no Discourse: o número aparece ao lado do link, os "Links populares" no mapa da discussão e os "Melhores links" no resumo do perfil.'
-    ),
-    keywords: 'links cliques clicks contagem count links populares popular links melhores links top links topic_link_clicks mapa do tópico topic map',
-    master: 'canela.stats_links_enabled',
-    body: () => (
-      <AdminNotice>
-        {trans(
-          `${KEY}.links_notice`,
-          'Um clique por link por pessoa (ou IP, para visitantes) a cada 24 horas; robôs não contam. Só links externos que estão na postagem.'
-        )}
-      </AdminNotice>
-    ),
   },
   {
     id: 'activity',
     group: 'people',
     icon: 'fas fa-chart-simple',
-    title: () => trans(`${KEY}.section_activity`, 'Atividade no perfil'),
+    title: () => trans(`${KEY}.section_activity`, '个人主页活动'),
     description: help(
       'stats_activity_enabled',
-      'Dias visitados, tempo de leitura (total e dos últimos 60 dias), postagens lidas e curtidas dadas e recebidas, no resumo do perfil, como no Discourse.'
+      '个人主页摘要中显示访问天数、阅读时长（总计及近 60 天）、已读帖子，以及给出和收到的赞，与 Discourse 一致。'
     ),
-    keywords: 'atividade activity resumo summary dias visitados days visited tempo de leitura read time postagens lidas posts read curtidas likes',
-    master: 'canela.stats_activity_enabled',
+    keywords: '活动 activity 摘要 summary 访问天数 days visited 阅读时长 read time 已读帖子 posts read 赞 likes',
+    master: 'lcoy.stats_activity_enabled',
     body: () => (
       <AdminNotice>
-        {trans(
-          `${KEY}.activity_notice`,
-          'O tempo de leitura só conta com a aba visível e alguém mexendo na página. Os números começam do zero no dia em que o recurso é ligado.'
-        )}
+        {trans(`${KEY}.activity_notice`, '阅读时长只在标签页可见且有人在操作页面时才会计时。各项数据自开启该功能之日起从零开始。')}
       </AdminNotice>
     ),
   },

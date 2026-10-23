@@ -1,12 +1,12 @@
 /*
- * Seletor de idioma do brechó: no cabeçalho, a pílula com a bandeira do
- * idioma atual e o código curto ("PT ⌄"); aberto, um balão com seta e, em
- * cada linha, a bandeira redonda, o nome e o código do idioma (o atual com um
- * anel na cor de destaque).
+ * 本主题的语言选择器：页头中，显示当前语言的旗帜和
+ * 短代码（“PT ⌄”）的胶囊按钮；展开后，是一个带箭头的气泡，
+ * 每行包含圆形旗帜、语言名称和语言代码（当前项
+ * 带强调色圆环）。
  *
- * As bandeiras (flag-icons, MIT, recorte 1×1) moram em assets/flags e são
- * publicadas pelo `php flarum assets:publish` em
- * /assets/extensions/lcoy-roselle/flags.
+ * 旗帜（flag-icons，MIT，1×1 裁剪）位于 assets/flags，
+ * 由 `php flarum assets:publish` 发布到
+ * /assets/extensions/lcoy-roselle/flags。
  */
 import app from 'flarum/forum/app';
 import Dropdown from 'flarum/common/components/Dropdown';
@@ -14,14 +14,14 @@ import type Mithril from 'mithril';
 
 import { t } from '../utils/settings';
 
-/** Códigos de país com bandeira em assets/flags (ao pôr ou tirar arquivos, regrave a lista). */
+/** 在 assets/flags 中有旗帜的国家代码（增删文件后，请重新生成此列表）。 */
 const FLAGS = new Set(
   'ad ae af ag ai al am ao aq ar as at au aw ax az ba bb bd be bf bg bh bi bj bl bm bn bo bq br bs bt bv bw by bz ca cc cd cf cg ch ci ck cl cm cn co cp cr cu cv cw cx cy cz de dg dj dk dm do dz ec ee eg eh er es et eu fi fj fk fm fo fr ga gb gd ge gf gg gh gi gl gm gn gp gq gr gs gt gu gw gy hk hm hn hr ht hu ic id ie il im in io iq ir is it je jm jo jp ke kg kh ki km kn kp kr kw ky kz la lb lc li lk lr ls lt lu lv ly ma mc md me mf mg mh mk ml mm mn mo mp mq mr ms mt mu mv mw mx my mz na nc ne nf ng ni nl no np nr nu nz om pa pc pe pf pg ph pk pl pm pn pr ps pt pw py qa re ro rs ru rw sa sb sc sd se sg sh si sj sk sl sm sn so sr ss st sv sx sy sz tc td tf tg th tj tk tl tm tn to tr tt tv tw tz ua ug um un us uy uz va vc ve vg vi vn vu wf ws xk ye yt za zm zw'.split(
     ' '
   )
 );
 
-/** País padrão de um código só de idioma (com região vale a região: `pt-BR` → br). */
+/** 仅有语言代码时的默认国家（带地区时以地区为准：`pt-BR` → br）。 */
 const COUNTRY: Record<string, string> = {
   en: 'us',
   pt: 'pt',
@@ -86,7 +86,7 @@ const COUNTRY: Record<string, string> = {
   tl: 'ph',
 };
 
-/** País da bandeira de um locale (`pt-BR` → br, `en` → us), ou `null` sem bandeira empacotada. */
+/** 某个 locale 对应旗帜的国家（`pt-BR` → br，`en` → us），没有打包旗帜时为 `null`。 */
 function countryOf(locale: string): string | null {
   const [language, ...rest] = locale.toLowerCase().split(/[-_]/);
   const country = rest.find((part) => /^[a-z]{2}$/.test(part)) ?? COUNTRY[language];
@@ -94,13 +94,13 @@ function countryOf(locale: string): string | null {
   return country && FLAGS.has(country) ? country : null;
 }
 
-/** A bandeira com medidas fixas (nada pula ao carregar); sem bandeira, um selo com as duas letras. */
+/** 尺寸固定的旗帜（加载时不会跳动）；没有旗帜时，显示两个字母的徽标。 */
 export function flag(locale: string, size: number): Mithril.Children {
   const country = countryOf(locale);
 
   return country ? (
     <img
-      className="CanelaFlag"
+      className="LcoyFlag"
       src={`${app.forum.attribute('assetsBaseUrl')}/extensions/lcoy-roselle/flags/${country}.svg`}
       width={size}
       height={size}
@@ -108,18 +108,18 @@ export function flag(locale: string, size: number): Mithril.Children {
       decoding="sync"
     />
   ) : (
-    <span className="CanelaFlag CanelaFlag--code" style={{ width: `${size}px`, height: `${size}px` }} aria-hidden="true">
+    <span className="LcoyFlag LcoyFlag--code" style={{ width: `${size}px`, height: `${size}px` }} aria-hidden="true">
       {locale.slice(0, 2).toUpperCase()}
     </span>
   );
 }
 
-/** O código completo ao lado da bandeira: "pt-BR" → "PT-BR", "en" → "EN". */
+/** 旗帜旁的完整代码："pt-BR" → "PT-BR"，"en" → "EN"。 */
 function shortCode(locale: string): string {
   return locale.replace('_', '-').toUpperCase();
 }
 
-/** A mesma troca do core: logado grava a preferência; visitante grava o cookie; a página recarrega. */
+/** 与核心相同的切换方式：已登录用户保存偏好；访客写入 cookie；页面重新加载。 */
 function choose(locale: string): void {
   if (locale === (app.data as any).locale) return;
 
@@ -131,14 +131,14 @@ function choose(locale: string): void {
   }
 }
 
-/** As setas andam entre as bandeiras (dando a volta); Enter e espaço escolhem, como em todo botão. */
+/** 方向键在旗帜间移动（循环）；回车和空格选择，与所有按钮一致。 */
 function move(event: KeyboardEvent): void {
   const step = ({ ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 } as Record<string, number>)[event.key];
 
   if (!step) return;
 
-  const menu = (event.currentTarget as HTMLElement).closest('.CanelaLocale-menu');
-  const options = menu ? Array.from(menu.querySelectorAll<HTMLElement>('.CanelaLocale-option')) : [];
+  const menu = (event.currentTarget as HTMLElement).closest('.LcoyLocale-menu');
+  const options = menu ? Array.from(menu.querySelectorAll<HTMLElement>('.LcoyLocale-option')) : [];
 
   event.preventDefault();
   event.stopPropagation();
@@ -151,17 +151,17 @@ export default function LocaleFlags(): Mithril.Children {
 
   return (
     <Dropdown
-      className="CanelaLocale"
-      buttonClassName="Button CanelaLocale-toggle"
-      menuClassName="Dropdown-menu--right CanelaLocale-menu"
+      className="LcoyLocale"
+      buttonClassName="Button LcoyLocale-toggle"
+      menuClassName="Dropdown-menu--right LcoyLocale-menu"
       caretIcon="fas fa-angle-down"
-      label={[flag(current, 18), <span className="CanelaLocale-code">{shortCode(current)}</span>]}
+      label={[flag(current, 18), <span className="LcoyLocale-code">{shortCode(current)}</span>]}
       accessibleToggleLabel={t('header.language', { name: locales[current] ?? current })}
     >
       {Object.entries(locales).map(([locale, name]) => (
         <button
           type="button"
-          className={`CanelaLocale-option${locale === current ? ' CanelaLocale-option--current' : ''}`}
+          className={`LcoyLocale-option${locale === current ? ' LcoyLocale-option--current' : ''}`}
           role="menuitemradio"
           aria-checked={String(locale === current)}
           lang={locale}
@@ -169,8 +169,8 @@ export default function LocaleFlags(): Mithril.Children {
           onkeydown={move}
         >
           {flag(locale, 24)}
-          <span className="CanelaLocale-name">{name}</span>
-          <span className="CanelaLocale-optionCode">{locale}</span>
+          <span className="LcoyLocale-name">{name}</span>
+          <span className="LcoyLocale-optionCode">{locale}</span>
         </button>
       ))}
     </Dropdown>

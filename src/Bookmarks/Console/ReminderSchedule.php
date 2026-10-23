@@ -17,8 +17,8 @@ namespace Lcoy\Roselle\Bookmarks\Console;
 use Illuminate\Console\Scheduling\Event;
 
 /**
- * A cada cinco minutos, sem sobrepor: um ciclo lento (muitos lembretes de uma
- * vez) não pode começar a enviar os mesmos lembretes que o próximo.
+ * 每五分钟运行一次，且不重叠：一次缓慢的循环（一次处理大量提醒）不能
+ * 与下一次循环重复发送相同的提醒。
  */
 final class ReminderSchedule
 {

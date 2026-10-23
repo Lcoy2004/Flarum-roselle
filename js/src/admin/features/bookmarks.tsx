@@ -1,8 +1,7 @@
 /*
- * Card dos Marcadores no grupo "Tópico": o liga/desliga do recurso no
- * cabeçalho e, com ele ligado, onde os atalhos aparecem. O botão do post não
- * tem opção própria — é o coração do recurso, e desligar o recurso inteiro já
- * o tira.
+ * “主题”分组中的收藏卡片：标题栏的功能开关，以及开启后
+ * 快捷入口出现的位置。帖子上的按钮没有单独选项——
+ * 它是功能的核心，关闭整个功能就会将其移除。
  */
 import { AdminNotice } from '../components/AdminCard';
 import AdminToggle from '../components/AdminToggle';
@@ -12,7 +11,7 @@ import type { CardDef } from '../types';
 const KEY = 'lcoy-roselle.admin.settings.bookmarks';
 
 const toggle = (name: string, label: string, help: string) => (
-  <AdminToggle settingKey={`canela.${name}`} label={trans(`${KEY}.${name}_label`, label)} help={trans(`${KEY}.${name}_help`, help)} />
+  <AdminToggle settingKey={`lcoy.${name}`} label={trans(`${KEY}.${name}_label`, label)} help={trans(`${KEY}.${name}_help`, help)} />
 );
 
 const cards: CardDef[] = [
@@ -20,26 +19,22 @@ const cards: CardDef[] = [
     id: 'bookmarks',
     group: 'topic',
     icon: 'far fa-bookmark',
-    title: () => trans(`${KEY}.title`, 'Marcadores'),
+    title: () => trans(`${KEY}.title`, '收藏'),
     description: () =>
       trans(
         `${KEY}.bookmarks_enabled_help`,
-        'Cada usuário marca posts para voltar depois, com um nome e um lembrete opcionais, e encontra todos na aba "Marcadores" do próprio perfil. Desligado, os botões somem e a API responde como se o recurso não existisse, os marcadores já criados ficam guardados.'
+        '成员可以收藏帖子，以便之后回看，并可添加可选的名称和提醒，在个人主页的「收藏」标签页中可以找到全部收藏。关闭后，相关按钮会消失，接口的行为就像该功能不存在一样，已有收藏会保留。'
       ),
-    keywords: 'marcadores bookmarks favoritos salvar lembrete lembretes reminder',
-    master: 'canela.bookmarks_enabled',
+    keywords: '收藏 书签 标记 提醒 bookmarks bookmark favorites reminder',
+    master: 'lcoy.bookmarks_enabled',
     body: () => (
       <>
-        {toggle(
-          'bookmarks_topic_button',
-          'Marcar discussão',
-          'Acrescenta "Marcar discussão" aos controles da discussão (o menu "…" do rodapé). Marca o primeiro post, como o Discourse.'
-        )}
-        {toggle('bookmarks_user_menu', 'Item no menu do usuário', 'Um atalho "Marcadores" no menu do avatar, logo abaixo de "Perfil".')}
+        {toggle('bookmarks_topic_button', '收藏讨论', '在讨论操作菜单（页脚的「…」菜单）中添加「收藏讨论」。它会像 Discourse 那样收藏第一条帖子。')}
+        {toggle('bookmarks_user_menu', '用户菜单项', '在头像菜单中，「个人主页」的下方新增一个「收藏」快捷入口。')}
         <AdminNotice icon="far fa-clock">
           {trans(
             `${KEY}.reminders_notice`,
-            'Os lembretes saem pelo agendador do Flarum, a cada cinco minutos: o servidor precisa rodar "php flarum schedule:run" pelo cron a cada minuto. Sem o cron, os marcadores funcionam, mas nenhum lembrete é enviado.'
+            '提醒由 Flarum 的计划任务每五分钟发送一次，服务器必须通过 cron 每分钟执行 php flarum schedule:run。没有 cron 时，收藏仍可正常使用，但不会发送提醒。'
           )}
         </AdminNotice>
       </>

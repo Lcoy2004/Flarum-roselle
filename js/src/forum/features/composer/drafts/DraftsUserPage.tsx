@@ -1,8 +1,8 @@
 /*
- * A aba "Rascunhos" do perfil (`/u/:username/drafts`), como a do Discourse,
- * com os rascunhos do fof/drafts: só a própria pessoa a vê. Cada rascunho
- * mostra o tipo (tópico novo, resposta, mensagem), o título, o começo do
- * texto e há quanto tempo foi mexido, com "Continuar" e "Excluir".
+ * 个人资料页的“草稿”标签（`/u/:username/drafts`），与 Discourse 一致，
+ * 使用 fof/drafts 的草稿：仅本人可见。每条草稿显示类型（新主题、
+ * 回复、私信）、标题、文本开头以及最后修改距今的时间，并提供
+ * “继续”和“删除”。
  */
 import app from 'flarum/forum/app';
 import UserPage, { type IUserPageAttrs } from 'flarum/forum/components/UserPage';
@@ -45,8 +45,8 @@ export default class DraftsUserPage<Attrs extends IUserPageAttrs = IUserPageAttr
   }
 
   show(user: User): void {
-    // Rascunhos são de quem escreveu: no perfil de outra pessoa a aba não
-    // existe, e a URL digitada à mão leva às postagens dela.
+    // 草稿属于撰写者：在他人资料页上该标签不存在，手动输入的
+    // URL 会跳转到对方的帖子页。
     if (user !== app.session.user || !draftsOn()) {
       m.route.set(app.route('user.posts', { username: user.slug() }), undefined, { replace: true });
       return;
@@ -71,10 +71,10 @@ export default class DraftsUserPage<Attrs extends IUserPageAttrs = IUserPageAttr
     ensureDiscussions(drafts);
 
     return (
-      <div className="CanelaDrafts">
-        <ul className="CanelaDrafts-list">{drafts.map((draft) => this.item(draft))}</ul>
+      <div className="LcoyDrafts">
+        <ul className="LcoyDrafts-list">{drafts.map((draft) => this.item(draft))}</ul>
         {state?.hasNextPage && (
-          <div className="CanelaDrafts-more">
+          <div className="LcoyDrafts-more">
             <Button className="Button" loading={state.loadingMore} onclick={() => state.loadMore()}>
               {t('composer.drafts.load_more')}
             </Button>
@@ -90,29 +90,29 @@ export default class DraftsUserPage<Attrs extends IUserPageAttrs = IUserPageAttr
     const text = (draft.content() || '').replace(/\s+/g, ' ').trim();
 
     return (
-      <li key={draft.id()} className={`CanelaDrafts-item CanelaDrafts-item--${type}`}>
-        <span className="CanelaDrafts-icon" aria-hidden="true">
+      <li key={draft.id()} className={`LcoyDrafts-item LcoyDrafts-item--${type}`}>
+        <span className="LcoyDrafts-icon" aria-hidden="true">
           <Icon name={draftIcon(draft)} />
         </span>
-        <div className="CanelaDrafts-main">
-          <div className="CanelaDrafts-context">
+        <div className="LcoyDrafts-main">
+          <div className="LcoyDrafts-context">
             {t(`composer.drafts.${TYPE_KEYS[type] || 'type_new_topic'}`)}
             {updated && (
-              <time className="CanelaDrafts-time" dateTime={updated.toISOString()} title={fullDate(updated)}>
+              <time className="LcoyDrafts-time" dateTime={updated.toISOString()} title={fullDate(updated)}>
                 {' · '}
                 {shortAge(updated)}
               </time>
             )}
           </div>
-          <h3 className="CanelaDrafts-title">{draftTitle(draft)}</h3>
-          {text && <p className="CanelaDrafts-excerpt">{truncate(text, 200)}</p>}
+          <h3 className="LcoyDrafts-title">{draftTitle(draft)}</h3>
+          {text && <p className="LcoyDrafts-excerpt">{truncate(text, 200)}</p>}
         </div>
-        <div className="CanelaDrafts-actions">
+        <div className="LcoyDrafts-actions">
           <Button className="Button Button--primary" icon="fas fa-pen" onclick={() => openDraft(draft)}>
             {t('composer.drafts.resume')}
           </Button>
           <Button
-            className="Button Button--icon CanelaDrafts-delete"
+            className="Button Button--icon LcoyDrafts-delete"
             icon="far fa-trash-can"
             aria-label={t('composer.drafts.delete')}
             title={t('composer.drafts.delete')}

@@ -1,16 +1,14 @@
 /*
- * O menu do usuário do Discourse no lugar do sino e do menu da sessão.
+ * 用 Discourse 的用户菜单取代铃铛和会话菜单。
  *
- * - O cabeçalho perde o sino (NotificationsDropdown), os posts sinalizados
- *   (FlagsDropdown, do flarum/flags) e o envelope (DialogsDropdown, do
- *   flarum/messages): tudo isso vira aba do menu, como no Discourse. O menu
- *   da sessão (SessionDropdown) vira o avatar que abre o menu — os itens dele
- *   continuam, na aba Perfil.
- * - Esc e clique fora fecham; navegar também.
- * - A página /notifications ganha a mesma lista, com as abas em linha.
+ * - 头部去掉铃铛（NotificationsDropdown）、被举报帖子（FlagsDropdown，
+ *   来自 flarum/flags）和信封图标（DialogsDropdown，来自 flarum/messages）：
+ *   这些都变成菜单的标签页，与 Discourse 一致。会话菜单（SessionDropdown）
+ *   变成打开菜单的头像——它的条目仍然保留，位于“个人资料”标签页。
+ * - Esc 和点击外部会关闭；导航时也会关闭。
+ * - /notifications 页面获得同样的列表，标签页横向排列。
  *
- * Desligável no admin (`canela.user_menu`): desligado, o cabeçalho volta ao
- * do core.
+ * 可在管理后台关闭（`lcoy.user_menu`）：关闭后头部恢复为核心的样式。
  */
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
@@ -28,27 +26,27 @@ import { loadMenu } from './lazy';
 import { beforeChunk } from '../utils/chunkGate';
 import { forumBool } from '../utils/settings';
 
-// O menu aberto e os painéis moram num chunk (lazy.ts); quem quiser
-// estendê-los usa o nome do módulo (`ext:lcoy/roselle/forum/usermenu/UserMenu`).
+// 打开的菜单和各面板位于一个 chunk（lazy.ts）中；想扩展它们的人使用
+// 模块名（`ext:lcoy/roselle/forum/usermenu/UserMenu`）。
 export function userMenuEnabled(): boolean {
-  return !!app.session.user && forumBool('canelaUserMenu', true);
+  return !!app.session.user && forumBool('lcoyUserMenu', true);
 }
 
-/** Os itens do cabeçalho que o menu absorve. */
+/** 菜单吸收的头部条目。 */
 const ABSORBED_HEADER_ITEMS = ['notifications', 'flags', 'messages'];
 
 export default function installUserMenu(): void {
-  // Registrado no `mount`, antes do primeiro desenho: os initializers de
-  // extensões que vêm depois do tema (o flarum/messages, por exemplo) já
-  // acrescentaram os itens deles, e a remoção precisa rodar por último.
+  // 在 `mount` 中注册，早于首次绘制：主题之后加载的扩展 initializer
+  //（例如 flarum/messages）已经添加了它们的条目，
+  // 移除必须最后运行。
   override(app as any, 'mount', function (this: any, original: (...args: any[]) => unknown, ...args: any[]) {
     extend(HeaderSecondary.prototype, 'items', function (items: ItemList<Mithril.Children>) {
       if (!userMenuEnabled()) return;
 
       ABSORBED_HEADER_ITEMS.forEach((key) => items.has(key) && items.remove(key));
 
-      // A mesma chave (`session`) e prioridade do menu da sessão: a ordem dos
-      // ícones do cabeçalho, no celular também, já conta com ela.
+      // 使用与会话菜单相同的键（`session`）和优先级：头部图标的顺序
+      //（手机上也是）已经把它算在内。
       if (items.has('session')) items.setContent('session', <UserMenuButton />);
     });
 
@@ -61,9 +59,8 @@ export default function installUserMenu(): void {
 }
 
 /**
- * "Notificações" entre as abas de primeiro nível do perfil, como no Discourse
- * (só no próprio perfil). A chave `notifications` já está entre as que o
- * perfil do tema põe na primeira linha.
+ * 资料一级标签页中的“通知”，与 Discourse 一致（仅在自己的资料中）。
+ * `notifications` 键已经在主题资料放到第一行的那些键之中。
  */
 function installProfileTab(): void {
   extend(UserPage.prototype, 'navItems', function (this: UserPage, items: ItemList<Mithril.Children>) {
@@ -82,8 +79,8 @@ function installProfileTab(): void {
 }
 
 function installGlobalListeners(): void {
-  // Clique fora fecha. Na captura, antes de outros ouvintes pararem o evento;
-  // o clique no próprio avatar fica com o botão (que alterna).
+  // 点击外部关闭。在捕获阶段，早于其他监听器停止事件；
+  // 点击头像本身由按钮处理（它负责切换）。
   document.addEventListener(
     'mousedown',
     (e: MouseEvent) => {
@@ -91,7 +88,7 @@ function installGlobalListeners(): void {
 
       const target = e.target as HTMLElement | null;
 
-      if (target?.closest?.('.CanelaUserMenuWrap')) return;
+      if (target?.closest?.('.LcoyUserMenuWrap')) return;
 
       userMenu.close();
       m.redraw();
@@ -102,7 +99,7 @@ function installGlobalListeners(): void {
   document.addEventListener('keydown', (e: KeyboardEvent) => {
     if (!userMenu.open || e.key !== 'Escape') return;
 
-    // Um modal aberto por cima (ex.: a confirmação de sair) fica com o Esc.
+    // 上层打开的弹窗（例如退出确认）保留 Esc。
     if (document.body.classList.contains('modal-open')) return;
 
     e.preventDefault();
@@ -110,13 +107,13 @@ function installGlobalListeners(): void {
     m.redraw();
   });
 
-  // O foco saindo do menu pelo Tab também fecha, como um menu suspenso.
+  // 焦点通过 Tab 离开菜单时也会关闭，如同下拉菜单。
   document.addEventListener('focusin', (e: FocusEvent) => {
     if (!userMenu.open) return;
 
     const target = e.target as HTMLElement | null;
 
-    if (target && target !== document.body && !target.closest('.CanelaUserMenuWrap') && !target.closest('.ModalManager')) {
+    if (target && target !== document.body && !target.closest('.LcoyUserMenuWrap') && !target.closest('.ModalManager')) {
       userMenu.close();
       m.redraw();
     }
@@ -124,11 +121,11 @@ function installGlobalListeners(): void {
 }
 
 /**
- * A página /notifications (carregada sob demanda: pelo nome do módulo). O
- * `oninit` do core continua: ele carrega a lista e põe o título.
+ * /notifications 页面（按需加载：通过模块名）。核心的 `oninit`
+ * 继续保留：它负责加载列表并设置标题。
  */
 function installNotificationsPage(): void {
-  // O chunk do menu (com a lista) desce junto com o da página do core.
+  // 菜单 chunk（含列表）随核心页面的 chunk 一起加载。
   let NotificationsPageView: (() => Mithril.Children) | null = null;
 
   beforeChunk(
@@ -143,9 +140,9 @@ function installNotificationsPage(): void {
     if (!userMenuEnabled()) return original();
 
     return (
-      <PageStructure className="NotificationsPage CanelaNotificationsPage">
-        <div className="CanelaNotificationsPage-header">
-          <h2 className="CanelaNotificationsPage-title">{umText('page.title')}</h2>
+      <PageStructure className="NotificationsPage LcoyNotificationsPage">
+        <div className="LcoyNotificationsPage-header">
+          <h2 className="LcoyNotificationsPage-title">{umText('page.title')}</h2>
         </div>
         {NotificationsPageView ? NotificationsPageView() : null}
       </PageStructure>

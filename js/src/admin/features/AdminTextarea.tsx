@@ -1,6 +1,6 @@
 /*
- * Área de texto que salva sozinha, um tempo depois de a pessoa parar de
- * digitar — uma requisição por pausa, não por tecla.
+ * 自动保存的文本域，在用户停止输入一段时间后保存——
+ * 每次暂停一个请求，而不是每次按键。
  */
 import app from 'flarum/admin/app';
 import { AdminComponent, getStr, saveSetting } from '../util';
@@ -13,12 +13,12 @@ export default class AdminTextarea extends AdminComponent {
 
   view() {
     const { settingKey, label, help, placeholder, rows = 5 } = this.attrs;
-    const id = `CanelaAdmin-${String(settingKey).replace(/\W+/g, '-')}`;
+    const id = `LcoyAdmin-${String(settingKey).replace(/\W+/g, '-')}`;
 
     return (
-      <div className="Form-group CanelaAdmin-textarea">
+      <div className="Form-group LcoyAdmin-textarea">
         {label && (
-          <label className="CanelaAdmin-label" for={id}>
+          <label className="LcoyAdmin-label" for={id}>
             {label}
           </label>
         )}
@@ -37,7 +37,7 @@ export default class AdminTextarea extends AdminComponent {
   }
 
   store(value: string): void {
-    // Na hora em app.data, para um redesenho antes do POST não "desfazer" o texto.
+    // 立即写入 app.data，这样在 POST 之前的重绘不会“撤销”文本。
     app.data.settings[this.attrs.settingKey] = value;
     this.pending = value;
 
@@ -62,7 +62,7 @@ export default class AdminTextarea extends AdminComponent {
   onremove(vnode: any) {
     super.onremove(vnode);
 
-    // Sair da página no meio da pausa não pode perder o que foi digitado.
+    // 在暂停期间离开页面不能丢失已输入的内容。
     this.flush();
   }
 }

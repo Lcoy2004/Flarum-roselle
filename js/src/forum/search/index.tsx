@@ -1,8 +1,8 @@
 /*
- * A busca do Discourse: o menu de busca (SearchMenu) no lugar do botão que
- * abria o SearchModal do core. O do cabeçalho é desenhado pelo HeaderSearch
- * (shell/); aqui entra o do banner de boas-vindas, que no Discourse é o mesmo
- * `search-menu`.
+ * Discourse 搜索：用搜索菜单（SearchMenu）取代打开核心
+ * SearchModal 的按钮。页头的那个由 HeaderSearch
+ * （shell/）绘制；这里加入欢迎横幅中的那个，在 Discourse 中
+ * 它也是同一个 `search-menu`。
  */
 import { extend } from 'flarum/common/extend';
 import type ItemList from 'flarum/common/utils/ItemList';
@@ -17,7 +17,7 @@ export default function installSearchMenu(): void {
 
     items.setContent(
       'search',
-      <div className="CanelaWelcome-search">
+      <div className="LcoyWelcome-search">
         <SearchMenu location="welcome" />
       </div>
     );

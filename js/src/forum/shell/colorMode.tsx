@@ -1,14 +1,14 @@
 /*
- * O rodapé da barra lateral como o do Discourse: o seletor de paleta em texto
- * ("Padrão ⌄", como o "Meta Branded ⌄" do Meta) e o botão do modo de cor — sol,
- * lua ou meio círculo — com o menu Claro / Escuro / Automático
- * (`interface-color-selector`).
+ * 与 Discourse 相同的侧栏页脚：文本形式的调色板选择器
+ * （“默认 ⌄”，如同 Meta 的 “Meta Branded ⌄”）以及颜色模式按钮——太阳、
+ * 月亮或半圆——带有 浅色 / 深色 / 自动 菜单
+ * （`interface-color-selector`）。
  *
- * O Flarum guarda um esquema só (`light`, `dark`, `auto`, `light-hc`,
- * `dark-hc`); aqui ele vira dois eixos: o modo e a paleta (padrão ou alto
- * contraste). "Automático" com alto contraste não existe no core: a escolha
- * fica no navegador e o `data-theme` resolvido ganha o `-hc` (veja
- * `installColorMode`).
+ * Flarum 只保存一个方案（`light`、`dark`、`auto`、`light-hc`、
+ * `dark-hc`）；这里它被拆成两个轴：模式和调色板（默认或高
+ * 对比度）。核心中没有“自动”加高对比度：该选择
+ * 保存在浏览器中，解析后的 `data-theme` 会加上 `-hc`（见
+ * `installColorMode`）。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -24,7 +24,7 @@ import { t } from '../utils/settings';
 
 type Mode = 'light' | 'dark' | 'auto';
 
-const HC_KEY = 'canela.highContrast';
+const HC_KEY = 'lcoy.highContrast';
 
 const MODE_ICONS: Record<Mode, string> = {
   light: 'fas fa-sun',
@@ -45,7 +45,7 @@ function storeHighContrast(value: boolean): void {
     if (value) localStorage.setItem(HC_KEY, '1');
     else localStorage.removeItem(HC_KEY);
   } catch {
-    // Sem armazenamento: vale até sair da página.
+    // 没有存储：仅本次页面访问期间有效。
   }
 }
 
@@ -65,7 +65,7 @@ function currentHighContrast(): boolean {
   return scheme === 'auto' ? storedHighContrast() : scheme.endsWith('-hc');
 }
 
-/** Grava a combinação como o ThemeSwitcher do core grava o esquema. */
+/** 像核心的 ThemeSwitcher 保存方案那样保存组合。 */
 function apply(mode: Mode, highContrast: boolean): void {
   const scheme = mode === 'auto' ? 'auto' : highContrast ? `${mode}-hc` : mode;
 
@@ -78,7 +78,7 @@ function apply(mode: Mode, highContrast: boolean): void {
     try {
       sessionStorage.setItem('colorScheme', scheme);
     } catch {
-      // O navegador bloqueia o armazenamento.
+      // 浏览器阻止了存储。
     }
   }
 
@@ -86,9 +86,9 @@ function apply(mode: Mode, highContrast: boolean): void {
 }
 
 /**
- * "Automático" + alto contraste: o core resolve `auto` para `light`/`dark`
- * (só soma `-hc` quando o sistema pede contraste); aqui o `-hc` entra também
- * quando a pessoa escolheu a paleta de alto contraste.
+ * “自动”加高对比度：核心把 `auto` 解析为 `light`/`dark`
+ * （只在系统要求高对比度时才加上 `-hc`）；这里当用户选择了
+ * 高对比度调色板时，也会加上 `-hc`。
  */
 export function installColorMode(): void {
   extend(app as any, 'setColorScheme', function () {
@@ -100,18 +100,18 @@ export function installColorMode(): void {
   });
 }
 
-/** Um tema oferecido pelo ernestdefoe/wardrobe (posto no payload da página). */
+/** ernestdefoe/wardrobe 提供的一个主题（放在页面 payload 中）。 */
 type WardrobeTheme = { id: string; title: string };
 
 type WardrobeData = { themes: WardrobeTheme[]; active: string | null; allowUserChoice: boolean };
 
-/** Mesmo cookie do Wardrobe: é ele que o servidor lê para o visitante sem conta. */
+/** 与 Wardrobe 相同的 cookie：服务器正是读取它为未登录访客服务。 */
 const WARDROBE_COOKIE = 'wardrobe_theme';
 
 /**
- * Os temas que dá para escolher, ou `null` sem o Wardrobe (ou com um tema só,
- * ou com a escolha desligada no admin dele): aí o seletor volta a ser só o das
- * paletas.
+ * 可供选择的主题，或没有 Wardrobe 时（或只有一个主题、
+ * 或在其后台关闭了用户选择时）为 `null`：此时选择器只剩下
+ * 调色板。
  */
 function wardrobe(): WardrobeData | null {
   const data = (app.data as any).wardrobe as WardrobeData | undefined;
@@ -120,9 +120,9 @@ function wardrobe(): WardrobeData | null {
 }
 
 /**
- * Troca de tema como o Wardrobe troca: preferência de quem tem conta (vale em
- * todo aparelho), cookie de quem não tem. E recarrega: cada tema tem o próprio
- * JS e CSS, então a página aberta é literalmente o código do tema que fica.
+ * 像 Wardrobe 那样切换主题：有账号的用户保存偏好（在所有
+ * 设备上生效），没有账号的写 cookie。然后重新加载：每个主题都有自己的
+ * JS 和 CSS，所以打开的页面实际上就是所选主题的代码。
  */
 function chooseTheme(id: string): void {
   const user = app.session.user;
@@ -143,10 +143,10 @@ function chooseTheme(id: string): void {
 }
 
 /**
- * O seletor em texto do rodapé, como o "🖌 Meta Branded ⌄" do Meta. Com o
- * Wardrobe e mais de um tema, mostra o pincel e o nome do tema, e o menu lista
- * os temas; as paletas (Padrão / Alto contraste) ficam numa seção separada do
- * mesmo menu. Sem o Wardrobe, é só o seletor de paletas, como antes.
+ * 页脚中的文本选择器，如同 Meta 的 “🖌 Meta Branded ⌄”。有
+ * Wardrobe 且主题多于一个时，显示画笔和主题名称，菜单列出
+ * 主题；调色板（默认 / 高对比度）放在同一菜单的单独
+ * 区块中。没有 Wardrobe 时，就只是调色板选择器，和以前一样。
  */
 export class FooterPaletteSelector extends Component {
   view(): Mithril.Children {
@@ -161,10 +161,10 @@ export class FooterPaletteSelector extends Component {
 
     const paletteOptions = palettes.map((palette) => (
       <Button
-        className={classList('CanelaPaletteSelector-option', { active: palette.id === highContrast })}
+        className={classList('LcoyPaletteSelector-option', { active: palette.id === highContrast })}
         onclick={() => apply(currentMode(), palette.id)}
       >
-        <span className={classList('CanelaPaletteSelector-dot', { 'CanelaPaletteSelector-dot--hc': palette.id })} aria-hidden="true" />
+        <span className={classList('LcoyPaletteSelector-dot', { 'LcoyPaletteSelector-dot--hc': palette.id })} aria-hidden="true" />
         {palette.label}
       </Button>
     ));
@@ -172,10 +172,10 @@ export class FooterPaletteSelector extends Component {
     if (!themes || !activeTheme) {
       return (
         <Dropdown
-          className="CanelaPaletteSelector"
-          buttonClassName="Button Button--flat CanelaPaletteSelector-toggle"
-          menuClassName="CanelaPaletteSelector-menu"
-          label={<span className="CanelaPaletteSelector-label">{current.label}</span>}
+          className="LcoyPaletteSelector"
+          buttonClassName="Button Button--flat LcoyPaletteSelector-toggle"
+          menuClassName="LcoyPaletteSelector-menu"
+          label={<span className="LcoyPaletteSelector-label">{current.label}</span>}
           caretIcon="fas fa-chevron-down"
           accessibleToggleLabel={t('sidebar.palette.title')}
         >
@@ -186,22 +186,22 @@ export class FooterPaletteSelector extends Component {
 
     return (
       <Dropdown
-        className="CanelaPaletteSelector CanelaPaletteSelector--themes"
-        buttonClassName="Button Button--flat CanelaPaletteSelector-toggle"
-        menuClassName="CanelaPaletteSelector-menu"
+        className="LcoyPaletteSelector LcoyPaletteSelector--themes"
+        buttonClassName="Button Button--flat LcoyPaletteSelector-toggle"
+        menuClassName="LcoyPaletteSelector-menu"
         label={
-          <span className="CanelaPaletteSelector-label">
-            <Icon name="fas fa-paintbrush" className="CanelaPaletteSelector-brush" />
+          <span className="LcoyPaletteSelector-label">
+            <Icon name="fas fa-paintbrush" className="LcoyPaletteSelector-brush" />
             {activeTheme.title}
           </span>
         }
         caretIcon="fas fa-chevron-down"
         accessibleToggleLabel={t('sidebar.theme.title')}
       >
-        <span className="CanelaPaletteSelector-heading">{t('sidebar.theme.title')}</span>
+        <span className="LcoyPaletteSelector-heading">{t('sidebar.theme.title')}</span>
         {themes.themes.map((theme) => (
           <Button
-            className={classList('CanelaPaletteSelector-option', { active: theme.id === activeTheme.id })}
+            className={classList('LcoyPaletteSelector-option', { active: theme.id === activeTheme.id })}
             icon={theme.id === activeTheme.id ? 'fas fa-check' : 'fas fa-paintbrush'}
             onclick={() => theme.id !== activeTheme.id && chooseTheme(theme.id)}
           >
@@ -209,14 +209,14 @@ export class FooterPaletteSelector extends Component {
           </Button>
         ))}
         <Separator />
-        <span className="CanelaPaletteSelector-heading">{t('sidebar.palette.title')}</span>
+        <span className="LcoyPaletteSelector-heading">{t('sidebar.palette.title')}</span>
         {paletteOptions}
       </Dropdown>
     );
   }
 }
 
-/** O botão de modo de cor: só o ícone, com o menu de três opções. */
+/** 颜色模式按钮：只有图标，带三个选项的菜单。 */
 export class FooterColorMode extends Component {
   view(): Mithril.Children {
     const mode = currentMode();
@@ -224,9 +224,9 @@ export class FooterColorMode extends Component {
 
     return (
       <Dropdown
-        className="CanelaColorMode"
-        buttonClassName="Button Button--icon Button--flat CanelaColorMode-toggle"
-        menuClassName="CanelaColorMode-menu"
+        className="LcoyColorMode"
+        buttonClassName="Button Button--icon Button--flat LcoyColorMode-toggle"
+        menuClassName="LcoyColorMode-menu"
         icon={MODE_ICONS[mode]}
         caretIcon=""
         label=""
@@ -234,7 +234,7 @@ export class FooterColorMode extends Component {
       >
         {modes.map((option) => (
           <Button
-            className={classList('CanelaColorMode-option', `CanelaColorMode-option--${option}`, { active: option === mode })}
+            className={classList('LcoyColorMode-option', `LcoyColorMode-option--${option}`, { active: option === mode })}
             onclick={() => apply(option, currentHighContrast())}
           >
             <Icon name={MODE_ICONS[option]} className="Button-icon" />

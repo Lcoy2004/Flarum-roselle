@@ -20,11 +20,11 @@ use Flarum\Settings\Event\Saving;
 use Lcoy\Roselle\Theme\Logo\SvgSanitizer;
 
 /**
- * O SVG próprio do indicador é limpo antes de ir para o banco: o que fica
- * gravado já é o que o fórum usa, e o admin vê na hora se o arquivo não serve.
- * A compilação do LESS limpa de novo (LoaderLess::clean), por garantia.
+ * 指示器的自定义 SVG 在写入数据库之前会被清理：保存下来的正是论坛使用的
+ * 内容，管理员也能立即看到文件是否可用。LESS 编译时还会再清理一次
+ * （LoaderLess::clean）作为保障。
  *
- * Também prende o estilo e o tamanho às opções conhecidas.
+ * 同时把样式和尺寸限定在已知选项内。
  */
 final class SanitizeLoaderSetting
 {

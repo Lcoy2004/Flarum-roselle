@@ -9,11 +9,9 @@ import installUser from './user';
 import installTopic from './topic';
 import installCommunity from './features/community';
 import installStats from './features/stats';
-import installLinks from './features/links';
 import installBookmarks from './features/bookmarks';
 import installComposer from './features/composer';
 import installExtras from './features/extras';
-import installExtendedProfile from './features/profile';
 import installUserMenu from './usermenu';
 import installReview from './review';
 import installComposerShell from './composer/installComposerShell';
@@ -30,54 +28,49 @@ import extrasExtend from './features/extras/extend';
 import gapsExtend from './gaps/extend';
 import userMenuExtend from './usermenu/extend';
 
-// Modelos e rotas dos recursos com backend. Cada recurso decide sozinho se
-// aparece (pela configuração que o servidor serializa), então registrar as
-// rotas sempre não tem efeito colateral.
+// 带后端功能的模型与路由。每个功能自行决定是否出现（由服务器序列化的配置
+// 决定），所以始终注册路由不会有副作用。
 export const extend = [...communityExtend, ...bookmarksExtend, ...extrasExtend, ...gapsExtend, ...userMenuExtend];
 
 app.initializers.add('lcoy-roselle', () => {
-  // Antes de qualquer chunk: as chaves das revisões no Windows (ver o arquivo).
+  // 早于任何 chunk：处理 Windows 上的修订号键（见该文件）。
   normalizeRevManifest();
-  // Antes de tudo: as páginas que pedem dados no boot já encontram a resposta pronta.
+  // 最先执行：启动时就要数据的页面能直接拿到现成的响应。
   installPreload();
   installIcons();
-  // Tema base: casca, lista, perfil e tópico.
+  // 基础主题：外壳、列表、个人主页和主题页。
   installShell();
   installList();
   installUser();
   installTopic();
 
-  // Recursos com backend. A ordem importa onde um estende o outro: a
-  // comunidade substitui um item do perfil, e as estatísticas estendem a
-  // navegação da lista e a barra lateral.
-  installExtendedProfile();
+  // 带后端的功能。互相扩展时顺序很重要：社区功能会替换个人主页的一项，
+  // 统计会扩展列表导航和侧栏。
   installCommunity();
   installStats();
-  installLinks();
   installBookmarks();
   installComposer();
   installComposerShell();
   installExtras();
   installUserMenu();
-  // A fila de revisão do Discourse na página /flags (flarum/flags e approval).
+  // /flags 页面上 Discourse 风格的审核队列（flarum/flags 与 approval）。
   installReview();
 
-  // Recursos e comportamentos do Discourse que faltavam (gaps/).
+  // 补齐的 Discourse 功能与行为（gaps/）。
   installGaps();
 
-  // Animações, toasts, dicas e carregamento do Discourse (motion/).
+  // 动画、toast、提示与加载效果（motion/）。
   installMotion();
 
-  // Extensões de terceiros (FoF) no visual do Discourse (thirdparty/).
+  // 第三方扩展（FoF）的 Discourse 风格外观（thirdparty/）。
   installThirdParty();
 
-  // O menu de busca do Discourse no cabeçalho e no banner (search/).
+  // 页头与横幅中的 Discourse 风格搜索菜单（search/）。
   installSearchMenu();
 
-  // Entrar e cadastrar em página própria (/login, /signup).
+  // 独立页面上的登录与注册（/login、/signup）。
   installAuth();
 
-  // Dicas nos botões só de ícone da barra de ações do post: por último, para
-  // enxergar os botões de todos os recursos e extensões.
+  // 帖子操作栏中纯图标按钮的提示：放在最后，才能看到所有功能与扩展的按钮。
   installActionTooltips();
 });

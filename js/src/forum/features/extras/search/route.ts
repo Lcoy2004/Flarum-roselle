@@ -1,19 +1,19 @@
 /*
- * A rota da página de busca e o endereço dela. Fora da SearchPage para a
- * página ir num chunk próprio: o link do modal só precisa da URL.
+ * 搜索页面的路由及其地址。放在 SearchPage 之外，使页面可位于独立
+ * chunk 中：弹窗中的链接只需要 URL。
  */
 import app from 'flarum/forum/app';
 
 import { forumBool } from '../../../utils/settings';
 import type { SearchTab } from './sources';
 
-export const SEARCH_ROUTE = 'canela.search';
+export const SEARCH_ROUTE = 'lcoy.search';
 
 export function searchPageEnabled(): boolean {
-  return forumBool('canelaSearchPageEnabled', true);
+  return forumBool('lcoySearchPageEnabled', true);
 }
 
-/** URL da página de busca — usada pelo link do modal e por quem mais quiser. */
+/** 搜索页面的 URL——供弹窗中的链接及其他调用方使用。 */
 export function searchUrl(q: string, type?: SearchTab, sort?: string): string {
   const params: Record<string, string> = {};
 

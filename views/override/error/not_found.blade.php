@@ -1,10 +1,10 @@
-{{-- A página 404 do Discourse quando o recurso está ligado (lcoy/roselle); senão, a do core. --}}
+{{-- 功能开启时（lcoy/roselle）使用 Discourse 的 404 页面；否则用核心的。 --}}
 @php
-  $canelaNotFound = resolve(\Lcoy\Roselle\Gaps\NotFound\NotFoundPage::class);
-  $canelaPage = $canelaNotFound->enabled() ? $canelaNotFound->data() : null;
+  $lcoyNotFound = resolve(\Lcoy\Roselle\Gaps\NotFound\NotFoundPage::class);
+  $lcoyPage = $lcoyNotFound->enabled() ? $lcoyNotFound->data() : null;
 @endphp
-@if ($canelaPage)
-  @include('lcoy-roselle-gaps::not-found', ['page' => $canelaPage, 'message' => $message])
+@if ($lcoyPage)
+  @include('lcoy-roselle-gaps::not-found', ['page' => $lcoyPage, 'message' => $message])
 @else
   @include('lcoy-roselle-gaps::core-not-found', ['message' => $message])
 @endif

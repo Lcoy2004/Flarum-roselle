@@ -1,13 +1,12 @@
 /*
- * /login e /signup: as páginas cheias de entrar e de cadastro do Discourse
- * (`.login-fullpage`/`.signup-fullpage`) — o logo do fórum, o título grande,
- * o formulário, "Esqueci minha senha", os botões sociais (fof/oauth) e o link
- * para a outra página.
+ * /login 和 /signup：Discourse 风格的全屏登录与注册页面
+ * （`.login-fullpage`/`.signup-fullpage`）——论坛 logo、大标题、
+ * 表单、“忘记密码”、社交登录按钮（fof/oauth）以及
+ * 跳转到另一页面的链接。
  *
- * Nada de reescrever o POST: o formulário é o próprio LogInModal/SignUpModal
- * do core, desenhado dentro da página por uma subclasse. Assim valem as
- * validações do core, os campos que as extensões põem nos modais (fof/terms,
- * convites…) e o que o tema já faz neles (rótulo flutuante, títulos).
+ * 不重写 POST：表单本身就是核心的 LogInModal/SignUpModal，
+ * 由子类绘制在页面内。这样就沿用了核心的校验、扩展在弹窗中
+ * 添加的字段（fof/terms）以及主题对它们已有的处理（浮动标签、标题）。
  */
 import app from 'flarum/forum/app';
 import Page, { type IPageAttrs } from 'flarum/common/components/Page';
@@ -24,12 +23,12 @@ const MODULES: Record<AuthMode, string> = {
   forgot: 'flarum/forum/components/ForgotPasswordModal',
 };
 
-const RETURN_KEY = 'canela.authReturn';
+const RETURN_KEY = 'lcoy.authReturn';
 
-/** Valores levados de uma página para a outra (o e-mail digitado no login vai para o cadastro), fora da URL. */
+/** 在页面之间携带的值（登录页输入的邮箱会带到注册页），不经过 URL。 */
 let carried: Record<string, unknown> = {};
 
-/** Guarda a página de onde a pessoa veio: depois de entrar, ela volta para lá. */
+/** 记录用户来源页面：登录后返回该页面。 */
 export function rememberReturn(): void {
   const route = m.route.get();
 
@@ -38,7 +37,7 @@ export function rememberReturn(): void {
   try {
     sessionStorage.setItem(RETURN_KEY, route);
   } catch {
-    // Sem armazenamento a pessoa volta para a página inicial.
+    // 没有存储时，用户将返回首页。
   }
 }
 
@@ -48,10 +47,10 @@ function takeReturn(): string {
 
     sessionStorage.removeItem(RETURN_KEY);
 
-    // Só caminhos do próprio fórum.
+    // 仅限论坛自身的路径。
     if (route && route.startsWith('/') && !route.startsWith('//')) return route;
   } catch {
-    // Idem.
+    // 同上。
   }
 
   return app.route('index');
@@ -59,30 +58,30 @@ function takeReturn(): string {
 
 export function goToAuth(mode: AuthMode, attrs: Record<string, unknown> = {}): void {
   carried = attrs;
-  m.route.set(app.route(`canela.${mode}`));
+  m.route.set(app.route(`lcoy.${mode}`));
 }
 
-/** A subclasse de cada modal, criada uma vez quando o módulo chega. */
+/** 每个弹窗的子类，在模块加载时创建一次。 */
 const classes: Partial<Record<AuthMode, any>> = {};
 
 function pageClass(mode: AuthMode, Base: any): any {
   if (classes[mode]) return classes[mode];
 
   classes[mode] = class extends Base {
-    // Na página não há o que fechar: o ✕ some e o Esc não faz nada.
+    // 页面上无需关闭：✕ 隐藏，Esc 也不起作用。
     static isDismissibleViaCloseButton = false;
     static isDismissibleViaEscKey = false;
     static isDismissibleViaBackdropClick = false;
 
     className() {
-      return `${super.className()} CanelaAuthForm`;
+      return `${super.className()} LcoyAuthForm`;
     }
 
     hide() {
       m.route.set(app.route('index'));
     }
 
-    // "Redefinir senha" no lugar de "Redefinição de senha": é o título da página.
+    // 使用“重置密码”而非“密码重置”：这是页面标题。
     title() {
       return mode === 'forgot' ? t('auth.forgot_heading') : super.title();
     }
@@ -93,7 +92,7 @@ function pageClass(mode: AuthMode, Base: any): any {
       goToAuth('forgot', email.includes('@') ? { email } : {});
     }
 
-    // Entre as duas páginas, a navegação é de página, não de modal.
+    // 两个页面之间是页面级导航，而非弹窗导航。
     signUp() {
       const identification = String(this.identification?.() || '');
 
@@ -110,12 +109,12 @@ function pageClass(mode: AuthMode, Base: any): any {
   return classes[mode];
 }
 
-/** "Voltar para entrar", debaixo do cartão das páginas de senha. */
+/** “返回登录”，位于密码相关页面卡片的底部。 */
 export function backToLogin(): Mithril.Children {
   return (
-    <p className="CanelaAuthPage-back">
+    <p className="LcoyAuthPage-back">
       <a
-        href={app.route('canela.login')}
+        href={app.route('lcoy.login')}
         onclick={(event: MouseEvent) => {
           event.preventDefault();
           goToAuth('login');
@@ -127,25 +126,25 @@ export function backToLogin(): Mithril.Children {
   );
 }
 
-/** O ModalManager que o modal espera, sem modal nenhum: abre na hora e não anima a saída. */
+/** 弹窗所期望的 ModalManager，但不含任何弹窗：立即打开且不做关闭动画。 */
 const embeddedState = { modal: {}, close() {} };
 
 export default class AuthPage extends Page<IPageAttrs> {
-  protected bodyClass = 'Canela--authPage';
+  protected bodyClass = 'Lcoy--authPage';
   form: any = null;
   formAttrs: Record<string, unknown> = {};
 
   mode(): AuthMode {
     const name = this.attrs.routeName;
 
-    return name === 'canela.signup' ? 'signup' : name === 'canela.forgot' ? 'forgot' : 'login';
+    return name === 'lcoy.signup' ? 'signup' : name === 'lcoy.forgot' ? 'forgot' : 'login';
   }
 
   oninit(vnode: Mithril.Vnode<IPageAttrs, this>) {
     super.oninit(vnode);
 
-    // Já entrou (inclusive logo depois do login, que recarrega a página):
-    // volta para onde estava.
+    // 已登录（包括刚登录后页面刷新的情况）：
+    // 返回之前所在的位置。
     if (app.session.user) {
       m.route.set(takeReturn(), undefined, { replace: true });
       return;
@@ -154,7 +153,7 @@ export default class AuthPage extends Page<IPageAttrs> {
     const mode = this.mode();
 
     if (mode === 'signup' && !app.forum.attribute<boolean>('allowSignUp')) {
-      m.route.set(app.route('canela.login'), undefined, { replace: true });
+      m.route.set(app.route('lcoy.login'), undefined, { replace: true });
       return;
     }
 
@@ -175,8 +174,8 @@ export default class AuthPage extends Page<IPageAttrs> {
     const mode = this.mode();
 
     return (
-      <div className={`CanelaAuthPage CanelaAuthPage--${mode}`}>
-        <div className="CanelaAuthPage-inner">
+      <div className={`LcoyAuthPage LcoyAuthPage--${mode}`}>
+        <div className="LcoyAuthPage-inner">
           {this.logo()}
           {Form ? (
             <Form state={embeddedState} animateShow={(ready: () => void) => ready()} animateHide={() => {}} {...this.formAttrs} />
@@ -194,21 +193,21 @@ export default class AuthPage extends Page<IPageAttrs> {
   }
 }
 
-/** O logo do fórum em cima do cartão (a versão escura no tema escuro). */
+/** 卡片上方的论坛 logo（暗色主题下为暗色版本）。 */
 export function authLogo(): Mithril.Children {
   const title = app.forum.attribute<string>('title');
   const logo = app.forum.attribute<string | null>('logoUrl');
   const dark = app.forum.attribute<string | null>('logoDarkModeUrl');
 
   return (
-    <a className="CanelaAuthPage-logo" href={app.route('index')} aria-label={title}>
+    <a className="LcoyAuthPage-logo" href={app.route('index')} aria-label={title}>
       {logo ? (
         [
-          <img className={`CanelaAuthPage-logoImage${dark ? ' CanelaAuthPage-logoImage--light' : ''}`} src={logo} alt="" />,
-          dark ? <img className="CanelaAuthPage-logoImage CanelaAuthPage-logoImage--dark" src={dark} alt="" /> : null,
+          <img className={`LcoyAuthPage-logoImage${dark ? ' LcoyAuthPage-logoImage--light' : ''}`} src={logo} alt="" />,
+          dark ? <img className="LcoyAuthPage-logoImage LcoyAuthPage-logoImage--dark" src={dark} alt="" /> : null,
         ]
       ) : (
-        <span className="CanelaAuthPage-logoText">{title}</span>
+        <span className="LcoyAuthPage-logoText">{title}</span>
       )}
     </a>
   );

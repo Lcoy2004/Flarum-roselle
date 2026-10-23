@@ -1,10 +1,10 @@
 /*
- * O estado da seleção em massa: o modo ligado e os ids marcados.
+ * 批量选择的状态：模式是否开启以及已勾选的 id。
  *
- * Um objeto só para o fórum inteiro (e não estado da página) porque quem
- * desenha a caixa é cada DiscussionListItem, quem desenha a barra é o
- * IndexPage, e os dois precisam ver a mesma seleção. Mudar de página da lista
- * (outra tag, outra ordenação) zera tudo — ver `reset`.
+ * 整个论坛共用一个对象（而非页面状态），因为复选框由每个
+ * DiscussionListItem 绘制，工具栏由 IndexPage 绘制，两者必须看到
+ * 同一份选择。切换列表页面（其他标签、其他排序）会清空全部内容
+ * ——见 `reset`。
  */
 import app from 'flarum/forum/app';
 import type Discussion from 'flarum/common/models/Discussion';
@@ -13,10 +13,10 @@ import { forumBool } from '../../../utils/settings';
 
 class BulkSelection {
   active = false;
-  /** Sobe a cada mudança: é o que os itens da lista (SubtreeRetainer) observam. */
+  /** 每次变更时递增：列表项（SubtreeRetainer）据此观察变化。 */
   version = 0;
   private ids = new Set<string>();
-  /** Último item clicado, para o shift+clique selecionar o intervalo. */
+  /** 最后点击的项，用于 shift+点击选择区间。 */
   private anchor: string | null = null;
 
   has(discussion: Discussion): boolean {
@@ -41,7 +41,7 @@ class BulkSelection {
       const to = visible.indexOf(id);
 
       if (from !== -1 && to !== -1) {
-        // O intervalo segue o estado do item âncora, como num gerenciador de arquivos.
+        // 区间跟随锚点项的状态，与文件管理器一致。
         const select = this.ids.has(this.anchor);
 
         visible.slice(Math.min(from, to), Math.max(from, to) + 1).forEach((itemId) => (select ? this.ids.add(itemId) : this.ids.delete(itemId)));
@@ -69,7 +69,7 @@ class BulkSelection {
     this.version++;
   }
 
-  /** Os tópicos marcados que ainda estão no store (um excluído some daqui). */
+  /** 仍存在于 store 中的已选主题（已删除的会从这里消失）。 */
   selected(): Discussion[] {
     return [...this.ids].map((id) => app.store.getById<Discussion>('discussions', id)).filter((discussion): discussion is Discussion => !!discussion);
   }
@@ -82,12 +82,12 @@ class BulkSelection {
 
 export const selection = new BulkSelection();
 
-/** Os tópicos já carregados na lista, na ordem em que aparecem. */
+/** 列表中已加载的主题，按出现顺序排列。 */
 export function loadedDiscussions(): Discussion[] {
   return app.discussions.getPages().flatMap((page) => page.items);
 }
 
-/** Quem modera algo nesta lista — o "staff" do Discourse. */
+/** 能管理此列表中某些内容的人——即 Discourse 的“staff”。 */
 export function canModerate(discussion: Discussion): boolean {
   const model = discussion as Discussion & Record<string, any>;
 
@@ -95,7 +95,7 @@ export function canModerate(discussion: Discussion): boolean {
 }
 
 export function bulkAvailable(): boolean {
-  if (!app.session.user || !forumBool('canelaBulkSelectEnabled', true)) return false;
+  if (!app.session.user || !forumBool('lcoyBulkSelectEnabled', true)) return false;
 
   return !!app.session.user.isAdmin?.() || loadedDiscussions().some(canModerate);
 }

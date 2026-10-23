@@ -5,25 +5,25 @@ const KEY = 'lcoy-roselle.admin.settings';
 const MIN = 960;
 const MAX = 1800;
 const DEFAULT = 1110;
-/** A tela de referência da prévia: larga o bastante para «largo» e «extra largo» se distinguirem. */
+/** 预览的参考屏幕：足够宽，以便区分“宽”和“超宽”。 */
 const SCREEN = 1680;
 
-/** As opções prontas: px, ou porcentagem da área ao lado da barra lateral. */
+/** 预设选项：px，或侧边栏旁区域的百分比。 */
 const PRESETS: { value: string; label: string; fallback: string }[] = [
-  { value: '1110', label: 'content_width_default', fallback: 'Padrão' },
-  { value: '1280', label: 'content_width_wide', fallback: 'Largo' },
-  { value: '1440', label: 'content_width_wider', fallback: 'Extra largo' },
+  { value: '1110', label: 'content_width_default', fallback: '默认' },
+  { value: '1280', label: 'content_width_wide', fallback: '宽' },
+  { value: '1440', label: 'content_width_wider', fallback: '超宽' },
   { value: '90%', label: 'content_width_90', fallback: '90%' },
-  { value: '100%', label: 'content_width_full', fallback: 'Largura toda' },
+  { value: '100%', label: 'content_width_full', fallback: '全宽' },
 ];
 
 /**
- * Largura do cartão de conteúdo (--cn-main-max): opções prontas (padrão,
- * largo, 90%, largura toda) ou um valor manual em px, com a prévia do fórum
- * real numa tela de 1440px.
+ * 内容卡片宽度（--lcoy-main-max）：预设选项（默认、
+ * 宽、90%、全宽）或手动输入的 px 值，并在 1440px 屏幕上
+ * 预览真实论坛。
  */
 export default class ContentWidthControl extends AdminComponent {
-  /** "1110", "1280"… (px) ou "90%" / "100%". */
+  /** "1110"、"1280"……（px）或 "90%" / "100%"。 */
   value = String(DEFAULT);
   custom = false;
   saveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -31,17 +31,17 @@ export default class ContentWidthControl extends AdminComponent {
   discussionPath: string | null = null;
   frame: HTMLIFrameElement | null = null;
   loaded = false;
-  /** Vigia a prévia até o documento dela aceitar a variável. */
+  /** 监视预览，直到其文档接受该变量。 */
   watchTimer: ReturnType<typeof setInterval> | undefined;
 
   oninit(vnode: any) {
     super.oninit(vnode);
-    const stored = getStr('canela.content_width', String(DEFAULT)).trim();
+    const stored = getStr('lcoy.content_width', String(DEFAULT)).trim();
 
     this.value = /^(90|100)%$/.test(stored) ? stored : String(clamp(parseInt(stored, 10) || DEFAULT));
     this.custom = !PRESETS.some((preset) => preset.value === this.value);
 
-    // A discussão mais recente, para a prévia da página de discussão.
+    // 最新的讨论，用于讨论页预览。
     app
       .request<any>({ method: 'GET', url: `${app.forum.attribute('apiUrl')}/discussions`, params: { 'page[limit]': 1, sort: '-lastPostedAt' } })
       .then((res) => {
@@ -53,12 +53,12 @@ export default class ContentWidthControl extends AdminComponent {
   }
 
   /**
-   * O endereço da prévia sempre no mesmo host da página do admin.
+   * 预览地址始终位于 admin 页面所在的主机上。
    *
-   * `baseUrl` pode apontar para outro nome do mesmo servidor (localhost ×
-   * 127.0.0.1, por exemplo): o iframe carregaria de outra origem e o
-   * `contentDocument` ficaria inacessível — a prévia então nunca mudava de
-   * largura. Um caminho relativo à raiz herda o host atual e resolve isso.
+   * `baseUrl` 可能指向同一服务器的另一个名称（例如 localhost ×
+   * 127.0.0.1）：iframe 会从另一个源加载，
+   * `contentDocument` 将无法访问——预览也就永远不会改变
+   * 宽度。相对于根路径的地址会继承当前主机，从而解决这个问题。
    */
   previewUrl(): string | null {
     if (this.page === 'discussion' && !this.discussionPath) return null;
@@ -75,21 +75,20 @@ export default class ContentWidthControl extends AdminComponent {
     }
   }
 
-  /** Reduz a "tela" de 1440px à largura disponível. */
+  /** 把 1440px 的“屏幕”缩放到可用宽度。 */
   fit(box: HTMLElement): void {
     const scale = box.clientWidth / SCREEN;
 
-    box.style.setProperty('--canela-preview-scale', String(scale));
+    box.style.setProperty('--lcoy-preview-scale', String(scale));
     box.style.height = `${900 * scale}px`;
   }
 
   /**
-   * Aplica a largura escolhida dentro do fórum da prévia.
+   * 在预览论坛中应用所选宽度。
    *
-   * Devolve `true` quando o documento já aceita a variável. O `load` do
-   * iframe não serve como único gatilho: uma imagem externa que não termina
-   * (um CDN fora do ar, por exemplo) o segura para sempre, e a prévia ficava
-   * parada no valor salvo.
+   * 当文档已接受该变量时返回 `true`。iframe 的 `load` 不能作为
+   * 唯一触发条件：一个无法完成加载的外部图片（例如宕机的 CDN）
+   * 会让它永远等待，预览便一直停留在已保存的值上。
    */
   apply(): boolean {
     const doc = this.frame?.contentDocument;
@@ -97,16 +96,16 @@ export default class ContentWidthControl extends AdminComponent {
     if (!doc || doc.readyState === 'loading' || !doc.documentElement) return false;
 
     try {
-      doc.documentElement.style.setProperty('--cn-main-max', this.cssValue());
+      doc.documentElement.style.setProperty('--lcoy-main-max', this.cssValue());
 
       return true;
     } catch {
-      // Outra origem: a prévia mostra a largura salva.
+      // 跨源：预览显示已保存的宽度。
       return false;
     }
   }
 
-  /** Tenta aplicar já e continua tentando até o documento da prévia carregar. */
+  /** 立即尝试应用，并持续尝试直到预览文档加载完成。 */
   watch(frame: HTMLIFrameElement): void {
     this.frame = frame;
     clearInterval(this.watchTimer);
@@ -133,9 +132,9 @@ export default class ContentWidthControl extends AdminComponent {
     const isActive = (value: string) => !this.custom && this.value === value;
 
     return (
-      <div className="Form-group CanelaAdmin-contentWidth">
-        <label className="CanelaAdmin-label">{trans(`${KEY}.content_width_label`, 'Largura do conteúdo')}</label>
-        <div className="CanelaAdmin-contentWidth-presets" role="radiogroup">
+      <div className="Form-group LcoyAdmin-contentWidth">
+        <label className="LcoyAdmin-label">{trans(`${KEY}.content_width_label`, '内容宽度')}</label>
+        <div className="LcoyAdmin-contentWidth-presets" role="radiogroup">
           {PRESETS.map((preset) => (
             <button
               type="button"
@@ -160,11 +159,11 @@ export default class ContentWidthControl extends AdminComponent {
               this.set(String(px));
             }}
           >
-            {trans(`${KEY}.content_width_custom`, 'Personalizado')}
+            {trans(`${KEY}.content_width_custom`, '自定义')}
           </button>
         </div>
         {this.custom && (
-          <div className="CanelaAdmin-contentWidth-row">
+          <div className="LcoyAdmin-contentWidth-row">
             <input
               type="range"
               min={MIN}
@@ -173,18 +172,18 @@ export default class ContentWidthControl extends AdminComponent {
               value={px}
               oninput={(e: InputEvent) => this.set(String(clamp(parseInt((e.target as HTMLInputElement).value, 10))))}
             />
-            <span className="CanelaAdmin-contentWidth-value">{`${px}px`}</span>
+            <span className="LcoyAdmin-contentWidth-value">{`${px}px`}</span>
           </div>
         )}
         <p className="helpText">
           {trans(
             `${KEY}.content_width_help`,
-            'A largura máxima do cartão de conteúdo (lista, discussão, perfil); na discussão, a coluna dos posts cresce junto. O padrão é 1110px, como no Discourse; 90% e Largura toda acompanham a tela. A prévia mostra o fórum de verdade numa tela de {width}px.',
+            '内容卡片（列表、讨论、个人资料）的最大宽度；在讨论中，帖子栏会随之变宽。默认是 1110px，与 Discourse 相同；90% 和全宽会跟随屏幕。预览会在 {width}px 的屏幕上显示真实论坛。',
             { width: SCREEN }
           )}
         </p>
 
-        <div className="CanelaAdmin-contentWidth-tabs">
+        <div className="LcoyAdmin-contentWidth-tabs">
           {(['index', 'discussion'] as const).map((page) => (
             <button
               type="button"
@@ -194,17 +193,15 @@ export default class ContentWidthControl extends AdminComponent {
                 this.loaded = false;
               }}
             >
-              {page === 'index'
-                ? trans(`${KEY}.content_width_preview_index`, 'Início')
-                : trans(`${KEY}.content_width_preview_discussion`, 'Discussão')}
+              {page === 'index' ? trans(`${KEY}.content_width_preview_index`, '首页') : trans(`${KEY}.content_width_preview_discussion`, '讨论')}
             </button>
           ))}
         </div>
 
-        {/* O fórum de verdade, numa tela de 1440px reduzida: a largura muda ao vivo
-            (a variável --cn-main-max é trocada dentro do iframe, mesma origem). */}
-        <div className="CanelaAdmin-contentWidth-preview" aria-hidden="true">
-          <div className="CanelaAdmin-contentWidth-frame" oncreate={(v: any) => this.fit(v.dom)} onupdate={(v: any) => this.fit(v.dom)}>
+        {/* 真实论坛，在缩小的 1440px 屏幕中：宽度会实时变化
+            （--lcoy-main-max 变量在 iframe 内替换，同源）。 */}
+        <div className="LcoyAdmin-contentWidth-preview" aria-hidden="true">
+          <div className="LcoyAdmin-contentWidth-frame" oncreate={(v: any) => this.fit(v.dom)} onupdate={(v: any) => this.fit(v.dom)}>
             {this.previewUrl() && (
               <iframe
                 key={this.previewUrl() ?? undefined}
@@ -215,7 +212,7 @@ export default class ContentWidthControl extends AdminComponent {
               />
             )}
           </div>
-          <span className="CanelaAdmin-contentWidth-caption">{trans(`${KEY}.content_width_caption`, '{width}px screen', { width: SCREEN })}</span>
+          <span className="LcoyAdmin-contentWidth-caption">{trans(`${KEY}.content_width_caption`, '{width}px 屏幕', { width: SCREEN })}</span>
         </div>
       </div>
     );
@@ -224,8 +221,8 @@ export default class ContentWidthControl extends AdminComponent {
   set(value: string) {
     this.value = value;
     clearTimeout(this.saveTimer);
-    this.saveTimer = setTimeout(() => saveSetting({ 'canela.content_width': String(this.value) }), 500);
-    app.data.settings['canela.content_width'] = String(this.value);
+    this.saveTimer = setTimeout(() => saveSetting({ 'lcoy.content_width': String(this.value) }), 500);
+    app.data.settings['lcoy.content_width'] = String(this.value);
     this.apply();
   }
 }

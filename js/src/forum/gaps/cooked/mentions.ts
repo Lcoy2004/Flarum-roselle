@@ -1,10 +1,10 @@
 /*
- * Clicar numa menção @fulano abre o cartão de usuário, como no Discourse —
- * o mesmo cartão do avatar do post. Ctrl/Cmd+clique continua abrindo o
- * perfil numa aba nova.
+ * 点击 @某某 提及会打开用户卡片，与 Discourse 一致——
+ * 即帖子头像所用的同一个卡片。Ctrl/Cmd+点击仍然在新标签页
+ * 打开个人资料。
  *
- * O link da menção só traz o endereço do perfil (/u/slug): o usuário vem do
- * store quando já foi carregado, ou da API pelo slug.
+ * 提及链接只带个人资料地址（/u/slug）：用户已加载时从 store 取，
+ * 否则按 slug 从 API 取。
  */
 import app from 'flarum/forum/app';
 import type User from 'flarum/common/models/User';
@@ -12,7 +12,7 @@ import type User from 'flarum/common/models/User';
 import { openUserCard } from '../../topic/components/UserCardPopover';
 import { gaps } from '../settings';
 
-const MENTION = '.Post-body a.UserMention, .CanelaEmbeddedPost-body a.UserMention';
+const MENTION = '.Post-body a.UserMention, .LcoyEmbeddedPost-body a.UserMention';
 
 export function slugFrom(link: HTMLAnchorElement): string | null {
   try {
@@ -55,13 +55,13 @@ function onClick(event: MouseEvent): void {
   event.stopPropagation();
 
   findUser(slug).then((user) => {
-    // Sem o usuário (apagado, sem permissão), o link volta a ser só um link.
+    // 没有用户（已删除、无权限）时，链接退化为普通链接。
     if (user) openUserCard(user, link);
     else window.location.href = link.href;
   });
 }
 
 export default function installMentionCards(): void {
-  // Na captura: o Link do Mithril em volta do post navegaria antes.
+  // 在捕获阶段：包裹帖子的 Mithril Link 会先导航。
   document.addEventListener('click', onClick, true);
 }

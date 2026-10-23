@@ -22,12 +22,12 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Links do Discourse para categorias (/c/suporte/6, /c/suporte/instalacao/31,
- * /c/suporte/6/l/top) levados à página da tag no Flarum (/t/instalacao).
+ * 把 Discourse 的分类链接（/c/suporte/6、/c/suporte/instalacao/31、
+ * /c/suporte/6/l/top）重定向到 Flarum 中对应的标签页（/t/instalacao）。
  *
- * O slug é o último pedaço que não é número nem parte do sufixo de lista
- * (`l/<ordenação>`, `none`, `all`). A URL é montada à mão, e não pela rota
- * `tag` do flarum/tags, para não depender da extensão estar ativa.
+ * slug 取最后一个既不是数字、也不属于列表后缀（`l/<排序>`、`none`、
+ * `all`）的片段。URL 是手工拼接的，而不是使用 flarum/tags 的 `tag` 路由，
+ * 以免依赖该扩展是否启用。
  */
 final class RedirectCategory implements RequestHandlerInterface
 {
@@ -44,7 +44,7 @@ final class RedirectCategory implements RequestHandlerInterface
         $path = (string) ($request->getAttribute('routeParameters')['path'] ?? '');
         $segments = array_values(array_filter(explode('/', $path), static fn (string $part): bool => $part !== ''));
 
-        // Tudo depois de "/l/" é a ordenação da lista, não a categoria.
+        // "/l/" 之后的内容是列表排序，而不是分类。
         $listAt = array_search('l', $segments, true);
         if ($listAt !== false) {
             $segments = array_slice($segments, 0, (int) $listAt);

@@ -1,14 +1,12 @@
 /*
- * O sino de notificações da categoria do Discourse (category-notifications-
- * tracking), na barra de navegação ao lado de "Iniciar Discussão", usando o
- * fof/follow-tags por baixo — a extensão guarda o nível, manda as
- * notificações e esconde os tópicos; o tema só troca a casca.
+ * Discourse 的分类通知铃铛（category-notifications-
+ * tracking），位于“发起讨论”旁的导航栏中，底层使用
+ * fof/follow-tags——扩展负责保存级别、发送通知并隐藏主题；主题只更换外壳。
  *
- * O follow-tags põe o botão dele no IndexSidebar, que o tema esconde nas
- * páginas de lista (a navegação foi para a barra global); daí o sino aqui.
- * Os níveis dele viram os do Discourse: lurk = Acompanhando, follow =
- * Acompanhando a primeira postagem, nada = Normal, ignore = Silenciado e
- * hide = Silenciado e fora da lista de Recentes.
+ * follow-tags 把自己的按钮放在 IndexSidebar，而主题在列表页面隐藏了它
+ *（导航移到了全局栏）；因此铃铛放在这里。它的级别映射为 Discourse 的：
+ * lurk = 关注，follow = 关注第一楼，无 = 常规，ignore = 静音，
+ * hide = 静音且不出现在“最新”列表中。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -54,7 +52,7 @@ function choose(tag: any, level: Level): void {
   tag
     .save({ subscription: level.value })
     .then(() => {
-      // "Silenciado e oculto" muda o que a lista de Recentes mostra.
+      // “静音并隐藏”会改变“最新”列表显示的内容。
       if (level.value === 'hide' || currentLevel(tag).value === 'hide') app.discussions.refresh();
     })
     .catch(() => {})
@@ -70,9 +68,9 @@ function bell(tag: any): Mithril.Children {
 
   return (
     <Dropdown
-      className={classList('CanelaNotifications CanelaNotifications--compact CanelaCategoryNotifications', `CanelaNotifications--${current.key}`)}
+      className={classList('LcoyNotifications LcoyNotifications--compact LcoyCategoryNotifications', `LcoyNotifications--${current.key}`)}
       buttonClassName="Button Button--icon"
-      menuClassName="CanelaNotifications-menu Dropdown-menu--right"
+      menuClassName="LcoyNotifications-menu Dropdown-menu--right"
       icon={current.icon}
       noStyleOverride
       label=""
@@ -101,13 +99,13 @@ export default function installCategoryNotifications(): void {
 
     if (!tag) return;
 
-    // Logo à esquerda do "Iniciar Discussão" (50), como no Discourse.
-    items.add('canelaCategoryNotifications', bell(tag), 55);
+    // 紧靠“发起讨论”（50）左侧，与 Discourse 一致。
+    items.add('lcoyCategoryNotifications', bell(tag), 55);
   });
 
-  // O botão do follow-tags no IndexSidebar (o "olho", que no celular sobe
-  // para o cabeçalho) repetiria o sino: sai. No beforeMount, para rodar
-  // depois do extend do próprio follow-tags, que é registrado depois do tema.
+  // follow-tags 在 IndexSidebar 的按钮（“眼睛”，在手机上会移到
+  // 头部）会与铃铛重复：移除。放在 beforeMount，以便在 follow-tags
+  // 自身的 extend 之后运行——它注册在主题之后。
   app.beforeMount(() => {
     extend(IndexSidebar.prototype, 'items', function (items: ItemList<Mithril.Children>) {
       if (isExtensionEnabled('fof-follow-tags') && items.has('subscriptionButton')) items.remove('subscriptionButton');

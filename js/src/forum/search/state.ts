@@ -1,51 +1,51 @@
 /*
- * O estado da busca, compartilhado entre os menus (o do cabeçalho e o do
- * banner de boas-vindas), como o serviço `search` do Discourse: o termo, se a
- * busca já inclui os tópicos (depois do Enter) e os resultados.
+ * 搜索状态，在各菜单（页头的和欢迎横幅的）之间共享，
+ * 如同 Discourse 的 `search` 服务：搜索词、搜索是否
+ * 已包含主题（按回车后）以及结果。
  *
- * Como no Discourse, digitar faz só a busca "rápida" (`exclude_topics`):
- * categorias, etiquetas e usuários, com 400ms de espera. Os tópicos entram
- * quando a pessoa pressiona Enter ou escolhe uma sugestão.
+ * 与 Discourse 一样，输入只触发“快速”搜索（`exclude_topics`）：
+ * 分类、标签和用户，等待 400ms。用户按回车或选择
+ * 建议后才会加入主题。
  *
- * Aqui fica só o que o campo desenha; a busca em si (engine.ts) desce com o
- * painel (SearchPanel), pedido no foco/hover do campo ou no ocioso do boot.
+ * 这里只放字段绘制所需的内容；搜索本身（engine.ts）随面板
+ * （SearchPanel）一起下载，在字段聚焦/悬停或启动空闲时请求。
  */
 import type Discussion from 'flarum/common/models/Discussion';
 import type User from 'flarum/common/models/User';
 
-import type { CanelaTag } from '../utils/tags';
+import type { LcoyTag } from '../utils/tags';
 import { withSearchPanel } from './panelLazy';
 
 export interface SearchResults {
-  /** O texto livre (sem gambits), para destacar nos títulos e trechos. */
+  /** 不含 gambit 的自由文本，用于在标题和摘要中高亮。 */
   text: string;
   topics: Discussion[];
   moreTopics: boolean;
-  categories: CanelaTag[];
-  tags: CanelaTag[];
+  categories: LcoyTag[];
+  tags: LcoyTag[];
   users: User[];
 }
 
 export class SearchMenuState {
   term = '';
-  /** `typeFilter !== exclude_topics` do Discourse: a busca já inclui os tópicos. */
+  /** Discourse 的 `typeFilter !== exclude_topics`：搜索已经包含主题。 */
   searchTopics = false;
   loading = false;
   invalidTerm = false;
   noResults = false;
   results: SearchResults | null = null;
-  /** "#", "@" ou o atalho digitado ("é:"): o assistente aparece no lugar dos resultados. */
+  /** "#"、"@" 或输入的快捷方式（"is:"）：助手会显示在结果的位置。 */
   suggestionKeyword: string | false = false;
-  suggestionResults: Array<CanelaTag | User> = [];
+  suggestionResults: Array<LcoyTag | User> = [];
 
-  /** `searchTermChanged` do Discourse. */
+  /** Discourse 的 `searchTermChanged`。 */
   setTerm(term: string, opts: { searchTopics?: boolean } = {}): void {
     this.term = term.replace(/[​-‍﻿]/g, '');
     this.searchTopics = !!opts.searchTopics;
     this.trigger();
   }
 
-  /** Enter: a mesma consulta, agora com os tópicos. */
+  /** Enter：同一查询，现在包含主题。 */
   searchTopicsNow(): void {
     this.searchTopics = true;
     this.trigger();
@@ -57,7 +57,7 @@ export class SearchMenuState {
 
   trigger(): void {
     this.noResults = false;
-    // O carregando do Enter aparece já; o resto vem do motor (síncrono quando o chunk já chegou).
+    // Enter 的加载状态会立即显示；其余来自引擎（chunk 已到达时同步）。
     this.loading = this.searchTopics;
     withSearchPanel((panel) => panel.trigger(this));
   }

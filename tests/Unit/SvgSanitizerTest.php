@@ -7,7 +7,7 @@ namespace Lcoy\Roselle\Tests\Unit;
 use PHPUnit\Framework\TestCase;
 use Lcoy\Roselle\Theme\Logo\SvgSanitizer;
 
-/** O logo em SVG vai inline na página: nada que rode script ou busque fora. */
+/** SVG logo 会内联到页面中：不能执行脚本，也不能请求外部资源。 */
 final class SvgSanitizerTest extends TestCase
 {
     private function clean(string $svg): string
@@ -61,7 +61,7 @@ final class SvgSanitizerTest extends TestCase
         self::assertStringContainsString('style="fill:red"', $out);
     }
 
-    /** `\75 rl(` e `@\69mport` são `url(` e `@import` para o navegador. */
+    /** `\75 rl(` 和 `@\69mport` 对浏览器来说就是 `url(` 和 `@import`。 */
     public function test_css_com_escape_nao_passa(): void
     {
         $out = $this->clean('<svg xmlns="http://www.w3.org/2000/svg"><style>@\69mport "https://evil.test/a.css";</style><circle style="fill:\75 rl(https://evil.test/p)"/><rect width="1"/></svg>');

@@ -1,15 +1,14 @@
 /*
- * Extenders do fórum para os marcadores: o modelo no store, a rota da aba do
- * perfil, o componente da notificação de lembrete e os atributos que o PHP
- * acrescenta aos posts. O agente principal espalha este array no `extend` do
- * fórum.
+ * 书签的论坛 extenders：store 中的模型、个人资料页标签的路由、
+ * 提醒通知组件，以及 PHP 为帖子添加的属性。主入口文件会把
+ * 该数组展开到论坛的 `extend` 中。
  */
 import Extend from 'flarum/common/extenders';
 import Post from 'flarum/common/models/Post';
 import UserPageResolver from 'flarum/forum/resolvers/UserPageResolver';
 
 import Bookmark from './Bookmark';
-// Páginas carregadas sob demanda (chunk próprio): não pesam na primeira carga.
+// 按需加载的页面（独立 chunk）：不增加首次加载负担。
 const BookmarksUserPage = () => import('./components/BookmarksUserPage');
 import BookmarkReminderNotification from './components/BookmarkReminderNotification';
 
@@ -17,15 +16,15 @@ export default [
   new Extend.Store() //
     .add('bookmarks', Bookmark),
 
-  // O servidor já atende `/u/{username}[/{filter}]` com a página do perfil:
-  // a URL abre direto, sem rota nova no PHP.
-  // O cast: a tipagem do core 2.0.1 não aceita o UserPageResolver aqui, embora
-  // o próprio flarum/likes o use do mesmo jeito.
+  // 服务端已用个人资料页响应 `/u/{username}[/{filter}]`：
+  // 该 URL 可直接打开，无需在 PHP 中新增路由。
+  // 类型断言：core 2.0.1 的类型定义不接受此处的 UserPageResolver，
+  // 尽管 flarum/likes 本身也是这样使用的。
   new Extend.Routes() //
     .add('user.bookmarks', '/u/:username/bookmarks', BookmarksUserPage, UserPageResolver as any),
 
   new Extend.Notification() //
-    .add('canelaBookmarkReminder', BookmarkReminderNotification),
+    .add('lcoyBookmarkReminder', BookmarkReminderNotification),
 
   new Extend.Model(Post) //
     .attribute<boolean>('bookmarked')

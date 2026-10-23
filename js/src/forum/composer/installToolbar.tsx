@@ -1,22 +1,22 @@
 /*
- * A barra de formatação do composer do Discourse (`.d-editor-button-bar`):
+ * Discourse 编辑器的格式工具栏（`.d-editor-button-bar`）：
  *
  *   [M↓|A]  N  I  Tт  🔗  "  <>  ⬆  ☰  1.  ⇆  ☺  ⊕   ›
  *
- * - O alternador Markdown/"A" (o `composer-toggle-switch`): Markdown abre o
- *   composer na largura toda com a prévia ao lado; "A" o deixa estreito, sem
- *   a prévia (veja `richMode`).
- * - Negrito e título como letras ("N", "Tт"), aspas de fechamento.
- * - O ⬆ é o upload do fof/upload (que o põe no rodapé), trazido para depois
- *   do código; arrastar e colar imagens continua sendo dele.
- * - ⇆ alterna a direção do texto (`toggle-direction`).
- * - O ⊕ (`options`) junta o que o Discourse não mostra na barra: tachado,
- *   spoiler, imagem por endereço, menção e a enquete do fof/polls.
- * - "›" aparece quando a barra não cabe e a rola.
+ * - Markdown/"A" 切换器（`composer-toggle-switch`）：Markdown 以全宽
+ *   打开编辑器并在侧边显示预览；"A" 则保持窄幅、
+ *   不带预览（见 `richMode`）。
+ * - 加粗和标题使用字母（"N"、"Tт"），引号使用闭合引号。
+ * - ⬆ 是 fof/upload 的上传（它放在页脚），被移到代码之后；
+ *   拖放和粘贴图片仍由它负责。
+ * - ⇆ 切换文本方向（`toggle-direction`）。
+ * - ⊕（`options`）汇集 Discourse 不在栏中显示的内容：删除线、
+ *   剧透、按地址插入图片、提及以及 fof/polls 的投票。
+ * - 栏放不下并可滚动时，会出现 "›"。
  *
- * Tudo entra no primeiro editor, depois das extensões: o flarum/markdown monta
- * a barra por `override`, e um `extend` registrado antes seria descartado.
- * Vale para qualquer TextEditor com composer (o de mensagens também).
+ * 全部内容都在扩展之后进入第一个编辑器：flarum/markdown 通过
+ * `override` 组装该栏，之前注册的 `extend` 会被丢弃。
+ * 适用于任何带编辑器的 TextEditor（私信编辑器也一样）。
  */
 import { extend } from 'flarum/common/extend';
 import Component from 'flarum/common/Component';
@@ -37,15 +37,15 @@ export interface MoreAction {
   active?: boolean;
 }
 
-const MODE_KEY = 'canela.composerEditor';
+const MODE_KEY = 'lcoy.composerEditor';
 let memoryMode: 'rich' | 'markdown' = 'rich';
 
 /**
- * Os dois modos do alternador "M↓ | A" do Discourse, lembrados no navegador:
- * - "A" (padrão): o composer estreito, da largura do tópico, sem a prévia ao
- *   lado e só com tela cheia/minimizar/fechar no canto. O Flarum não tem
- *   editor rico; o texto continua sendo escrito no mesmo campo.
- * - Markdown: a largura toda, a prévia ao lado (o « no canto a esconde).
+ * Discourse "M↓ | A" 切换器的两种模式，记录在浏览器中：
+ * - "A"（默认）：窄幅编辑器，与主题同宽，不带侧边预览，
+ *   角落只有全屏/最小化/关闭。Flarum 没有富文本
+ *   编辑器；文本仍在同一字段中书写。
+ * - Markdown：全宽，侧边显示预览（角落的 « 可隐藏它）。
  */
 export function richMode(): boolean {
   try {
@@ -56,7 +56,7 @@ export function richMode(): boolean {
   }
 }
 
-/** O placeholder do campo conforme o modo, para trocar sem reabrir. */
+/** 字段的占位文本按模式变化，以便无需重新打开即可切换。 */
 let placeholderFor: (rich: boolean) => string = () => '';
 
 export function setPlaceholderProvider(provider: (rich: boolean) => string): void {
@@ -69,7 +69,7 @@ export function setRichMode(value: boolean): void {
   try {
     localStorage.setItem(MODE_KEY, memoryMode);
   } catch {
-    // Vale até sair da página.
+    // 保持到离开页面为止。
   }
 
   const textarea = document.querySelector('.Composer .TextEditor-editor') as HTMLTextAreaElement | null;
@@ -80,8 +80,8 @@ export function setRichMode(value: boolean): void {
 }
 
 /**
- * Ações extras vindas de fora do editor (a enquete do fof/polls mora no
- * cabeçalho do composer). Quem registra devolve `null` quando não se aplica.
+ * 来自编辑器外部的额外操作（fof/polls 的投票位于编辑器的
+ * 页眉中）。注册者在不再适用时返回 `null`。
  */
 const externalActions: Array<() => (MoreAction & { key: string }) | null> = [];
 
@@ -89,7 +89,7 @@ export function addMoreAction(provider: () => (MoreAction & { key: string }) | n
   externalActions.push(provider);
 }
 
-/** O alternador Markdown / "A". */
+/** Markdown / "A" 切换器。 */
 class RichToggle extends Component {
   view(): Mithril.Children {
     const rich = richMode();
@@ -98,18 +98,18 @@ class RichToggle extends Component {
     return (
       <button
         type="button"
-        className={`CanelaRichToggle ${rich ? '--rte' : '--markdown'}`}
+        className={`LcoyRichToggle ${rich ? '--rte' : '--markdown'}`}
         role="switch"
         aria-checked={rich ? 'true' : 'false'}
         aria-label={label}
         title={label}
         onclick={() => setRichMode(!rich)}
       >
-        <span className="CanelaRichToggle-slider">
-          <span className="CanelaRichToggle-left" aria-hidden="true">
+        <span className="LcoyRichToggle-slider">
+          <span className="LcoyRichToggle-left" aria-hidden="true">
             <Icon name="fab fa-markdown" />
           </span>
-          <span className="CanelaRichToggle-right" aria-hidden="true">
+          <span className="LcoyRichToggle-right" aria-hidden="true">
             A
           </span>
         </span>
@@ -118,7 +118,7 @@ class RichToggle extends Component {
   }
 }
 
-/** O menu ⊕: abre para cima, preso à tela, fora da barra (que rola e cortaria). */
+/** ⊕ 菜单：向上打开，固定在屏幕上，位于工具栏之外（工具栏会滚动并裁剪它）。 */
 class MoreMenu extends Component<{ actions: () => MoreAction[] }> {
   private portal: HTMLElement | null = null;
   private outside: ((e: MouseEvent) => void) | null = null;
@@ -128,7 +128,7 @@ class MoreMenu extends Component<{ actions: () => MoreAction[] }> {
 
     return (
       <Button
-        className="Button Button--icon Button--link CanelaMoreOptions"
+        className="Button Button--icon Button--link LcoyMoreOptions"
         icon="fas fa-circle-plus"
         title={label}
         aria-label={label}
@@ -144,7 +144,7 @@ class MoreMenu extends Component<{ actions: () => MoreAction[] }> {
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const portal = document.createElement('div');
 
-    portal.className = 'CanelaMoreOptions-portal';
+    portal.className = 'LcoyMoreOptions-portal';
     portal.style.left = `${Math.max(8, rect.left)}px`;
     portal.style.bottom = `${window.innerHeight - rect.top + 6}px`;
     document.body.appendChild(portal);
@@ -153,12 +153,12 @@ class MoreMenu extends Component<{ actions: () => MoreAction[] }> {
     const render = () =>
       m.render(
         portal,
-        <ul className="Dropdown-menu CanelaMoreOptions-menu" role="menu">
+        <ul className="Dropdown-menu LcoyMoreOptions-menu" role="menu">
           {this.attrs.actions().map((action) => (
             <li>
               <button
                 type="button"
-                className={`CanelaMoreOptions-item${action.active ? ' active' : ''}`}
+                className={`LcoyMoreOptions-item${action.active ? ' active' : ''}`}
                 role="menuitem"
                 onclick={(event: MouseEvent) => {
                   this.close();
@@ -200,8 +200,8 @@ class MoreMenu extends Component<{ actions: () => MoreAction[] }> {
 }
 
 /**
- * "‹" e "›": só aparecem quando a barra não cabe e há o que rolar para aquele
- * lado; rolam a barra 160px.
+ * "‹" 和 "›"：仅在工具栏放不下且该方向还有内容可滚动时
+ * 出现；每次滚动工具栏 160px。
  */
 class ScrollButton extends Component<{ dir: 'left' | 'right' }> {
   view(): Mithril.Children {
@@ -210,7 +210,7 @@ class ScrollButton extends Component<{ dir: 'left' | 'right' }> {
     return (
       <button
         type="button"
-        className={`CanelaToolbarScroll CanelaToolbarScroll--${this.attrs.dir}`}
+        className={`LcoyToolbarScroll LcoyToolbarScroll--${this.attrs.dir}`}
         aria-hidden="true"
         tabindex={-1}
         onclick={() => this.bar()?.scrollBy({ left: left ? -160 : 160, behavior: 'smooth' })}
@@ -238,18 +238,18 @@ class ScrollButton extends Component<{ dir: 'left' | 'right' }> {
 
     bar?.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update);
-    (this as any).canelaUpdate = update;
+    (this as any).lcoyUpdate = update;
     update();
   }
 
   onupdate(vnode: Mithril.VnodeDOM): void {
     super.onupdate(vnode as any);
-    (this as any).canelaUpdate?.();
+    (this as any).lcoyUpdate?.();
   }
 
   onremove(vnode: Mithril.VnodeDOM): void {
     super.onremove(vnode as any);
-    window.removeEventListener('resize', (this as any).canelaUpdate);
+    window.removeEventListener('resize', (this as any).lcoyUpdate);
   }
 }
 
@@ -283,20 +283,20 @@ export default function installToolbar() {
     if (applied) return;
     applied = true;
 
-    // A letra do negrito vem da tradução ("N" em português, "B" em inglês).
-    document.documentElement.style.setProperty('--cn-bold-label', JSON.stringify(t('composer.shell.bold_label')));
+    // 加粗的字母来自翻译（葡萄牙语为 "N"，英语为 "B"）。
+    document.documentElement.style.setProperty('--lcoy-bold-label', JSON.stringify(t('composer.shell.bold_label')));
 
-    // 1) Rodapé: o upload sai dos controles para entrar na barra.
+    // 1) 页脚：上传从控件中移出，进入工具栏。
     extend(TextEditor.prototype, 'controlItems', function (this: any, items: ItemList<Mithril.Children>) {
       if (!editorComposer(this)) return;
 
-      this.canelaMore = [] as Array<MoreAction & { key: string }>;
-      this.canelaUploads = UPLOAD_KEYS.filter((key) => items.has(key)).map((key) => ({ key, vnode: items.get(key) }));
-      this.canelaUploadsPlaced = false;
-      this.canelaUploads.forEach(({ key }: { key: string }) => items.remove(key));
+      this.lcoyMore = [] as Array<MoreAction & { key: string }>;
+      this.lcoyUploads = UPLOAD_KEYS.filter((key) => items.has(key)).map((key) => ({ key, vnode: items.get(key) }));
+      this.lcoyUploadsPlaced = false;
+      this.lcoyUploads.forEach(({ key }: { key: string }) => items.remove(key));
     });
 
-    // 2) Botões do markdown: ordem do Discourse, letras, extras para o ⊕.
+    // 2) Markdown 按钮：Discourse 的顺序、字母，以及 ⊕ 的额外项。
     extend(TextEditor.prototype as any, 'markdownToolbarItems', function (this: any, items: ItemList<any>) {
       if (!editorComposer(this)) return;
 
@@ -309,24 +309,24 @@ export default function installToolbar() {
         if (vnode?.attrs) vnode.attrs.icon = icon;
       };
 
-      set('bold', 'CanelaTextIcon CanelaTextIcon--bold');
-      set('header', 'CanelaTextIcon CanelaTextIcon--heading');
+      set('bold', 'LcoyTextIcon LcoyTextIcon--bold');
+      set('header', 'LcoyTextIcon LcoyTextIcon--heading');
       set('quote', 'fas fa-quote-right');
 
       MOVED_TO_MORE.forEach((key) => {
         if (!items.has(key)) return;
         const action = fromVnode(items.get(key));
-        if (action) (this.canelaMore ||= []).push({ key, ...action });
+        if (action) (this.lcoyMore ||= []).push({ key, ...action });
         items.remove(key);
       });
 
-      (this.canelaUploads || []).forEach(({ key, vnode }: { key: string; vnode: Mithril.Children }) => items.add(key, vnode, 870));
-      this.canelaUploadsPlaced = true;
+      (this.lcoyUploads || []).forEach(({ key, vnode }: { key: string; vnode: Mithril.Children }) => items.add(key, vnode, 870));
+      this.lcoyUploadsPlaced = true;
 
       items.add(
-        'canelaDirection',
+        'lcoyDirection',
         <Button
-          className="Button Button--icon Button--link CanelaDirection"
+          className="Button Button--icon Button--link LcoyDirection"
           icon="fas fa-right-left"
           title={t('composer.shell.toggle_direction')}
           aria-label={t('composer.shell.toggle_direction')}
@@ -339,31 +339,31 @@ export default function installToolbar() {
       );
     });
 
-    // 3) A barra inteira: alternador, menção para o ⊕, o ⊕ e o "›".
+    // 3) 整个工具栏：切换器、给 ⊕ 的提及项、⊕ 本身以及 "›"。
     extend(TextEditor.prototype, 'toolbarItems', function (this: any, items: ItemList<Mithril.Children>) {
       if (!editorComposer(this)) return;
 
-      // Sem o flarum/markdown, o upload fica na barra mesmo assim.
-      if (!this.canelaUploadsPlaced)
-        (this.canelaUploads || []).forEach(({ key, vnode }: { key: string; vnode: Mithril.Children }) => items.add(key, vnode, 90));
+      // 没有 flarum/markdown 时，上传仍然放在工具栏中。
+      if (!this.lcoyUploadsPlaced)
+        (this.lcoyUploads || []).forEach(({ key, vnode }: { key: string; vnode: Mithril.Children }) => items.add(key, vnode, 90));
 
-      items.add('canelaRich', <RichToggle />, 10000);
+      items.add('lcoyRich', <RichToggle />, 10000);
 
       if (items.has('mention')) {
         const action = fromVnode(items.get('mention'));
-        if (action) (this.canelaMore ||= []).push({ key: 'mention', ...action });
+        if (action) (this.lcoyMore ||= []).push({ key: 'mention', ...action });
         items.remove('mention');
       }
 
       const editor = this;
       const actions = (): MoreAction[] => [
         ...externalActions.map((provider) => provider()).filter((action): action is MoreAction & { key: string } => !!action),
-        ...(editor.canelaMore || []),
+        ...(editor.lcoyMore || []),
       ];
 
-      if (actions().length) items.add('canelaMore', <MoreMenu actions={actions} />, -1000);
-      items.add('canelaScrollBack', <ScrollButton dir="left" />, 2000);
-      items.add('canelaScroll', <ScrollButton dir="right" />, -2000);
+      if (actions().length) items.add('lcoyMore', <MoreMenu actions={actions} />, -1000);
+      items.add('lcoyScrollBack', <ScrollButton dir="left" />, 2000);
+      items.add('lcoyScroll', <ScrollButton dir="right" />, -2000);
     });
   });
 }

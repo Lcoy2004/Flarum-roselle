@@ -1,8 +1,8 @@
 /*
- * O painel aberto do menu de busca (`search-menu/results.gjs`), num chunk: o
- * campo (SearchMenu) é desenhado desde a primeira pintura e isto desce no
- * ocioso do boot, no hover/foco do campo ou, no máximo, quando o painel abre.
- * Cada abertura cria o painel de novo: a dica aleatória muda, como no Discourse.
+ * 打开状态的搜索菜单面板（`search-menu/results.gjs`），位于一个 chunk 中：
+ * 字段（SearchMenu）从首次绘制起就会绘制，而这里会在
+ * 启动空闲时、字段悬停/聚焦时，或最迟在面板打开时下载。
+ * 每次打开都会重新创建面板：随机提示会变化，如同 Discourse。
  */
 import app from 'flarum/forum/app';
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
@@ -17,7 +17,7 @@ import type User from 'flarum/common/models/User';
 import type Mithril from 'mithril';
 
 import { t } from '../utils/settings';
-import { categoryBadge, currentTag, discussionBadges, tagSymbol, tagUrl, type CanelaTag } from '../utils/tags';
+import { categoryBadge, currentTag, discussionBadges, tagSymbol, tagUrl, type LcoyTag } from '../utils/tags';
 import { shortAge } from '../utils/dates';
 import state from './state';
 import { fullSearchUrl, MODIFIER_REGEXP } from './query';
@@ -25,8 +25,8 @@ import { clearRecentSearches, randomTip, recentSearches, suggestionShortcuts, ty
 import { isCategory } from './engine';
 import type SearchMenu from './SearchMenu';
 
-// O painel expõe o `trigger` do motor: `search/state` chama o método pelo
-// módulo carregado sob demanda (`panelLazy`), e é o nome exportado que dá tipo.
+// 面板导出引擎的 `trigger`：`search/state` 通过按需加载的模块
+// （`panelLazy`）调用该方法，导出的名称决定了类型。
 export { trigger } from './engine';
 
 interface AssistantItemOpts {
@@ -39,8 +39,8 @@ interface AssistantItemOpts {
   suffix?: string;
   extraHint?: boolean;
   withInLabel?: boolean;
-  category?: CanelaTag;
-  tag?: CanelaTag;
+  category?: LcoyTag;
+  tag?: LcoyTag;
   user?: User;
   searchAllTopics?: boolean;
 }
@@ -53,7 +53,7 @@ function isMac(): boolean {
   return /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
 }
 
-/** Uma URL interna sem recarregar a página; com Ctrl/⌘ ou o botão do meio, o navegador decide. */
+/** 内部 URL，不重新加载页面；使用 Ctrl/⌘ 或中键时，由浏览器决定。 */
 function wantsNewWindow(event: MouseEvent): boolean {
   return event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0;
 }
@@ -82,7 +82,7 @@ export default class SearchPanel extends Component<SearchPanelAttrs> {
   }
 
   // ---------------------------------------------------------------------
-  // Resultados (`search-menu/results.gjs`)
+  // 结果（`search-menu/results.gjs`）
   // ---------------------------------------------------------------------
 
   resultsView(): Mithril.Children {
@@ -107,7 +107,7 @@ export default class SearchPanel extends Component<SearchPanelAttrs> {
     return <div className="results">{body}</div>;
   }
 
-  /** O texto antes da palavra-chave da sugestão (`AssistantItem.prefix`). */
+  /** 建议关键词之前的文本（`AssistantItem.prefix`）。 */
   itemPrefix(keyword?: string): string {
     const term = state.term || '';
     const lastIndex = keyword ? term.lastIndexOf(keyword) : -1;
@@ -126,7 +126,7 @@ export default class SearchPanel extends Component<SearchPanelAttrs> {
     const select = () => {
       const updated = opts.slug && (opts.keyword || opts.concatSlug) ? prefix + opts.slug : prefix.trim();
 
-      // "criado:" pede um valor: o termo recebe a chave e o foco volta ao campo.
+      // "created:" 需要值：搜索词获得该键，焦点回到字段。
       if (opts.slug && /:$/.test(opts.slug)) state.setTerm(updated);
       else state.setTerm(updated, { searchTopics: true });
 
@@ -178,13 +178,13 @@ export default class SearchPanel extends Component<SearchPanelAttrs> {
     );
   }
 
-  /** `search-menu/results/assistant.gjs`: categorias e etiquetas, usuários ou atalhos. */
+  /** `search-menu/results/assistant.gjs`：分类和标签、用户或快捷方式。 */
   assistant(): Mithril.Children {
     const keyword = state.suggestionKeyword as string;
     let items: Mithril.Children[];
 
     if (keyword === '#') {
-      items = (state.suggestionResults as CanelaTag[]).map((tag) =>
+      items = (state.suggestionResults as LcoyTag[]).map((tag) =>
         isCategory(tag)
           ? this.assistantItem({ typeClass: 'category', category: tag, slug: `#${this.tagSlug(tag)}`, keyword, searchAllTopics: true })
           : this.assistantItem({ typeClass: 'tag', tag, slug: `#${tag.slug()}`, keyword, searchAllTopics: true })
@@ -205,14 +205,14 @@ export default class SearchPanel extends Component<SearchPanelAttrs> {
     return <ul className="search-menu-assistant">{items}</ul>;
   }
 
-  /** "pai:filha", como o Discourse escreve a subcategoria. */
-  tagSlug(tag: CanelaTag): string {
-    const parent = tag.isChild() ? (tag.parent() as CanelaTag | null) : null;
+  /** "父:子"，如同 Discourse 书写子分类的方式。 */
+  tagSlug(tag: LcoyTag): string {
+    const parent = tag.isChild() ? (tag.parent() as LcoyTag | null) : null;
 
     return parent ? `${parent.slug()}:${tag.slug()}` : tag.slug();
   }
 
-  /** A página de categoria (ou etiqueta) é o contexto da busca, como no Discourse. */
+  /** 分类（或标签）页面是搜索的上下文，如同 Discourse。 */
   contextItem(): Mithril.Children {
     const tag = currentTag();
 
@@ -223,7 +223,7 @@ export default class SearchPanel extends Component<SearchPanelAttrs> {
       : this.assistantItem({ typeClass: 'tag', tag, slug: `#${tag.slug()}`, keyword: '#', withInLabel: true });
   }
 
-  /** `search-menu/results/initial-options.gjs`. */
+  /** `search-menu/results/initial-options.gjs`。 */
   initialOptions(): Mithril.Children {
     const term = state.term.trim();
     const context = this.contextItem();
@@ -262,7 +262,7 @@ export default class SearchPanel extends Component<SearchPanelAttrs> {
             this.attrs.menu.input()?.focus();
           }}
         >
-          {/* eslint-disable-next-line i18n/no-hardcoded-text -- nome da tecla Enter, igual em todo idioma */}
+          {/* eslint-disable-next-line i18n/no-hardcoded-text -- 回车键名称，在所有语言中都相同 */}
           {tip.shortcut ? [<kbd>{isMac() ? '⌘' : 'Ctrl'}</kbd>, '+', <kbd>Enter</kbd>] : tip.label}
         </button>{' '}
         <span id="tip-description">{tip.description}</span>
@@ -293,7 +293,7 @@ export default class SearchPanel extends Component<SearchPanelAttrs> {
   }
 
   // ---------------------------------------------------------------------
-  // Tipos de resultado (`search-menu/results/types.gjs`)
+  // 结果类型（`search-menu/results/types.gjs`）
   // ---------------------------------------------------------------------
 
   resultLink(href: string, content: Mithril.Children, className = 'search-link'): Mithril.Children {
@@ -347,7 +347,7 @@ export default class SearchPanel extends Component<SearchPanelAttrs> {
     ];
   }
 
-  /** `search-menu/results/type/user.gjs`: avatar pequeno, nome (em negrito) e @usuário. */
+  /** `search-menu/results/type/user.gjs`：小头像、名称（加粗）和 @用户名。 */
   userView(user: User, withName: boolean): Mithril.Children {
     const name = user.displayName();
     const showName = withName && !!name && name !== user.username();
@@ -400,7 +400,7 @@ export default class SearchPanel extends Component<SearchPanelAttrs> {
     );
   }
 
-  /** Os ícones cinza pequenos antes do título (`TopicStatus`): trancado e fixado. */
+  /** 标题前的灰色小图标（`TopicStatus`）：已锁定和已置顶。 */
   topicStatuses(discussion: Discussion): Mithril.Children {
     const statuses: Mithril.Children[] = [];
 
@@ -410,7 +410,7 @@ export default class SearchPanel extends Component<SearchPanelAttrs> {
     return statuses.length ? <span className="topic-statuses">{statuses}</span> : null;
   }
 
-  /** `search-menu/results/more-link.gjs`: "Mais..." leva à busca de página inteira. */
+  /** `search-menu/results/more-link.gjs`：“更多...”会打开整页搜索。 */
   moreLink(more: boolean): Mithril.Children {
     return (
       <div className="search-menu__show-more">

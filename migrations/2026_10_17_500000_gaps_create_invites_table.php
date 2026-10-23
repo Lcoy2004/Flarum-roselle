@@ -14,21 +14,21 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
 
 /*
- * Links de convite do Discourse: quem convida gera um link com validade e um
- * número máximo de usos; cada cadastro feito por ele conta um uso.
+ * Discourse 的邀请链接：邀请者生成一个带有效期和最大使用次数的链接；
+ * 每一次通过它完成的注册都计为一次使用。
  *
- * O código é o que vai no link (único, imprevisível). Apagar quem convidou
- * apaga os convites dele: um link órfão não tem a quem avisar.
+ * 链接中携带的是 code（唯一、不可预测）。删除邀请者会删除
+ * 他的邀请：孤立链接没有可通知的对象。
  */
 return [
     'up' => static function (Builder $schema): void {
-        // Idempotente: quem vem do Canela já tem a tabela, mas a migração
-        // antiga não está registrada com este nome.
-        if ($schema->hasTable('canela_invites')) {
+        // 幂等：来自 Lcoy 的用户已经有该表，但旧的迁移
+        // 没有以这个名称注册。
+        if ($schema->hasTable('lcoy_invites')) {
             return;
         }
 
-        $schema->create('canela_invites', static function (Blueprint $table): void {
+        $schema->create('lcoy_invites', static function (Blueprint $table): void {
             $table->increments('id');
             $table->string('code', 40)->unique();
             $table->unsignedInteger('user_id');
@@ -43,6 +43,6 @@ return [
     },
 
     'down' => static function (Builder $schema): void {
-        $schema->dropIfExists('canela_invites');
+        $schema->dropIfExists('lcoy_invites');
     },
 ];

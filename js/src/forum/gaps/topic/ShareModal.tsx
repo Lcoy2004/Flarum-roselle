@@ -1,8 +1,7 @@
 /*
- * "Compartilhar discussão" do Discourse (share-topic): o endereço num campo com
- * o botão de copiar e, embaixo, os botões das redes (X, Facebook, e-mail… —
- * as que o admin escolher). No celular, com a folha de compartilhamento do
- * sistema disponível, vale ela, como no Discourse.
+ * Discourse 的“分享讨论”（share-topic）：地址放在输入框中，带复制按钮，
+ * 下面是各网络（X、Facebook、邮件…——由管理后台选择的那些）。
+ * 在手机上，如果系统分享面板可用，则用它，与 Discourse 一致。
  */
 import app from 'flarum/forum/app';
 import Modal, { type IInternalModalAttrs } from 'flarum/common/components/Modal';
@@ -15,14 +14,13 @@ import type Mithril from 'mithril';
 import { forumString } from '../settings';
 import { t } from '../../utils/settings';
 import { copyText } from '../../utils/clipboard';
-import { canInvite, openInviteModal } from '../backend/invites';
 
 interface Network {
   icon: string;
   url: (link: string, title: string) => string;
 }
 
-/** As redes do share_links do Discourse, mais as que o Brasil usa. */
+/** Discourse share_links 中的网络，加上巴西常用的那些。 */
 const NETWORKS: Record<string, Network> = {
   x: { icon: 'fab fa-x-twitter', url: (link, title) => `https://x.com/intent/tweet?url=${link}&text=${title}` },
   facebook: { icon: 'fab fa-facebook', url: (link) => `https://www.facebook.com/sharer.php?u=${link}` },
@@ -36,7 +34,7 @@ const NETWORKS: Record<string, Network> = {
 const DEFAULT_NETWORKS = 'x,facebook,whatsapp,email';
 
 function enabledNetworks(): string[] {
-  const configured = forumString('canelaShareNetworks') || DEFAULT_NETWORKS;
+  const configured = forumString('lcoyShareNetworks') || DEFAULT_NETWORKS;
 
   return configured
     .split(/[\s,|]+/)
@@ -53,7 +51,7 @@ export default class ShareModal extends Modal<ShareModalAttrs> {
   copied = false;
 
   className() {
-    return 'CanelaShareModal Modal--small';
+    return 'LcoyShareModal Modal--small';
   }
 
   title() {
@@ -75,8 +73,8 @@ export default class ShareModal extends Modal<ShareModalAttrs> {
 
     return (
       <div className="Modal-body">
-        <p className="CanelaShareModal-instructions">{this.attrs.post ? t('gaps.share.post_instructions') : t('gaps.share.instructions')}</p>
-        <div className="CanelaShareModal-link">
+        <p className="LcoyShareModal-instructions">{this.attrs.post ? t('gaps.share.post_instructions') : t('gaps.share.instructions')}</p>
+        <div className="LcoyShareModal-link">
           <input
             className="FormControl"
             type="text"
@@ -86,7 +84,7 @@ export default class ShareModal extends Modal<ShareModalAttrs> {
             onfocus={(event: FocusEvent) => (event.target as HTMLInputElement).select()}
           />
           <Button
-            className="Button Button--primary CanelaShareModal-copy"
+            className="Button Button--primary LcoyShareModal-copy"
             icon={this.copied ? 'fas fa-check' : 'far fa-copy'}
             aria-label={t('gaps.share.copy')}
             title={t('gaps.share.copy')}
@@ -99,18 +97,18 @@ export default class ShareModal extends Modal<ShareModalAttrs> {
           />
         </div>
         {this.copied && (
-          <p className="CanelaShareModal-copied" role="status">
+          <p className="LcoyShareModal-copied" role="status">
             {t('gaps.share.copied')}
           </p>
         )}
-        <div className="CanelaShareModal-networks">
+        <div className="LcoyShareModal-networks">
           {enabledNetworks().map((name) => {
             const network = NETWORKS[name];
             const href = network.url(encodeURIComponent(link), encodeURIComponent(title));
 
             return (
               <a
-                className={`Button Button--icon CanelaShareModal-network CanelaShareModal-network--${name}`}
+                className={`Button Button--icon LcoyShareModal-network LcoyShareModal-network--${name}`}
                 href={href}
                 target={name === 'email' ? undefined : '_blank'}
                 rel="noopener noreferrer"
@@ -122,14 +120,6 @@ export default class ShareModal extends Modal<ShareModalAttrs> {
             );
           })}
         </div>
-        {/* O "Convite" do Discourse, para trazer alguém novo ao fórum. */}
-        {!this.attrs.post && canInvite() && (
-          <div className="CanelaShareModal-invite">
-            <Button className="Button" icon="fas fa-user-plus" onclick={() => openInviteModal(true)}>
-              {t('gaps.invites.share_button')}
-            </Button>
-          </div>
-        )}
       </div>
     );
   }

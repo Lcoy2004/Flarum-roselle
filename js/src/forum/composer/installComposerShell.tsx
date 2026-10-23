@@ -1,19 +1,19 @@
 /*
- * O composer do Flarum com a forma do composer do Discourse (o redesenho que o
- * meta.discourse.org usa, `uc-enable-composer-redesign`):
+ * Flarum 编辑器，采用 Discourse 编辑器（meta.discourse.org 使用的
+ * 改版，`uc-enable-composer-redesign`）的形态：
  *
- *   alça · "Iniciar Discussão" / "Tópico ▾" ............ «  ⤢  —  ✕
- *   categoria ▾                 | 🏷 etiquetas opcionais ▾
- *   Título
- *   texto                       | prévia
- *   B I H 🔗 " </> … 😀 ............ Descartar  [Criar tópico]
+ *   拖柄 · "发起讨论" / "主题 ▾" ............ «  ⤢  —  ✕
+ *   分类 ▾                      | 🏷 可选标签 ▾
+ *   标题
+ *   文本                        | 预览
+ *   B I H 🔗 " </> … 😀 ............ 丢弃  [创建主题]
  *
- * O core continua dono do comportamento (abrir, redimensionar, minimizar,
- * tela cheia, enviar); aqui só se trocam os itens das ItemLists e as classes
- * — a disposição é do CSS (`less/forum/Composer.less`).
+ * 行为仍由核心负责（打开、调整大小、最小化、
+ * 全屏、提交）; 这里只更换 ItemList 中的项和类名
+ * —— 布局由 CSS 负责（`less/forum/Composer.less`）。
  *
- * Composer, DiscussionComposer, ReplyComposer e EditPostComposer vêm num pedaço
- * carregado sob demanda: são estendidos pelo nome do módulo.
+ * Composer、DiscussionComposer、ReplyComposer 和 EditPostComposer 位于按需
+ * 加载的 chunk 中：按模块名扩展。
  */
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
@@ -39,12 +39,12 @@ const REPLY = 'flarum/forum/components/ReplyComposer';
 const EDIT = 'flarum/forum/components/EditPostComposer';
 const DISCUSSION = 'flarum/forum/components/DiscussionComposer';
 
-/** As alturas iniciais do Discourse: resposta 255px, o resto 400px. */
+/** Discourse 的初始高度：回复 255px，其余 400px。 */
 function defaultHeight(): number {
   return app.composer.bodyMatches(REPLY) ? 255 : 400;
 }
 
-/** A pessoa já arrastou a alça: a altura dela vale para todos os composers. */
+/** 用户已经拖动过拖柄：其高度对所有编辑器生效。 */
 function hasStoredHeight(): boolean {
   try {
     return !!localStorage.getItem('composerHeight');
@@ -54,14 +54,14 @@ function hasStoredHeight(): boolean {
 }
 
 function kindClass(): string {
-  if (app.composer.bodyMatches(REPLY)) return 'CanelaComposer--reply';
-  if (app.composer.bodyMatches(EDIT)) return 'CanelaComposer--edit';
-  if (app.composer.bodyMatches(DISCUSSION)) return 'CanelaComposer--newTopic';
+  if (app.composer.bodyMatches(REPLY)) return 'LcoyComposer--reply';
+  if (app.composer.bodyMatches(EDIT)) return 'LcoyComposer--edit';
+  if (app.composer.bodyMatches(DISCUSSION)) return 'LcoyComposer--newTopic';
 
-  return 'CanelaComposer--other';
+  return 'LcoyComposer--other';
 }
 
-/** Põe o conteúdo numa chave (trocando o que houver) com a prioridade dada. */
+/** 把内容放入某个键（替换已有内容），使用给定优先级。 */
 function put(items: ItemList<Mithril.Children>, key: string, content: Mithril.Children, priority: number): void {
   if (items.has(key)) items.setContent(key, content).setPriority(key, priority);
   else items.add(key, content, priority);
@@ -70,7 +70,7 @@ function put(items: ItemList<Mithril.Children>, key: string, content: Mithril.Ch
 function controlButton(icon: string, label: string, onclick: () => void, className = ''): Mithril.Children {
   return (
     <Button
-      className={`Button Button--icon Button--link CanelaComposer-control ${className}`}
+      className={`Button Button--icon Button--link LcoyComposer-control ${className}`}
       icon={icon}
       title={label}
       aria-label={label}
@@ -80,8 +80,8 @@ function controlButton(icon: string, label: string, onclick: () => void, classNa
 }
 
 /**
- * O ✕ do Discourse é "Salvar e fechar": com rascunhos, guarda o texto e fecha
- * sem perguntar. Sem rascunhos, fecha como o core (que pergunta se há texto).
+ * Discourse 的 ✕ 是 "保存并关闭"：有草稿时保存文本并直接关闭，
+ * 不再询问。没有草稿时，与核心一样关闭（有文本时会询问）。
  */
 function saveAndClose(): void {
   if (draftsOn() && draftableBody()) {
@@ -93,11 +93,11 @@ function saveAndClose(): void {
 }
 
 /**
- * O placeholder do Discourse, que muda com o modo: no "A", "Digite aqui. Use
- * a barra de ferramentas ou Markdown para formatar."; no Markdown, "Digite
- * aqui. Use Markdown, BBCode, ou HTML para formatar." — aqui só com os
- * formatos ligados neste fórum. "Arraste ou cole imagens." só com o
- * fof/upload, que é quem recebe o arrastar e o colar.
+ * Discourse 的占位文本，随模式变化："A" 模式下为 "在此输入。使用
+ * 工具栏或 Markdown 进行格式化。"；Markdown 模式下为 "在此输入。
+ * 使用 Markdown、BBCode 或 HTML 进行格式化。" —— 这里只列出
+ * 本论坛已启用的格式。"拖放或粘贴图片。" 仅在装有
+ * fof/upload 时出现，由它接收拖放和粘贴。
  */
 function bodyPlaceholder(rich: boolean = richMode()): string {
   const formats = [isExtensionEnabled('flarum-markdown') && 'Markdown', isExtensionEnabled('flarum-bbcode') && 'BBCode'].filter(Boolean) as string[];
@@ -114,8 +114,8 @@ function bodyPlaceholder(rich: boolean = richMode()): string {
 }
 
 /**
- * Os rótulos do Discourse ("Iniciar Discussão", "Responder", "Salvar edição") e os
- * placeholders, só quando quem abriu o composer não passou os seus.
+ * Discourse 的标签（"发起讨论"、"回复"、"保存编辑"）和
+ * 占位文本，仅在打开编辑器的人未传入自己的值时才使用。
  */
 function installLabels(): void {
   const labels: Array<[string, string]> = [
@@ -140,8 +140,8 @@ function installLabels(): void {
 function installHeights(): void {
   override(ComposerState.prototype, 'minimumHeight', () => 255);
 
-  // O Composer pega a altura padrão uma vez, ao montar; os composers abertos
-  // depois herdam a do anterior. O Discourse decide a cada abertura.
+  // Composer 在挂载时只读取一次默认高度；之后打开的编辑器
+  // 会继承前一个的高度。Discourse 每次打开都重新决定。
   override(ComposerState.prototype, 'load', async function (this: ComposerState, original: (...args: any[]) => Promise<any>, ...args: any[]) {
     const result = await original(...args);
 
@@ -154,18 +154,18 @@ function installHeights(): void {
 }
 
 function installRoot(): void {
-  // As classes de que o CSS precisa: o tipo do composer e se a prévia está
-  // ao lado (`show-preview` / `hide-preview`, que mudam a largura).
+  // CSS 所需的类名：编辑器类型，以及预览是否
+  // 位于侧边（`show-preview` / `hide-preview`，会改变宽度）。
   extend('flarum/forum/components/Composer' as any, 'view', function (vdom: any) {
     if (!vdom?.attrs) return;
 
     const rich = richMode();
 
-    vdom.attrs.className = `${vdom.attrs.className} CanelaComposer ${kindClass()} ${splitPreviewVisible() && !rich ? 'show-preview' : 'hide-preview'}${rich ? ' is-rich' : ' is-markdown'}`;
+    vdom.attrs.className = `${vdom.attrs.className} LcoyComposer ${kindClass()} ${splitPreviewVisible() && !rich ? 'show-preview' : 'hide-preview'}${rich ? ' is-rich' : ' is-markdown'}`;
   });
 
-  // «, tela cheia, minimizar e ✕ — a ordem e os ícones do Discourse. Minimizado,
-  // só o ✕, sobre a barra colorida.
+  // «、全屏、最小化和 ✕ —— Discourse 的顺序和图标。最小化后
+  // 只有 ✕，位于彩色栏之上。
   extend('flarum/forum/components/Composer' as any, 'controlItems', function (items: ItemList<Mithril.Children>) {
     const state = app.composer;
     const phone = app.screen() === 'phone';
@@ -179,14 +179,14 @@ function installRoot(): void {
       return;
     }
 
-    // Os ícones do canto do Discourse: tela cheia, minimizar e fechar — e, no
-    // modo Markdown, o « da prévia antes deles. O que outras extensões ponham
-    // aqui sai.
+    // Discourse 角落的图标：全屏、最小化和关闭 —— 在
+    // Markdown 模式下，还有它们之前的预览 «。其他扩展在此放置的
+    // 内容会被移除。
     Object.keys(items.toObject()).forEach((key) => {
       if (!['fullScreen', 'minimize', 'close'].includes(key)) items.remove(key);
     });
 
-    if (splitPossible()) put(items, 'canelaPreview', previewToggle(), 40);
+    if (splitPossible()) put(items, 'lcoyPreview', previewToggle(), 40);
 
     if (!phone) {
       put(
@@ -203,8 +203,8 @@ function installRoot(): void {
       );
     }
 
-    // Sem o `App-backControl` do core, que no celular vira o "voltar" do
-    // cabeçalho: o composer móvel do Discourse mostra — e ✕ na própria linha.
+    // 没有核心的 `App-backControl`，它在移动端会变成页眉的
+    // "返回"：Discourse 的移动端编辑器在同一行显示 — 和 ✕。
     put(
       items,
       'minimize',
@@ -217,15 +217,15 @@ function installRoot(): void {
 }
 
 /**
- * O cabeçalho. Entra no primeiro corpo de composer, depois de todas as
- * extensões: assim os itens que elas põem (as tags, a enquete do fof/polls)
- * já estão na lista quando são trocados.
+ * 页眉。进入第一个编辑器主体，位于所有扩展之后：
+ * 这样它们放入的项（标签、fof/polls 的投票）在被替换时
+ * 已经存在于列表中。
  */
 function installHeader(): void {
-  // A enquete do fof/polls: o botão "Adicionar enquete" do cabeçalho vira um
-  // item do menu ⊕ da barra, como o "Criar enquete" do Discourse.
+  // fof/polls 的投票：页眉的 "添加投票" 按钮变成工具栏 ⊕ 菜单中的
+  // 一项，与 Discourse 的 "创建投票" 相同。
   addMoreAction(() => {
-    const poll = (app.composer as any).canelaPoll;
+    const poll = (app.composer as any).lcoyPoll;
 
     if (!poll || !app.composer.isVisible()) return null;
 
@@ -241,7 +241,7 @@ function installHeader(): void {
   const takePoll = (body: any, items: ItemList<Mithril.Children>) => {
     const poll: any = items.has('polls') ? items.get('polls') : null;
 
-    (app.composer as any).canelaPoll = poll?.attrs?.onclick ? { onclick: poll.attrs.onclick, hasPoll: !!body.composer?.fields?.poll } : null;
+    (app.composer as any).lcoyPoll = poll?.attrs?.onclick ? { onclick: poll.attrs.onclick, hasPoll: !!body.composer?.fields?.poll } : null;
     if (poll) items.remove('polls');
   };
 
@@ -254,14 +254,14 @@ function installHeader(): void {
     extend(DISCUSSION as any, 'headerItems', function (this: any, items: ItemList<Mithril.Children>) {
       put(items, 'title', <ComposerActionTitle kind="new_topic" title={this.title} />, 1000);
 
-      // O botão do flarum/tags vira a linha "categoria | etiquetas".
+      // flarum/tags 的按钮变成 "分类 | 标签" 这一行。
       if (items.has('tags')) {
         const original: any = items.get('tags');
         const disabled = String(original?.attrs?.className || '').includes('disabled') || !!this.attrs.disabled;
 
-        // As tags que chegam de fora (a página da tag, um rascunho, o tópico
-        // vinculado) passam pelas regras do flarum/tags: sem filha órfã e sem
-        // tag em que o ator não pode iniciar discussão.
+        // 从外部传入的标签（标签页、草稿、关联主题）
+        // 要经过 flarum/tags 的规则：不含孤立子标签，
+        // 也不含操作者无权发起讨论的标签。
         const current: RuleTag[] = this.composer.fields.tags || [];
         const allowed = normalizeTags(current.filter((tag) => tag?.canStartDiscussion?.() !== false));
         if (allowed.length !== current.length) this.composer.fields.tags = allowed;
@@ -296,11 +296,11 @@ function installHeader(): void {
 }
 
 /**
- * Os mínimos de tags do flarum/tags (`minPrimaryTags`, `minSecondaryTags`)
- * cobrados ao publicar, com a mensagem do próprio flarum/tags, e o seletor
- * que falta preencher aberto. Sem isso o flarum/tags abriria o modal dele,
- * que o tema substitui pela linha do composer. Fica por fora do override do
- * flarum/tags (que inicializa antes): só chega a ele uma seleção válida.
+ * 发布时校验 flarum/tags 的标签下限（`minPrimaryTags`、`minSecondaryTags`），
+ * 使用 flarum/tags 自己的提示信息，并打开尚未填写的
+ * 选择器。没有这段逻辑，flarum/tags 会打开它自己的弹窗，
+ * 而主题已用编辑器中的一行取代了该弹窗。它在 flarum/tags 的 override
+ * 之外（后者先初始化）：传给它的只会是有效的选择。
  */
 function installTagRequirements(): void {
   override(DISCUSSION as any, 'onsubmit', function (this: any, original: (...args: unknown[]) => unknown, ...args: unknown[]) {
@@ -315,7 +315,7 @@ function installTagRequirements(): void {
     app.alerts.show({ type: 'error' }, missing.message);
 
     const cell = missing.kind === 'primary' ? 'category' : 'tags';
-    const chooser = document.querySelector(`.CanelaComposerFields-${cell}:not(.is-expanded) .CanelaSelectKit-header`) as HTMLElement | null;
+    const chooser = document.querySelector(`.LcoyComposerFields-${cell}:not(.is-expanded) .LcoySelectKit-header`) as HTMLElement | null;
     chooser?.click();
 
     return undefined;
@@ -323,23 +323,23 @@ function installTagRequirements(): void {
 }
 
 function installFooter(): void {
-  // O rodapé do Discourse: a barra de formatação à esquerda e, à direita,
-  // "Descartar" e o botão primário sem ícone.
+  // Discourse 的页脚：左侧是格式工具栏，右侧是
+  // "丢弃" 和没有图标的主按钮。
   extend(TextEditor.prototype, 'controlItems', function (this: TextEditor, items: ItemList<Mithril.Children>) {
     if (!editorComposer(this) || editorComposer(this) !== app.composer) return;
 
     const attrs = this.attrs as any;
 
-    // O "olho" de prévia do core: o tema já mostra a prévia lado a lado.
+    // 核心的预览 "眼睛"：主题已经在侧边显示预览。
     if (items.has('preview')) items.remove('preview');
 
     if (items.has('submit')) {
       items.setContent(
         'submit',
-        // Sem o `App-primaryControl` do core: no celular essa classe leva o
-        // botão para o cabeçalho e esconde o rótulo; no Discourse ele fica no
-        // rodapé, em texto.
-        <Button className="Button Button--primary CanelaComposer-submit" onclick={() => (this as any).onsubmit()}>
+        // 没有核心的 `App-primaryControl`：在移动端，这个类会把
+        // 按钮移到页眉并隐藏标签；在 Discourse 中它留在
+        // 页脚，以文字形式显示。
+        <Button className="Button Button--primary LcoyComposer-submit" onclick={() => (this as any).onsubmit()}>
           {attrs.submitLabel}
         </Button>
       );
@@ -348,15 +348,15 @@ function installFooter(): void {
     const editing = app.composer.bodyMatches(EDIT);
 
     items.add(
-      'canelaCancel',
-      <Button className="Button Button--link CanelaComposer-cancel" onclick={() => app.composer.close()}>
+      'lcoyCancel',
+      <Button className="Button Button--link LcoyComposer-cancel" onclick={() => app.composer.close()}>
         {editing ? t('composer.shell.cancel_edit') : t('composer.shell.discard')}
       </Button>,
       -200
     );
 
-    // Onde cabe a prévia ao lado (mesmo escondida pelo «), o "olho" do core
-    // — que leva à prévia dentro do tópico — sobra: o Discourse não tem.
+    // 在能侧边显示预览的地方（即使被 « 隐藏），核心的 "眼睛"
+    // —— 指向主题内预览 —— 就是多余的：Discourse 没有它。
     if (splitPossible() && items.has('preview')) items.remove('preview');
   });
 }
@@ -370,9 +370,9 @@ export default function installComposerShell() {
   installTagRequirements();
   installFooter();
   installToolbar();
-  // Os modais de entrar/cadastrar (a casca de UI mora junto da do composer).
+  // 登录/注册弹窗（UI 外壳与编辑器外壳放在一起）。
   installModals();
-  // O modal de tags do flarum/tags no desenho do seletor de tags do composer.
+  // 按编辑器标签选择器的外观绘制 flarum/tags 的标签弹窗。
   installTagModal();
   installAlignComposer();
 }

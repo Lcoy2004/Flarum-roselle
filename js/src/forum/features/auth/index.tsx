@@ -1,8 +1,7 @@
 /*
- * Entrar e cadastrar em página própria (/login, /signup), como o Discourse.
- * Com a opção desligada (ou sem o extend/auth.php carregado, que dá as rotas
- * no servidor), Entrar e Cadastrar-se do cabeçalho continuam abrindo os
- * modais do core.
+ * 登录与注册使用独立页面（/login、/signup），与 Discourse 一致。
+ * 关闭该选项时（或未加载在服务端提供路由的 extend/auth.php 时），
+ * 页头中的“登录”和“注册”仍会打开核心的弹窗。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -15,15 +14,15 @@ import ResetPasswordPage from './ResetPasswordPage';
 import { forumBool } from '../../utils/settings';
 
 export function authPagesActive(): boolean {
-  return forumBool('canelaAuthPages', true) && forumBool('canelaAuthRoutes', false);
+  return forumBool('lcoyAuthPages', true) && forumBool('lcoyAuthRoutes', false);
 }
 
 export default function installAuth(): void {
-  // A página tira o modo do nome da rota (o DefaultResolver não passa attrs).
-  app.routes['canela.login'] = { path: '/login', component: AuthPage };
-  app.routes['canela.signup'] = { path: '/signup', component: AuthPage };
-  app.routes['canela.forgot'] = { path: '/forgot-password', component: AuthPage };
-  // O link do e-mail de redefinição (o servidor dá a página: extend/auth.php).
+  // 页面从路由名中取得模式（DefaultResolver 不传递 attrs）。
+  app.routes['lcoy.login'] = { path: '/login', component: AuthPage };
+  app.routes['lcoy.signup'] = { path: '/signup', component: AuthPage };
+  app.routes['lcoy.forgot'] = { path: '/forgot-password', component: AuthPage };
+  // 重置邮件中的链接（页面由服务端提供：extend/auth.php）。
   app.routes['resetPassword'] = { path: '/reset/:token', component: ResetPasswordPage };
 
   extend(HeaderSecondary.prototype, 'items', (items: ItemList<Mithril.Children>) => {

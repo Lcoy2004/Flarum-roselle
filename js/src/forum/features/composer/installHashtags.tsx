@@ -1,14 +1,14 @@
 /*
- * #categoria e #etiqueta, como no Discourse.
+ * #分类 与 #标签，与 Discourse 一致。
  *
- * No editor: digitar `#` sugere as tags (com o símbolo colorido da categoria)
- * e insere um link markdown `[#nome](endereço da tag)`. Com o flarum/mentions
- * e o flarum/tags ligados, o `#` já é dele — ele sugere as tags e grava uma
- * menção de tag —, e o tema não abre um segundo menu no mesmo gatilho.
+ * 在编辑器中：输入 `#` 会建议标签（带分类的彩色符号），并插入
+ * Markdown 链接 `[#name](标签地址)`。当 flarum/mentions 和
+ * flarum/tags 启用时，`#` 已归它管理——它会建议标签并写入标签
+ * 提及——主题不会在同一触发符上打开第二个菜单。
  *
- * Nos posts: os links para uma tag cujo texto começa com `#` (os do tema) e as
- * menções de tag do flarum/mentions viram a pílula do hashtag do Discourse,
- * com o símbolo da categoria ou o ícone de etiqueta.
+ * 在帖子中：指向文本以 `#` 开头的标签的链接（主题自带的）以及
+ * flarum/mentions 的标签提及，会变成 Discourse 的 hashtag 胶囊，
+ * 带分类符号或标签图标。
  */
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
@@ -19,7 +19,7 @@ import highlight from 'flarum/common/helpers/highlight';
 
 import Autocomplete from './Autocomplete';
 import { composerOn } from './common';
-import { allTags, categorySymbol, isTagsEnabled, sortTags, tagUrl, type CanelaTag } from '../../utils/tags';
+import { allTags, categorySymbol, isTagsEnabled, sortTags, tagUrl, type LcoyTag } from '../../utils/tags';
 import { isExtensionEnabled, t } from '../../utils/settings';
 import { iconMarkup } from '../../icons';
 
@@ -27,7 +27,7 @@ declare const s9e: { TextFormatter: { preview: (text: string, element: HTMLEleme
 
 const SUGGESTION_LIMIT = 8;
 
-/** Busca sem acento e sem caixa, como a pessoa digita. */
+/** 忽略重音和大小写的搜索，与用户的输入方式一致。 */
 function normalize(text: string): string {
   return text
     .toLowerCase()
@@ -36,7 +36,7 @@ function normalize(text: string): string {
     .trim();
 }
 
-/** O flarum/mentions já cuida do `#` quando as duas extensões estão ligadas. */
+/** 两个扩展均启用时，`#` 已由 flarum/mentions 处理。 */
 function mentionsOwnsHash(): boolean {
   return isExtensionEnabled('flarum-mentions') && isTagsEnabled();
 }
@@ -47,14 +47,14 @@ function absoluteUrl(path: string): string {
   return /^https?:\/\//.test(path) ? path : origin + path;
 }
 
-function suggestTags(typed: string): CanelaTag[] {
+function suggestTags(typed: string): LcoyTag[] {
   const query = normalize(typed);
   const visible = allTags();
-  const starts = (tag: CanelaTag) => normalize(tag.name()).startsWith(query) || tag.slug().startsWith(query);
-  const contains = (tag: CanelaTag) => normalize(tag.name()).includes(query);
+  const starts = (tag: LcoyTag) => normalize(tag.name()).startsWith(query) || tag.slug().startsWith(query);
+  const contains = (tag: LcoyTag) => normalize(tag.name()).includes(query);
 
-  // Categorias antes das etiquetas, e quem começa pelo digitado antes de
-  // quem só o contém — a ordem da sugestão do Discourse.
+  // 分类先于标签，以输入内容开头的项先于仅包含它的项
+  // ——即 Discourse 的建议顺序。
   const ranked = [...sortTags(visible.filter(starts)), ...sortTags(visible.filter((tag) => !starts(tag) && contains(tag)))];
 
   return ranked.slice(0, SUGGESTION_LIMIT);
@@ -65,21 +65,21 @@ export default function installHashtags() {
     if (!composerOn('Hashtags') || !isTagsEnabled() || mentionsOwnsHash()) return;
 
     const autocomplete = new Autocomplete(this, {
-      className: 'CanelaAutocomplete--hashtag',
+      className: 'LcoyAutocomplete--hashtag',
       trigger: '#',
       validBit: /[-_\p{L}\p{N}\p{M}]/u,
       suggest: (typed) =>
         suggestTags(typed).map((tag) => {
-          const parent = tag.isChild() ? (tag.parent() as CanelaTag | null) : null;
+          const parent = tag.isChild() ? (tag.parent() as LcoyTag | null) : null;
 
           return {
             key: tag.id() || tag.slug(),
             replacement: `[#${tag.name()}](${absoluteUrl(tagUrl(tag))})`,
             label: (
               <>
-                {tag.position() !== null ? categorySymbol(tag) : <Icon name="fas fa-tag" className="CanelaHashtag-tagIcon" />}
-                <span className="CanelaAutocomplete-label">{typed ? highlight(tag.name(), typed) : tag.name()}</span>
-                {parent && <span className="CanelaAutocomplete-meta">{parent.name()}</span>}
+                {tag.position() !== null ? categorySymbol(tag) : <Icon name="fas fa-tag" className="LcoyHashtag-tagIcon" />}
+                <span className="LcoyAutocomplete-label">{typed ? highlight(tag.name(), typed) : tag.name()}</span>
+                {parent && <span className="LcoyAutocomplete-meta">{parent.name()}</span>}
               </>
             ),
           };
@@ -87,16 +87,16 @@ export default function installHashtags() {
       header: () => t('composer.hashtags.autocomplete_header'),
     });
 
-    (this as any).canelaHashtagAutocomplete = autocomplete;
+    (this as any).lcoyHashtagAutocomplete = autocomplete;
     params.inputListeners.push(autocomplete.listener);
   });
 
   extend(TextEditor.prototype as any, 'onbuild', function (this: TextEditor) {
-    (this as any).canelaHashtagAutocomplete?.attach();
+    (this as any).lcoyHashtagAutocomplete?.attach();
   });
 
-  // O conteúdo do post é HTML pronto do servidor: a pílula entra depois de
-  // ele chegar ao DOM, e de novo a cada atualização (edição, tempo real).
+  // 帖子内容是服务端返回的现成 HTML：胶囊在内容进入 DOM 之后插入，
+  // 并在每次更新（编辑、实时刷新）时再次插入。
   extend(CommentPost.prototype, ['oncreate', 'onupdate'], function (this: CommentPost) {
     if (!composerOn('Hashtags')) return;
 
@@ -105,7 +105,7 @@ export default function installHashtags() {
     if (body) decorateHashtags(body);
   });
 
-  // A prévia do composer é desenhada pelo formatador em JS, a cada mudança.
+  // composer 的预览由 JS 格式化器在每次变更时绘制。
   if (typeof s9e !== 'undefined' && s9e?.TextFormatter) {
     override(s9e.TextFormatter as any, 'preview', function (original: any, ...args: any[]) {
       const [text, element] = args as [string, HTMLElement];
@@ -117,8 +117,8 @@ export default function installHashtags() {
   }
 }
 
-/** A tag do link, pelo slug no fim do endereço `/t/<slug>`. */
-function tagFromHref(href: string): CanelaTag | null {
+/** 链接对应的标签，取自地址末尾的 slug `/t/<slug>`。 */
+function tagFromHref(href: string): LcoyTag | null {
   const match = /\/t\/([^/?#]+)\/?(?:[?#].*)?$/.exec(href);
 
   if (!match) return null;
@@ -132,28 +132,28 @@ export function decorateHashtags(root: HTMLElement): void {
   if (!isTagsEnabled()) return;
 
   root.querySelectorAll<HTMLAnchorElement>('a.TagMention, a[href*="/t/"]').forEach((link) => {
-    if (link.dataset.canelaHashtag) return;
+    if (link.dataset.lcoyHashtag) return;
 
     const isMention = link.classList.contains('TagMention');
 
-    // Um link qualquer para /t/ só conta quando aponta para este fórum: o
-    // mesmo slug em outro site é outra tag.
+    // 指向 /t/ 的普通链接只有指向本论坛时才计入：其他站点上的
+    // 相同 slug 属于另一个标签。
     if (!isMention && (link.origin !== window.location.origin || !(link.textContent || '').trim().startsWith('#'))) return;
 
     const tag = tagFromHref(link.getAttribute('href') || '');
 
     if (!tag) return;
 
-    link.dataset.canelaHashtag = '1';
-    link.classList.add('CanelaHashtag', tag.position() !== null ? 'CanelaHashtag--category' : 'CanelaHashtag--tag');
+    link.dataset.lcoyHashtag = '1';
+    link.classList.add('LcoyHashtag', tag.position() !== null ? 'LcoyHashtag--category' : 'LcoyHashtag--tag');
 
-    // O nome sem o "#": no Discourse o símbolo é que faz esse papel.
+    // 名称不带 “#”：在 Discourse 中该符号由符号元素承担。
     const label = document.createElement('span');
-    label.className = 'CanelaHashtag-name';
+    label.className = 'LcoyHashtag-name';
     label.textContent = tag.name();
 
     const symbol = document.createElement('span');
-    symbol.className = 'CanelaHashtag-symbol';
+    symbol.className = 'LcoyHashtag-symbol';
 
     if (tag.position() !== null) {
       m.render(symbol, categorySymbol(tag));

@@ -21,9 +21,9 @@ use Flarum\Post\Post;
 use Flarum\User\User;
 
 /**
- * "Fulano vinculou seu tópico" — o `linked` do Discourse: uma postagem de
- * outra pessoa traz um link para um tópico seu. O assunto é a postagem com o
- * link (é para lá que a notificação leva); o tópico vinculado vai nos dados.
+ * "某某引用了你的主题"——即 Discourse 的 `linked`：他人的帖子中带有指向
+ * 你主题的链接。主题对象是带链接的帖子（通知会引导到那里）；
+ * 被链接的主题放在数据中。
  */
 final class TopicLinkedBlueprint implements BlueprintInterface, AlertableInterface
 {
@@ -55,7 +55,7 @@ final class TopicLinkedBlueprint implements BlueprintInterface, AlertableInterfa
     #[\Override]
     public static function getType(): string
     {
-        return 'canelaTopicLinked';
+        return 'lcoyTopicLinked';
     }
 
     #[\Override]

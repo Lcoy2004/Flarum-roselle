@@ -1,12 +1,12 @@
 /*
- * O `select-kit` do Discourse, no tamanho do que o composer precisa: um
- * cabeçalho que abre, logo embaixo (ou em cima, quando falta espaço), o
- * corpo com o campo "Pesquisar…" e a lista. Setas sobem e descem, Enter
- * escolhe, Esc fecha; clicar fora fecha.
+ * Discourse 的 `select-kit`，尺寸只满足编辑器所需：一个
+ * 页眉，打开后在紧下方（空间不足时在上方）显示带 "搜索…" 字段
+ * 和列表的主体。方向键上下移动，Enter 选择，Esc 关闭；
+ * 点击外部也关闭。
  *
- * Quem usa passa as linhas já filtradas (`rows(filter)`), o conteúdo do
- * cabeçalho e o que fazer ao escolher — o componente só cuida de abrir,
- * posicionar e navegar.
+ * 使用方传入已过滤的行（`rows(filter)`）、页眉内容
+ * 以及选择时要做的事 —— 组件只负责打开、
+ * 定位和导航。
  */
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
 import Icon from 'flarum/common/components/Icon';
@@ -25,27 +25,27 @@ export interface SelectKitRow {
 export interface SelectKitAttrs extends ComponentAttrs {
   className?: string;
   header: Mithril.Children;
-  /** Ícone à direita do cabeçalho (seta, "+"). */
+  /** 页眉右侧的图标（箭头、"+"）。 */
   caret?: string;
-  /** Ícone à direita com o menu aberto. */
+  /** 菜单打开时右侧的图标。 */
   caretOpen?: string;
   rows: (filter: string) => SelectKitRow[];
   onselect: (key: string) => void;
-  /** Continua aberto depois de escolher (o seletor de etiquetas). */
+  /** 选择后保持打开（标签选择器）。 */
   stayOpen?: boolean;
   disabled?: boolean;
   label: string;
-  /** A lupa à direita do campo de busca (o de categoria tem; o de etiquetas, não). */
+  /** 搜索框右侧的放大镜（分类选择器有；标签选择器没有）。 */
   filterIcon?: boolean;
-  /** O que vem entre a busca e a lista (as etiquetas já escolhidas). */
+  /** 位于搜索框和列表之间的内容（已选择的标签）。 */
   before?: Mithril.Children;
-  /** O que vem depois da lista (o "Filtre para ver mais…" da barra da lista). */
+  /** 位于列表之后的内容（列表栏中的 "过滤以查看更多…"）。 */
   after?: Mithril.Children | ((filter: string) => Mithril.Children);
-  /** Texto do campo de busca (padrão: "Pesquisar…"). */
+  /** 搜索框的占位文本（默认："搜索…"）。 */
   placeholder?: string;
   /**
-   * Ao abrir, destaca a linha escolhida (ou nenhuma), em vez da primeira —
-   * o `category-drop` do Discourse abre sem destacar nada.
+   * 打开时高亮已选的行（或没有高亮），而不是第一行 ——
+   * Discourse 的 `category-drop` 打开时不高亮任何项。
    */
   highlightSelected?: boolean;
   emptyText?: string;
@@ -64,10 +64,10 @@ export default class SelectKit extends Component<SelectKitAttrs> {
     const { className, header, caret = 'fas fa-angle-down', caretOpen = 'fas fa-angle-up', disabled, label } = this.attrs;
 
     return (
-      <div className={classList('CanelaSelectKit', className, { 'is-expanded': this.open, 'is-above': this.above, 'is-disabled': disabled })}>
+      <div className={classList('LcoySelectKit', className, { 'is-expanded': this.open, 'is-above': this.above, 'is-disabled': disabled })}>
         <button
           type="button"
-          className="CanelaSelectKit-header"
+          className="LcoySelectKit-header"
           disabled={disabled}
           aria-haspopup="listbox"
           aria-expanded={this.open ? 'true' : 'false'}
@@ -80,8 +80,8 @@ export default class SelectKit extends Component<SelectKitAttrs> {
             }
           }}
         >
-          <span className="CanelaSelectKit-headerContent">{header}</span>
-          <Icon name={this.open ? caretOpen : caret} className="CanelaSelectKit-caret" />
+          <span className="LcoySelectKit-headerContent">{header}</span>
+          <Icon name={this.open ? caretOpen : caret} className="LcoySelectKit-caret" />
         </button>
         {this.open && this.bodyView()}
       </div>
@@ -94,10 +94,10 @@ export default class SelectKit extends Component<SelectKitAttrs> {
     if (this.highlighted >= rows.length) this.highlighted = rows.length - 1;
 
     const filter = (
-      <div className="CanelaSelectKit-filter">
+      <div className="LcoySelectKit-filter">
         <input
           type="search"
-          className="CanelaSelectKit-filterInput"
+          className="LcoySelectKit-filterInput"
           placeholder={this.attrs.placeholder || t('composer.shell.search_placeholder')}
           value={this.filter}
           autocomplete="off"
@@ -109,22 +109,22 @@ export default class SelectKit extends Component<SelectKitAttrs> {
           onkeydown={(e: KeyboardEvent) => this.onkeydown(e, rows)}
           oncreate={(vnode: Mithril.VnodeDOM) => (vnode.dom as HTMLInputElement).focus()}
         />
-        {this.attrs.filterIcon && <Icon name="fas fa-magnifying-glass" className="CanelaSelectKit-filterIcon" />}
+        {this.attrs.filterIcon && <Icon name="fas fa-magnifying-glass" className="LcoySelectKit-filterIcon" />}
       </div>
     );
 
     const list = (
-      <ul className="CanelaSelectKit-collection" role="listbox" aria-label={this.attrs.label}>
+      <ul className="LcoySelectKit-collection" role="listbox" aria-label={this.attrs.label}>
         {rows.length ? (
           rows.map((row, i) => (
             <li
               key={row.key}
-              className={classList('CanelaSelectKit-row', { 'is-highlighted': i === this.highlighted, 'is-selected': row.selected })}
+              className={classList('LcoySelectKit-row', { 'is-highlighted': i === this.highlighted, 'is-selected': row.selected })}
               role="option"
               aria-selected={row.selected ? 'true' : 'false'}
               title={row.title}
               onmouseenter={() => (this.highlighted = i)}
-              // `mousedown` e não `click`: escolher antes que o campo perca o foco.
+              // 用 `mousedown` 而不是 `click`：在字段失去焦点之前完成选择。
               onmousedown={(e: MouseEvent) => {
                 e.preventDefault();
                 this.choose(row.key);
@@ -134,7 +134,7 @@ export default class SelectKit extends Component<SelectKitAttrs> {
             </li>
           ))
         ) : (
-          <li key="empty" className="CanelaSelectKit-empty">
+          <li key="empty" className="LcoySelectKit-empty">
             {this.attrs.emptyText || t('composer.shell.no_results')}
           </li>
         )}
@@ -143,9 +143,9 @@ export default class SelectKit extends Component<SelectKitAttrs> {
 
     const after = typeof this.attrs.after === 'function' ? this.attrs.after(this.filter) : this.attrs.after;
 
-    // Aberto para cima, a busca fica embaixo, perto do cabeçalho (como no Discourse).
+    // 向上打开时，搜索框位于下方、靠近页眉（与 Discourse 相同）。
     return (
-      <div className="CanelaSelectKit-body" onmousedown={(e: MouseEvent) => e.stopPropagation()}>
+      <div className="LcoySelectKit-body" onmousedown={(e: MouseEvent) => e.stopPropagation()}>
         {this.above ? [after, list, this.attrs.before, filter] : [filter, this.attrs.before, list, after]}
       </div>
     );
@@ -163,11 +163,11 @@ export default class SelectKit extends Component<SelectKitAttrs> {
       const row = rows[this.highlighted];
       if (row) this.choose(row.key);
     } else if (e.key === 'Escape') {
-      // Não deixa o Esc chegar ao composer (que fecharia tudo).
+      // 不让 Esc 传到编辑器（否则会关闭整个编辑器）。
       e.preventDefault();
       e.stopPropagation();
       this.close();
-      (this.element.querySelector('.CanelaSelectKit-header') as HTMLElement | null)?.focus();
+      (this.element.querySelector('.LcoySelectKit-header') as HTMLElement | null)?.focus();
     } else if (e.key === 'Tab') {
       this.close();
     }
@@ -177,7 +177,7 @@ export default class SelectKit extends Component<SelectKitAttrs> {
 
   scrollHighlightedIntoView(): void {
     requestAnimationFrame(() => {
-      (this.element?.querySelector('.CanelaSelectKit-row.is-highlighted') as HTMLElement | null)?.scrollIntoView({ block: 'nearest' });
+      (this.element?.querySelector('.LcoySelectKit-row.is-highlighted') as HTMLElement | null)?.scrollIntoView({ block: 'nearest' });
     });
   }
 
@@ -192,7 +192,7 @@ export default class SelectKit extends Component<SelectKitAttrs> {
   show(): void {
     if (this.attrs.disabled) return;
 
-    // Abre para cima quando falta espaço embaixo e sobra em cima.
+    // 下方空间不足而上方充足时向上打开。
     const rect = this.element.getBoundingClientRect();
     const below = window.innerHeight - rect.bottom;
     this.above = below < BODY_MIN_SPACE && rect.top > below;

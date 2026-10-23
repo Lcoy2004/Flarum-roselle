@@ -1,26 +1,27 @@
 /*
- * A consulta da página de busca, nos dois sentidos:
+ * 搜索页面的查询，双向转换：
  *
  *   "horizon autor:ana tag:suporte é:trancada"  <->  { text, author, category, … }
+ *   （示例中的关键词随论坛语言变化）
  *
- * Como no Discourse, os filtros avançados não ficam num estado à parte: eles
- * ESCREVEM gambits na própria consulta, que vai para a URL. Assim a busca pode
- * ser compartilhada por link, o campo mostra exatamente o que está sendo
- * pesquisado, e quem digita os gambits à mão vê os controles se ajustarem.
+ * 与 Discourse 一致，高级筛选并不保存在独立状态中：它们会把
+ * gambits 写入查询本身，而查询会进入 URL。这样搜索链接可以分享，
+ * 输入框准确显示正在搜索的内容，手动输入 gambits 的用户也能看到
+ * 控件随之调整。
  *
- * A leitura usa o GambitManager do core (as palavras-chave são traduzidas, e
- * os gambits de outras extensões também são reconhecidos). Filtros que a
- * página não conhece ficam em `extra` e voltam intactos para a consulta.
+ * 解析使用核心的 GambitManager（关键词会被翻译，其他扩展的 gambits
+ * 也能被识别）。页面不认识的筛选条件会留在 `extra` 中，并原样
+ * 写回查询。
  */
 import app from 'flarum/forum/app';
 import type IGambit from 'flarum/common/query/IGambit';
 
-import { allTags, type CanelaTag } from '../../../utils/tags';
+import { allTags, type LcoyTag } from '../../../utils/tags';
 
 export type SearchStatus = '' | 'open' | 'closed' | 'sticky';
 
 export interface SearchQuery {
-  /** O texto livre, sem os gambits. */
+  /** 自由文本，不含 gambits。 */
   text: string;
   author: string;
   category: string;
@@ -34,11 +35,11 @@ export interface SearchQuery {
   after: string;
   before: string;
   minPosts: string;
-  /** Filtros de outras extensões (ou digitados à mão) que a página não edita. */
+  /** 其他扩展的筛选条件（或手动输入的），页面不编辑它们。 */
   extra: Record<string, unknown>;
 }
 
-/** Limites do `created:` quando só uma das pontas foi escolhida. */
+/** 只选择了一端时 `created:` 的边界。 */
 const OPEN_START = '1970-01-01';
 const OPEN_END = '2999-12-31';
 
@@ -46,15 +47,15 @@ const KNOWN_KEYS = [
   'q',
   'author',
   'tag',
-  'canelaInTitle',
-  'canelaLiked',
-  'canelaBookmarked',
+  'lcoyInTitle',
+  'lcoyLiked',
+  'lcoyBookmarked',
   'unread',
   'locked',
   '-locked',
   'sticky',
   'created',
-  'canelaMinPosts',
+  'lcoyMinPosts',
 ];
 
 export function emptyQuery(): SearchQuery {
@@ -75,14 +76,14 @@ export function emptyQuery(): SearchQuery {
   };
 }
 
-function findTag(slug: string): CanelaTag | undefined {
+function findTag(slug: string): LcoyTag | undefined {
   const wanted = slug.toLowerCase();
 
   return allTags().find((tag) => tag.slug().toLowerCase() === wanted);
 }
 
-/** Categoria = tag primária (com posição) ou filha de uma. */
-export function isCategory(tag: CanelaTag): boolean {
+/** 分类 = 主标签（带位置）或某个主标签的子标签。 */
+export function isCategory(tag: LcoyTag): boolean {
   return tag.position() !== null || tag.isChild();
 }
 
@@ -92,18 +93,18 @@ export function parseQuery(raw: string): SearchQuery {
 
   query.text = String(filter.q || '').trim();
   query.author = typeof filter.author === 'string' ? filter.author : '';
-  query.inTitle = !!filter.canelaInTitle;
-  query.liked = !!filter.canelaLiked;
-  query.bookmarked = !!filter.canelaBookmarked;
+  query.inTitle = !!filter.lcoyInTitle;
+  query.liked = !!filter.lcoyLiked;
+  query.bookmarked = !!filter.lcoyBookmarked;
   query.unread = !!filter.unread;
-  query.minPosts = filter.canelaMinPosts ? String(filter.canelaMinPosts) : '';
+  query.minPosts = filter.lcoyMinPosts ? String(filter.lcoyMinPosts) : '';
 
   if (filter['-locked']) query.status = 'open';
   else if (filter.locked) query.status = 'closed';
   else if (filter.sticky) query.status = 'sticky';
 
-  // `tag:a tag:b` chega como ['a', 'b'] (E); `tag:a,b` como ['a,b'] (OU). Só
-  // os simples viram categoria/etiquetas; um OU fica como foi digitado.
+  // `tag:a tag:b` 会得到 ['a', 'b']（与）；`tag:a,b` 得到 ['a,b']（或）。
+  // 只有简单值会变成分类/标签；或组保持输入时的原样。
   const tagValues: string[] = Array.isArray(filter.tag) ? filter.tag : filter.tag ? [String(filter.tag)] : [];
   const orGroups: string[] = [];
 
@@ -140,7 +141,7 @@ export function parseQuery(raw: string): SearchQuery {
   return query;
 }
 
-/** Os filtros da API equivalentes à consulta (sem o texto livre). */
+/** 与查询等价的 API 筛选条件（不含自由文本）。 */
 export function queryFilters(query: SearchQuery): Record<string, any> {
   const filter: Record<string, any> = { ...query.extra };
   const tags = [query.category, ...query.tags].filter(Boolean);
@@ -148,16 +149,16 @@ export function queryFilters(query: SearchQuery): Record<string, any> {
 
   if (tags.length || extraTags.length) filter.tag = [...tags, ...extraTags];
   if (query.author.trim()) filter.author = query.author.trim();
-  if (query.inTitle) filter.canelaInTitle = true;
-  if (query.liked) filter.canelaLiked = true;
-  if (query.bookmarked) filter.canelaBookmarked = true;
+  if (query.inTitle) filter.lcoyInTitle = true;
+  if (query.liked) filter.lcoyLiked = true;
+  if (query.bookmarked) filter.lcoyBookmarked = true;
   if (query.unread) filter.unread = true;
   if (query.status === 'open') filter['-locked'] = true;
   if (query.status === 'closed') filter.locked = true;
   if (query.status === 'sticky') filter.sticky = true;
 
   const minPosts = parseInt(query.minPosts, 10);
-  if (Number.isFinite(minPosts) && minPosts > 0) filter.canelaMinPosts = String(minPosts);
+  if (Number.isFinite(minPosts) && minPosts > 0) filter.lcoyMinPosts = String(minPosts);
 
   if (query.after || query.before) {
     filter.created = query.after && query.after === query.before ? query.after : `${query.after || OPEN_START}..${query.before || OPEN_END}`;
@@ -167,10 +168,10 @@ export function queryFilters(query: SearchQuery): Record<string, any> {
 }
 
 /**
- * A consulta como texto, com os gambits traduzidos.
+ * 将查询序列化为文本，并翻译其中的 gambits。
  *
- * Não usa `GambitManager.from`: ele perde o "-" de um filtro negado (o
- * `-é:trancada` dos tópicos abertos) quando há mais de um gambit registrado.
+ * 不使用 `GambitManager.from`：当注册了多个 gambit 时，它会丢失
+ * 否定筛选的“-”（例如“未锁定”主题所用的否定关键词）。
  */
 export function serializeQuery(query: SearchQuery): string {
   const gambits = app.search.gambits.for('discussions');
@@ -184,19 +185,20 @@ export function serializeQuery(query: SearchQuery): string {
 
     if (!gambit) continue;
 
-    // Tags em E viram um `tag:` por valor; o TagGambit já faz isso com arrays.
+    // “与”关系的标签会为每个值生成一个 `tag:`；TagGambit 对数组
+    // 已做此处理。
     parts.push(gambit.fromFilter(value, negate));
   }
 
   return parts.join(' ').replace(/\s+/g, ' ').trim();
 }
 
-/** Há algo para pesquisar? Só filtros também vale, como no Discourse. */
+/** 是否有可搜索的内容？仅有筛选条件也算，与 Discourse 一致。 */
 export function hasCriteria(query: SearchQuery): boolean {
   return !!query.text || Object.keys(queryFilters(query)).length > 0;
 }
 
-/** As palavras do texto livre, para destacar nos resultados. */
+/** 自由文本中的各个词，用于在结果中高亮。 */
 export function highlightPattern(text: string): RegExp | undefined {
   const words = text
     .split(/\s+/)

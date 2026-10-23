@@ -1,6 +1,6 @@
-// Largura do conteúdo: o controle deslizante e a prévia em escala de uma tela
-// de 1440px (barra lateral, margens e o cartão na proporção real).
-.CanelaAdmin-contentWidth {
+// 内容宽度：滑块与一块 1440px 屏幕的等比预览
+// （侧边栏、页边距和按真实比例呈现的卡片）。
+.LcoyAdmin-contentWidth {
   &-row {
     display: flex;
     align-items: center;
@@ -35,7 +35,7 @@
     }
   }
 
-  // A tela de 1440 × 900 do fórum real, reduzida para caber.
+  // 真实论坛的 1440 × 900 屏幕，缩小以适配。
   &-frame {
     position: relative;
     overflow: hidden;
@@ -51,7 +51,7 @@
       width: 1680px;
       height: 900px;
       border: 0;
-      transform: scale(var(--canela-preview-scale, 0.4));
+      transform: scale(var(--lcoy-preview-scale, 0.4));
       transform-origin: 0 0;
       pointer-events: none;
     }
@@ -65,7 +65,7 @@
   }
 }
 
-.CanelaAdmin-contentWidth-presets {
+.LcoyAdmin-contentWidth-presets {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;

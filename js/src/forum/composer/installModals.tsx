@@ -1,13 +1,13 @@
 /*
- * Entrar, Cadastrar-se e Esqueci a senha com a cara das páginas de login do
- * meta.discourse.org: o título grande ("Boas-vindas outra vez", "Criar sua
- * conta"), campos com o rótulo flutuante (`.input-group` do Discourse: o
- * rótulo mora dentro do campo e sobe para a borda ao focar ou preencher) e o
- * "Esqueci minha senha" logo abaixo da senha.
+ * 登录、注册和忘记密码，外观与 meta.discourse.org 的登录页一致：
+ * 大标题（"欢迎回来"、"创建你的
+ * 账号"）、带浮动标签的字段（Discourse 的 `.input-group`：
+ * 标签位于字段内部，聚焦或填写时上移到边框处），以及
+ * 密码正下方的 "忘记密码"。
  *
- * O resto dos modais (`.d-modal`) é só CSS (less/forum/Components.less).
+ * 其余弹窗（`.d-modal`）只由 CSS 负责（less/forum/Components.less）。
  *
- * Os três modais vêm em pedaços carregados sob demanda: estendidos pelo nome.
+ * 三个弹窗都位于按需加载的 chunk 中：按名称扩展。
  */
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
@@ -18,10 +18,10 @@ import type Mithril from 'mithril';
 import { t } from '../utils/settings';
 
 /**
- * Transforma o `.Form-group` do campo `key` num grupo de rótulo flutuante: o
- * texto do placeholder (ou do `<label>` que o core põe em cima) vira um rótulo
- * depois do campo, e o placeholder fica " " para o CSS saber, por
- * `:placeholder-shown`, se há texto.
+ * 把 `key` 字段的 `.Form-group` 变成浮动标签组：占位文本
+ * （或核心放在上方的 `<label>`）变成字段之后的标签，
+ * 占位符设置为 " "，以便 CSS 通过
+ * `:placeholder-shown` 判断是否已有文本。
  */
 function floatLabel(items: ItemList<Mithril.Children>, key: string): void {
   if (!items.has(key)) return;
@@ -41,10 +41,10 @@ function floatLabel(items: ItemList<Mithril.Children>, key: string): void {
   if (labelIndex >= 0) children.splice(labelIndex, 1);
 
   input.attrs.placeholder = ' ';
-  group.attrs.className = `${group.attrs.className || ''} CanelaFloat`;
-  // O rótulo não recebe clique: o toque cai no campo, por baixo dele.
+  group.attrs.className = `${group.attrs.className || ''} LcoyFloat`;
+  // 标签不接收点击：触摸会落到它下方的字段上。
   children.push(
-    <label className="CanelaFloat-label" aria-hidden="true">
+    <label className="LcoyFloat-label" aria-hidden="true">
       {text}
     </label>
   );
@@ -59,7 +59,7 @@ export default function installModals() {
   override(SIGNUP as any, 'title', () => t('modals.signup_title'));
 
   extend(LOGIN as any, 'fields', function (this: any, items: ItemList<Mithril.Children>) {
-    // "E-mail/nome do(a) usuário(a)", o rótulo do Discourse.
+    // "邮箱/用户名"，Discourse 的标签。
     const identification: any = items.has('identification') ? items.get('identification') : null;
     const input = (Array.isArray(identification?.children) ? identification.children : []).find((child: any) => child?.tag === 'input');
 
@@ -68,11 +68,11 @@ export default function installModals() {
     floatLabel(items, 'identification');
     floatLabel(items, 'password');
 
-    // "Esqueci minha senha" debaixo da senha, como no Discourse (o link do
-    // rodapé do core some pelo CSS).
+    // "忘记密码" 位于密码下方，与 Discourse 相同（核心页脚的
+    // 链接会被 CSS 隐藏）。
     items.add(
-      'canelaForgot',
-      <div className="Form-group CanelaLogin-forgot">
+      'lcoyForgot',
+      <div className="Form-group LcoyLogin-forgot">
         <Button className="Button Button--link Button--text" type="button" onclick={() => this.forgotPassword()}>
           {t('modals.forgot_password')}
         </Button>
@@ -81,8 +81,8 @@ export default function installModals() {
     );
   });
 
-  // "Não tem uma conta?" e, embaixo, "Cadastrar-se" (o core junta os dois
-  // numa frase com "Cadastre-se").
+  // "还没有账号？"，其下是 "注册"（核心把两者合并成
+  // 一句话，使用 "注册"）。
   override(LOGIN as any, 'footer', function (this: any, original: () => Mithril.Children) {
     if (!app.forum.attribute<boolean>('allowSignUp')) return original();
 
@@ -100,14 +100,14 @@ export default function installModals() {
     ['username', 'email', 'password'].forEach((key) => floatLabel(items, key));
   });
 
-  // "Redefinição de senha" é um modal comum do Discourse (não a página de
-  // login): título no cabeçalho, o texto em negrito, o campo com placeholder e
-  // "Redefinir senha" no rodapé, apagado até haver um e-mail.
+  // "重置密码" 是 Discourse 的普通弹窗（不是登录
+  // 页面）：页眉中的标题、加粗的说明文本、带占位文本的字段，
+  // 以及页脚的 "重置密码"，在有邮箱之前处于禁用状态。
   override(FORGOT as any, 'title', () => t('modals.forgot_title'));
 
-  // Sinalizar (`flag-modal` do Discourse): "Obrigado por ajudar a manter a
-  // nossa comunidade civilizada!", os nomes dos motivos do Discourse ("Fora do
-  // tópico", "Algo mais") e "Sinalizar postagem" no rodapé.
+  // 举报（Discourse 的 `flag-modal`）："感谢你帮助维护
+  // 我们文明的社区！"、Discourse 的原因名称（"偏离
+  // 主题"、"其他原因"）以及页脚的 "举报帖子"。
   const FLAG = 'ext:flarum/flags/forum/components/FlagPostModal';
   const FLAG_LABELS: Record<string, string> = { 'off-topic': 'modals.flag_off_topic', other: 'modals.flag_other' };
 
@@ -119,8 +119,8 @@ export default function installModals() {
       const children: any[] = Array.isArray(item?.children) ? item.children : [];
       const index = children.findIndex((child: any) => child?.tag === 'strong');
 
-      // Os filhos de um elemento já são vnodes normalizados: troca o vnode
-      // inteiro em vez de pôr texto cru dentro dele.
+      // 元素的子节点已经是规范化的 vnode：替换整个
+      // vnode，而不是直接在里面放原始文本。
       if (index >= 0) children[index] = <strong>{t(label)}</strong>;
     });
   });
@@ -128,7 +128,7 @@ export default function installModals() {
   extend(FLAG as any, 'content', function (this: any, vnode: any) {
     if (this.success) return;
 
-    // O botão de enviar é o último `Button--primary` do formulário.
+    // 提交按钮是表单中最后一个 `Button--primary`。
     const walk = (node: any): any => {
       if (!node || typeof node !== 'object') return null;
       if (Array.isArray(node)) return node.map(walk).find(Boolean) || null;

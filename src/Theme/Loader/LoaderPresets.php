@@ -15,23 +15,22 @@ declare(strict_types=1);
 namespace Lcoy\Roselle\Theme\Loader;
 
 /**
- * Os indicadores de carregamento prontos do tema.
+ * 主题预置的加载指示器。
  *
- * Todos são de uma cor só: viram máscara no CSS (less/forum/Loader.less), e a
- * cor vem de fora (a primária do tema ou a escolhida no admin). Por isso o
- * preenchimento é preto: na máscara só conta a opacidade. Sem animação (o
- * `prefers-reduced-motion` desliga as animações dentro do SVG), cada um ainda
- * forma um desenho inteiro, e não um quadro solto do meio do movimento.
+ * 它们都是单色的：在 CSS 中作为遮罩使用（less/forum/Loader.less），颜色
+ * 来自外部（主题的主色或后台选择的颜色）。因此填充为黑色：遮罩只关心
+ * 不透明度。没有动画时（`prefers-reduced-motion` 会关闭 SVG 内的动画），
+ * 每一个仍构成完整图形，而不是运动中途的某一帧。
  *
- * "avocado" e "orbital" são os mesmos do tema avocado
- * (src/Content/CustomLoadingSpinner.php de lá).
+ * "avocado" 和 "orbital" 与 avocado 主题中的相同
+ * （那边的 src/Content/CustomLoadingSpinner.php）。
  */
 final class LoaderPresets
 {
-    /** O spinner do Flarum, sem troca nenhuma. */
+    /** Flarum 自带的加载动画，不做任何替换。 */
     public const DEFAULT = 'default';
 
-    /** SVG enviado ou colado no admin (`canela.loader_custom`). */
+    /** 在后台上传或粘贴的 SVG（`lcoy.loader_custom`）。 */
     public const CUSTOM = 'custom';
 
     public const SVG = [
@@ -39,7 +38,7 @@ final class LoaderPresets
 
         'orbital' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 90"><style>rect{animation:2s cubic-bezier(.45,0,.55,1) infinite}.a{animation-name:a}.b{animation-name:b}.c{animation-name:c}.d{animation-name:d}@keyframes a{0%,100%{transform:translate(0,0)}25%{transform:translate(0,50px)}50%{transform:translate(50px,50px)}75%{transform:translate(50px,0)}}@keyframes b{0%,100%{transform:translate(0,0)}25%{transform:translate(-50px,0)}50%{transform:translate(-50px,50px)}75%{transform:translate(0,50px)}}@keyframes c{0%,100%{transform:translate(0,0)}25%{transform:translate(0,-50px)}50%{transform:translate(-50px,-50px)}75%{transform:translate(-50px,0)}}@keyframes d{0%,100%{transform:translate(0,0)}25%{transform:translate(50px,0)}50%{transform:translate(50px,-50px)}75%{transform:translate(0,-50px)}}</style><rect class="a" x="0" y="0" width="40" height="40" rx="4"/><rect class="b" x="50" y="0" width="40" height="40" rx="4"/><rect class="c" x="50" y="50" width="40" height="40" rx="4"/><rect class="d" x="0" y="50" width="40" height="40" rx="4"/></svg>',
 
-        // O anel do Discourse (o `.spinner` do Horizon): trilho claro e um arco.
+        // Discourse 的圆环（Horizon 的 `.spinner`）：浅色轨道加一段弧。
         'ring' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><style>.a{transform-origin:25px 25px;animation:r .9s linear infinite}@keyframes r{to{transform:rotate(360deg)}}</style><circle cx="25" cy="25" r="20" fill="none" stroke="#000" stroke-opacity=".22" stroke-width="5"/><path class="a" d="M25 5a20 20 0 0 1 20 20" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/></svg>',
 
         'dots' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><style>circle{transform-box:fill-box;transform-origin:center;animation:d 1.2s ease-in-out infinite}.b{animation-delay:.15s}.c{animation-delay:.3s}@keyframes d{0%,80%,100%{transform:scale(.55);opacity:.35}40%{transform:scale(1);opacity:1}}</style><circle cx="18" cy="50" r="12"/><circle class="b" cx="50" cy="50" r="12"/><circle class="c" cx="82" cy="50" r="12"/></svg>',
@@ -49,7 +48,7 @@ final class LoaderPresets
         'pulse' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><style>circle{transform-origin:50px 50px;animation:p 1.6s cubic-bezier(.2,.6,.4,1) infinite}.b{animation-delay:-.8s}@keyframes p{0%{transform:scale(.1);opacity:1}100%{transform:scale(1);opacity:0}}</style><circle cx="50" cy="50" r="44" fill="none" stroke="#000" stroke-width="8"/><circle class="b" cx="50" cy="50" r="44" fill="none" stroke="#000" stroke-width="8"/></svg>',
     ];
 
-    /** Os estilos que o admin aceita, na ordem em que aparecem. */
+    /** 后台可接受的样式，按显示顺序排列。 */
     public static function keys(): array
     {
         return [self::DEFAULT, ...array_keys(self::SVG), self::CUSTOM];

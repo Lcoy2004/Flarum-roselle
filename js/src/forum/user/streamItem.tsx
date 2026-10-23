@@ -1,8 +1,8 @@
 /*
- * O `user-stream-item` do Discourse: avatar de 48px, o título do tópico como
- * link, categoria e data embaixo e o começo do texto. Usado pelas abas de
- * postagens do perfil (Postagens, Curtidas, Menções, Votos, Resolvido) e pela
- * aba Reações, que acrescenta a linha da reação (`extra`).
+ * Discourse 的 `user-stream-item`：48px 头像、作为链接的主题标题、
+ * 下方的分类和日期以及正文开头。用于资料的帖子标签页
+ *（帖子、点赞、提及、投票、已解决）以及“反应”标签页，
+ * 后者会额外添加反应行（`extra`）。
  */
 import app from 'flarum/forum/app';
 import Avatar from 'flarum/common/components/Avatar';
@@ -17,12 +17,12 @@ import type Mithril from 'mithril';
 import { discussionBadges } from '../utils/tags';
 import { fullDate, mediumAge } from '../utils/dates';
 
-/** O tamanho do trecho (o `excerpt` do Discourse). */
+/** 摘录的长度（Discourse 的 `excerpt`）。 */
 const STREAM_EXCERPT = 300;
 
 export interface StreamItemOptions {
   className?: string;
-  /** Entre o cabeçalho e o trecho (a reação da aba Reações). */
+  /** 位于头部和摘录之间（“反应”标签页的反应）。 */
   extra?: Mithril.Children;
 }
 
@@ -32,25 +32,25 @@ export default function streamItem(post: Post, options: StreamItemOptions = {}):
   const createdAt = post.createdAt();
 
   return (
-    <div className={classList('PostListItem CanelaStreamItem', options.className)}>
-      <div className="CanelaStreamItem-header">
+    <div className={classList('PostListItem LcoyStreamItem', options.className)}>
+      <div className="LcoyStreamItem-header">
         {user ? (
-          <Link href={app.route.user(user)} className="CanelaStreamItem-avatar" tabindex="-1" aria-hidden="true">
+          <Link href={app.route.user(user)} className="LcoyStreamItem-avatar" tabindex="-1" aria-hidden="true">
             <Avatar user={user} />
           </Link>
         ) : (
-          <span className="CanelaStreamItem-avatar">
+          <span className="LcoyStreamItem-avatar">
             <Avatar user={null} />
           </span>
         )}
-        <div className="CanelaStreamItem-details">
-          <div className="CanelaStreamItem-title">
+        <div className="LcoyStreamItem-details">
+          <div className="LcoyStreamItem-title">
             <Link href={app.route.post(post)}>{discussion ? discussion.title() : ''}</Link>
           </div>
-          <div className="CanelaStreamItem-meta">
+          <div className="LcoyStreamItem-meta">
             {discussion && discussionBadges(discussion)}
             {createdAt && (
-              <time className="CanelaStreamItem-date" datetime={createdAt.toISOString()} title={fullDate(createdAt)}>
+              <time className="LcoyStreamItem-date" datetime={createdAt.toISOString()} title={fullDate(createdAt)}>
                 {mediumAge(createdAt)}
               </time>
             )}
@@ -58,7 +58,7 @@ export default function streamItem(post: Post, options: StreamItemOptions = {}):
         </div>
       </div>
       {options.extra}
-      <div className="CanelaStreamItem-excerpt">{truncate(post.contentPlain() || '', STREAM_EXCERPT)}</div>
+      <div className="LcoyStreamItem-excerpt">{truncate(post.contentPlain() || '', STREAM_EXCERPT)}</div>
     </div>
   );
 }

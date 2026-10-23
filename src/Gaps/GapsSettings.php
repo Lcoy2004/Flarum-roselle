@@ -17,42 +17,36 @@ namespace Lcoy\Roselle\Gaps;
 use Flarum\Settings\SettingsRepositoryInterface;
 
 /**
- * As chaves liga/desliga dos recursos com backend que faltavam (gaps), já
- * convertidas. Cada ponto de entrada (rotas, ouvintes, campos da API)
- * consulta a sua: desligado, o recurso some do fórum e as rotas respondem 404.
+ * 补齐后端缺失功能（gaps）的开关设置键，已转换为布尔值。每个入口
+ * （路由、监听器、API 字段）都查询自己的键：关闭后，该功能会从论坛中
+ * 消失，路由返回 404。
  */
 final class GapsSettings
 {
-    public const POST_EDITED = 'canela.notify_post_edited';
+    public const POST_EDITED = 'lcoy.notify_post_edited';
 
-    public const TOPIC_LINKED = 'canela.notify_topic_linked';
+    public const TOPIC_LINKED = 'lcoy.notify_topic_linked';
 
-    public const TAG_TRACKING = 'canela.tag_tracking_enabled';
+    public const TAG_TRACKING = 'lcoy.tag_tracking_enabled';
 
-    public const IGNORE_USERS = 'canela.ignore_users_enabled';
+    public const IGNORE_USERS = 'lcoy.ignore_users_enabled';
 
-    public const INVITES = 'canela.invites_enabled';
+    public const MOVE_POSTS = 'lcoy.move_posts_enabled';
 
-    public const INVITE_DAYS = 'canela.invites_expire_days';
+    public const NOT_FOUND = 'lcoy.not_found_page';
 
-    public const MOVE_POSTS = 'canela.move_posts_enabled';
+    public const MARKDOWN_TABLES = 'lcoy.markdown_tables';
 
-    public const NOT_FOUND = 'canela.not_found_page';
+    public const LOCAL_DATES = 'lcoy.local_dates';
 
-    public const MARKDOWN_TABLES = 'canela.markdown_tables';
+    public const CATEGORY_UNREAD = 'lcoy.sidebar_category_dots';
 
-    public const LOCAL_DATES = 'canela.local_dates';
-
-    public const CATEGORY_UNREAD = 'canela.sidebar_category_dots';
-
-    /** Padrões: tudo ligado, como o Discourse vem. */
+    /** 默认值：全部开启，与 Discourse 出厂状态一致。 */
     public const DEFAULTS = [
         self::POST_EDITED => true,
         self::TOPIC_LINKED => true,
         self::TAG_TRACKING => true,
         self::IGNORE_USERS => true,
-        self::INVITES => true,
-        self::INVITE_DAYS => 7,
         self::MOVE_POSTS => true,
         self::NOT_FOUND => true,
         self::MARKDOWN_TABLES => true,
@@ -69,13 +63,5 @@ final class GapsSettings
         $value = $this->settings->get($key, self::DEFAULTS[$key] ?? false);
 
         return $value === true || $value === 1 || $value === '1' || $value === 'true';
-    }
-
-    /** Dias de validade de um convite novo: de 1 a 90. */
-    public function inviteDays(): int
-    {
-        $days = (int) $this->settings->get(self::INVITE_DAYS, self::DEFAULTS[self::INVITE_DAYS]);
-
-        return max(1, min(90, $days ?: (int) self::DEFAULTS[self::INVITE_DAYS]));
     }
 }

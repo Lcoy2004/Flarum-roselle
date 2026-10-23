@@ -18,12 +18,12 @@ import { extend, override } from 'flarum/common/extend';
 import type ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 
-import CanelaSidebar from '../components/CanelaSidebar';
+import LcoySidebar from '../components/LcoySidebar';
 import SidebarSection from '../components/SidebarSection';
 import { forumBool, t } from '../utils/settings';
 
 function takeOver(): boolean {
-  return forumBool('canelaSidebarEnabled', true);
+  return forumBool('lcoySidebarEnabled', true);
 }
 
 /** widget 的标题；`fof/news-widget` 没有标题，用主题给它的名字。 */
@@ -39,22 +39,22 @@ function sectionTitle(widget: any): Mithril.Children {
   return widget.key === 'news' ? t('sidebar.widget_news') : t('sidebar.widgets');
 }
 
-/** Um widget já pronto para virar seção, com a chave para a ordenação. */
+/** 已可变成区块的小部件，带排序用的键。 */
 interface WidgetSection {
   key: string;
   node: Mithril.Children;
 }
 
 /**
- * Widgets que a barra não mostra.
+ * 侧边栏不显示的小部件。
  *
- * `topPosters` é o "发帖之星 do mês" do fof/top-posters-widget: a lista muda a
- * cada mês e ocupava uma seção inteira da barra. Continua instalado (o filtro
- * `top_poster` da busca segue funcionando), mas não vira seção.
+ * `topPosters` 是 fof/top-posters-widget 的 "本月发帖之星"：该列表每月
+ * 变化，占用了整个侧边栏区块。它仍然安装（搜索的
+ * `top_poster` 过滤器继续可用），但不会变成区块。
  */
 const HIDDEN_WIDGETS = new Set(['topPosters']);
 
-/** Um widget um分区，顺序同后台布局里的 position。 */
+/** 每个小部件一个区块，顺序同后台布局中的 position。 */
 function widgetSections(): WidgetSection[] {
   const widgets = (app.widgets?.get('end') ?? [])
     .filter((widget: any) => !HIDDEN_WIDGETS.has(widget.key))
@@ -65,7 +65,7 @@ function widgetSections(): WidgetSection[] {
     key: widget.key,
     node: (
       <SidebarSection name={`fof-${widget.key}`} title={sectionTitle(widget)}>
-        <li className="CanelaSidebar-fofWidget">{widget.component.component({ state: widget.state })}</li>
+        <li className="LcoySidebar-fofWidget">{widget.component.component({ state: widget.state })}</li>
       </SidebarSection>
     ),
   }));
@@ -77,7 +77,7 @@ export default function installFofWidgets(): void {
     return takeOver() ? null : original();
   });
 
-  extend(CanelaSidebar.prototype, 'sectionItems', function (items: ItemList<Mithril.Children>) {
+  extend(LcoySidebar.prototype, 'sectionItems', function (items: ItemList<Mithril.Children>) {
     if (!takeOver()) return;
 
     // 公告紧挨着社区（90），在「推荐」（88）上面：那是要最先看到的一句话。

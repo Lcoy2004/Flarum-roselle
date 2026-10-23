@@ -1,11 +1,10 @@
 /*
- * O "timings" do Discourse, simplificado: enquanto o tópico está na tela e a
- * pessoa está de fato ali (aba visível, mexeu na página há pouco), conta os
- * segundos de leitura e as postagens que ficaram tempo bastante à vista, e
- * manda os dois para o servidor a cada 30 segundos.
+ * Discourse 的“timings”的简化版：当主题显示在屏幕上且用户确实在场
+ * （标签页可见、最近操作过页面）时，统计阅读秒数以及停留足够久的
+ * 帖子，并每 30 秒将两者发送到服务端。
  *
- * O servidor desconfia de tudo (veja RecordReadTimeController); aqui o
- * cuidado é só não contar tempo de aba esquecida aberta.
+ * 服务端对一切持怀疑态度（见 RecordReadTimeController）；此处只需
+ * 注意不要把遗忘打开的标签页计入。
  */
 import { extend } from 'flarum/common/extend';
 import app from 'flarum/forum/app';
@@ -16,16 +15,16 @@ import { sendReadTime } from './api';
 
 const TICK_MS = 1000;
 
-/** De quanto em quanto tempo os segundos acumulados vão para o servidor. */
+/** 累积的秒数每隔多久发送到服务端。 */
 const FLUSH_EVERY_TICKS = 30;
 
-/** Sem mexer na página por 3 minutos, a pessoa saiu de perto (o mesmo do Discourse). */
+/** 超过 3 分钟未操作页面即视为用户离开（与 Discourse 相同）。 */
 const IDLE_AFTER_MS = 3 * 60 * 1000;
 
-/** Uma postagem conta como lida depois de 2 segundos à vista. */
+/** 帖子在屏幕上停留 2 秒后计为已读。 */
 const POST_READ_SECONDS = 2;
 
-/** O servidor aceita até 50 por envio; o resto espera o próximo. */
+/** 服务端每次最多接受 50 个；其余等待下次发送。 */
 const MAX_POSTS_PER_FLUSH = 50;
 
 const ACTIVITY_EVENTS = ['scroll', 'wheel', 'keydown', 'mousemove', 'pointerdown', 'touchstart'];
@@ -37,11 +36,16 @@ export class ReadTracker {
   private seconds = 0;
   private discussionId: string | null = null;
 
-  /** id da postagem → segundos à vista, até virar lida. */
+  /** 帖子 id → 在屏秒数，直到计为已读。 */
   private exposure = new Map<string, number>();
   private pending = new Set<string>();
-  /** Já enviadas nesta visita à página: não contam duas vezes. */
+  /** 本次访问页面中已发送的：不重复计数。 */
   private sent = new Set<string>();
+
+  /** 哪些帖子在屏幕上，避免每秒测量一次布局。 */
+  private observer: IntersectionObserver | null = null;
+  private observed = new WeakSet<Element>();
+  private onScreen = new Set<Element>();
 
   constructor(private readonly currentDiscussionId: () => string | null) {}
 
@@ -50,13 +54,22 @@ export class ReadTracker {
   };
 
   private readonly onVisibility = () => {
-    // A aba saindo de vista pode ser a última chance de enviar (o celular
-    // congela a página logo depois); o keepalive do fetch garante a entrega.
+    // 标签页离开可见状态可能是最后一次发送机会（手机会随即
+    // 冻结页面）；fetch 的 keepalive 可保证送达。
     if (document.visibilityState === 'hidden') this.flush();
   };
 
   start(): void {
     if (this.interval) return;
+
+    if (typeof IntersectionObserver !== 'undefined') {
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0) this.onScreen.add(entry.target);
+          else this.onScreen.delete(entry.target);
+        });
+      });
+    }
 
     ACTIVITY_EVENTS.forEach((name) => window.addEventListener(name, this.onActivity, { passive: true }));
     document.addEventListener('visibilitychange', this.onVisibility);
@@ -75,14 +88,19 @@ export class ReadTracker {
     document.removeEventListener('visibilitychange', this.onVisibility);
     window.removeEventListener('pagehide', this.onVisibility);
 
+    this.observer?.disconnect();
+    this.observer = null;
+    this.observed = new WeakSet<Element>();
+    this.onScreen.clear();
+
     this.flush();
   }
 
   private tick(): void {
     const id = this.currentDiscussionId();
 
-    // A DiscussionPage é reaproveitada ao ir de um tópico a outro: o que foi
-    // juntado no anterior vai embora com o id dele antes de recomeçar.
+    // 从某个主题切换到另一个时 DiscussionPage 会被复用：前一个主题
+    // 累积的数据会随其 id 一起发送，然后重新开始。
     if (id !== this.discussionId) {
       this.flush();
       this.discussionId = id;
@@ -99,26 +117,54 @@ export class ReadTracker {
   }
 
   private collectVisiblePosts(): void {
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const items = document.querySelectorAll<HTMLElement>('.PostStream-item[data-id]');
 
-    document.querySelectorAll<HTMLElement>('.PostStream-item[data-id]').forEach((element) => {
-      const postId = element.dataset.id;
+    // 没有 IntersectionObserver 时，按屏幕位置采样。
+    if (!this.observer) {
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
-      if (!postId || this.sent.has(postId) || this.pending.has(postId)) return;
+      items.forEach((element) => {
+        const rect = element.getBoundingClientRect();
 
-      const rect = element.getBoundingClientRect();
+        if (rect.bottom <= 0 || rect.top >= viewportHeight || rect.height === 0) return;
 
-      if (rect.bottom <= 0 || rect.top >= viewportHeight || rect.height === 0) return;
+        this.countExposure(element.dataset.id);
+      });
 
-      const seconds = (this.exposure.get(postId) || 0) + 1;
+      return;
+    }
 
-      if (seconds >= POST_READ_SECONDS) {
-        this.exposure.delete(postId);
-        this.pending.add(postId);
-      } else {
-        this.exposure.set(postId, seconds);
-      }
+    // observer 会在帖子进入和离开屏幕时通知；此处只登记新项
+    // （流会卸载旧项）并统计在屏内容的时长——无需每秒测量布局。
+    items.forEach((element) => {
+      if (this.observed.has(element)) return;
+
+      this.observed.add(element);
+      this.observer!.observe(element);
     });
+
+    this.onScreen.forEach((element) => {
+      if (!element.isConnected) {
+        this.observer!.unobserve(element);
+        this.onScreen.delete(element);
+        return;
+      }
+
+      this.countExposure((element as HTMLElement).dataset.id);
+    });
+  }
+
+  private countExposure(postId: string | undefined): void {
+    if (!postId || this.sent.has(postId) || this.pending.has(postId)) return;
+
+    const seconds = (this.exposure.get(postId) || 0) + 1;
+
+    if (seconds >= POST_READ_SECONDS) {
+      this.exposure.delete(postId);
+      this.pending.add(postId);
+    } else {
+      this.exposure.set(postId, seconds);
+    }
   }
 
   flush(): void {
@@ -145,7 +191,7 @@ export class ReadTracker {
 }
 
 export function activityEnabled(): boolean {
-  return !!app.session.user && forumBool('canelaStatsActivityEnabled', true);
+  return !!app.session.user && forumBool('lcoyStatsActivityEnabled', true);
 }
 
 const trackers = new WeakMap<DiscussionPage, ReadTracker>();

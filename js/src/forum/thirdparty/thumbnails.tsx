@@ -1,11 +1,11 @@
 /*
- * fof/discussion-thumbnail na lista do tema.
+ * fof/discussion-thumbnail 在主题列表中。
  *
- * A extensão troca o avatar do autor pela miniatura, mas a lista do tema
- * nem desenha esse avatar (o Discourse mostra os postadores numa coluna).
- * Então a miniatura vira um item próprio, antes do título, como no
- * componente de miniaturas do Horizon; no celular ela ocupa o lugar do
- * avatar de 48px.
+ * 该扩展用缩略图替换作者头像，但主题的列表
+ * 并不绘制该头像（Discourse 在独立的列中显示发帖人）。
+ * 因此缩略图变成独立项，位于标题之前，与 Horizon 的
+ * 缩略图组件相同；在移动端它占据 48px 头像的
+ * 位置。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -20,7 +20,7 @@ export default function installThumbnails(): void {
   extend(DiscussionListItem.prototype, 'contentItems', function (this: any, items: ItemList<Mithril.Children>) {
     if (!thirdParty.thumbnails()) return;
 
-    // Os resultados do modal de busca (MinimalDiscussionListItem) continuam com o avatar.
+    // 搜索弹窗的结果（MinimalDiscussionListItem）仍保留头像。
     if (String(this.elementAttrs().className || '').includes('MinimalDiscussionListItem')) return;
 
     const discussion = this.attrs.discussion;
@@ -29,8 +29,8 @@ export default function installThumbnails(): void {
     if (!src) return;
 
     items.add(
-      'canelaThumbnail',
-      <Link href={app.route.discussion(discussion)} className="CanelaTopicThumbnail" tabindex="-1" aria-hidden="true">
+      'lcoyThumbnail',
+      <Link href={app.route.discussion(discussion)} className="LcoyTopicThumbnail" tabindex="-1" aria-hidden="true">
         <img src={src} alt="" loading="lazy" decoding="async" />
       </Link>,
       90

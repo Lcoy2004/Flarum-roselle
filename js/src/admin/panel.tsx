@@ -1,7 +1,7 @@
 /*
- * O painel do tema (abas, cards, busca): um chunk sob demanda, que só desce
- * quando a página da extensão abre. A busca do painel procura nos cards daqui,
- * então continua igual.
+ * 主题面板（选项卡、卡片、搜索）：按需加载的 chunk，只在
+ * 扩展页面打开时下载。面板的搜索会查找这里的卡片，
+ * 因此保持不变。
  */
 import { createPanel } from './components/SettingsPanel';
 import type { CardDef } from './types';
@@ -9,7 +9,7 @@ import CORE_CARDS from './cards/core';
 import FEATURE_CARDS from './features';
 
 const ORDER: string[] = [
-  // Aparência
+  // 外观
   'colors',
   'font',
   'surfaces',
@@ -22,7 +22,7 @@ const ORDER: string[] = [
   'loading-slider',
   'loader',
   'toast-auto-close',
-  // Cabeçalho e barra lateral
+  // 页头与侧边栏
   'header-search',
   'user-menu',
   'auth-pages',
@@ -31,7 +31,7 @@ const ORDER: string[] = [
   'sidebar-home',
   'sidebar-tags',
   'sidebar-links',
-  // Lista
+  // 列表
   'welcome-banner',
   'category-hero',
   'list-tabs',
@@ -43,7 +43,7 @@ const ORDER: string[] = [
   'top-periods',
   'infinite-scroll',
   'categories-page',
-  // Tópico
+  // 主题
   'post-style',
   'sticky-avatar',
   'reply-to-style',
@@ -53,7 +53,6 @@ const ORDER: string[] = [
   'reading',
   'topic-timeline',
   'topic-map',
-  'link-clicks',
   'topic-footer',
   'suggested',
   'new-replies-bar',
@@ -63,29 +62,24 @@ const ORDER: string[] = [
   'local-dates',
   'print',
   'event-posts',
-  // Editor e busca
+  // 编辑器与搜索
   'composer',
   'drafts',
   'hashtags',
   'search-page',
-  // Perfil e usuários
+  // 个人资料与用户
   'user-page',
   'user-card',
-  'profile-fields',
-  'profile-title',
-  'profile-status',
   'activity',
-  // Comunidade
+  // 社区
   'about',
   'guidelines',
   'about_pages',
   'legal',
   'groups',
-  'invites',
   'not-found',
-  // Moderação
+  // 审核
   'bulk-select',
-  'post-history',
   'author-notifications',
 ];
 

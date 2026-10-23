@@ -13,7 +13,7 @@ export interface DirectoryControlsAttrs extends ComponentAttrs {
   state: DirectoryState;
 }
 
-/** Período, busca por nome e o total: a barra acima da tabela do diretório. */
+/** 时间段、按名称搜索与总数：目录表格上方的工具栏。 */
 export default class DirectoryControls extends Component<DirectoryControlsAttrs> {
   searchTimer: ReturnType<typeof setTimeout> | undefined;
   draft: string | null = null;
@@ -28,16 +28,16 @@ export default class DirectoryControls extends Component<DirectoryControlsAttrs>
     const options = Object.fromEntries(PERIODS.map((period) => [period, t(`community.users.period.${period}`)]));
 
     return (
-      <div className="CanelaDirectory-controls">
-        <div className="CanelaDirectory-filters">
+      <div className="LcoyDirectory-controls">
+        <div className="LcoyDirectory-filters">
           <Select
-            className="CanelaDirectory-period"
+            className="LcoyDirectory-period"
             options={options}
             value={state.params.period || 'all'}
             onchange={(value: PeriodKey) => state.setPeriod(value)}
             aria-label={t('community.users.period_label')}
           />
-          <label className="CanelaDirectory-search">
+          <label className="LcoyDirectory-search">
             <Icon name="fas fa-magnifying-glass" />
             <input
               className="FormControl"
@@ -49,12 +49,12 @@ export default class DirectoryControls extends Component<DirectoryControlsAttrs>
             />
           </label>
         </div>
-        {state.total !== null && <span className="CanelaDirectory-total">{t('community.users.total', { count: state.total })}</span>}
+        {state.total !== null && <span className="LcoyDirectory-total">{t('community.users.total', { count: state.total })}</span>}
       </div>
     );
   }
 
-  /** A busca espera a pessoa parar de digitar: uma requisição por nome, não por tecla. */
+  /** 搜索会等待用户停止输入：每个名称只发一次请求，而非每次按键。 */
   search(value: string): void {
     this.draft = value;
     clearTimeout(this.searchTimer);

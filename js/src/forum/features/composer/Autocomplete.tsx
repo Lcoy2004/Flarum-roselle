@@ -1,11 +1,10 @@
 /*
- * Um menu de sugestões preso ao cursor do editor, como os do Discourse para
- * `:emoji` e `#categoria`.
+ * 附着在编辑器光标处的建议菜单，类似 Discourse 为 `:emoji` 和
+ * `#分类` 提供的菜单。
  *
- * Segue o desenho do autocompletar do flarum/mentions (um contêiner logo
- * depois do textarea, posição calculada pelas coordenadas do cursor e as
- * setas/Enter/Tab/Esc pelo KeyboardNavigatable), mas como uma classe só,
- * reaproveitada pelos dois gatilhos do tema.
+ * 沿用 flarum/mentions 自动补全的设计（textarea 之后的一个容器，
+ * 依据光标坐标计算位置，方向键/Enter/Tab/Esc 由 KeyboardNavigatable
+ * 处理），但合并为单个类，由主题的两个触发入口复用。
  */
 import KeyboardNavigatable from 'flarum/common/utils/KeyboardNavigatable';
 import AutocompleteReader from 'flarum/common/utils/AutocompleteReader';
@@ -17,23 +16,23 @@ import { editorDriver } from './common';
 
 export interface Suggestion {
   key: string;
-  /** O que aparece na linha do menu. */
+  /** 菜单行中显示的内容。 */
   label: Mithril.Children;
-  /** O texto que substitui o gatilho e o que foi digitado. */
+  /** 替换触发符及已输入内容的文本。 */
   replacement: string;
 }
 
 export interface AutocompleteOptions {
-  /** Classe extra do menu, para o CSS de cada gatilho. */
+  /** 菜单的额外类名，用于各触发入口的 CSS。 */
   className: string;
   trigger: string;
-  /** Caracteres aceitos depois do gatilho (o resto encerra a sugestão). */
+  /** 触发符之后可接受的字符（其余字符会结束建议）。 */
   validBit: RegExp;
-  /** Quantos caracteres antes do cursor procurar o gatilho. */
+  /** 在光标前查找触发符的字符数。 */
   lookBehind?: number;
-  /** Texto do cabeçalho do menu, quando há. */
+  /** 菜单标题文本（若有）。 */
   header?: () => string;
-  /** As sugestões para o que foi digitado; pode ser assíncrono. */
+  /** 针对已输入内容的建议；可为异步。 */
   suggest: (typed: string) => Suggestion[] | Promise<Suggestion[]>;
 }
 
@@ -51,7 +50,7 @@ export default class Autocomplete {
     private readonly options: AutocompleteOptions
   ) {}
 
-  /** Chamado no `onbuild` do editor: o textarea já está no DOM. */
+  /** 在编辑器的 `onbuild` 中调用：此时 textarea 已在 DOM 中。 */
   attach(): void {
     const textarea = this.editor.element?.querySelector<HTMLElement>('.TextEditor-editor');
 
@@ -59,7 +58,7 @@ export default class Autocomplete {
 
     this.textarea = textarea;
     this.container = document.createElement('div');
-    this.container.className = 'CanelaAutocomplete-container';
+    this.container.className = 'LcoyAutocomplete-container';
     textarea.parentElement.style.position ||= 'relative';
     textarea.after(this.container);
 
@@ -72,7 +71,7 @@ export default class Autocomplete {
       .bindTo($(textarea));
   }
 
-  /** O ouvinte de digitação, posto em `params.inputListeners`. */
+  /** 输入监听器，挂在 `params.inputListeners` 上。 */
   readonly listener = (): void => {
     const driver = editorDriver(this.editor);
 
@@ -92,8 +91,7 @@ export default class Autocomplete {
     const request = ++this.request;
 
     Promise.resolve(this.options.suggest(found.typed)).then((items) => {
-      // Uma resposta antiga (de uma busca na API) não pode passar por cima
-      // do que já foi digitado depois.
+      // 旧响应（来自 API 查询）不能覆盖此后已经输入的内容。
       if (request !== this.request) return;
 
       this.items = items;
@@ -115,13 +113,13 @@ export default class Autocomplete {
 
     if (!driver || !menu) return;
 
-    // Mesma conta do flarum/mentions: abaixo do cursor, ou acima quando não
-    // cabe, e sem sair pela direita do editor. As coordenadas do cursor são
-    // relativas ao textarea; o contêiner fica no canto do pai dele.
+    // 与 flarum/mentions 相同的计算方式：位于光标下方，空间不足时
+    // 位于上方，且不超出编辑器右边界。光标坐标相对于 textarea；
+    // 容器位于其父元素的一角。
     const coordinates = driver.getCaretCoordinates(this.start);
     const parent = this.container.parentElement!;
-    // Pelos retângulos, e não por offsetTop: o flarum/mentions pode embrulhar
-    // o textarea num div posicionado depois que o contêiner foi criado.
+    // 使用矩形而非 offsetTop：flarum/mentions 可能在容器创建后
+    // 将 textarea 包裹进一个定位的 div。
     const textareaRect = this.textarea!.getBoundingClientRect();
     const parentRect = parent.getBoundingClientRect();
     let top = textareaRect.top - parentRect.top + coordinates.top + 22;
@@ -160,7 +158,7 @@ export default class Autocomplete {
 
     if (!item || !driver) return;
 
-    // `start` é a posição logo depois do gatilho; o -1 o inclui na troca.
+    // `start` 是触发符之后的位置；-1 使其也被纳入替换范围。
     driver.replaceBeforeCursor(this.start - 1, item.replacement + ' ', false);
     this.hide();
   }
@@ -172,14 +170,14 @@ export default class Autocomplete {
 
     m.render(
       this.container,
-      <ul className={classList('Dropdown-menu', 'CanelaAutocomplete', this.options.className)} role="listbox">
+      <ul className={classList('Dropdown-menu', 'LcoyAutocomplete', this.options.className)} role="listbox">
         {header && <li className="Dropdown-header">{header}</li>}
         {this.items.map((item, i) => (
           <li key={item.key} className={classList({ active: i === this.index })} role="option" aria-selected={i === this.index ? 'true' : 'false'}>
             <button
               type="button"
-              // mousedown, e não click: o click tiraria o foco do textarea
-              // antes, e o cursor iria para o fim do texto.
+              // 使用 mousedown 而非 click：click 会先让 textarea 失去焦点，
+              // 光标会跳到文本末尾。
               onmousedown={(e: MouseEvent) => {
                 e.preventDefault();
                 this.choose(i);

@@ -1,52 +1,52 @@
 // =====================================================================
-// Perfil do usuário como o do Discourse (meta.discourse.org/u/…), com as
-// medidas tiradas do CSS do Meta (user.scss + new-user.scss + Horizon):
+// 用户个人资料与 Discourse 一致（meta.discourse.org/u/…），
+// 数值取自 Meta 的 CSS（user.scss + new-user.scss + Horizon）：
 //
-//   ┌───────────── capa (300px; 200px no celular) ──────────────────────┐
-//   ( avatar 144 )  username (2em, 700)                       [Mensagem]
-//      (flair)      Nome de exibição (1.5157em)
-//                   título · local/site · bio
+// ┌───────────── 封面 (300px；手机端 200px) ───────────────────────────┐
+// ( avatar 144 )  username (2em, 700)                       [发消息]
+// (flair)      显示名称 (1.5157em)
+// 头衔 · 位置/网站 · 简介
 //   ─────────────────────────────────────────────────────────────────────
-//   Ingressou 23 fev  Última postagem 17 set  Visto(a) 14 h  Grupos team
+// 注册于 2月23日  最后发帖 9月17日  最后访问 14 小时  分组 team
 //   ─────────────────────────────────────────────────────────────────────
-//        Resumo          ≡ Atividade           Emblemas        (16px)
-//   ───────────────────── Tudo · Tópicos · Curtidas ───────── (13.9px)
-//   conteúdo da aba (margem de 2em)
+// 摘要            ≡ 活动                徽章            (16px)
+// ───────────────────── 全部 · 话题 · 点赞 ───────── (13.9px)
+// 标签页内容（外边距 2em）
 //
-// Fora do Resumo o cabeçalho encolhe (`--collapsed`, o `.collapsed-info` do
-// Discourse): avatar de 45px e os dois nomes, sem capa, bio nem números.
-// O hero já está dentro do cartão (.Page-hero--inline, feito pela casca).
+// 在摘要之外，头部会收缩（`--collapsed`，即 Discourse 的
+// `.collapsed-info`）：45px 头像和两个名称，不含封面、简介和数字。
+// hero 已在卡片内（.Page-hero--inline，由外壳创建）。
 // =====================================================================
 
-// O Discourse trabalha com 16px de base, e as medidas em em abaixo contam
-// com isso (o corpo do Flarum é 15px).
-.CanelaUserPage .Page-container {
+// Discourse 以 16px 为基准，下面的 em 数值也基于此
+// （Flarum 的正文是 15px）。
+.LcoyUserPage .Page-container {
   font-size: 16px;
   line-height: 1.4;
 }
 
 // ---------------------------------------------------------------------
-// Layout da página: cartão, abas e conteúdo empilhados
+// 页面布局：卡片、标签页和内容堆叠
 // ---------------------------------------------------------------------
-.Canela .CanelaUserPage .Page-container.container {
+.Lcoy .LcoyUserPage .Page-container.container {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   gap: 0;
 
-  // Em coluna, a base de 100% que a casca dá ao hero seria a altura.
+  // 在列布局中，外壳给 hero 的 100% 基准会变成高度。
   > .Page-hero--inline {
     flex: 0 0 auto;
   }
 }
 
-.Canela .CanelaUserPage .Page-sidebar {
+.Lcoy .LcoyUserPage .Page-sidebar {
   float: none;
   width: auto;
   margin: 0;
 }
 
-.Canela .CanelaUserPage .Page-content {
+.Lcoy .LcoyUserPage .Page-content {
   float: none;
   width: auto;
   min-width: 0;
@@ -55,22 +55,22 @@
 }
 
 // ---------------------------------------------------------------------
-// O cartão do perfil
+// 个人资料卡片
 // ---------------------------------------------------------------------
-.CanelaUserHero.UserCard {
-  // O UserCard do core é um hero escuro com texto branco (.light-contents);
-  // dentro do cartão branco tudo volta às cores do texto.
-  --light-content-color: var(--cn-primary);
-  --light-content-control-color: var(--cn-primary);
-  --light-content-control-bg: var(--cn-primary-100);
-  --light-content-control-bg-shaded: var(--cn-primary-low);
-  --light-content-control-bg-fadedin: var(--cn-primary-low);
+.LcoyUserHero.UserCard {
+  // 核心的 UserCard 是深色 hero 配白色文字（.light-contents）；
+  // 在白色卡片内，一切都恢复为文字颜色。
+  --light-content-color: var(--lcoy-primary);
+  --light-content-control-color: var(--lcoy-primary);
+  --light-content-control-bg: var(--lcoy-primary-100);
+  --light-content-control-bg-shaded: var(--lcoy-primary-low);
+  --light-content-control-bg-fadedin: var(--lcoy-primary-low);
 
   position: static;
   margin: 0;
   padding: 0;
   background: none;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
   text-align: left;
   box-shadow: none;
 
@@ -89,30 +89,30 @@
   }
 
   a {
-    color: var(--cn-link);
+    color: var(--lcoy-link);
   }
 }
 
-// A capa: a imagem do perfil estendido (--canela-cover) ou, sem ela, a cor
-// do usuário (a cor dominante do avatar, --usercard-bg) em degradê com a cor
-// de destaque. Retangular, de ponta a ponta, como a `.user-profile-image`.
-.CanelaUserHero-cover {
+// 封面：扩展资料的图片（--lcoy-cover），没有时则为
+// 用户颜色（头像的主色，--usercard-bg）与高亮色
+// 的渐变。矩形，贯穿两端，与 `.user-profile-image` 一致。
+.LcoyUserHero-cover {
   height: 300px;
   margin: 0;
   border-radius: 0;
-  background-color: var(--usercard-bg, var(--cn-accent));
+  background-color: var(--usercard-bg, var(--lcoy-accent));
   background-image:
-    var(--canela-cover, none),
-    radial-gradient(60% 120% at 85% 10%, var(--cn-blob-2), transparent 70%),
-    radial-gradient(50% 90% at 10% 100%, var(--cn-blob-1), transparent 70%),
-    linear-gradient(135deg, var(--usercard-bg, var(--cn-accent)) 0%, ~"color-mix(in oklch, var(--usercard-bg, var(--cn-accent)) 55%, var(--cn-accent))" 55%, var(--cn-accent) 100%);
+    var(--lcoy-cover, none),
+    radial-gradient(60% 120% at 85% 10%, var(--lcoy-blob-2), transparent 70%),
+    radial-gradient(50% 90% at 10% 100%, var(--lcoy-blob-1), transparent 70%),
+    linear-gradient(135deg, var(--usercard-bg, var(--lcoy-accent)) 0%, ~"color-mix(in oklch, var(--usercard-bg, var(--lcoy-accent)) 55%, var(--lcoy-accent))" 55%, var(--lcoy-accent) 100%);
   background-size: cover;
-  // A posição vertical do editor da forumaker/profile-cover, quando ela manda na capa.
-  background-position: var(--canela-cover-position, center center);
+  // forumaker/profile-cover 编辑器主导封面时的垂直位置。
+  background-position: var(--lcoy-cover-position, center center);
   background-repeat: no-repeat;
 }
 
-.CanelaUserHero .UserCard-profile {
+.LcoyUserHero .UserCard-profile {
   display: flex;
   flex: 0 1 auto;
   align-items: flex-start;
@@ -123,13 +123,13 @@
   text-align: left;
 }
 
-// Com capa, o bloco começa 15px abaixo dela (`.details { padding-top: 15px }`).
-.CanelaUserHero--cover .UserCard-profile {
+// 有封面时，区块从其下方 15px 开始（`.details { padding-top: 15px }`）。
+.LcoyUserHero--cover .UserCard-profile {
   padding-top: 15px;
 }
 
-// Avatar de 144px, sem borda, com 20px até os nomes e 10px embaixo.
-.CanelaUserHero-avatar {
+// 144px 头像，无边框，距名称 20px，下方 10px。
+.LcoyUserHero-avatar {
   position: relative;
   flex: none;
   align-self: flex-start;
@@ -139,13 +139,13 @@
   }
 }
 
-.CanelaUserHero .UserCard-avatar {
+.LcoyUserHero .UserCard-avatar {
   width: auto;
   height: auto;
   margin: 0 20px 10px 0;
 
-  // flex, e não block: o avatar padrão (a inicial sobre a cor) precisa do
-  // alinhamento do core para a letra ficar no centro.
+  // 用 flex 而非 block：默认头像（颜色上的首字母）需要
+  // 核心的对齐方式才能使字母居中。
   .Avatar {
     --size: 144px;
     display: flex;
@@ -157,19 +157,19 @@
   }
 }
 
-.CanelaUserHero .AvatarEditor .Dropdown-toggle {
+.LcoyUserHero .AvatarEditor .Dropdown-toggle {
   margin: 0;
 }
 
-// Sem foto, o core deixa o "+" do editor sempre à vista (opacidade .7); no
-// Discourse o avatar padrão aparece limpo e o editor só surge no hover.
-.CanelaUserHero .AvatarEditor:not(:hover):not(.open) .AvatarEditor--noAvatar {
+// 无照片时，核心让编辑器的"+"始终可见（不透明度 .7）；在
+// Discourse 中默认头像干净显示，编辑器仅在悬停时出现。
+.LcoyUserHero .AvatarEditor:not(:hover):not(.open) .AvatarEditor--noAvatar {
   opacity: 0;
 }
 
-// O "flair": o ícone do grupo num círculo de 40px na cor dele, 16px para
-// dentro da margem direita do avatar e 8px acima da base.
-.CanelaAvatarFlair {
+// "flair"：分组图标位于其颜色的 40px 圆中，距头像右边距
+// 向内 16px，距底部 8px。
+.LcoyAvatarFlair {
   position: absolute;
   right: 16px;
   bottom: 8px;
@@ -179,8 +179,8 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--cn-primary-low);
-  color: var(--cn-primary);
+  background: var(--lcoy-primary-low);
+  color: var(--lcoy-primary);
   font-size: 22px;
   line-height: 1;
   pointer-events: none;
@@ -191,26 +191,26 @@
   }
 }
 
-// O `.primary-textual`: nomes, título, local e bio, com 8px embaixo.
-.CanelaUserHero .UserCard-content {
+// `.primary-textual`：名称、头衔、位置和简介，下方 8px。
+.LcoyUserHero .UserCard-content {
   flex: 0 1 auto;
   min-width: 0;
   padding: 0 0 0.5em;
   word-break: break-word;
 }
 
-.CanelaUserHero-names {
+.LcoyUserHero-names {
   min-width: 0;
 }
 
-.CanelaUserHero .UserCard-identity.CanelaUserHero-username {
+.LcoyUserHero .UserCard-identity.LcoyUserHero-username {
   display: block;
   margin: 0;
   font-size: 2em;
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: normal;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -220,35 +220,22 @@
   }
 }
 
-.CanelaUserHero-displayName {
+.LcoyUserHero-displayName {
   margin: 0;
   font-size: 1.5157em;
   font-weight: 400;
   line-height: 1.4;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-// Título ("team"): texto comum, na cor do texto.
-.CanelaUserHero .CanelaProfileTitle {
-  margin: 0;
-  font-size: 1em;
-  font-weight: 400;
-  line-height: 1.4;
-  color: var(--cn-primary);
-}
-
-.CanelaUserHero .CanelaProfileStatus {
-  margin-top: 0.5em;
-}
-
-// Ícones (selo de verificado) e insígnias que não são grupo (suspenso, por
-// exemplo): na linha do nome, depois dele, alinhados ao meio da altura. Só
-// quebram para baixo se o nome não couber; o nome corta com reticências, e o
-// h1 deixa o popover do selo sair dele.
-.CanelaUserHero .UserCard-identity.CanelaUserHero-username {
+// 图标（验证徽章）和非分组徽章（例如封禁）：
+// 位于名称行、名称之后，与高度居中。仅在名称
+// 放不下时换行；名称用省略号截断，h1 允许徽章的 popover
+// 溢出。
+.LcoyUserHero .UserCard-identity.LcoyUserHero-username {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -262,10 +249,10 @@
     text-overflow: ellipsis;
   }
 
-  // Caixa sem altura de linha própria: o centro dela é o centro do selo. O
-  // pequeno deslocamento leva o selo ao meio das minúsculas do nome (o centro
-  // da caixa do h1 fica acima delas, por causa das ascendentes).
-  .CanelaUserIcons {
+  // 盒子没有自己的行高：其中心就是徽章的中心。微小的
+  // 偏移将徽章放到名称小写字母的中部（h1 盒子的中心
+  // 因上升部而高于它们）。
+  .LcoyUserIcons {
     display: inline-flex;
     align-items: center;
     flex-shrink: 0;
@@ -274,7 +261,7 @@
   }
 }
 
-.CanelaUserHero .UserCard-badges.CanelaUserHero-badges {
+.LcoyUserHero .UserCard-badges.LcoyUserHero-badges {
   display: inline-flex;
   margin: 0;
   font-size: 1rem;
@@ -292,7 +279,7 @@
 // 徽章、社交按钮和简介。原先都在一行 flex 里自由换行，块级简介会和数字
 // 并排。现在分三条带：资料事实、数字与徽章胶囊、简介块。
 // ---------------------------------------------------------------------
-.CanelaProfileInfo {
+.LcoyProfileInfo {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -304,7 +291,7 @@
 }
 
 // 资料事实：位置、网站、生日。图标 + 次要色文字，行内让间隔分开。
-.CanelaProfileInfo-facts {
+.LcoyProfileInfo-facts {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -312,7 +299,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  color: var(--cn-primary-high);
+  color: var(--lcoy-primary-high);
   font-size: 0.95em;
   line-height: 1.45;
 
@@ -323,21 +310,19 @@
     margin: 0;
   }
 
-  .CanelaProfileFact,
   > li > span {
     display: inline-flex;
     align-items: center;
     gap: 0.4em;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
   }
 
-  a,
-  a.CanelaProfileFact {
-    color: var(--cn-link);
+  a {
+    color: var(--lcoy-link);
 
     &:hover,
     &:focus-visible {
-      color: var(--cn-accent);
+      color: var(--lcoy-accent);
       text-decoration: none;
     }
   }
@@ -345,12 +330,12 @@
   .icon {
     width: auto;
     font-size: 0.9em;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
   }
 }
 
 // 数字与徽章：统一的小胶囊，图标用强调色。
-.CanelaProfileInfo-chips {
+.LcoyProfileInfo-chips {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -368,10 +353,10 @@
     min-height: 1.9em;
     margin: 0;
     padding: 0.22em 0.75em;
-    border: 1px solid var(--cn-border);
+    border: 1px solid var(--lcoy-border);
     border-radius: 999px;
-    background: var(--cn-primary-low);
-    color: var(--cn-primary-high);
+    background: var(--lcoy-primary-low);
+    color: var(--lcoy-primary-high);
     font-size: 0.8125em;
     font-weight: 500;
     line-height: 1.35;
@@ -379,16 +364,16 @@
     transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 
     &:hover {
-      border-color: var(--cn-primary-100);
-      background: var(--cn-primary-100);
-      color: var(--cn-primary);
+      border-color: var(--lcoy-primary-100);
+      background: var(--lcoy-primary-100);
+      color: var(--lcoy-primary);
     }
 
     .icon {
       width: auto;
       flex: none;
       font-size: 0.95em;
-      color: var(--cn-accent);
+      color: var(--lcoy-accent);
     }
 
     a {
@@ -399,7 +384,7 @@
 
       &:hover,
       &:focus-visible {
-        color: var(--cn-accent);
+        color: var(--lcoy-accent);
         text-decoration: none;
       }
     }
@@ -459,7 +444,7 @@
       width: 1.9em;
       padding: 0;
       border-style: dashed;
-      border-color: var(--cn-primary-100);
+      border-color: var(--lcoy-primary-100);
     }
   }
 
@@ -477,7 +462,7 @@
       font-size: inherit;
 
       > i {
-        color: var(--cn-accent);
+        color: var(--lcoy-accent);
       }
     }
 
@@ -488,21 +473,21 @@
     .UserCardBadge-more {
       padding: 0 0.35em;
       border-radius: 999px;
-      background: var(--cn-primary-100);
-      color: var(--cn-primary-high);
+      background: var(--lcoy-primary-100);
+      color: var(--lcoy-primary-high);
       font-size: 0.92em;
     }
   }
 }
 
 // 简介：独占一行，上方细线把它和数字分开，段落之间留半行。
-.CanelaProfileInfo-bio {
+.LcoyProfileInfo-bio {
   width: 100%;
   min-width: 0;
   margin-top: 0.1em;
   padding-top: 0.75em;
-  border-top: 1px solid var(--cn-border);
-  color: var(--cn-primary-high);
+  border-top: 1px solid var(--lcoy-border);
+  color: var(--lcoy-primary-high);
   font-size: 0.95em;
   line-height: 1.6;
 
@@ -515,12 +500,12 @@
   }
 
   a {
-    color: var(--cn-link);
+    color: var(--lcoy-link);
   }
 }
 
-// Controles à direita, centrados na altura do bloco (`.controls`).
-.CanelaUserHero .UserCard-controls {
+// 右侧控件，在区块高度上居中（`.controls`）。
+.LcoyUserHero .UserCard-controls {
   position: static;
   display: flex;
   flex-wrap: wrap;
@@ -538,33 +523,92 @@
   }
 }
 
-// O core esconde o ícone do botão de controles do perfil; aqui ele é o botão.
-.CanelaUserPage .CanelaUserHero .CanelaUserHero-controls .Dropdown-toggle .Button-icon {
+// 核心隐藏个人资料控件按钮的图标；这里它就是按钮。
+.LcoyUserPage .LcoyUserHero .LcoyUserHero-controls .Dropdown-toggle .Button-icon {
   display: inline-block;
 }
 
-.CanelaUserHero .CanelaUserHero-message.Button--primary {
+.LcoyUserHero .LcoyUserHero-message.Button--primary {
   min-width: 9em;
   justify-content: center;
-  background: var(--cn-accent);
-  color: var(--cn-accent-text);
+  background: var(--lcoy-accent);
+  color: var(--lcoy-accent-text);
 
   .Button-icon {
-    color: var(--cn-accent-text);
+    color: var(--lcoy-accent-text);
   }
 
   &:hover,
   &:focus-visible {
-    background: var(--cn-accent-hover);
-    color: var(--cn-accent-text);
+    background: var(--lcoy-accent-hover);
+    color: var(--lcoy-accent-text);
+  }
+}
+
+// ianm/follow-users 把"关注"作为 .UserCard-profile 的第三个子元素，
+// 远离"发消息"和"…"（它们位于 .UserCard-controls）。从
+// 平板起容器变为网格：头像在左（跨两行），
+// 名称和三个控件在第一行，信息带（徽章、
+// 简介）在第二行占满整宽——此前它被挤在狭窄的
+// 列中，按钮下方留出空白。
+@media @tablet-up {
+  .LcoyUserHero.UserCard > .darkenBackground > .container {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      'avatar names follow controls'
+      'avatar info info info';
+    align-items: start;
+    padding-bottom: 0.5em;
+  }
+
+  // 原先在 profile（封面下方）上的内边距移到网格上。
+  .LcoyUserHero--cover > .darkenBackground > .container {
+    padding-top: 15px;
+  }
+
+  // profile 和 content 不再是盒子：其子元素成为网格项。
+  .LcoyUserHero .UserCard-profile,
+  .LcoyUserHero .UserCard-content {
+    display: contents;
+  }
+
+  .LcoyUserHero-avatar {
+    grid-area: avatar;
+  }
+
+  .LcoyUserHero-names {
+    grid-area: names;
+    min-width: 0;
+    word-break: break-word;
+  }
+
+  .LcoyUserHero .LcoyProfileInfo {
+    grid-area: info;
+    min-width: 0;
+  }
+
+  .LcoyUserHero .UserCard-profile > .Button--follow-profile {
+    grid-area: follow;
+    align-self: start;
+    margin: 4px 0 0 0.5em;
+  }
+
+  .LcoyUserHero .UserCard-controls {
+    grid-area: controls;
+    flex: none;
+    flex-wrap: nowrap;
+    align-self: start;
+    max-width: none;
+    margin: 4px 0 0 0.5em;
   }
 }
 
 // ---------------------------------------------------------------------
-// Cabeçalho encolhido (fora do Resumo)
+// 收缩后的头部（摘要之外）
 // ---------------------------------------------------------------------
-.CanelaUserHero--collapsed {
-  border-bottom: 1px solid var(--cn-border);
+.LcoyUserHero--collapsed {
+  border-bottom: 1px solid var(--lcoy-border);
 
   .UserCard-profile {
     padding-top: 0;
@@ -581,7 +625,7 @@
     }
   }
 
-  .CanelaAvatarFlair {
+  .LcoyAvatarFlair {
     right: 2px;
     bottom: 8px;
     width: 20px;
@@ -593,35 +637,33 @@
     padding-bottom: 0;
   }
 
-  .UserCard-identity.CanelaUserHero-username {
+  .UserCard-identity.LcoyUserHero-username {
     font-size: 1.5157em;
   }
 
-  .CanelaUserHero-displayName {
+  .LcoyUserHero-displayName {
     font-size: 1.1487em;
   }
 
-  .CanelaProfileTitle,
-  .CanelaProfileStatus,
-  .CanelaProfileInfo,
+  .LcoyProfileInfo,
   .UserCard-badges {
     display: none;
   }
 
   .UserCard-controls {
     max-width: none;
-    flex: 1 2 min-content;
+    flex: none;
   }
 }
 
 // ---------------------------------------------------------------------
-// Linha de estatísticas (`.secondary dl`)
+// 统计行（`.secondary dl`）
 // ---------------------------------------------------------------------
-.CanelaUserStats {
+.LcoyUserStats {
   display: block;
   margin: 0;
   padding: 0.5em 0;
-  border-top: 1px solid var(--cn-border);
+  border-top: 1px solid var(--lcoy-border);
   font-size: 1em;
   line-height: 1.4;
 
@@ -641,42 +683,42 @@
   dt {
     margin: 0 5px 0 0;
     font-weight: 400;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
   }
 
   dd {
     margin: 0 15px 0 0;
     padding: 0;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 
   &-online {
-    color: var(--cn-success);
+    color: var(--lcoy-success);
   }
 
-  // "team, plugin_authors": vírgula depois de cada grupo, menos do último.
+  // "team, plugin_authors"：每个分组后加逗号，最后一个除外。
   &-group:not(:last-child) {
     margin-right: 0.25em;
 
     &::after {
       content: ",";
-      color: var(--cn-primary);
+      color: var(--lcoy-primary);
     }
   }
 
-  a.CanelaUserStats-group {
-    color: var(--cn-link);
+  a.LcoyUserStats-group {
+    color: var(--lcoy-link);
   }
 }
 
 // ---------------------------------------------------------------------
-// Abas (`.user-navigation`): a linha principal e, em "Atividade", a segunda
+// 标签页（`.user-navigation`）：主行，以及在"活动"中的第二行
 // ---------------------------------------------------------------------
-.CanelaUserNav {
+.LcoyUserNav {
   width: auto;
   margin: 0;
   padding: 0;
-  border-bottom: 1px solid var(--cn-border);
+  border-bottom: 1px solid var(--lcoy-border);
 
   ul {
     display: flex;
@@ -715,20 +757,20 @@
     border: 0;
     border-radius: 0;
     background: transparent;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     font-size: 1em;
     font-weight: 400;
     line-height: 1;
     white-space: nowrap;
     text-decoration: none;
-    // Horizon zera a transição dos botões e abas (--d-button-transition:
-    // none); só o ícone muda de cor em 0.2s, como no `.nav-pills`.
+    // Horizon 将按钮和标签页的过渡归零（--d-button-transition:
+    // none）；只有图标在 0.2s 内变色，与 `.nav-pills` 一致。
     transition: none;
 
     .Button-icon {
       margin: 0 5px 0 0;
       font-size: 0.8706em;
-      color: var(--cn-primary-high);
+      color: var(--lcoy-primary-high);
       transition: color 0.2s;
     }
 
@@ -739,7 +781,7 @@
       line-height: normal;
     }
 
-    // O Discourse não mostra as contagens nas abas.
+    // Discourse 不在标签页上显示计数。
     .Button-badge {
       display: none;
     }
@@ -747,11 +789,11 @@
     &:hover,
     &:focus-visible {
       background: transparent;
-      color: var(--cn-link);
+      color: var(--lcoy-link);
       text-decoration: none;
 
       .Button-icon {
-        color: var(--cn-link);
+        color: var(--lcoy-link);
       }
 
       &::after {
@@ -761,18 +803,18 @@
         right: 0;
         bottom: 0;
         height: 0.125em;
-        background: var(--cn-link);
+        background: var(--lcoy-link);
       }
     }
   }
 
   li.active > a,
   li > a[active="true"] {
-    color: var(--cn-link);
+    color: var(--lcoy-link);
     background: transparent;
 
     .Button-icon {
-      color: var(--cn-link);
+      color: var(--lcoy-link);
     }
 
     &::after {
@@ -782,24 +824,24 @@
       right: 0;
       bottom: 0;
       height: 0.125em;
-      background: var(--cn-link);
+      background: var(--lcoy-link);
     }
   }
 }
 
-.CanelaUserNav-primary {
-  border-top: 1px solid var(--cn-border);
-  border-bottom: 1px solid var(--cn-border);
+.LcoyUserNav-primary {
+  border-top: 1px solid var(--lcoy-border);
+  border-bottom: 1px solid var(--lcoy-border);
 }
 
-// Sem a linha de estatísticas, a borda de cima já é a do cabeçalho encolhido.
-.CanelaUserPage--collapsed .CanelaUserNav-primary {
+// 没有统计行时，上边框就是收缩头部的边框。
+.LcoyUserPage--collapsed .LcoyUserNav-primary {
   border-top: 0;
 }
 
-// A linha de "Atividade" (ScrollNav): quando as abas não cabem, setas ‹ ›
-// nas pontas do lado em que ainda há abas, e as abas esmaecem embaixo delas.
-.CanelaScrollNav {
+// "活动"行（ScrollNav）：标签页放不下时，仍有标签页的一侧
+// 两端出现 ‹ › 箭头，标签页在其下方淡出。
+.LcoyScrollNav {
   position: relative;
 
   &-arrow {
@@ -815,14 +857,14 @@
     padding: 0;
     border: 0;
     border-radius: 0;
-    background: var(--cn-surface);
-    color: var(--cn-primary-high);
+    background: var(--lcoy-surface);
+    color: var(--lcoy-primary-high);
     font-size: 0.8706em;
     cursor: pointer;
 
     &:hover,
     &:focus-visible {
-      color: var(--cn-link);
+      color: var(--lcoy-link);
     }
 
     &--left {
@@ -855,7 +897,7 @@
   }
 }
 
-.CanelaUserNav-secondary {
+.LcoyUserNav-secondary {
   font-size: 0.8706em;
 
   li {
@@ -867,9 +909,9 @@
   }
 }
 
-// Abaixo de 1024px a linha principal fica só com os ícones, maiores.
+// 低于 1024px 时，主行只保留图标，且尺寸更大。
 @media (max-width: 1023px) {
-  .CanelaUserNav-primary li > a {
+  .LcoyUserNav-primary li > a {
     .Button-icon {
       margin: 0;
       font-size: 1.1487em;
@@ -882,13 +924,13 @@
 }
 
 // ---------------------------------------------------------------------
-// Conteúdo das abas
+// 标签页内容
 // ---------------------------------------------------------------------
 
-// Postagens, Curtidas, Menções: o `user-stream-item` do Discourse — avatar
-// de 48px, título do tópico como link, categoria e data embaixo e o trecho
-// recuado 56px, uma postagem por bloco com a borda entre eles.
-.CanelaUserPage .PostList-discussions {
+// 帖子、点赞、提及：Discourse 的 `user-stream-item`——48px
+// 头像，话题标题作为链接，分类和日期在下方，摘要
+// 缩进 56px，每个块一个帖子，块之间以边框分隔。
+.LcoyUserPage .PostList-discussions {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -900,10 +942,10 @@
   }
 }
 
-.CanelaStreamItem {
+.LcoyStreamItem {
   padding: 16px 0.53em;
-  border-bottom: 1px solid var(--cn-border);
-  background: var(--cn-surface);
+  border-bottom: 1px solid var(--lcoy-border);
+  background: var(--lcoy-surface);
   font-size: 1em;
   line-height: 1.4;
 
@@ -929,7 +971,7 @@
   }
 
   &-title a {
-    color: var(--cn-link);
+    color: var(--lcoy-link);
     word-break: break-word;
 
     &:hover {
@@ -942,20 +984,20 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 0 8px;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
 
-    .CanelaBadges {
+    .LcoyBadges {
       font-size: 0.8706em;
     }
   }
 
-  // `.relative-date`: --font-down-2 e a altura de linha pequena.
+  // `.relative-date`：--font-down-2 和小行高。
   &-date {
     display: inline-flex;
     align-items: center;
     font-size: 0.7579em;
     line-height: 1.1;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
 
     &::before {
       content: "•";
@@ -970,11 +1012,11 @@
 
   &-excerpt {
     margin: 12px 0 0 56px;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     word-break: break-word;
   }
 
-  // Aba Reações: o emoji dado e o avatar de quem reagiu, acima do trecho.
+  // 回应标签页：给出的 emoji 和回应者头像，位于摘要上方。
   &-reaction {
     display: flex;
     align-items: center;
@@ -1001,59 +1043,59 @@
     }
 
     .icon,
-    .CanelaStreamItem-likeIcon {
+    .LcoyStreamItem-likeIcon {
       font-size: 1.1em;
     }
 
-    // Curtida sem a reação "heart" do fof: o coração na cor de curtida.
-    .CanelaStreamItem-likeIcon {
-      color: var(--cn-love);
+    // 没有 fof 的 "heart" 回应时：心形使用点赞色。
+    .LcoyStreamItem-likeIcon {
+      color: var(--lcoy-love);
     }
   }
 }
 
 @media @phone {
-  .CanelaStreamItem-excerpt,
-  .CanelaStreamItem-reaction {
+  .LcoyStreamItem-excerpt,
+  .LcoyStreamItem-reaction {
     margin-left: 0;
   }
 }
 
-.CanelaUserPage .PostList-loadMore,
-.CanelaUserPage .DiscussionList-loadMore {
-  margin-top: var(--cn-space-4);
+.LcoyUserPage .PostList-loadMore,
+.LcoyUserPage .DiscussionList-loadMore {
+  margin-top: var(--lcoy-space-4);
   text-align: center;
 }
 
 // ---------------------------------------------------------------------
-// Resumo (`.user-summary-page`)
+// 摘要（`.user-summary-page`）
 // ---------------------------------------------------------------------
-.CanelaUserSummary {
+.LcoyUserSummary {
   display: block;
 }
 
-// "ESTATÍSTICAS", "MELHORES TÓPICOS"…: o h3 do Discourse em caixa alta.
-.CanelaUserSummary-heading {
+// "统计"、"最佳话题"…：Discourse 的大写 h3。
+.LcoyUserSummary-heading {
   margin: 0 0 10px;
   font-size: 1.17em;
   font-weight: 700;
   line-height: 1.4;
   text-transform: uppercase;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
 }
 
-.CanelaUserSummary-section {
+.LcoyUserSummary-section {
   margin-bottom: 20px;
 }
 
-// Os números em linha: valor em negrito grande, rótulo cinza.
-.CanelaUserSummary-statList {
+// 数字排成一行：大号加粗数值，灰色标签。
+.LcoyUserSummary-statList {
   margin: 10px 0;
   padding: 0;
   list-style: none;
 }
 
-.CanelaUserSummary-stat {
+.LcoyUserSummary-stat {
   display: inline-block;
   margin: 0 10px 10px 0;
   padding: 10px 14px 10px 0;
@@ -1061,31 +1103,31 @@
   &-value {
     font-size: 1.3195em;
     font-weight: 700;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 
   &-label {
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
   }
 
   &-icon {
     margin: 0 2px;
     font-size: 0.9em;
-    color: var(--cn-love);
+    color: var(--lcoy-love);
   }
 }
 
-// Duas colunas de 50%, cada lista com 95% da largura.
-.CanelaUserSummary-columns {
+// 两个 50% 的列，每个列表占 95% 宽度。
+.LcoyUserSummary-columns {
   display: flex;
   flex-wrap: wrap;
 }
 
-.CanelaUserSummary-columns > .CanelaUserSummary-section {
+.LcoyUserSummary-columns > .LcoyUserSummary-section {
   width: 50%;
 }
 
-.CanelaSummaryList {
+.LcoySummaryList {
   max-width: 95%;
   margin: 0;
   padding: 0;
@@ -1094,12 +1136,12 @@
   &-item {
     margin: 10px 0;
     padding: 5px 8px;
-    border-left: 2px solid var(--cn-primary-low);
+    border-left: 2px solid var(--lcoy-primary-low);
     overflow-wrap: break-word;
   }
 
   &-meta {
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
 
     .icon {
       font-size: 0.9em;
@@ -1107,10 +1149,10 @@
   }
 
   &-likes .icon {
-    color: var(--cn-love);
+    color: var(--lcoy-love);
   }
 
-  // Linhas falsas enquanto a coluna carrega, na altura do texto de verdade.
+  // 列加载时的假行，高度与真实文字一致。
   &-fake {
     display: inline-block;
     height: 0.9em;
@@ -1118,7 +1160,7 @@
   }
 
   &-title {
-    color: var(--cn-link) !important;
+    color: var(--lcoy-link) !important;
 
     &:hover {
       text-decoration: underline;
@@ -1126,9 +1168,9 @@
   }
 }
 
-// `.summary-user-list`: linhas de 45px com o avatar de 40px, o nome de
-// usuário em negrito, o nome em cinza e a contagem embaixo.
-.CanelaSummaryUsers {
+// `.summary-user-list`：45px 行，40px 头像，用户名
+// 加粗，名称灰色，计数在下方。
+.LcoySummaryUsers {
   max-width: 95%;
   margin: 0;
   padding: 0;
@@ -1166,7 +1208,7 @@
   }
 
   &-username {
-    color: var(--cn-primary) !important;
+    color: var(--lcoy-primary) !important;
     font-weight: 700;
 
     &:hover {
@@ -1176,11 +1218,11 @@
 
   &-name {
     margin-left: 0.5em;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
   }
 
   &-count {
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
     font-size: 0.8706em;
 
     .icon {
@@ -1189,15 +1231,15 @@
   }
 }
 
-.CanelaUserSummary-most-liked-by,
-.CanelaUserSummary-most-liked {
-  .CanelaSummaryUsers-count .icon {
-    color: var(--cn-love);
+.LcoyUserSummary-most-liked-by,
+.LcoyUserSummary-most-liked {
+  .LcoySummaryUsers-count .icon {
+    color: var(--lcoy-love);
   }
 }
 
-// `.top-categories-section`: a tabela sem bordas, com as contagens centradas.
-.CanelaSummaryCategories {
+// `.top-categories-section`：无边框表格，计数居中。
+.LcoySummaryCategories {
   max-width: 95%;
   border-collapse: collapse;
 
@@ -1209,24 +1251,24 @@
   }
 
   th {
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
     font-weight: 400;
   }
 
   &-count {
     text-align: center !important;
-    color: var(--cn-link);
+    color: var(--lcoy-link);
   }
 
   th&-count {
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
   }
 
   &-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: var(--cn-primary) !important;
+    color: var(--lcoy-primary) !important;
     font-size: 0.8706em;
   }
 
@@ -1238,13 +1280,13 @@
   }
 }
 
-.CanelaUserSummary-empty {
+.LcoyUserSummary-empty {
   margin: 10px 0;
-  color: var(--cn-primary-medium);
+  color: var(--lcoy-primary-medium);
 }
 
-.CanelaUserSummary-more {
-  color: var(--cn-link);
+.LcoyUserSummary-more {
+  color: var(--lcoy-link);
 
   &:hover {
     text-decoration: underline;
@@ -1252,19 +1294,19 @@
 }
 
 // ---------------------------------------------------------------------
-// Celular (< 768px): capa de 200px, avatar centrado sobre ela e tudo
-// centralizado, como o perfil do Discourse no celular
+// 手机端（< 768px）：200px 封面，头像居中其上，一切
+// 居中，与 Discourse 手机端的个人资料一致
 // ---------------------------------------------------------------------
 @media @phone {
-  .CanelaUserHero.UserCard > .darkenBackground > .container {
+  .LcoyUserHero.UserCard > .darkenBackground > .container {
     flex-wrap: wrap;
   }
 
-  // A capa no celular: a foto inteira, sem corte. As capas do site são em
-  // maioria retratos (2:3, 3:4); no `cover` só sobrava uma faixa central de
-  // ~43% da imagem. O retrato aparece inteiro e uma cópia desfocada dele
-  // preenche as laterais; sem capa, o degradê do tema continua atrás.
-  .CanelaUserHero-cover {
+  // 手机端封面：完整照片，不裁切。站点的封面多为
+  // 竖幅（2:3、3:4）；使用 `cover` 时只剩中间约
+  // 43% 的图像。竖幅完整显示，其模糊副本
+  // 填充两侧；无封面时，主题渐变仍在背后。
+  .LcoyUserHero-cover {
     position: relative;
     height: 190px;
     overflow: hidden;
@@ -1273,7 +1315,7 @@
     &::after {
       content: '';
       position: absolute;
-      background-image: var(--canela-cover, none);
+      background-image: var(--lcoy-cover, none);
       background-repeat: no-repeat;
     }
 
@@ -1291,7 +1333,7 @@
     }
   }
 
-  .CanelaUserHero .UserCard-profile {
+  .LcoyUserHero .UserCard-profile {
     flex-wrap: wrap;
     justify-content: center;
     width: 100%;
@@ -1299,38 +1341,38 @@
     text-align: center;
   }
 
-  .CanelaUserHero--cover .UserCard-profile {
+  .LcoyUserHero--cover .UserCard-profile {
     padding-top: 0;
   }
 
-  // Avatar de 96px (o dobro da fonte do nome), sobre a capa pela metade:
-  // 144px ocupava 37% da tela e ampliava uma foto de 100px.
-  .CanelaUserHero-avatar {
+  // 96px 头像（名称字号的两倍），一半覆盖在封面上：
+  // 144px 会占据屏幕 37% 并放大 100px 的照片。
+  .LcoyUserHero-avatar {
     margin: 6px auto 0;
   }
 
-  .CanelaUserHero--cover .CanelaUserHero-avatar {
+  .LcoyUserHero--cover .LcoyUserHero-avatar {
     margin-top: -40px;
   }
 
-  .CanelaUserHero .UserCard-avatar {
+  .LcoyUserHero .UserCard-avatar {
     margin: 0;
   }
 
-  // Só no cabeçalho completo: encolhido (fora do Resumo) o avatar é o de 45px.
-  .CanelaUserHero:not(.CanelaUserHero--collapsed) .UserCard-avatar .Avatar {
+  // 仅在完整头部中：收缩后（摘要之外）头像为 45px。
+  .LcoyUserHero:not(.LcoyUserHero--collapsed) .UserCard-avatar .Avatar {
     --size: 96px;
     width: 96px;
     height: 96px;
     font-size: 36px;
-    // Metade do avatar fica sobre a capa: um anel da cor do cartão separa —
-    // e a sombra leve mantém o contorno quando o resto cai no cartão branco.
+    // 头像的一半位于封面上：一圈卡片色的环将其分隔——
+    // 当其余部分落在白色卡片上时，浅阴影保持轮廓。
     box-shadow:
-      0 0 0 3px var(--cn-surface),
+      0 0 0 3px var(--lcoy-surface),
       0 4px 10px ~"rgb(0 0 0 / 0.08)";
   }
 
-  .CanelaAvatarFlair {
+  .LcoyAvatarFlair {
     right: 0;
     bottom: 4px;
     width: 26px;
@@ -1338,26 +1380,26 @@
     font-size: 14px;
   }
 
-  .CanelaUserHero .UserCard-content {
+  .LcoyUserHero .UserCard-content {
     width: 100%;
   }
 
-  .CanelaUserHero:not(.CanelaUserHero--collapsed) .UserCard-content {
+  .LcoyUserHero:not(.LcoyUserHero--collapsed) .UserCard-content {
     padding-bottom: 0.35em;
   }
 
-  .CanelaUserHero .UserCard-identity.CanelaUserHero-username {
+  .LcoyUserHero .UserCard-identity.LcoyUserHero-username {
     justify-content: center;
     font-size: 1.5em;
   }
 
-  .CanelaUserHero-displayName {
+  .LcoyUserHero-displayName {
     font-size: 1.1487em;
   }
 
-  // A linha de estatísticas também encolhe, para o cartão caber mais inteiro
-  // na primeira tela.
-  .CanelaUserStats {
+  // 统计行也会缩小，使卡片更完整地容纳在
+  // 首屏中。
+  .LcoyUserStats {
     padding: 0.4em 0;
     font-size: 0.9375em;
 
@@ -1368,17 +1410,17 @@
 
   // 手机上的信息区跟着头像居中：事实行和胶囊行居中，简介文字居中；
   // 胶囊收紧一点，事实行继续自动换行。
-  .CanelaProfileInfo {
+  .LcoyProfileInfo {
     align-items: center;
     gap: 0.5em;
   }
 
-  .CanelaProfileInfo-facts,
-  .CanelaProfileInfo-chips {
+  .LcoyProfileInfo-facts,
+  .LcoyProfileInfo-chips {
     justify-content: center;
   }
 
-  .CanelaProfileInfo-chips {
+  .LcoyProfileInfo-chips {
     gap: 0.35em 0.4em;
 
     > li {
@@ -1387,10 +1429,10 @@
     }
   }
 
-  .CanelaProfileInfo-bio {
+  .LcoyProfileInfo-bio {
     text-align: center;
 
-    // Listas na biografia continuam alinhadas à esquerda quando o texto centraliza.
+    // 文字居中时，简介中的列表仍保持左对齐。
     ul,
     ol {
       display: inline-block;
@@ -1399,27 +1441,33 @@
     }
   }
 
-  .CanelaUserHero .UserCard-controls {
+  .LcoyUserHero .UserCard-controls {
     flex: 1 1 25%;
     justify-content: center;
     max-width: none;
     margin: 0 0 0.5em;
   }
 
-  // O conteúdo (Resumo) começa mais perto do cartão no celular.
-  .Canela .CanelaUserPage .Page-content {
+  // 手机端"关注"仍在名称列；与其他控件之间留出
+  // 间距，其他控件下移到下一行。
+  .LcoyUserHero .UserCard-profile > .Button--follow-profile {
+    margin-top: 0.5em;
+  }
+
+  // 手机端内容（摘要）开始得更靠近卡片。
+  .Lcoy .LcoyUserPage .Page-content {
     margin-top: 1.25em;
   }
 
-  // Encolhido: avatar e nomes lado a lado, à esquerda.
-  .CanelaUserHero--collapsed {
+  // 收缩后：头像与名称并排，居左。
+  .LcoyUserHero--collapsed {
     .UserCard-profile {
       flex-wrap: nowrap;
       justify-content: flex-start;
       text-align: left;
     }
 
-    .CanelaUserHero-avatar {
+    .LcoyUserHero-avatar {
       margin: 0;
     }
 
@@ -1428,7 +1476,7 @@
     }
   }
 
-  .CanelaUserSummary-columns > .CanelaUserSummary-section {
+  .LcoyUserSummary-columns > .LcoyUserSummary-section {
     width: 100%;
   }
 }

@@ -20,11 +20,11 @@ use Flarum\Search\SearchState;
 use Flarum\Search\ValidateFilterTrait;
 
 /**
- * `filter[canelaMinPosts]=N`: tópicos com pelo menos N postagens, o "mínimo de
- * postagens" dos filtros avançados do Discourse.
+ * `filter[lcoyMinPosts]=N`：至少有 N 个帖子的主题，即 Discourse 高级
+ * 过滤器中的"最少帖子数"。
  *
- * Conta pelo `comment_count`, a coluna que o core já mantém: a postagem de
- * abertura entra na conta, como no Discourse (lá `posts_count` também a inclui).
+ * 通过核心已维护的 `comment_count` 列统计：首帖也计入其中，与 Discourse
+ * 一致（那里的 `posts_count` 同样包含首帖）。
  *
  * @implements FilterInterface<DatabaseSearchState>
  */
@@ -35,7 +35,7 @@ final class MinPostsFilter implements FilterInterface
     #[\Override]
     public function getFilterKey(): string
     {
-        return 'canelaMinPosts';
+        return 'lcoyMinPosts';
     }
 
     #[\Override]
@@ -43,7 +43,7 @@ final class MinPostsFilter implements FilterInterface
     {
         $minimum = max(0, $this->asInt($value));
 
-        // Negado vira "menos de N", o complemento exato do filtro.
+        // 取反后变为"少于 N"，即该过滤器的精确补集。
         $state->getQuery()->where('discussions.comment_count', $negate ? '<' : '>=', $minimum);
     }
 }

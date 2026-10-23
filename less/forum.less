@@ -1,10 +1,10 @@
-// Canela — tema para Flarum 2 inspirado no Discourse (Horizon).
-// A ordem importa: tokens primeiro, depois a base, a casca e as telas.
+// Lcoy —— 受 Discourse（Horizon）启发的 Flarum 2 主题。
+// 顺序很重要：令牌在前，然后是基础、外壳和各页面。
 
 @import "fonts.less";
 @import "common/tokens.less";
 
-// Casca
+// 外壳
 @import "forum/Core.less";
 @import "forum/Icons.less";
 @import "forum/Components.less";
@@ -15,19 +15,19 @@
 @import "forum/ThemePreview.less";
 @import "forum/Mobile.less";
 
-// Lista de tópicos
+// 话题列表
 @import "forum/List.less";
 @import "forum/Navigation.less";
 @import "forum/Hero.less";
 @import "forum/Categories.less";
 
-// Tópico
+// 话题
 @import "forum/Topic.less";
 @import "forum/Posts.less";
 @import "forum/Timeline.less";
 @import "forum/TopicExtras.less";
 
-// Perfil, menus, editor, busca e configurações
+// 个人资料、菜单、编辑器、搜索和设置
 @import "forum/Menus.less";
 @import "forum/UserMenu.less";
 @import "forum/Review.less";
@@ -37,25 +37,24 @@
 @import "forum/Settings.less";
 @import "forum/User.less";
 
-// Recursos com backend
+// 带后端的功能
 @import "forum/features/Community.less";
 @import "forum/features/Stats.less";
 @import "forum/features/Bookmarks.less";
 @import "forum/features/Composer.less";
 @import "forum/features/Extras.less";
 @import "forum/features/Profile.less";
-@import "forum/features/Links.less";
 @import "forum/features/Auth.less";
 
-// Recursos do Discourse que faltavam (gaps)
+// Discourse 中此前缺失的功能（gaps）
 @import "forum/Gaps.less";
 
-// Movimento do Discourse (por último: ajusta spinner, dicas e toasts)
+// Discourse 的动效（放在最后：调整 spinner、提示和 toast）
 @import "forum/Motion.less";
-// Indicador de carregamento com SVG (depois do Motion, que ajusta o anel).
+// 带 SVG 的加载指示器（放在 Motion 之后，因为后者会调整圆环）。
 @import "forum/Loader.less";
 
-// Extensões de terceiros (FoF) no visual do Discourse
+// 第三方扩展（FoF）采用 Discourse 外观
 @import "forum/thirdparty/BestAnswer.less";
 @import "forum/thirdparty/Reactions.less";
 @import "forum/thirdparty/Polls.less";
@@ -74,10 +73,10 @@
 @import "forum/thirdparty/Deck.less";
 @import "forum/thirdparty/FofWidgets.less";
 
-// Estilo das postagens "Direto" (o modo de conversa do avocado): depois das
-// extensões de terceiros, porque refaz a barra de ações que elas repaginam.
+// "直聊"式帖子的样式（Avocado 的对话模式）：放在
+// 第三方扩展之后，因为它会重做这些扩展重新修饰的操作栏。
 @import "forum/PostDirect.less";
 
-// Modais de formulário longo: largos, em colunas, com o salvar fixo (por
-// último: vence os tamanhos dos modais do core e das extensões).
+// 长表单弹窗：宽幅、分栏，保存按钮固定（放在
+// 最后：优先于核心和扩展的弹窗尺寸）。
 @import "forum/ModalLayout.less";

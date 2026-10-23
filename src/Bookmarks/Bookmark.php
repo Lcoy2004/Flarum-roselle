@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Lcoy\Roselle\Bookmarks\Api\BookmarkBuffer;
 
 /**
- * Um post marcado por um usuário.
+ * 一个被用户标记的帖子。
  *
  * @property int $id
  * @property int $user_id
@@ -42,7 +42,7 @@ class Bookmark extends AbstractModel
 
     public const NAME_MAX_LENGTH = 100;
 
-    protected $table = 'canela_bookmarks';
+    protected $table = 'lcoy_bookmarks';
 
     public $timestamps = true;
 
@@ -59,9 +59,9 @@ class Bookmark extends AbstractModel
     #[\Override]
     protected static function booted(): void
     {
-        // Os atributos `bookmark*` dos posts vêm de um buffer por requisição.
-        // Criar ou apagar um marcador no meio dela (a resposta do POST inclui o
-        // post) não pode devolver o estado de antes.
+        // 帖子上的 `bookmark*` 属性来自按请求的缓冲区。
+        // 在该请求中途创建或删除书签（POST 的响应包含该帖子）时，
+        // 不能返回之前的状态。
         $forget = static fn (self $bookmark) => BookmarkBuffer::forget($bookmark->user_id, $bookmark->post_id);
 
         static::saved($forget);
@@ -85,16 +85,16 @@ class Bookmark extends AbstractModel
     }
 
     /**
-     * Troca o horário do lembrete. Um horário novo volta a valer: o envio do
-     * anterior (`reminded_at`) é esquecido, ou o comando nunca o mandaria.
+     * 更换提醒时间。新的时间会重新生效：之前那次发送的记录
+     * （`reminded_at`）会被清除，否则命令永远不会再发送它。
      */
     public function setReminder(?\DateTimeInterface $at): void
     {
         $next = $at === null ? null : Carbon::instance($at)->utc()->startOfMinute();
         $current = $this->reminder_at;
 
-        // O mesmo horário (o front-end reenvia o que já estava) não é um
-        // lembrete novo: um que já foi enviado não deve voltar a disparar.
+        // 相同的时间（前端会重发已有的时间）不算新的提醒：
+        // 已经发送过的提醒不应再次触发。
         if ($next === null ? $current === null : ($current !== null && $next->equalTo($current))) {
             return;
         }

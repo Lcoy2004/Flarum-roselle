@@ -1,11 +1,10 @@
 /*
- * O controle de notificações do tópico no jeito do Discourse: um botão com o
- * sino do nível atual e um menu em que cada nível tem título e descrição.
+ * Discourse 风格的主题通知控件：一个带当前级别铃铛的按钮，以及一个
+ * 每个级别都有标题和描述的菜单。
  *
- * Os níveis são os três do flarum/subscriptions (seguir, normal, ignorar),
- * com os nomes do Discourse: Acompanhando, Normal e Silenciado. O tema não usa
- * o SubscriptionMenu da extensão porque o botão dele é dividido (seguir com um
- * clique + seta), e no Discourse o clique sempre abre o menu.
+ * 级别沿用 flarum/subscriptions 的三个（关注、常规、忽略），名称采用 Discourse 的：
+ * 关注、常规和静音。主题没有使用扩展的 SubscriptionMenu，因为它的按钮是
+ * 分离式的（一次点击关注 + 箭头），而在 Discourse 中点击总是打开菜单。
  */
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
 import Dropdown from 'flarum/common/components/Dropdown';
@@ -38,7 +37,7 @@ export function currentLevel(discussion: Discussion): Level {
 
 export interface TopicNotificationsAttrs extends ComponentAttrs {
   discussion: Discussion;
-  /** Só o sino, redondo — a versão da linha do tempo. */
+  /** 只有铃铛，圆形——时间线中的版本。 */
   compact?: boolean;
 }
 
@@ -49,12 +48,12 @@ export default class TopicNotifications extends Component<TopicNotificationsAttr
 
     return (
       <Dropdown
-        className={classList('CanelaNotifications', `CanelaNotifications--${current.key}`, { 'CanelaNotifications--compact': this.attrs.compact })}
+        className={classList('LcoyNotifications', `LcoyNotifications--${current.key}`, { 'LcoyNotifications--compact': this.attrs.compact })}
         buttonClassName={classList('Button', { 'Button--icon': this.attrs.compact })}
-        menuClassName="CanelaNotifications-menu"
+        menuClassName="LcoyNotifications-menu"
         icon={current.icon}
-        // Sino cheio x vazado é o que distingue "Acompanhando" de "Normal": o
-        // estilo de ícone forçado pelo fórum não pode igualar os dois.
+        // 实心铃铛与空心铃铛用来区分“关注”和“常规”：论坛强制使用的图标
+        // 样式不能把两者变成一样。
         noStyleOverride
         label={this.attrs.compact ? '' : t(`topic.notifications.${current.key}`)}
         caretIcon={this.attrs.compact ? '' : 'fas fa-caret-down'}
@@ -77,7 +76,7 @@ export default class TopicNotifications extends Component<TopicNotificationsAttr
   }
 }
 
-/** "Você receberá notificações porque…" — o texto embaixo do botão no rodapé. */
+/** “你会收到通知，因为……”——页脚按钮下方的文字。 */
 export function notificationReason(discussion: Discussion): string {
   return t(`topic.notifications.${currentLevel(discussion).key}_reason`);
 }

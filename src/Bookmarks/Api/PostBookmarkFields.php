@@ -21,11 +21,11 @@ use Lcoy\Roselle\Bookmarks\Bookmark;
 use Lcoy\Roselle\Bookmarks\BookmarksFeature;
 
 /**
- * O marcador do ator em cada post: o botão do post precisa saber se está
- * marcado, e o "Editar marcador" abre já preenchido sem ir buscar o marcador.
+ * 当前操作者在每个帖子上的书签：帖子上的按钮需要知道是否已标记，
+ * 而"编辑书签"对话框打开时已有内容，无需再获取书签。
  *
- * Só para quem está logado e com o recurso ligado — para os outros os campos
- * nem aparecem. Os valores saem do BookmarkBuffer, numa consulta por resposta.
+ * 仅对已登录且功能已启用的用户可用——对其他用户这些字段根本不会出现。
+ * 值来自 BookmarkBuffer，每次响应只查一次。
  */
 final class PostBookmarkFields
 {
@@ -35,7 +35,7 @@ final class PostBookmarkFields
 
         $bookmark = static fn (Post $post, Context $context) => BookmarkBuffer::defer($context->getActor()->id, $post->id);
 
-        // Cada campo pega o mesmo marcador adiado e lê uma parte dele.
+        // 每个字段取用同一个延迟书签，并读取其中一部分。
         $read = static fn (callable $pick) => static function (Post $post, Context $context) use ($bookmark, $pick) {
             $resolve = $bookmark($post, $context);
 

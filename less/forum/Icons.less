@@ -1,16 +1,16 @@
 // ---------------------------------------------------------------------
-// Ícones Lucide (camada de ícones do tema: js/src/forum/icons).
+// Lucide 图标（主题的图标层：js/src/forum/icons）。
 //
-// As medidas são as do `.svg-icon` do Discourse (css-common.css do Meta):
-// 1em × 1em, `vertical-align: -0.125em`, `line-height: 1`, sem encolher e
-// com o traço podendo sair da caixa. O traço é o "medium" (2) do componente
-// "Discourse Lucide Icons", o padrão no Meta.
+// 尺寸沿用 Discourse 的 `.svg-icon`（Meta 的 css-common.css）：
+// 1em × 1em、`vertical-align: -0.125em`、`line-height: 1`，不缩小，
+// 线条可超出盒子。线宽为 "Discourse Lucide Icons" 组件的
+// "medium"（2），也是 Meta 上的默认值。
 //
-// O <svg> herda as classes do <i> do Font Awesome (`fas fa-x`), então o CSS
-// do Font Awesome também o alcança (`display: inline-block`, `fa-fw`): o
-// seletor com o elemento ganha dele.
+// <svg> 继承 Font Awesome 的 <i> 的类（`fas fa-x`），因此 Font Awesome
+// 的 CSS 也会作用于它（`display: inline-block`、`fa-fw`）：带元素的选择器
+// 优先级更高。
 // ---------------------------------------------------------------------
-svg.CanelaLucide {
+svg.LcoyLucide {
   display: inline-flex;
   width: 1em;
   height: 1em;
@@ -24,25 +24,25 @@ svg.CanelaLucide {
   stroke-linecap: round;
   stroke-linejoin: round;
 
-  // O `fa-fw` do Font Awesome alarga a caixa para alinhar colunas de ícones;
-  // o desenho fica centrado nela (preserveAspectRatio padrão).
+  // Font Awesome 的 `fa-fw` 会加宽盒子以对齐图标列；
+  // 图形在其中居中（默认 preserveAspectRatio）。
   &.fa-fw {
     width: 1.25em;
   }
 }
 
-// O coração de quem já curtiu: o Meta deixa esse (o `d-liked`) no coração
-// cheio. O Lucide não tem a variante cheia; preencher o traço dá o mesmo
-// desenho. A contagem de curtidas também mostra o coração cheio.
-.CanelaLike--liked svg.CanelaLucide.lucide-heart,
-.CanelaLikeCount svg.CanelaLucide.lucide-heart {
+// 已点赞用户的心形：Meta 让这个（`d-liked`）保持空心
+// 心形。Lucide 没有实心变体；填充描边可得到相同
+// 图形。点赞计数同样显示实心心形。
+.LcoyLike--liked svg.LcoyLucide.lucide-heart,
+.LcoyLikeCount svg.LcoyLucide.lucide-heart {
   fill: currentColor;
 }
 
-// Marcador ativo: o `fas fa-bookmark` (sólido) vira o marcador cheio, como o
-// `.bookmarked` do Discourse — no post, no rodapé ("Favoritado") e nas listas.
-svg.CanelaLucide.fas.fa-bookmark,
-.CanelaBookmarkButton--active svg.CanelaLucide.lucide-bookmark {
+// 激活的收藏标记：`fas fa-bookmark`（实心）变为实心标记，与
+// Discourse 的 `.bookmarked` 一致——出现在帖子、页脚（"已收藏"）和列表中。
+svg.LcoyLucide.fas.fa-bookmark,
+.LcoyBookmarkButton--active svg.LcoyLucide.lucide-bookmark {
   fill: currentColor;
 }
 

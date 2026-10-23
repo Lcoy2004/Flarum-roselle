@@ -14,24 +14,24 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
 
 /*
- * Um clique por linha num link de postagem, como o `topic_link_clicks` do
- * Discourse: daqui saem o número ao lado do link no post, os "Links populares"
- * do mapa do tópico e os "Melhores links" do resumo do perfil.
+ * 帖子链接的每次点击一行，与 Discourse 的 `topic_link_clicks` 相同：
+ * 帖子中链接旁的数字、"主题地图" 的 "热门链接" 以及
+ * 个人资料摘要中的 "最佳链接" 都由此得出。
  *
- * O endereço vai inteiro em `url` (para mostrar) e num sha1 em `url_hash`
- * (para agrupar e indexar: um índice num texto de até 2 000 caracteres não
- * caberia no limite de chave do MariaDB). `user_id` fica vazio para
- * visitantes; quem apagar a conta deixa os cliques, que são do link, não dela.
+ * 地址完整保存在 `url` 中（用于展示），并以 sha1 保存在 `url_hash` 中
+ * （用于分组和建索引：最长 2 000 字符的文本索引会
+ * 超出 MariaDB 的键长度限制）。访客的 `user_id` 为空；
+ * 删除账号的人会留下这些点击，因为它们属于链接，而不是他。
  */
 return [
     'up' => static function (Builder $schema): void {
-        // Idempotente: quem vem do Canela já tem a tabela, mas a migração
-        // antiga não está registrada com este nome.
-        if ($schema->hasTable('canela_link_clicks')) {
+        // 幂等：来自 Lcoy 的用户已经有该表，但旧的迁移
+        // 没有以这个名称注册。
+        if ($schema->hasTable('lcoy_link_clicks')) {
             return;
         }
 
-        $schema->create('canela_link_clicks', static function (Blueprint $table): void {
+        $schema->create('lcoy_link_clicks', static function (Blueprint $table): void {
             $table->increments('id');
             $table->unsignedInteger('post_id');
             $table->unsignedInteger('discussion_id');
@@ -51,6 +51,6 @@ return [
     },
 
     'down' => static function (Builder $schema): void {
-        $schema->dropIfExists('canela_link_clicks');
+        $schema->dropIfExists('lcoy_link_clicks');
     },
 ];

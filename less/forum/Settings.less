@@ -1,15 +1,15 @@
 // =====================================================================
-// Preferências (abas do perfil) como as do Discourse: cada aba é um
-// formulário corrido, sem cartões — o `form-vertical` de 500px, rótulo em
-// negrito em cima, ajuda em cinza embaixo e 2em entre um grupo e outro.
-// As abas em si são a segunda linha da navegação do perfil (User.less).
+// 偏好设置（个人资料标签页）与 Discourse 一致：每个标签页是一个
+// 连续的表单，没有卡片——`form-vertical` 500px，标签
+// 加粗在上，帮助文字灰色在下，组与组之间 2em。
+// 标签页本身是个人资料导航的第二行（User.less）。
 // =====================================================================
 
 .SettingsPage,
 .UserSecurityPage {
   margin-top: 0;
   max-width: 720px;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
 
   > ul {
     display: flex;
@@ -27,7 +27,7 @@
   .FieldSet {
     display: flex;
     flex-direction: column;
-    gap: var(--cn-space-2);
+    gap: var(--lcoy-space-2);
     margin: 0;
     padding: 0;
     border: 0;
@@ -35,26 +35,26 @@
     background: none;
   }
 
-  // O `control-label` do Discourse: o tamanho do texto, só em negrito.
+  // Discourse 的 `control-label`：文字大小，仅加粗。
   .FieldSet-label {
     margin: 0 0 0.25em;
     padding: 0;
-    font-size: var(--cn-font-0);
+    font-size: var(--lcoy-font-0);
     font-weight: 700;
     line-height: 1.4;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
     text-transform: none;
     letter-spacing: 0;
     border: 0;
   }
 
   .FieldSet-description {
-    margin-top: calc(~"-1 * var(--cn-space-2)");
+    margin-top: calc(~"-1 * var(--lcoy-space-2)");
   }
 
-  // Seções aninhadas (dentro de "Privacidade", por exemplo).
+  // 嵌套区块（例如位于"隐私"内部）。
   .FieldSet .FieldSet .FieldSet-label {
-    font-size: var(--cn-font-0);
+    font-size: var(--lcoy-font-0);
     font-weight: 600;
   }
 
@@ -66,29 +66,29 @@
   }
 
   .FieldSet--col .FieldSet-items {
-    gap: var(--cn-space-2);
+    gap: var(--lcoy-space-2);
   }
 
   .helpText {
     display: block;
     margin: 0.25em 0 0;
-    font-size: var(--cn-font-down-1);
+    font-size: var(--lcoy-font-down-1);
     line-height: 1.5;
-    color: var(--cn-primary-medium);
+    color: var(--lcoy-primary-medium);
   }
 
-  // Switch com o rótulo à direita e a ajuda embaixo, como no Discourse.
+  // 开关，标签在右，帮助文字在下，与 Discourse 一致。
   .Checkbox--switch {
     margin: 0;
     line-height: 1.5;
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
 
     .helpText {
       margin-top: 2px;
     }
   }
 
-  // Campos com a largura do formulário do Discourse.
+  // 字段宽度与 Discourse 的表单一致。
   .FormControl,
   .Select {
     max-width: 500px;
@@ -104,7 +104,7 @@
     max-width: 500px;
   }
 
-  // Botões no tamanho do texto, à esquerda (o core estica os do FieldSet--col).
+  // 按钮为文字大小，左对齐（核心会拉伸 FieldSet--col 的子元素）。
   .FieldSet-items > .Button,
   .FieldSet > .Button,
   .UserSecurityPage-controls .Button {
@@ -112,42 +112,36 @@
     align-self: flex-start;
   }
 
-  // As miniaturas do esquema de cores lado a lado, não empilhadas.
+  // 配色方案缩略图并排，而非堆叠。
   .Settings-colorScheme .FieldSet-items {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: var(--cn-space-3);
+    gap: var(--lcoy-space-3);
   }
 }
 
-// O formulário do perfil (e os outros que têm botão próprio) termina com o
-// botão primário à esquerda, como o `save-controls` do Discourse.
-.CanelaPrefs .Settings-canelaProfile .Button--primary {
-  align-self: flex-start;
-}
-
-.CanelaPrefs-empty {
+.LcoyPrefs-empty {
   margin: 0;
-  padding: var(--cn-space-6) 0;
-  color: var(--cn-primary-medium);
+  padding: var(--lcoy-space-6) 0;
+  color: var(--lcoy-primary-medium);
 }
 
 // ---------------------------------------------------------------------
-// Grupos da aba Conta (`control-group`): rótulo, controles e ajuda
+// 账户标签页的分组（`control-group`）：标签、控件和帮助文字
 // ---------------------------------------------------------------------
-.CanelaPrefs-account {
+.LcoyPrefs-account {
   display: flex;
   flex-direction: column;
   gap: 2em;
   width: 100%;
 }
 
-// "Conta" já é a aba: o título da seção repetiria o da navegação.
-.CanelaPrefs .Settings-account > .FieldSet-label {
+// "账户"本身就是标签页：区块标题会与导航重复。
+.LcoyPrefs .Settings-account > .FieldSet-label {
   display: none;
 }
 
-.CanelaPrefs-group {
+.LcoyPrefs-group {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -155,45 +149,45 @@
   max-width: 500px;
 }
 
-.CanelaPrefs-label {
+.LcoyPrefs-label {
   font-weight: 700;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
 }
 
-.CanelaPrefs-controls {
+.LcoyPrefs-controls {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--cn-space-2);
+  gap: var(--lcoy-space-2);
 }
 
-.CanelaPrefs-static {
-  color: var(--cn-primary);
+.LcoyPrefs-static {
+  color: var(--lcoy-primary);
   word-break: break-all;
 }
 
-.CanelaPrefs-help {
+.LcoyPrefs-help {
   margin: 0;
-  font-size: var(--cn-font-down-1);
+  font-size: var(--lcoy-font-down-1);
   line-height: 1.5;
-  color: var(--cn-primary-medium);
+  color: var(--lcoy-primary-medium);
 }
 
-.CanelaPrefs-extra > ul {
+.LcoyPrefs-extra > ul {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--cn-space-2);
+  gap: var(--lcoy-space-2);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-// A foto: 90px, como o `pref-avatar`; o clique ainda abre o menu do core.
-.CanelaPrefs-avatar .CanelaPrefs-controls {
-  gap: var(--cn-space-3);
+// 照片：90px，与 `pref-avatar` 一致；点击仍会打开核心的菜单。
+.LcoyPrefs-avatar .LcoyPrefs-controls {
+  gap: var(--lcoy-space-3);
 }
 
-.CanelaPrefs-avatarEditor {
+.LcoyPrefs-avatarEditor {
   margin: 0;
 
   .Avatar {
@@ -207,8 +201,8 @@
   width: 90px;
   height: 90px;
 
-  // O core dá 4px de margem ao véu (pensado para o avatar do perfil, que
-  // tem borda): aqui ele cobre a foto exatamente, sem ficar torto.
+  // 核心给遮罩留了 4px 边距（是为带边框的个人资料头像
+  // 设计的）：这里它恰好覆盖照片，不会歪斜。
   > .Dropdown-toggle {
     inset: 0;
     width: 90px;
@@ -218,13 +212,13 @@
   }
 }
 
-// Misturado com o texto: legível tanto no claro quanto no escuro.
-.CanelaPrefs-remove {
-  color: ~"color-mix(in oklch, var(--cn-danger) 80%, var(--cn-primary))" !important;
+// 与文字混合：在浅色和深色模式下都可读。
+.LcoyPrefs-remove {
+  color: ~"color-mix(in oklch, var(--lcoy-danger) 80%, var(--lcoy-primary))" !important;
 }
 
-// E-mail com o estado em pílulas (principal, confirmado / não confirmado).
-.CanelaPrefs-emailRow {
+// 邮箱及胶囊形式的状态（主要、已验证 / 未验证）。
+.LcoyPrefs-emailRow {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -232,64 +226,64 @@
   margin-bottom: 0.25em;
 }
 
-.CanelaPrefs-emailAddress {
+.LcoyPrefs-emailAddress {
   margin-right: 0.25em;
   word-break: break-all;
 }
 
-.CanelaPrefs-pill {
+.LcoyPrefs-pill {
   display: inline-flex;
   align-items: center;
   padding: 0.15em 0.6em;
-  border-radius: var(--cn-radius-pill);
-  font-size: var(--cn-font-down-2);
+  border-radius: var(--lcoy-radius-pill);
+  font-size: var(--lcoy-font-down-2);
   font-weight: 600;
   line-height: 1.5;
-  background: var(--cn-primary-very-low);
-  color: var(--cn-primary-high);
+  background: var(--lcoy-primary-very-low);
+  color: var(--lcoy-primary-high);
 
   &--primary {
-    background: var(--cn-accent-low);
-    color: ~"color-mix(in oklch, var(--cn-link) 80%, var(--cn-primary))";
+    background: var(--lcoy-accent-low);
+    color: ~"color-mix(in oklch, var(--lcoy-link) 80%, var(--lcoy-primary))";
   }
 
   &--ok {
-    background: ~"color-mix(in oklch, var(--cn-success) 16%, transparent)";
-    color: ~"color-mix(in oklch, var(--cn-success) 75%, var(--cn-primary))";
+    background: ~"color-mix(in oklch, var(--lcoy-success) 16%, transparent)";
+    color: ~"color-mix(in oklch, var(--lcoy-success) 75%, var(--lcoy-primary))";
   }
 
   &--warn {
-    background: ~"color-mix(in oklch, var(--cn-danger) 16%, transparent)";
-    color: ~"color-mix(in oklch, var(--cn-danger) 75%, var(--cn-primary))";
+    background: ~"color-mix(in oklch, var(--lcoy-danger) 16%, transparent)";
+    color: ~"color-mix(in oklch, var(--lcoy-danger) 75%, var(--lcoy-primary))";
   }
 }
 
-.CanelaPrefs-resend {
+.LcoyPrefs-resend {
   padding: 0 !important;
-  font-size: var(--cn-font-down-1);
-  color: var(--cn-link) !important;
+  font-size: var(--lcoy-font-down-1);
+  color: var(--lcoy-link) !important;
 }
 
-// A seção "Barra lateral" (aba Menu de navegação).
-.Settings-canelaNavMenu .CanelaPrefs-group {
-  margin-top: var(--cn-space-2);
+// "侧边栏"区块（"导航菜单"标签页）。
+.Settings-lcoyNavMenu .LcoyPrefs-group {
+  margin-top: var(--lcoy-space-2);
 }
 
 // ---------------------------------------------------------------------
-// Grade de notificações
+// 通知网格
 // ---------------------------------------------------------------------
 .NotificationGrid {
   width: 100%;
   background: none;
-  border: 1px solid var(--cn-border);
-  border-radius: var(--cn-radius);
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
   border-collapse: separate;
   overflow: hidden;
 
   td,
   th {
-    border-bottom: 1px solid var(--cn-border);
-    color: var(--cn-primary);
+    border-bottom: 1px solid var(--lcoy-border);
+    color: var(--lcoy-primary);
   }
 
   tr:last-child td {
@@ -298,38 +292,38 @@
 
   thead th {
     padding: 12px 20px;
-    font-size: var(--cn-font-down-1);
+    font-size: var(--lcoy-font-down-1);
     font-weight: 600;
-    color: var(--cn-primary-high);
-    background: var(--cn-primary-very-low);
+    color: var(--lcoy-primary-high);
+    background: var(--lcoy-primary-very-low);
 
     .icon {
-      color: var(--cn-link);
+      color: var(--lcoy-link);
       font-size: 16px;
     }
   }
 
   .NotificationGrid-groupToggle {
     font-size: 15px;
-    // "E-mail" não quebra no hífen na coluna estreita do celular.
+    // 在手机端的窄列中，"E-mail" 不会在连字符处换行。
     white-space: nowrap;
 
     .icon {
-      color: var(--cn-primary-high);
+      color: var(--lcoy-primary-high);
     }
 
     &:hover {
-      background: var(--cn-hover);
+      background: var(--lcoy-hover);
     }
   }
 
   .NotificationGrid-checkbox {
     .Checkbox:hover:not(.disabled) {
-      background: var(--cn-hover);
+      background: var(--lcoy-hover);
     }
 
     &.highlighted .Checkbox:not(.disabled) {
-      background: var(--cn-hover);
+      background: var(--lcoy-hover);
     }
   }
 
@@ -338,16 +332,16 @@
   }
 
   .on .Checkbox-display {
-    color: var(--cn-link);
+    color: var(--lcoy-link);
   }
 
   .off .Checkbox-display {
-    color: var(--cn-primary-low-mid);
+    color: var(--lcoy-primary-low-mid);
   }
 }
 
-// A grade ocupa a largura toda; no celular o texto quebra e, se ainda
-// assim não couber, ela rola de lado.
+// 网格占满整个宽度；在手机端文字会换行，如果仍
+// 放不下，则横向滚动。
 .Settings-notifications .FieldSet-items {
   align-items: stretch;
 }
@@ -364,21 +358,21 @@
 }
 
 // ---------------------------------------------------------------------
-// Segurança: tokens e sessões
+// 安全：令牌与会话
 // ---------------------------------------------------------------------
 .AccessTokensList {
   gap: 1px;
-  border: 1px solid var(--cn-border);
-  border-radius: var(--cn-radius);
-  background: var(--cn-border);
+  border: 1px solid var(--lcoy-border);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-border);
 
   &-item {
     padding: 14px 16px 14px 0;
-    background-color: var(--cn-surface);
-    color: var(--cn-primary);
+    background-color: var(--lcoy-surface);
+    color: var(--lcoy-primary);
 
     &-icon {
-      color: var(--cn-primary-medium);
+      color: var(--lcoy-primary-medium);
     }
 
     &-title {
@@ -386,26 +380,26 @@
     }
 
     &-title-sub {
-      color: var(--cn-primary-medium);
+      color: var(--lcoy-primary-medium);
       font-style: normal;
     }
 
     &--active .AccessTokensList-item-title-sub {
-      color: var(--cn-success);
+      color: var(--lcoy-success);
     }
   }
 
   &--empty {
     padding: 14px 16px;
-    border: 1px dashed var(--cn-primary-300);
-    border-radius: var(--cn-radius);
-    color: var(--cn-primary-medium);
+    border: 1px dashed var(--lcoy-primary-300);
+    border-radius: var(--lcoy-radius);
+    color: var(--lcoy-primary-medium);
     background: none;
   }
 }
 
 @media @phone {
-  .CanelaPrefs-group,
+  .LcoyPrefs-group,
   .SettingsPage .Form-group,
   .SettingsPage .FormControl {
     max-width: none;

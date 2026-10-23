@@ -1,34 +1,33 @@
 /*
- * Leitura das estatísticas de atividade do usuário para o resumo do perfil.
+ * 读取用户活跃度统计，用于个人资料摘要。
  *
- * O servidor só manda esses atributos na resposta do perfil (Show do usuário)
- * e com o recurso ligado; fora disso eles faltam, e cada função devolve null
- * para a estatística simplesmente não aparecer. As curtidas também vêm null
- * quando o flarum-likes está desligado.
+ * 服务端仅在个人资料响应（用户 Show）中、且功能启用时才下发这些
+ * 属性；否则缺失，各函数返回 null，使对应统计直接不显示。关闭
+ * flarum-likes 时，点赞数同样为 null。
  */
 import app from 'flarum/forum/app';
 import type User from 'flarum/common/models/User';
 
 export interface UserActivity {
-  /** Dias distintos com ao menos uma visita. */
+  /** 至少访问过一次的不同天数。 */
   daysVisited: number | null;
-  /** Tempo de leitura, em segundos. */
+  /** 阅读时长，单位为秒。 */
   timeRead: number | null;
-  /** Tempo de leitura dos últimos 60 dias, em segundos (o "recente" do Discourse). */
+  /** 最近 60 天的阅读时长，单位为秒（Discourse 的“最近”）。 */
   recentTimeRead: number | null;
   postsRead: number | null;
   likesGiven: number | null;
   likesReceived: number | null;
 }
 
-/** Os nomes dos atributos na API — documentados aqui para o perfil e outras áreas. */
+/** API 中的属性名——在此记录，供个人资料页及其他区域使用。 */
 export const ACTIVITY_ATTRIBUTES: Record<keyof UserActivity, string> = {
-  daysVisited: 'canelaDaysVisited',
-  timeRead: 'canelaTimeRead',
-  recentTimeRead: 'canelaRecentTimeRead',
-  postsRead: 'canelaPostsRead',
-  likesGiven: 'canelaLikesGiven',
-  likesReceived: 'canelaLikesReceived',
+  daysVisited: 'lcoyDaysVisited',
+  timeRead: 'lcoyTimeRead',
+  recentTimeRead: 'lcoyRecentTimeRead',
+  postsRead: 'lcoyPostsRead',
+  likesGiven: 'lcoyLikesGiven',
+  likesReceived: 'lcoyLikesReceived',
 };
 
 function numberOrNull(value: unknown): number | null {
@@ -39,9 +38,9 @@ function numberOrNull(value: unknown): number | null {
   return Number.isFinite(number) ? number : null;
 }
 
-/** null quando o perfil ainda não chegou com as estatísticas (ou o recurso está desligado). */
+/** 当个人资料尚未携带统计数据（或功能已关闭）时返回 null。 */
 export function userActivity(user: User): UserActivity | null {
-  if (user.attribute<unknown>('canelaDaysVisited') === undefined) return null;
+  if (user.attribute<unknown>('lcoyDaysVisited') === undefined) return null;
 
   const activity = {} as UserActivity;
 
@@ -53,8 +52,8 @@ export function userActivity(user: User): UserActivity | null {
 }
 
 /**
- * O tempo de leitura como o Discourse escreve: "45 s", "12 min", "3 h", "2 d".
- * Uma unidade só, arredondada — o resumo é para ter ideia, não para auditoria.
+ * 以 Discourse 的写法表示阅读时长："45 s"、"12 min"、"3 h"、"2 d"。
+ * 只用一个单位并取整——摘要用于大致了解，而非精确审计。
  */
 export function formatReadTime(seconds: number): string {
   const trans = (key: string, count: number) => app.translator.trans(`lcoy-roselle.forum.stats.duration.${key}`, { count }, true) as string;

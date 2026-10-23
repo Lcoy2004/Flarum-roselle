@@ -1,10 +1,9 @@
 /*
- * Dica (Tooltip do core) nos botões da barra de ações do post que mostram só
- * o ícone: marcador, solução, curtir, link, "…" e os de outras extensões. O
- * `title` nativo demorava a aparecer e não seguia o visual do tema.
+ * 帖子操作栏中只显示图标的按钮（书签、解决方案、点赞、链接、“…”以及其他扩展的按钮）上的
+ * 提示（核心的 Tooltip）。原生的 `title` 出现得慢，而且不跟随主题的视觉。
  *
- * Roda por último (beforeMount registrado no fim do initializer do tema), para
- * enxergar os botões que os recursos e as extensões já puseram na barra.
+ * 最后运行（beforeMount 注册在主题 initializer 的末尾），以便能看到各功能与扩展
+ * 已经放进操作栏的按钮。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -14,7 +13,7 @@ import CommentPost from 'flarum/forum/components/CommentPost';
 import type ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 
-/** Um botão só de ícone, com a descrição que a dica vai mostrar. */
+/** 一个只有图标的按钮，附带提示将要显示的描述。 */
 function iconOnlyLabel(vnode: any): string | null {
   if (!vnode || typeof vnode !== 'object' || vnode.tag !== Button || !vnode.attrs) return null;
 
@@ -38,14 +37,13 @@ export default function installActionTooltips(): void {
 
         const className = String(vnode.attrs.className || '');
 
-        // A dica toma o lugar do `title` nativo (senão apareciam os dois).
+        // 提示取代原生 `title`（否则两者会同时出现）。
         vnode.attrs = { ...vnode.attrs, title: undefined, 'aria-label': label };
 
         items.setContent(
           key,
-          // Logo depois de copiar o link, o retorno "Link copiado!" ocupa o
-          // lugar da dica em cima do botão.
-          <Tooltip text={label} tooltipVisible={/\bCanelaPostAction--copied\b/.test(className) ? false : undefined}>
+          // 刚复制完链接时，“链接已复制！”的反馈会占据按钮上方提示的位置。
+          <Tooltip text={label} tooltipVisible={/\bLcoyPostAction--copied\b/.test(className) ? false : undefined}>
             {vnode}
           </Tooltip>
         );

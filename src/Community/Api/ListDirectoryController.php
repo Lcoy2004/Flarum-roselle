@@ -28,20 +28,18 @@ use Lcoy\Roselle\Community\Directory;
 use Lcoy\Roselle\Community\UserPresenter;
 
 /**
- * GET /api/canela-directory?period=&order=&dir=&q=&page=&group=
+ * GET /api/lcoy-directory?period=&order=&dir=&q=&page=&group=
  *
- * Sem `group`, é o diretório de usuários (/u). Com `group`, a lista de
- * membros da página do grupo (/g/:nome) — a mesma tabela, filtrada, e por
- * isso o mesmo endpoint. Nos dois casos vale a permissão do core de listar
- * usuários: os membros de um grupo são uma lista de usuários como outra.
+ * 不带 `group` 时是用户目录（/u）。带 `group` 时是组页面（/g/:nome）的
+ * 成员列表——同一张表，只是加了过滤，因此复用同一个端点。两种情况下都
+ * 遵循核心的"列出用户"权限：组成员不过是另一种用户列表。
  *
- * Valores fora do esperado (período, coluna, página) caem no padrão em vez de
- * dar erro: a URL do fórum é editável, e um parâmetro velho num link salvo não
- * deveria quebrar a página.
+ * 超出预期的值（时间范围、列、页码）会退回默认值而不是报错：论坛的 URL
+ * 可以被编辑，保存的链接里的旧参数不应让页面崩溃。
  */
 final class ListDirectoryController implements RequestHandlerInterface
 {
-    /** Mais do que isso é raspagem, não navegação. */
+    /** 超过此范围就属于抓取而非浏览了。 */
     private const MAX_PAGE = 200;
 
     public function __construct(
@@ -71,7 +69,7 @@ final class ListDirectoryController implements RequestHandlerInterface
         $order = (string) Arr::get($params, 'order', '');
         $order = in_array($order, $sortable, true) ? $order : ($groupId === null ? $this->directory->defaultOrder() : 'username');
 
-        // Sem sentido pedido, nomes vão de A a Z e números do maior ao menor.
+        // 未指定方向时，名称按 A 到 Z，数字按从大到小。
         $dir = Arr::get($params, 'dir');
         $ascending = $dir === null || $dir === '' ? $order === 'username' : $dir === 'asc';
         $search = mb_substr(trim((string) Arr::get($params, 'q', '')), 0, 100);
@@ -99,8 +97,8 @@ final class ListDirectoryController implements RequestHandlerInterface
     }
 
     /**
-     * O grupo pedido, se o ator pode vê-lo. Visitantes e Membros não são
-     * grupos de verdade (ninguém é "adicionado" a eles) e não têm página.
+     * 请求的组，前提是操作者可以看到。访客和成员不是真正的组
+     * （没有人会被"加入"它们），也没有对应页面。
      */
     private function groupId(User $actor, mixed $value): ?int
     {

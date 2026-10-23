@@ -10,8 +10,8 @@ use Flarum\Search\SearchState;
 use Lcoy\Roselle\Stats\TopicCounter;
 
 /**
- * `filter[canelaUnread]=1` — a aba "Não lidos" do Discourse: os tópicos já
- * abertos com respostas novas, pela mesma regra de "Não lidos (N)".
+ * `filter[lcoyUnread]=1`——Discourse 的"未读"选项卡：已打开过但有新回复的
+ * 主题，规则与"未读 (N)"计数相同。
  *
  * @implements FilterInterface<DatabaseSearchState>
  */
@@ -25,7 +25,7 @@ final class UnreadFilter implements FilterInterface
     #[\Override]
     public function getFilterKey(): string
     {
-        return 'canelaUnread';
+        return 'lcoyUnread';
     }
 
     #[\Override]
@@ -33,7 +33,7 @@ final class UnreadFilter implements FilterInterface
     {
         $actor = $state->getActor();
 
-        // Para o visitante não há "não lido" pessoal: a lista fica como estava.
+        // 对访客而言没有个人的"未读"：列表保持原样。
         if ($actor->isGuest() || $negate) {
             return;
         }

@@ -1,8 +1,8 @@
 /*
- * Cards do editor (composer) do Discourse: a chave geral no cabeçalho do card
- * principal e cada recurso. As chaves são `canela.composer_*`, registradas em
- * extend/composer.php — todas ligadas por padrão. Rascunhos e hashtags
- * dependem da chave geral: com ela desligada, os cards deles somem.
+ * Discourse 编辑器（composer）的卡片：主卡片标题栏的总开关以及
+ * 各项功能。这些键是 `lcoy.composer_*`，在
+ * extend/composer.php 中注册——默认全部开启。草稿和 #标签
+ * 依赖总开关：关闭它后，它们的卡片会消失。
  */
 import isExtensionEnabled from 'flarum/admin/utils/isExtensionEnabled';
 
@@ -14,7 +14,7 @@ import type { CardDef } from '../types';
 const KEY = 'lcoy-roselle.admin.settings.composer';
 
 const toggle = (name: string, label: string, help: string) => (
-  <AdminToggle settingKey={`canela.composer_${name}`} label={trans(`${KEY}.${name}_label`, label)} help={trans(`${KEY}.${name}_help`, help)} />
+  <AdminToggle settingKey={`lcoy.composer_${name}`} label={trans(`${KEY}.${name}_label`, label)} help={trans(`${KEY}.${name}_help`, help)} />
 );
 
 const cards: CardDef[] = [
@@ -22,26 +22,18 @@ const cards: CardDef[] = [
     id: 'composer',
     group: 'composer',
     icon: 'fas fa-pen-to-square',
-    title: () => trans(`${KEY}.section_editor`, 'Editor do Discourse'),
-    description: () => trans(`${KEY}.enabled_help`, 'A chave geral: desligada, o composer volta a ser o do Flarum, sem nenhum dos recursos abaixo.'),
-    keywords: 'editor composer prévia preview lado a lado split semelhante similar vinculado linked responder tópico',
-    master: 'canela.composer_enabled',
+    title: () => trans(`${KEY}.section_editor`, 'Discourse 编辑器'),
+    description: () => trans(`${KEY}.enabled_help`, '总开关：关闭后，编辑器回到 Flarum 原版，不启用下面任何功能。'),
+    keywords: '编辑器 composer 预览 preview 并排 split 相似 similar 关联 linked 回复 主题',
+    master: 'lcoy.composer_enabled',
     body: () => (
       <>
-        {toggle(
-          'preview',
-          'Pré-visualização lado a lado',
-          'No computador, com o composer alto o bastante, o texto formatado aparece à direita do editor. Cada pessoa pode escondê-la pelo botão do rodapé.'
-        )}
-        {toggle(
-          'similar',
-          'Discussões semelhantes',
-          'Ao escrever o título de uma discussão nova (três palavras ou mais), mostra "Sua discussão é semelhante a…" com até cinco discussões parecidas.'
-        )}
+        {toggle('preview', '并排预览', '在桌面端，编辑器足够高时，格式化后的帖子会显示在编辑器右侧。任何人都可以用页脚的按钮将其隐藏。')}
+        {toggle('similar', '相似讨论', '撰写新讨论标题时（三个词以上），会显示「你的讨论与以下内容相似…」，最多列出五条相关讨论。')}
         {toggle(
           'linked_topic',
-          'Responder como discussão vinculada',
-          'No composer de resposta, o menu "↩ ▾" troca a resposta por uma discussão nova com o mesmo texto, um link de volta e as mesmas tags.'
+          '将回复作为关联讨论',
+          '在回复编辑器中，「↩ ▾」菜单会把这条回复变成一个带有相同内容、指回原讨论的链接以及相同标签的新讨论。'
         )}
       </>
     ),
@@ -50,24 +42,19 @@ const cards: CardDef[] = [
     id: 'drafts',
     group: 'composer',
     icon: 'fas fa-pen-ruler',
-    title: () => trans(`${KEY}.section_drafts`, 'Rascunhos'),
+    title: () => trans(`${KEY}.section_drafts`, '草稿'),
     description: () =>
       trans(
         `${KEY}.drafts_help`,
-        'Com a extensão FoF Drafts, o tema mostra os rascunhos como o Discourse: a discussão nova e a resposta são salvas sozinhas, responder numa discussão retoma o rascunho dela, fechar com texto pergunta se descarta ou guarda, e o botão Iniciar Discussão ganha o ⌄ com a lista.'
+        '安装 FoF Drafts 扩展后，主题会以 Discourse 的方式显示草稿：新讨论和回复会自动保存，回复讨论时会恢复它的草稿，带内容关闭时会询问是放弃还是保留，而「发起讨论」按钮会多出一个带列表的 ⌄。'
       ),
-    keywords: 'rascunho rascunhos drafts salvar save automático autosave fof',
-    master: 'canela.composer_drafts',
-    dependsOn: 'canela.composer_enabled',
-    // Os rascunhos são do fof/drafts: sem ele, o tema não tem onde guardá-los.
+    keywords: '草稿 存草稿 drafts 保存 save 自动 automatic autosave fof',
+    master: 'lcoy.composer_drafts',
+    dependsOn: 'lcoy.composer_enabled',
+    // 草稿属于 fof/drafts：没有它，主题无处保存草稿。
     extensions: ['fof-drafts'],
     body: () => (
-      <p className="helpText">
-        {trans(
-          `${KEY}.drafts_note`,
-          'Os rascunhos são guardados pelo fof/drafts (tabela drafts), que também cuida das permissões e do agendamento. Edições de postagens não têm rascunho.'
-        )}
-      </p>
+      <p className="helpText">{trans(`${KEY}.drafts_note`, '草稿由 fof/drafts 保存（drafts 表），权限和定时保存也由它负责。编辑帖子没有草稿。')}</p>
     ),
   },
   {
@@ -78,18 +65,18 @@ const cards: CardDef[] = [
     description: () =>
       trans(
         `${KEY}.hashtags_help`,
-        'Digitar # no editor sugere as tags e insere um link para elas; nos posts, esses links (e as menções de tag da extensão Menções) viram a pílula com o símbolo da tag.'
+        '在编辑器中输入 # 会提示标签并插入指向它们的链接；在帖子中，这些链接（以及 Mentions 扩展的标签提及）会变成带标签图标的胶囊。'
       ),
-    keywords: 'hashtag # categoria etiqueta tag link autocompletar autocomplete pílula',
-    master: 'canela.composer_hashtags',
-    dependsOn: 'canela.composer_enabled',
+    keywords: '话题标签 hashtag # 分类 标签 tag link 自动补全 autocomplete 胶囊',
+    master: 'lcoy.composer_hashtags',
+    dependsOn: 'lcoy.composer_enabled',
     extensions: ['flarum-tags'],
     body: () =>
       isExtensionEnabled('flarum-mentions') ? (
         <AdminNotice>
           {trans(
             `${KEY}.hashtags_mentions_notice`,
-            'Com a extensão Menções ligada, o # do editor é dela (menção de tag); o tema só desenha as menções como hashtags do Discourse.'
+            '启用 Mentions 扩展后，编辑器中的 # 归它所有（标签提及）；主题只负责把提及绘制成 Discourse 风格的话题标签。'
           )}
         </AdminNotice>
       ) : null,

@@ -135,7 +135,7 @@ lcoy-roselle:
         group_topic_desc: 帖子、时间线、主题信息、页脚与阅读功能。
         group_composer_desc: Discourse 风格的编辑器、草稿、#标签与高级搜索。
         group_people_desc: 个人主页、用户卡片、扩展字段与活动。
-        group_community_desc: 关于、社区准则、用户、用户组与邀请。
+        group_community_desc: 关于、社区准则、用户与用户组。
         group_moderation_desc: 管理工具：批量操作、编辑历史，以及给作者的提示。
         group_integrations_desc: 为第三方扩展套用 Discourse 外观。每项都只有在启用对应扩展后才会生效。
         'on': 开启
@@ -157,8 +157,6 @@ lcoy-roselle:
         active_count: '{active} 项功能已开启，共 {total} 项'
         search_results: 「{query}」的搜索结果
         auth_backend_off: 服务器尚未加载 /login 和 /signup 页面（extend/auth.php），因此按钮仍会打开弹窗。
-      logo_colored_label: 为徽标上色
-      logo_colored_help: 上传的徽标只保留形状，并填充为强调色（在标签页面和讨论中则填充为标签颜色）。使用 SVG 或带透明背景的 PNG 效果最佳。
       loading_slider_label: 顶部的加载条
       loading_slider_help: 切换页面时，屏幕顶部会有一条细进度条一直显示到页面加载完成，如同 Discourse，取代 Flarum 的「正在加载…」提示。
       loader:
@@ -279,7 +277,6 @@ lcoy-roselle:
       gaps:
         notifications_title: 给作者的提示
         mention_cards_help: 点击 @提及会打开用户卡片，而不是跳转到个人主页。
-        invite_permission: 邀请他人（邀请链接）
         sidebar_category_dots_label: 标签上的新动态圆点
         sidebar_category_dots_help: 有新帖或未读讨论的标签旁会有一个圆点，和「全部讨论」上的一样。
         timeline_back_label: 时间线上的「返回」按钮
@@ -295,10 +292,6 @@ lcoy-roselle:
         share_modal_help: 点击「分享」会打开 Discourse 风格的弹窗，包含链接、复制按钮和各平台按钮；关闭后仅复制链接。手机上使用系统分享面板。
         local_dates_label: 本地时间
         local_dates_help: '[date=2026-10-20 time=14:00 timezone="America/Sao_Paulo"] 会按读者的时区显示日期和时间。清理缓存后生效。'
-        invites_enabled_label: 邀请链接
-        invites_enabled_help: 拥有「邀请」权限（在「权限」中设置）的人可以在「分享」和「更多」菜单中生成带有效期和使用次数的链接。通过链接加入的人会显示为被邀请者，邀请者会收到「某某接受了你的邀请」。需要开放注册。
-        invites_expire_days_label: 默认有效期（天）
-        invites_expire_days_help: 1 到 90 天。
         not_found_page_label: Discourse 风格的 404 页面
         not_found_page_help: 用「糟糕！该页面不存在或为私密页面。」，以及「返回首页」、搜索框和热门/最新讨论，替代简单的错误页面。
         list_title: 上次访问与忽略
@@ -397,26 +390,9 @@ lcoy-roselle:
         text_size_enabled_help: 在「设置」中，每个人可以选择较小、正常、较大或最大。与 Discourse 一样，该选择只对当前设备生效（保存在浏览器中）。
         print_title: 打印讨论
         print_topic_enabled_help: 将全部帖子加载到一个简洁的视图中（不含侧栏、页头和时间线），并打开浏览器的打印对话框，也可用于另存为 PDF。
-        history_title: 编辑历史
-        post_history_enabled_help: 每次编辑都会保留之前的文字。帖子上的「已编辑」会变成一个带修订版本数的小铅笔，点击后打开版本对比（行内或并排）。
-        history_notice: 只有在该功能开启期间所做的编辑才会被记录。关闭后，新的编辑不再保存，编辑历史也会从论坛中消失，但此前已保存的记录仍留在数据库中。被隐藏帖子的历史版本文字只对有权编辑该帖的人显示。
       lucide_icons_label: Discourse 图标（Lucide）
       lucide_icons_help: 用 Lucide 细线描边绘制的界面图标（搜索、铃铛、回复、赞、菜单等），与 meta.discourse.org 一致。关闭后，会恢复 Font Awesome 的实心图标。Meta 未替换的图标（品牌图标以及部分为标签和用户组选用的图标）仍保留在 Font Awesome 中。
-      profile:
-        section_main: 扩展个人资料
-        profile_enabled_help: 个人主页和用户卡片上的头衔、状态与生日。关闭后，这些字段会从论坛和 API 中消失，但已填写的内容仍会保留。
-        profile_birthday_label: 生日
-        profile_birthday_help: 选填的出生日期。除非本人选择公开年份，否则其他人只能看到月和日。
-        section_title: 用户头衔
-        profile_title_help: 显示在个人主页、用户卡片以及帖子中名称旁的简短头衔（最多 60 个字符）。
-        profile_title_self_label: 由每人自行填写头衔
-        profile_title_self_help: 关闭后，只有能编辑用户的版主才能设置头衔，由管理团队授予。
-        section_status: 用户状态
-        profile_status_help: 一个表情加一句话（例如「🌴 休假到周五」），显示在帖子中的名称旁、用户卡片和页头头像处。状态何时自动清除由本人设置。
       stats:
-        section_links: 链接点击
-        stats_links_enabled_help: 帖子中每次点击外部链接都会被计入，与 Discourse 一致：数字显示在链接旁边，主题信息中显示「热门链接」，个人主页摘要中显示「点击最多的链接」。
-        links_notice: 每个人（访客按 IP 计算）对同一链接每 24 小时只计一次；机器人不计入。只统计出现在帖子中的外部链接。
         section_views: 浏览列高亮
         stats_views_enabled_help: 列表「浏览」列的高亮颜色（Discourse 的热力图）。浏览数字本身来自 fof/discussion-views。
         topic_views_heat_low_label: 轻度高亮起始值
@@ -777,28 +753,6 @@ lcoy-roselle:
         preparing: 正在准备打印讨论…
         print_again: 打印
         close: 关闭
-      history:
-        title: 历史
-        open: '{count, plural, one {# 个版本} other {# 个版本}}：查看历史'
-        failed: 无法加载该帖子的历史。
-        content_hidden: 该帖子已隐藏；只有有编辑权限的人才能看到各版本的内容。
-        pager_label: 浏览版本
-        first: 第一版
-        previous: 上一版
-        next: 下一版
-        last: 当前版本
-        position: 版本 {from} → {to}（共 {total} 个）
-        original: 原始版本（共 {total} 个）
-        edited_by: 由 {name} 于 {date} 编辑
-        created_by: 由 {name} 于 {date} 撰写
-        deleted_user: 已注销用户
-        mode_label: 对比模式
-        mode_inline: 行内
-        mode_side: 并排
-        added: '{count, plural, one {+# 个词} other {+# 个词}}'
-        removed: '{count, plural, one {−# 个词} other {−# 个词}}'
-        before: 上一版本
-        after: 本版本
     shortcuts:
       groups:
         actions: 操作
@@ -918,23 +872,6 @@ lcoy-roselle:
         post_edited_setting: 有人编辑了我的帖子
         topic_linked: '{username} 关联了你的讨论'
         topic_linked_setting: 有人关联了我的讨论
-        invite_accepted: '{username} 接受了你的邀请'
-        invite_accepted_setting: 有人通过我的邀请加入了
-      invites:
-        title: 邀请加入论坛
-        help: 生成一个链接，发送给任何你想邀请的人。通过它注册的人会显示为由你邀请，你也会收到通知。
-        sign_up_closed: 本论坛已关闭注册；只有在管理员开启注册后，该链接才会生效。
-        max_redemptions: 可供多少人使用
-        expires_days: 有效天数
-        create: 生成链接（并复制）
-        yours: 你的邀请
-        none: 你还没有生成邀请。
-        uses: 已使用 {used}/{max} 次
-        expires: 有效期至 {date}
-        delete: 删除邀请
-        sidebar: 邀请
-        share_button: 邀请
-        invited_by: '{username} 邀请你加入论坛。'
       category_notifications:
         toggle: 标签通知：{level}
         watching: 关注
@@ -1007,44 +944,12 @@ lcoy-roselle:
     motion:
       link_copied: 链接已复制！
     profile:
-      status:
-        label: 状态
-        until: 至 {when}
-        choose_emoji: 选择表情
-        custom_emoji: 其他表情
-        no_emoji: 无表情
-        clear_never: 不清除
-        clear_30m: 30 分钟后
-        clear_1h: 1 小时后
-        clear_4h: 4 小时后
-        clear_today: 今天
-        clear_week: 本周
-        clear_custom: 选择日期和时间
-      birthday:
-        today: 今天生日！
       settings:
         heading: 个人主页
-        save: 保存个人主页
-        discard: 放弃更改
-        saved: 你的个人主页已保存。
-        title_label: 头衔
-        title_placeholder: 例如 版主、摄影师、开发者
-        title_help: 显示在你的个人主页名字下方，以及帖子中的名字旁边。
-        title_locked: 你的头衔由版主设置。
-        birthday_label: 生日
-        birthday_show_year: 显示年份（同时显示年龄）
-        birthday_help: 除非你选择显示年份，否则他人只能看到月和日。
-        status_label: 状态
-        status_placeholder: 例如 休假中、会议中、回复较慢
-        status_clear: 清除状态
-        status_clear_after: 清除时间
-        status_custom_required: 请选择状态消失的日期和时间。
         cover_label: 个人主页封面
         cover_edit: 编辑封面
         cover_forumaker_help: 位于个人主页顶部的宽幅图片，也会显示在用户卡片背后。编辑器可让你上传、移除图片，并选择图片保留可见的部分。
         no_image: 无图片
-      moderation:
-        clear_status: 清除状态
     review:
       title: 审核
       empty: 没有需要审核的内容。
@@ -1166,8 +1071,6 @@ lcoy-roselle:
         minutes: '{count} 分钟'
         hours: '{count} 小时'
         days: '{count} 天'
-    links:
-      clicks: '{count, plural, one {# 次点击} other {# 次点击}}'
     thirdparty:
       solved:
         accepted_bar: 已解决
@@ -1252,9 +1155,6 @@ lcoy-roselle:
         likes: '{count, plural, one {赞} other {赞}}'
         frequent_posters: 活跃发帖者
         most_liked: 获赞最多的回复
-        links: '{count, plural, one {链接} other {链接}}'
-        popular_links: 热门链接
-        show_more_links: 查看更多
         posts: '{count, plural, one {# 篇帖子} other {# 篇帖子}}'
       timeline:
         ago: '{age} 前'
@@ -1302,13 +1202,11 @@ lcoy-roselle:
         likes_received_short: 获赞
         solutions: 最佳答案
         most_replied_to: 你最常回复的人
-        empty_links: 暂无点击过的链接。
         empty_replied: 暂无回复。
         empty_likes: 暂无赞。
         most_liked_by: 最常赞你的人
         most_liked: 你最常赞的人
         top_categories: 常用标签
-        top_links: 热门链接
         recent_time_read: 近期阅读时间
         topics: 讨论
         replies_column: 回复
@@ -1388,7 +1286,6 @@ lcoy-roselle:
         other_notifications_with_unread: '{count, plural, one {其他通知 - # 条未读} other {其他通知 - # 条未读}}'
         profile: 个人主页
       profile:
-        set_custom_status: 设置自定义状态
         activity: 活动
         messages: 私信
         dark_mode: 深色模式
@@ -1420,14 +1317,6 @@ lcoy-roselle:
   api:
     loader:
       invalid_svg: 该文件不是有效的 SVG，或清理后大小超过 64 KB。
-    profile:
-      invalid_website: 网址必须以 http:// 或 https:// 开头。
-      invalid_status_emoji: 状态只能使用一个表情。
-      invalid_status_until: 清除状态的日期必须是将来的时间。
-      invalid_image_url: 图片必须是不含空格、引号或括号的 https 地址。
-      invalid_birthday: 请选择 1900 年到昨天之间的出生日期。
-    invites:
-      too_many: 你的有效邀请数量过多。请先删除一个再生成新的。
   views:
     not_found:
       page_title: 页面未找到

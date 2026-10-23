@@ -23,10 +23,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Lcoy\Roselle\Community\AboutPages;
 
 /**
- * GET /api/canela-about-pages/{id}: uma das abas extras da área Sobre. Só
- * responde pelas páginas da lista do admin, e com a visibilidade do fof/pages;
- * qualquer outra (ou sem o fof/pages) é 404, para o endpoint não virar um
- * jeito de ler páginas fora da área.
+ * GET /api/lcoy-about-pages/{id}："关于"区域额外选项卡之一。只响应
+ * 管理员列表中的页面，并遵循 fof/pages 的可见性；其他任何页面
+ * （或未启用 fof/pages）都返回 404，以免该端点变成读取区域外页面的途径。
  */
 final class ShowAboutPageController implements RequestHandlerInterface
 {
@@ -41,7 +40,7 @@ final class ShowAboutPageController implements RequestHandlerInterface
         $actor = RequestUtil::getActor($request);
         $actor->assertCan('viewForum');
 
-        // O Flarum junta os parâmetros da rota aos da query.
+        // Flarum 会把路由参数合并进 query 参数。
         $id = (int) ($request->getQueryParams()['id'] ?? 0);
         $page = $this->pages->find($actor, $id);
 

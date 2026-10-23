@@ -18,9 +18,8 @@ export interface CommunityCustomizeModalAttrs extends IInternalModalAttrs {
 }
 
 /**
- * Quais itens da seção principal da barra lateral ficam à vista; os
- * desmarcados vão para dentro do "Mais", como o "personalizar seção" do
- * Discourse.
+ * 侧栏主区域中哪些条目保持可见；未勾选的条目会进入
+ * “更多”，如同 Discourse 的“自定义区域”。
  */
 export default class CommunityCustomizeModal extends Modal<CommunityCustomizeModalAttrs> {
   hidden = new Set<string>();
@@ -32,7 +31,7 @@ export default class CommunityCustomizeModal extends Modal<CommunityCustomizeMod
   }
 
   className() {
-    return 'CanelaSidebarCustomize Modal--small';
+    return 'LcoySidebarCustomize Modal--small';
   }
 
   title() {
@@ -44,7 +43,7 @@ export default class CommunityCustomizeModal extends Modal<CommunityCustomizeMod
       <div className="Modal-body">
         <p className="helpText">{t('sidebar.customize_community_help')}</p>
 
-        <ul className="CanelaSidebarCustomize-list">
+        <ul className="LcoySidebarCustomize-list">
           {this.attrs.entries.map((entry) => (
             <li>
               <label className="checkbox">
@@ -56,7 +55,7 @@ export default class CommunityCustomizeModal extends Modal<CommunityCustomizeMod
           ))}
         </ul>
 
-        <div className="CanelaSidebarCustomize-actions">
+        <div className="LcoySidebarCustomize-actions">
           <Button className="Button Button--primary" onclick={() => this.save()}>
             {t('sidebar.customize_save')}
           </Button>

@@ -36,26 +36,23 @@ use Lcoy\Roselle\Community\Community;
 use Lcoy\Roselle\Community\UserPresenter;
 
 /**
- * GET /api/canela-about — tudo o que a página "Sobre" mostra numa resposta só:
- * o texto do admin, o contato, a equipe e as estatísticas do site.
+ * GET /api/lcoy-about——"关于"页面展示的全部内容，一次响应返回：
+ * 管理员文本、联系方式、团队以及站点统计。
  *
- * As estatísticas contam a tabela inteira de tópicos e postagens, então ficam
- * 30 minutos em cache (o Discourse também as recalcula de tempos em tempos).
- * Elas só contam o que um visitante veria — sem ocultos, privados nem tópicos
- * de tags restritas —, o que as torna iguais para todo mundo e permite um
- * cache único. A equipe não entra no
- * cache: depende de quem pergunta (grupos ocultos, usuários visíveis) e são
- * duas consultas pequenas.
+ * 统计会扫描整个主题表和帖子表，因此缓存 30 分钟（Discourse 也会定期
+ * 重新计算）。它们只统计访客能看到的内容——不含隐藏、私密或带受限标签
+ * 的主题——因此对所有人一致，可以用同一份缓存。团队不进入缓存：
+ * 它取决于询问者（隐藏的组、可见的用户），而且只是两次小查询。
  */
 final class ShowAboutController implements RequestHandlerInterface
 {
     public const CACHE_TTL = 1800;
 
-    // `.v2`: as contagens antigas incluíam tópicos de tags restritas; a chave
-    // nova evita servi-las por até 30 minutos depois da atualização.
-    private const CACHE_KEY = 'canela.about.overview.v2';
+    // `.v2`：旧的计数包含带受限标签的主题；新的键避免在更新后长达 30 分钟内
+    // 仍返回旧数据。
+    private const CACHE_KEY = 'lcoy.about.overview.v2';
 
-    /** Mais que isso numa equipe vira lista de usuários, não página "Sobre". */
+    /** 团队超过这个数量就更像用户列表，而不是"关于"页面了。 */
     private const STAFF_LIMIT = 100;
 
     public function __construct(
@@ -108,9 +105,8 @@ final class ShowAboutController implements RequestHandlerInterface
     }
 
     /**
-     * Os membros de um grupo da equipe que o ator pode ver, ou `null` quando o
-     * grupo é oculto para ele — aí a seção some, em vez de aparecer vazia e
-     * revelar que o grupo existe.
+     * 操作者可以看到的团队成员，或在组对其隐藏时返回 `null`——此时该区块
+     * 直接消失，而不是显示为空并暴露该组的存在。
      *
      * @return list<User>|null
      */
@@ -134,7 +130,7 @@ final class ShowAboutController implements RequestHandlerInterface
         return $query->get()->all();
     }
 
-    /** O texto "sobre" do admin, em HTML (ver AdminText). */
+    /** 管理员的"关于"文本，输出为 HTML（见 AdminText）。 */
     private function aboutHtml(ServerRequestInterface $request): ?string
     {
         return $this->text->render((string) $this->settings->get(Community::ABOUT_TEXT), $request);
@@ -157,8 +153,8 @@ final class ShowAboutController implements RequestHandlerInterface
             'topics' => $this->countPeriods($periods, fn () => $this->publicDiscussions(), 'discussions.created_at'),
             'posts' => $this->countPeriods($periods, fn () => $this->publicPosts(), 'posts.created_at'),
             'users' => $this->countPeriods($periods, fn () => $this->members(), 'users.joined_at'),
-            // "Usuários ativos" de sempre seria igual a "usuários": o Discourse
-            // também deixa essa célula vazia.
+            // 常规定义的"活跃用户"会等同于"用户"：Discourse
+            // 也是让该单元格留空。
             'activeUsers' => $this->countPeriods($periods, fn () => $this->members(), 'users.last_seen_at', withTotal: false),
         ];
 
@@ -202,15 +198,14 @@ final class ShowAboutController implements RequestHandlerInterface
     }
 
     /**
-     * Os tópicos que um visitante vê: as regras de visibilidade do core e das
-     * extensões (tags restritas, aprovação…) com o ator visitante, como o
-     * Discourse, que só conta o que é público.
+     * 访客能看到的主题：以访客身份应用核心和扩展的可见性规则（受限标签、
+     * 审核……），与 Discourse 一样只统计公开内容。
      */
     private function publicDiscussions(): Builder
     {
-        // Os métodos que o Eloquent repassa ao query builder (whereNull,
-        // whereIn…) alteram a mesma consulta; em instrução separada, a
-        // variável continua um Builder do Eloquent também para a análise.
+        // Eloquent 转发给 query builder 的方法（whereNull、
+        // whereIn……）会修改同一个查询；写成独立语句，变量在静态分析
+        // 看来也仍是 Eloquent Builder。
         $guest = new Guest();
         $guestsCanView = $guest->hasPermission('viewForum');
 
@@ -219,8 +214,8 @@ final class ShowAboutController implements RequestHandlerInterface
         $query->whereNull('discussions.hidden_at');
 
         if (! $guestsCanView && $this->extensions->isEnabled('flarum-tags')) {
-            // Fórum fechado a visitantes: com o visitante tudo daria zero. Aí
-            // vale o que não está em nenhuma tag com permissões próprias.
+            // 论坛对访客关闭：以访客身份统计会全是零。此时
+            // 以不在任何带独立权限的标签中的内容为准。
             $query->whereNotIn('discussions.id', fn (QueryBuilder $tagged) => $tagged
                 ->select('discussion_tag.discussion_id')
                 ->from('discussion_tag')
@@ -231,7 +226,7 @@ final class ShowAboutController implements RequestHandlerInterface
         return $query;
     }
 
-    /** Respostas e primeiras postagens públicas, de tópicos públicos. */
+    /** 公开主题中的回复和首帖，且均为公开内容。 */
     private function publicPosts(): Builder
     {
         $query = Post::query()

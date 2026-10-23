@@ -14,20 +14,20 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
 
 /*
- * Um dia de visita por linha, como o `user_visits` do Discourse: daqui saem os
- * "Dias visitados", o "Tempo de leitura" e as "Postagens lidas" do resumo do
- * perfil. Por dia (e não por acesso) para a tabela crescer no máximo uma
- * linha por pessoa por dia, e para a soma do perfil ser um SUM simples.
+ * 每次访问一天一行，与 Discourse 的 `user_visits` 相同：个人资料摘要中的
+ * "访问天数"、"阅读时长" 和 "已读帖子" 由此得出。
+ * 按天（而不是按访问）记录，使表最多每人每天增长一行，
+ * 并让个人资料的汇总成为简单的 SUM。
  */
 return [
     'up' => static function (Builder $schema): void {
-        // Idempotente: quem vem do Canela já tem a tabela, mas a migração
-        // antiga não está registrada com este nome.
-        if ($schema->hasTable('canela_user_visits')) {
+        // 幂等：来自 Lcoy 的用户已经有该表，但旧的迁移
+        // 没有以这个名称注册。
+        if ($schema->hasTable('lcoy_user_visits')) {
             return;
         }
 
-        $schema->create('canela_user_visits', static function (Blueprint $table): void {
+        $schema->create('lcoy_user_visits', static function (Blueprint $table): void {
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->date('visited_at');
@@ -42,6 +42,6 @@ return [
     },
 
     'down' => static function (Builder $schema): void {
-        $schema->dropIfExists('canela_user_visits');
+        $schema->dropIfExists('lcoy_user_visits');
     },
 ];

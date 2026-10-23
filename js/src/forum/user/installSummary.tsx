@@ -1,14 +1,13 @@
 /*
- * Rota e aba do "Resumo" do perfil (`/u/:username/summary`).
+ * 资料“摘要”的路由和标签页（`/u/:username/summary`）。
  *
- * A rota entra direto em `app.routes`, como o Extend.Routes faria: o
- * initializer roda antes do `mount`, que é quando o core monta o roteador. O
- * servidor já atende `/u/{username}[/{filter}]` com a página do perfil, então
- * a URL abre direto, sem rota nova no PHP.
+ * 路由直接放进 `app.routes`，与 Extend.Routes 的做法相同：initializer 在
+ * `mount` 之前运行，而核心在 `mount` 时装配路由器。服务器已经用资料页面
+ * 响应 `/u/{username}[/{filter}]`，因此 URL 可直接打开，无需在 PHP 中新增路由。
  *
- * Os links de perfil (`app.route.user`: avatar, nome nos posts, menu da
- * sessão) abrem na aba escolhida no admin (`canela.user_default_tab`): a
- * atividade, como no Flarum (padrão), ou o Resumo, como no Discourse.
+ * 资料链接（`app.route.user`：头像、帖子中的名字、会话菜单）
+ * 会在管理后台选定的标签页打开（`lcoy.user_default_tab`）：活动页，
+ * 与 Flarum 一致（默认），或摘要页，与 Discourse 一致。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -30,16 +29,15 @@ export default function installSummary() {
     resolverClass: UserPageResolver,
   } as any;
 
-  // A configuração é lida na hora de montar o link: no initializer o
-  // `app.forum` ainda não existe.
+  // 配置在构建链接时读取：在 initializer 中 `app.forum` 还不存在。
   const userUrl = app.route.user;
   app.route.user = (user: User) =>
-    app.forum && forumBool('canelaUserSummary', true) && app.forum.attribute('canelaUserDefaultTab') === 'summary'
+    app.forum && forumBool('lcoyUserSummary', true) && app.forum.attribute('lcoyUserDefaultTab') === 'summary'
       ? app.route('user.summary', { username: user.slug() })
       : userUrl(user);
 
-  // As postagens ganham o endereço próprio do Discourse (`/u/:username/activity`):
-  // o `/u/:username` do core vira a porta de entrada e abre no Resumo.
+  // 帖子获得 Discourse 专属地址（`/u/:username/activity`）：
+  // 核心的 `/u/:username` 变成入口，打开摘要。
   app.routes['user.activity'] = {
     path: '/u/:username/activity',
     component: PostsUserPage,
@@ -49,10 +47,10 @@ export default function installSummary() {
   extend(UserPage.prototype, 'oninit', function () {
     const username = m.route.param('username');
 
-    if (!username || !forumBool('canelaUserSummary', true) || app.forum.attribute('canelaUserDefaultTab') !== 'summary') return;
+    if (!username || !forumBool('lcoyUserSummary', true) || app.forum.attribute('lcoyUserDefaultTab') !== 'summary') return;
 
-    // Só o endereço sem aba: as rotas `user` e `user.posts` do core dividem o
-    // mesmo caminho, então o nome da rota não basta para distinguir.
+    // 只有不带标签页的地址：核心的 `user` 和 `user.posts` 路由共用
+    // 同一路径，因此路由名不足以区分。
     if (m.route.get().split('?')[0] === app.route('user', { username })) {
       m.route.set(app.route('user.summary', { username }), undefined, { replace: true });
     }
@@ -65,9 +63,9 @@ export default function installSummary() {
   });
 
   extend(UserPage.prototype, 'navItems', function (this: UserPage, items: ItemList<Mithril.Children>) {
-    // O atributo do fórum é lido aqui, e não no install: no initializer o
-    // `app.forum` ainda não existe.
-    if (!this.user || !forumBool('canelaUserSummary', true)) return;
+    // 论坛属性在这里读取，而不是在 install 中：在 initializer 里
+    // `app.forum` 还不存在。
+    if (!this.user || !forumBool('lcoyUserSummary', true)) return;
 
     items.add(
       'summary',

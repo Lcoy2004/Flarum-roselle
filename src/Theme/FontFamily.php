@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Lcoy\Roselle\Theme;
 
 /**
- * Família tipográfica do tema, entregue ao LESS como `@config-canela-font`.
+ * 主题的字体族，以 `@config-lcoy-font` 传给 LESS。
  *
- * O LESS escolhe a pilha de fontes casando o identificador num mixin
- * (less/common/tokens.less), por isso só identificadores conhecidos passam.
+ * LESS 通过在 mixin（less/common/tokens.less）中匹配标识符来选择字体栈，
+ * 因此只有已知的标识符能通过。
  */
 final class FontFamily
 {
-    public const SETTING = 'canela.font';
+    public const SETTING = 'lcoy.font';
 
     public const INTER = 'inter';
 

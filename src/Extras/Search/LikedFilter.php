@@ -20,15 +20,14 @@ use Flarum\Search\SearchState;
 use Illuminate\Database\Query\Builder;
 
 /**
- * `filter[canelaLiked]`: tópicos em que quem pesquisa curtiu alguma postagem
- * ("curtidos por mim" do Discourse).
+ * `filter[lcoyLiked]`：搜索者点赞过其中某个帖子的主题（Discourse 的
+ * "我赞过的"）。
  *
- * O flarum/likes só filtra POSTAGENS por quem curtiu (`likedBy`); na busca de
- * tópicos o equivalente é "tem uma postagem curtida por mim". O valor é
- * ignorado e vale sempre o próprio ator: as curtidas alheias agrupadas por
- * tópico não são públicas, e o filtro não pode virar um jeito de descobri-las.
+ * flarum/likes 只能按点赞者对帖子进行过滤（`likedBy`）；在主题搜索中，
+ * 等价条件是"含有我点赞过的帖子"。该值会被忽略，始终以当前操作者为准：
+ * 按主题汇总他人的点赞并非公开信息，过滤器不能变成发现它们的手段。
  *
- * Só é registrado com o flarum/likes ligado (a tabela é dele).
+ * 仅在启用 flarum/likes 时注册（该表属于此扩展）。
  *
  * @implements FilterInterface<DatabaseSearchState>
  */
@@ -37,7 +36,7 @@ final class LikedFilter implements FilterInterface
     #[\Override]
     public function getFilterKey(): string
     {
-        return 'canelaLiked';
+        return 'lcoyLiked';
     }
 
     #[\Override]
@@ -47,8 +46,8 @@ final class LikedFilter implements FilterInterface
         $query = $state->getQuery();
 
         if ($actor->isGuest()) {
-            // Visitante não curte nada: "curtidos por mim" não acha nada, e o
-            // filtro negado não restringe nada.
+            // 访客不会点赞："我赞过的"查不到任何结果，而取反的
+            // 过滤器也不会限制任何内容。
             if (! $negate) {
                 $query->whereRaw('1 = 0');
             }
@@ -59,8 +58,8 @@ final class LikedFilter implements FilterInterface
         $likedByActor = static function (Builder $sub) use ($actor): void {
             $sub->selectRaw('1')
                 ->from('post_likes')
-                ->join('posts as canela_liked_posts', 'canela_liked_posts.id', '=', 'post_likes.post_id')
-                ->whereColumn('canela_liked_posts.discussion_id', 'discussions.id')
+                ->join('posts as lcoy_liked_posts', 'lcoy_liked_posts.id', '=', 'post_likes.post_id')
+                ->whereColumn('lcoy_liked_posts.discussion_id', 'discussions.id')
                 ->where('post_likes.user_id', $actor->id);
         };
 

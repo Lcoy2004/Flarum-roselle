@@ -25,18 +25,16 @@ use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Queue\SyncQueue;
 
 /**
- * O Wardrobe sem peso na visita.
+ * 访问时无负担的 Wardrobe。
  *
- * O original recompila o tema dentro da requisição de quem abre o fórum
- * depois de qualquer mudança nos assets, e aquece todos os temas de uma vez
- * quando eles são recompilados. Num servidor pequeno isso estourava a memória
- * (erro 500) e deixava a primeira visita lenta. Aqui:
+ * 原版会在打开论坛的请求中重新编译主题（只要资产有任何变化），并在重新
+ * 编译时一次性预热所有主题。在小服务器上这会耗尽内存（500 错误），并让
+ * 首次访问变慢。这里的做法：
  *
- * - na visita, o tema que já tem arquivo é servido como está, mesmo que um
- *   pouco desatualizado, e a recompilação vai para a fila (o worker);
- * - um tema que ainda não tem arquivo fica com o CSS/JS do core até o worker
- *   compilá-lo;
- * - no worker (CLI) e sem fila de verdade, vale o comportamento original.
+ * - 访问时，已有文件的主题按现状提供，即使略有陈旧，重新编译交给队列
+ *   （worker）；
+ * - 尚无文件的主题暂时使用核心的 CSS/JS，直到 worker 编译完成；
+ * - 在 worker（CLI）中且没有真实队列时，沿用原版行为。
  */
 final class LazyThemeAssets extends ThemeAssets
 {
@@ -61,21 +59,20 @@ final class LazyThemeAssets extends ThemeAssets
         return $this->inVisit() ? $this->servedUrl($themeId, 'js') : parent::jsUrlFor($themeId);
     }
 
-    /** Uma visita com worker de fila de verdade: aí a visita nunca compila. */
+    /** 存在真实队列 worker 的访问：此时访问过程绝不编译。 */
     private function inVisit(): bool
     {
         return PHP_SAPI !== 'cli' && ! $this->queue() instanceof SyncQueue;
     }
 
     /**
-     * A URL do arquivo já compilado, sem compilar nada. Velho: serve assim
-     * mesmo e pede à fila que o atualize. Ainda sem arquivo: devolve null (a
-     * página fica com o forum.css/js do core por enquanto) e pede à fila que
-     * o compile; compilar ali estourava a memória do PHP (erro 500).
+     * 已编译文件的 URL，且不触发任何编译。陈旧时：仍然照此提供，并请求
+     * 队列更新它。尚无文件时：返回 null（页面暂时使用核心的 forum.css/js），
+     * 并请求队列编译它；在那里编译会耗尽 PHP 内存（500 错误）。
      */
     private function servedUrl(string $themeId, string $type): ?string
     {
-        // Os membros do Wardrobe e do compilador são protegidos: lidos no escopo deles.
+        // Wardrobe 和编译器的成员是受保护的：需要在其作用域内读取。
         $peek = \Closure::bind(function (string $themeId, string $type): ?array {
             $compilers = $this->compilersFor($themeId);
 
@@ -103,10 +100,10 @@ final class LazyThemeAssets extends ThemeAssets
         return $compiler->getUrl();
     }
 
-    /** Uma recompilação na fila por minuto, no máximo, por mais visitas que cheguem. */
+    /** 每分钟最多排队一次重新编译，无论有多少访问到来。 */
     private function requestWarm(): void
     {
-        if ($this->store->add('canela.wardrobe.warm_requested', 1, 60)) {
+        if ($this->store->add('lcoy.wardrobe.warm_requested', 1, 60)) {
             $this->queue()->push(new WarmThemeAssets());
         }
     }
@@ -117,11 +114,10 @@ final class LazyThemeAssets extends ThemeAssets
     }
 
     /**
-     * O worker da fila é um processo longo: a lista "já atualizado nesta
-     * requisição" do Wardrobe (`fresh`) ficava preenchida para sempre nele, e
-     * os aquecimentos seguintes não recompilavam nada (o tema servido ficava
-     * velho até alguém rodar o aquecimento à mão). Cada aquecimento começa
-     * com ela vazia e decide pelo carimbo de tempo, como numa requisição nova.
+     * 队列 worker 是长生命周期进程：Wardrobe 的"本次请求已更新"列表
+     * （`fresh`）在其中会被永久填满，后续预热便不再重新编译任何内容
+     * （所服务的主题会一直陈旧，直到有人手动执行预热）。每次预热都从
+     * 空列表开始，并依据时间戳判断，如同新的请求。
      */
     #[\Override]
     public function warmAll(): void

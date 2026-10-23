@@ -1,14 +1,14 @@
-// fof/socialprofile: o editor de botões sociais ("Editar redes sociais").
+// fof/socialprofile：社交按钮编辑器（"编辑社交网络"）。
 //
-// O rodapé do formulário (`#submit-button-group`) é um `.Form-group` do core,
-// que é uma coluna flex — por isso os botões de adicionar/remover e o Salvar
-// ficavam empilhados. Aqui viram uma linha só: + e − à esquerda, Salvar à
-// direita (o `float: right` inline da extensão não vale dentro de um flex).
+// 表单页脚（`#submit-button-group`）是核心的 `.Form-group`，
+// 即一个 flex 列——因此添加/移除按钮和"保存"
+// 被堆叠。这里变为一行：+ 和 − 在左，保存在
+// 右（扩展内联的 `float: right` 在 flex 中无效）。
 
 .SocialButtonsModal #submit-button-group {
   flex-direction: row;
   align-items: center;
-  gap: var(--cn-space-2);
+  gap: var(--lcoy-space-2);
   width: 100%;
 
   > .Button {
@@ -17,18 +17,18 @@
     margin-bottom: 0;
   }
 
-  // O botão Salvar tem `float: right` inline; em flex quem manda no encosto
-  // à direita é a margem automática.
+  // 保存按钮带内联 `float: right`；在 flex 中决定右对齐的
+  // 是自动外边距。
   > .EditSocialButtons-save {
     margin-left: auto;
   }
 }
 
-// O seletor de ícone de cada rede é um `.Button--icon` redondo. A extensão
-// acrescenta um caret à direita e deixa a largura automática: o ícone fica
-// empurrado para a esquerda (56px de botão para um ícone de 20px). O botão
-// inteiro já abre o menu, então o caret é redundante — fica um círculo de
-// 36px com o ícone centrado.
+// 每个网络的图标选择器是圆形的 `.Button--icon`。扩展
+// 在右侧添加 caret 并让宽度自动：图标被
+// 推向左侧（20px 图标对应 56px 按钮）。整个按钮
+// 本就会打开菜单，因此 caret 多余——变为 36px 的圆
+// 并居中图标。
 .form-group-social .icondropdown > button.Dropdown-toggle {
   gap: 0;
   width: 36px;

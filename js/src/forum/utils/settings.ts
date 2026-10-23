@@ -1,12 +1,12 @@
 /*
- * Leitura das configurações do tema que o extend.php serializa no fórum
- * (`canela*`). O PHP já converte booleanos e inteiros, mas o atributo pode
- * faltar por um instante logo depois de ativar a extensão — daí os padrões.
+ * 读取 extend.php 在论坛中序列化的主题配置
+ * （`lcoy*`）。PHP 已经转换了布尔值和整数，但属性在启用扩展后
+ * 的一瞬间可能缺失——因此需要默认值。
  */
 import app from 'flarum/forum/app';
 
 export function forumBool(attributeName: string, fallback = false): boolean {
-  // Nos initializers o `app.forum` ainda não existe: vale o padrão.
+  // 在 initializer 中 `app.forum` 还不存在：使用默认值。
   if (!app.forum) return fallback;
 
   const value = app.forum.attribute<unknown>(attributeName);
@@ -22,7 +22,7 @@ export function forumInt(attributeName: string, fallback: number): number {
   return Number.isFinite(value) && value > 0 ? Math.floor(value) : fallback;
 }
 
-/** Atalho para a tradução do tema já como string (títulos, aria-label…). */
+/** 将主题翻译直接作为字符串获取的快捷方式（标题、aria-label……）。 */
 export function t(key: string, params: Record<string, unknown> = {}): string {
   return app.translator.trans(`lcoy-roselle.forum.${key}`, params, true) as string;
 }

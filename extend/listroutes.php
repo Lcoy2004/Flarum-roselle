@@ -11,15 +11,14 @@
  */
 
 /*
- * Os endereços do Discourse para a lista de tópicos:
+ * Discourse 的主题列表地址：
  *
- * - /latest, /hot, /top, /new e /unread abrem a lista (o JS escolhe a
- *   ordenação pela rota; o documento pré-carregado é o da lista padrão);
- * - /categories abre a página de categorias (o TagsPage carrega as tags);
- * - /c/<slug>[/<id>] redireciona para /t/<slug>.
+ * - /latest、/hot、/top、/new 和 /unread 打开列表（JS 按路由
+ *   选择排序方式；预加载的文档是默认列表的文档）；
+ * - /categories 打开分类页面（TagsPage 会加载标签）；
+ * - /c/<slug>[/<id>] 重定向到 /t/<slug>。
  *
- * Nada de variáveis soltas: o extend.php faz `require` deste arquivo no
- * próprio escopo.
+ * 不要留下散落的变量：extend.php 会在自身作用域内 `require` 这个文件。
  */
 
 use Flarum\Extend;
@@ -30,24 +29,24 @@ use Lcoy\Roselle\ListRoutes\PinStickiedToTop;
 use Lcoy\Roselle\ListRoutes\RedirectCategory;
 
 return [
-    // O fórum só leva as abas para estes endereços quando este arquivo está
-    // carregado (senão um F5 em /top daria 404): o atributo é a prova disso.
+    // 只有在这个文件被加载时，论坛才会把这些标签指向这些地址
+    // （否则在 /top 上按 F5 会 404）：这个属性就是证据。
     (new Extend\Settings())
-        ->default('canela.list_routes_backend', true)
-        ->serializeToForum('canelaListRoutes', 'canela.list_routes_backend', fn () => true),
+        ->default('lcoy.list_routes_backend', true)
+        ->serializeToForum('lcoyListRoutes', 'lcoy.list_routes_backend', fn () => true),
 
     (new Extend\Frontend('forum'))
-        ->route('/latest', 'canela.latest', Index::class)
-        ->route('/hot', 'canela.hot', Index::class)
-        ->route('/top', 'canela.top', Index::class)
-        ->route('/new', 'canela.new', Index::class)
-        ->route('/unread', 'canela.unread', Index::class)
-        ->route('/categories', 'canela.categories'),
+        ->route('/latest', 'lcoy.latest', Index::class)
+        ->route('/hot', 'lcoy.hot', Index::class)
+        ->route('/top', 'lcoy.top', Index::class)
+        ->route('/new', 'lcoy.new', Index::class)
+        ->route('/unread', 'lcoy.unread', Index::class)
+        ->route('/categories', 'lcoy.categories'),
 
     (new Extend\Routes('forum'))
-        ->get('/c/{path:.+}', 'canela.category_redirect', RedirectCategory::class),
+        ->get('/c/{path:.+}', 'lcoy.category_redirect', RedirectCategory::class),
 
-    // Fixados no topo da inicial e da tag, em ordem de criação (ver a classe).
+    // 在首页和标签页置顶，按创建顺序排列（见对应类）。
     (new Extend\Conditional())->whenExtensionEnabled('flarum-sticky', static fn (): array => [
         (new Extend\SearchDriver(DatabaseSearchDriver::class))
             ->addMutator(DiscussionSearcher::class, PinStickiedToTop::class),

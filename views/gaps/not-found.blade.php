@@ -1,8 +1,8 @@
 {{--
-  A página 404 do Discourse (page-not-found): cabeçalho com o logo, a lupa
-  triste com "Oops! Essa página não existe ou é privada." e "Voltar para o
-  início", a caixa "Que tal tentar pesquisar?" e as colunas de tópicos
-  populares e recentes. Medidas do css-common.css do meta.discourse.org.
+  Discourse 的 404 页面（page-not-found）：带 logo 的页眉，配着
+  "糟糕！该页面不存在或为私密。" 的悲伤放大镜和 "返回
+  首页" 按钮，"要不试着搜索一下？" 搜索框，以及热门和近期
+  主题两栏。尺寸取自 meta.discourse.org 的 css-common.css。
 --}}
 @php
   $t = fn (string $key) => $translator->trans('lcoy-roselle.views.not_found.'.$key);
@@ -103,9 +103,9 @@
 
     <section class="search">
       <form action="{{ $page['base'] }}/" method="get" role="search">
-        <label for="canela-404-search">{{ $t('search_title') }}</label>
+        <label for="lcoy-404-search">{{ $t('search_title') }}</label>
         <div class="field">
-          <input id="canela-404-search" type="search" name="q" placeholder="{{ $t('placeholder') }}">
+          <input id="lcoy-404-search" type="search" name="q" placeholder="{{ $t('placeholder') }}">
           <svg viewBox="0 0 512 512" aria-hidden="true"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
         </div>
         <button type="submit">{{ $t('search_button') }}</button>

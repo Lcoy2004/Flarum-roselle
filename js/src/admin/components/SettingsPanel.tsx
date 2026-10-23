@@ -1,12 +1,12 @@
 /*
- * A casca do painel: os grupos à esquerda (no celular, uma faixa rolável no
- * topo), a busca, o indicador "Salvando…/Salvo" e os cards do grupo ativo.
+ * 面板外壳：左侧的分组（在手机上为顶部可横向滚动的条）、
+ * 搜索、“正在保存…/已保存”指示器以及当前分组的卡片。
  *
- * Dependências: cada card com `master` registra o que a chave dele exige
- * (`dependsOn`, `extensions`, `lockedBy`). Um card cujo `dependsOn` está
- * desligado sai do grupo e entra na nota "Ocultos" do fim, com o link para o
- * card que falta ligar; na busca ele aparece como um aviso compacto, para a
- * busca achar tudo o que existe.
+ * 依赖关系：每张带 `master` 的卡片都会注册其开关所需的条件
+ * （`dependsOn`、`extensions`、`lockedBy`）。`dependsOn`
+ * 已关闭的卡片会离开分组，进入末尾的“隐藏”说明，并带有指向
+ * 需要开启的卡片的链接；在搜索中它会显示为紧凑提示，
+ * 以便搜索能找到所有存在的内容。
  */
 import type { CardDef, GroupKey } from '../types';
 import { firstOff, getBool, noteInteraction, registerDeps, saveState, toList, trans } from '../util';
@@ -20,7 +20,7 @@ export interface GroupDef {
   icon: string;
   label: () => string;
   description: () => string;
-  /** Grupo de uso esporádico: só aparece com "Mais opções" aberto. */
+  /** 不常使用的分组：仅在“更多设置”打开时显示。 */
   advanced?: boolean;
 }
 
@@ -28,75 +28,73 @@ export const GROUPS: GroupDef[] = [
   {
     key: 'appearance',
     icon: 'fas fa-palette',
-    label: () => trans(`${KEY}.group_appearance`, 'Aparência'),
-    description: () => trans(`${SHELL}.group_appearance_desc`, 'Cores, fonte, superfícies, botões, ícones e avisos.'),
+    label: () => trans(`${KEY}.group_appearance`, '外观'),
+    description: () => trans(`${SHELL}.group_appearance_desc`, '颜色、字体、表面、按钮、图标与提示条。'),
   },
   {
     key: 'navigation',
     icon: 'fas fa-table-columns',
-    label: () => trans(`${SHELL}.group_navigation`, 'Cabeçalho e barra lateral'),
-    description: () =>
-      trans(`${SHELL}.group_navigation_desc`, 'A busca e o menu do cabeçalho, o login, os atalhos de teclado e a barra lateral do Discourse.'),
+    label: () => trans(`${SHELL}.group_navigation`, '页头与侧栏'),
+    description: () => trans(`${SHELL}.group_navigation_desc`, '页头搜索与菜单、登录、键盘快捷键，以及 Discourse 风格的侧栏。'),
   },
   {
     key: 'list',
     icon: 'fas fa-list',
-    label: () => trans(`${KEY}.group_list`, 'Lista de discussões'),
-    description: () => trans(`${SHELL}.group_list_desc`, 'A página inicial, as abas, as colunas, as tags e os contadores da lista.'),
+    label: () => trans(`${KEY}.group_list`, '讨论列表'),
+    description: () => trans(`${SHELL}.group_list_desc`, '讨论列表的首页、选项卡、列、标签与计数。'),
   },
   {
     key: 'topic',
     icon: 'far fa-comments',
-    label: () => trans(`${KEY}.group_topic`, 'Discussão'),
-    description: () => trans(`${SHELL}.group_topic_desc`, 'As postagens, a linha do tempo, o mapa, o rodapé e os recursos de leitura.'),
+    label: () => trans(`${KEY}.group_topic`, '讨论'),
+    description: () => trans(`${SHELL}.group_topic_desc`, '帖子、时间线、主题信息、页脚与阅读功能。'),
   },
   {
     key: 'composer',
     icon: 'fas fa-pen-to-square',
-    label: () => trans(`${KEY}.group_composer`, 'Editor e busca'),
-    description: () => trans(`${SHELL}.group_composer_desc`, 'O editor do Discourse, os rascunhos, as hashtags e a busca avançada.'),
+    label: () => trans(`${KEY}.group_composer`, '编辑器与搜索'),
+    description: () => trans(`${SHELL}.group_composer_desc`, 'Discourse 风格的编辑器、草稿、#标签与高级搜索。'),
   },
   {
     key: 'people',
     icon: 'far fa-user',
-    label: () => trans(`${SHELL}.group_people`, 'Perfil e usuários'),
-    description: () => trans(`${SHELL}.group_people_desc`, 'A página de perfil, o cartão de usuário, os campos extras e a atividade.'),
+    label: () => trans(`${SHELL}.group_people`, '个人主页与用户'),
+    description: () => trans(`${SHELL}.group_people_desc`, '个人主页、用户卡片、扩展字段与活动。'),
   },
   {
     key: 'community',
     icon: 'fas fa-users',
-    label: () => trans(`${KEY}.group_community`, 'Comunidade'),
-    description: () => trans(`${SHELL}.group_community_desc`, 'Sobre, diretrizes, usuários, grupos e convites.'),
+    label: () => trans(`${KEY}.group_community`, '社区'),
+    description: () => trans(`${SHELL}.group_community_desc`, '关于、社区准则、用户与用户组。'),
   },
   {
     key: 'moderation',
     icon: 'fas fa-shield-halved',
-    label: () => trans(`${SHELL}.group_moderation`, 'Moderação'),
-    description: () => trans(`${SHELL}.group_moderation_desc`, 'Ferramentas da equipe: ações em massa, histórico de edições e avisos ao autor.'),
+    label: () => trans(`${SHELL}.group_moderation`, '审核'),
+    description: () => trans(`${SHELL}.group_moderation_desc`, '管理工具：批量操作、编辑历史，以及给作者的提示。'),
     advanced: true,
   },
   {
     key: 'integrations',
     icon: 'fas fa-puzzle-piece',
-    label: () => trans(`${SHELL}.group_integrations`, 'Integrações'),
-    description: () =>
-      trans(`${SHELL}.group_integrations_desc`, 'O visual do Discourse para extensões de terceiros. Cada uma só vale com a extensão ligada.'),
+    label: () => trans(`${SHELL}.group_integrations`, '集成'),
+    description: () => trans(`${SHELL}.group_integrations_desc`, '为第三方扩展套用 Discourse 外观。每项都只有在启用对应扩展后才会生效。'),
     advanced: true,
   },
 ];
 
-const TAB_STORAGE_KEY = 'canela.admin.tab';
+const TAB_STORAGE_KEY = 'lcoy.admin.tab';
 
 export function createPanel(cards: CardDef[]): any {
-  // O que cada chave mestra exige: assim um `dependsOn` que aponta para ela
-  // herda, em cascata, as dependências dela.
+  // 每个主开关的要求：这样指向它的 `dependsOn` 会
+  // 以级联方式继承它的依赖。
   for (const card of cards) {
     if (card.master) registerDeps(card.master, { deps: toList(card.dependsOn), extensions: card.extensions ?? [], locked: card.lockedBy });
   }
 
   const groupLabel = (key: GroupKey) => GROUPS.find((group) => group.key === key)?.label() ?? '';
 
-  /** O card cuja chave mestra é `key` — o alvo de "Depende de …". */
+  /** 主开关为 `key` 的卡片——“依赖于……”的目标。 */
   const ownerOf = (key: string): CardDef | undefined => cards.find((card) => card.master === key);
 
   const depTitle = (key: string): string => ownerOf(key)?.title() ?? key;
@@ -106,15 +104,15 @@ export function createPanel(cards: CardDef[]): any {
       const saved = localStorage.getItem(TAB_STORAGE_KEY) as GroupKey | null;
       if (saved && GROUPS.some((group) => group.key === saved)) return saved;
     } catch {
-      // localStorage bloqueado: segue no primeiro grupo.
+      // localStorage 被禁用：继续停留在第一个分组。
     }
     return 'appearance';
   })();
 
   let query = '';
 
-  // Os grupos de uso esporádico ficam atrás de "Mais opções". Se o último
-  // grupo aberto era um deles, o painel já volta com eles à vista.
+  // 不常使用的分组藏在“更多设置”后面。如果上次打开的
+  // 分组是其中之一，面板会直接带着它们显示。
   let showAdvanced = !!GROUPS.find((group) => group.key === activeGroup)?.advanced;
 
   const setGroup = (key: GroupKey) => {
@@ -123,29 +121,29 @@ export function createPanel(cards: CardDef[]): any {
     try {
       localStorage.setItem(TAB_STORAGE_KEY, key);
     } catch {
-      // Sem persistência é só uma conveniência a menos.
+      // 没有持久化只是少了一点便利。
     }
   };
 
-  /** Leva ao card (trocando de grupo se preciso) e o destaca por um instante. */
+  /** 跳转到卡片（必要时切换分组），并短暂高亮它。 */
   const jumpTo = (target: CardDef | undefined) => {
-    // Se o card que falta ligar também está oculto, sobe a cadeia até o
-    // primeiro que está à vista.
+    // 如果待开启的卡片也被隐藏，沿依赖链向上找到
+    // 第一个可见的卡片。
     let card = target;
     for (let dep = card && firstOff(card.dependsOn); card && dep; dep = card && firstOff(card.dependsOn)) card = ownerOf(dep);
     if (!card) return;
     setGroup(card.group);
     m.redraw.sync();
 
-    const element = document.getElementById(`CanelaAdmin-card-${card.id}`);
+    const element = document.getElementById(`LcoyAdmin-card-${card.id}`);
     if (!element) return;
     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
     element.setAttribute('data-flash', '1');
     setTimeout(() => element.removeAttribute('data-flash'), 1600);
   };
 
-  // No celular os grupos viram uma faixa rolável: o ativo precisa estar à
-  // vista. Só rola quando o grupo muda, não a cada redesenho.
+  // 在手机上分组会变成可横向滚动的条：当前项需要处于
+  // 可见范围。仅在分组变化时滚动，而不是每次重绘。
   let revealed: GroupKey | null = null;
   const revealActive = (nav: HTMLElement) => {
     if (revealed === activeGroup) return;
@@ -160,7 +158,7 @@ export function createPanel(cards: CardDef[]): any {
     normalize(`${card.title()} ${card.description?.() ?? ''} ${card.keywords} ${groupLabel(card.group)}`).includes(needle);
 
   const featureCount = (key: GroupKey) => {
-    // Só os recursos à vista: um card oculto por dependência não conta no total.
+    // 仅统计可见功能：因依赖而隐藏的卡片不计入总数。
     const features = cards.filter((card) => card.group === key && card.master && !firstOff(card.dependsOn));
     const active = features.filter((card) => !lockReason(card) && getBool(card.master!));
 
@@ -172,12 +170,12 @@ export function createPanel(cards: CardDef[]): any {
       const { status } = saveState;
       const text =
         status === 'saving'
-          ? trans(`${SHELL}.saving`, 'Salvando…')
+          ? trans(`${SHELL}.saving`, '正在保存…')
           : status === 'saved'
-            ? trans(`${SHELL}.saved_all`, 'Alterações salvas')
+            ? trans(`${SHELL}.saved_all`, '更改已保存')
             : status === 'error'
-              ? trans(`${SHELL}.save_error`, 'Não foi possível salvar')
-              : trans(`${SHELL}.autosave`, 'Tudo salva sozinho');
+              ? trans(`${SHELL}.save_error`, '无法保存')
+              : trans(`${SHELL}.autosave`, '所有设置都会自动保存');
       const icon =
         status === 'saving'
           ? 'fas fa-circle-notch fa-spin'
@@ -188,7 +186,7 @@ export function createPanel(cards: CardDef[]): any {
               : 'fas fa-cloud';
 
       return (
-        <span className={`CanelaAdmin-save is-${status}`} role="status" aria-live="polite">
+        <span className={`LcoyAdmin-save is-${status}`} role="status" aria-live="polite">
           <i className={icon} aria-hidden="true" />
           {text}
         </span>
@@ -196,23 +194,23 @@ export function createPanel(cards: CardDef[]): any {
     },
   };
 
-  /** Card que depende de algo desligado, na busca: o aviso e o atalho para ligar. */
+  /** 依赖已关闭内容的卡片，在搜索中：提示与开启快捷入口。 */
   const HiddenStub: any = {
     view({ attrs: { card, dep } }: any) {
       return (
-        <div className="CanelaAdmin-stub">
-          <span className="CanelaAdmin-card-icon">
+        <div className="LcoyAdmin-stub">
+          <span className="LcoyAdmin-card-icon">
             <i className={card.icon} aria-hidden="true" />
           </span>
-          <div className="CanelaAdmin-stub-text">
+          <div className="LcoyAdmin-stub-text">
             <strong>{card.title()}</strong>
-            <span className="CanelaAdmin-card-group">{groupLabel(card.group)}</span>
-            <span className="CanelaAdmin-stub-reason">
-              {trans(`${SHELL}.depends_on`, 'Depende de "{name}", que está desligado.', { name: depTitle(dep) })}
+            <span className="LcoyAdmin-card-group">{groupLabel(card.group)}</span>
+            <span className="LcoyAdmin-stub-reason">
+              {trans(`${SHELL}.depends_on`, '依赖于「{name}」，而它当前已关闭。', { name: depTitle(dep) })}
             </span>
           </div>
-          <button type="button" className="Button Button--text CanelaAdmin-stub-go" onclick={() => jumpTo(ownerOf(dep))}>
-            {trans(`${SHELL}.go_enable`, 'Ir para lá')} <i className="fas fa-arrow-right" aria-hidden="true" />
+          <button type="button" className="Button Button--text LcoyAdmin-stub-go" onclick={() => jumpTo(ownerOf(dep))}>
+            {trans(`${SHELL}.go_enable`, '前往开启')} <i className="fas fa-arrow-right" aria-hidden="true" />
           </button>
         </div>
       );
@@ -231,7 +229,7 @@ export function createPanel(cards: CardDef[]): any {
 
       return (
         <div
-          className="CanelaAdmin"
+          className="LcoyAdmin"
           onpointerdown={(event: any) => {
             event.redraw = false;
             noteInteraction(event.target);
@@ -241,15 +239,15 @@ export function createPanel(cards: CardDef[]): any {
             noteInteraction(event.target);
           }}
         >
-          <aside className="CanelaAdmin-side">
-            <div className="CanelaAdmin-search">
+          <aside className="LcoyAdmin-side">
+            <div className="LcoyAdmin-search">
               <i className="fas fa-magnifying-glass" aria-hidden="true" />
               <input
                 type="search"
-                className="CanelaAdmin-searchInput"
+                className="LcoyAdmin-searchInput"
                 value={query}
-                placeholder={trans(`${KEY}.search_placeholder`, 'Buscar configurações…')}
-                aria-label={trans(`${KEY}.search_placeholder`, 'Buscar configurações…')}
+                placeholder={trans(`${KEY}.search_placeholder`, '搜索设置…')}
+                aria-label={trans(`${KEY}.search_placeholder`, '搜索设置…')}
                 oninput={(event: InputEvent) => {
                   query = (event.target as HTMLInputElement).value;
                 }}
@@ -257,8 +255,8 @@ export function createPanel(cards: CardDef[]): any {
               {!!query && (
                 <button
                   type="button"
-                  className="CanelaAdmin-searchClear"
-                  aria-label={trans(`${KEY}.search_clear`, 'Limpar busca')}
+                  className="LcoyAdmin-searchClear"
+                  aria-label={trans(`${KEY}.search_clear`, '清除搜索')}
                   onclick={() => {
                     query = '';
                   }}
@@ -269,8 +267,8 @@ export function createPanel(cards: CardDef[]): any {
             </div>
 
             <nav
-              className="CanelaAdmin-nav"
-              aria-label={trans(`${KEY}.groups_aria`, 'Grupos de configurações')}
+              className="LcoyAdmin-nav"
+              aria-label={trans(`${KEY}.groups_aria`, '设置分组')}
               oncreate={(vnode: any) => revealActive(vnode.dom)}
               onupdate={(vnode: any) => revealActive(vnode.dom)}
             >
@@ -283,15 +281,15 @@ export function createPanel(cards: CardDef[]): any {
                     key={g.key}
                     type="button"
                     aria-current={isActive ? 'page' : undefined}
-                    className={`CanelaAdmin-navItem${isActive ? ' is-active' : ''}`}
+                    className={`LcoyAdmin-navItem${isActive ? ' is-active' : ''}`}
                     onclick={() => setGroup(g.key)}
                   >
                     <i className={g.icon} aria-hidden="true" />
-                    <span className="CanelaAdmin-navLabel">{g.label()}</span>
+                    <span className="LcoyAdmin-navLabel">{g.label()}</span>
                     {count.total > 0 && (
                       <span
-                        className="CanelaAdmin-navCount"
-                        title={trans(`${SHELL}.active_count`, '{active} de {total} recursos ativos', { active: count.active, total: count.total })}
+                        className="LcoyAdmin-navCount"
+                        title={trans(`${SHELL}.active_count`, '{active} 项功能已开启，共 {total} 项', { active: count.active, total: count.total })}
                       >
                         {count.active}/{count.total}
                       </span>
@@ -301,7 +299,7 @@ export function createPanel(cards: CardDef[]): any {
               })}
               <button
                 type="button"
-                className="CanelaAdmin-navItem CanelaAdmin-navMore"
+                className="LcoyAdmin-navItem LcoyAdmin-navMore"
                 aria-expanded={showAdvanced ? 'true' : 'false'}
                 onclick={() => {
                   showAdvanced = !showAdvanced;
@@ -309,19 +307,19 @@ export function createPanel(cards: CardDef[]): any {
                 }}
               >
                 <i className={showAdvanced ? 'fas fa-chevron-up' : 'fas fa-ellipsis'} aria-hidden="true" />
-                <span className="CanelaAdmin-navLabel">
-                  {showAdvanced ? trans(`${SHELL}.fewer_groups`, 'Menos opções') : trans(`${SHELL}.more_groups`, 'Mais opções')}
+                <span className="LcoyAdmin-navLabel">
+                  {showAdvanced ? trans(`${SHELL}.fewer_groups`, '收起设置') : trans(`${SHELL}.more_groups`, '更多设置')}
                 </span>
               </button>
             </nav>
           </aside>
 
-          <div className="CanelaAdmin-main">
-            <div className="CanelaAdmin-head">
-              <div className="CanelaAdmin-headText">
-                <h2 className="CanelaAdmin-headTitle">
+          <div className="LcoyAdmin-main">
+            <div className="LcoyAdmin-head">
+              <div className="LcoyAdmin-headText">
+                <h2 className="LcoyAdmin-headTitle">
                   {searching ? (
-                    trans(`${SHELL}.search_results`, 'Resultados para "{query}"', { query: query.trim() })
+                    trans(`${SHELL}.search_results`, '「{query}」的搜索结果', { query: query.trim() })
                   ) : (
                     <>
                       <i className={group.icon} aria-hidden="true" />
@@ -329,15 +327,15 @@ export function createPanel(cards: CardDef[]): any {
                     </>
                   )}
                 </h2>
-                {!searching && <p className="CanelaAdmin-headDesc">{group.description()}</p>}
+                {!searching && <p className="LcoyAdmin-headDesc">{group.description()}</p>}
               </div>
               <SaveIndicator />
             </div>
 
             {pool.length === 0 ? (
-              <p className="CanelaAdmin-empty">{trans(`${KEY}.search_empty`, 'Nenhuma configuração encontrada.')}</p>
+              <p className="LcoyAdmin-empty">{trans(`${KEY}.search_empty`, '未找到设置。')}</p>
             ) : (
-              <div className="CanelaAdmin-cards">
+              <div className="LcoyAdmin-cards">
                 {shown.map((card) => (
                   <AdminCard key={card.id} card={card} groupLabel={searching ? groupLabel(card.group) : undefined} />
                 ))}
@@ -346,10 +344,10 @@ export function createPanel(cards: CardDef[]): any {
             )}
 
             {!searching && hidden.length > 0 && (
-              <div className="CanelaAdmin-hidden">
-                <p className="CanelaAdmin-hidden-title">
+              <div className="LcoyAdmin-hidden">
+                <p className="LcoyAdmin-hidden-title">
                   <i className="far fa-eye-slash" aria-hidden="true" />
-                  {trans(`${SHELL}.hidden_title`, 'Ocultos porque dependem de algo desligado')}
+                  {trans(`${SHELL}.hidden_title`, '因依赖的项目已关闭而被隐藏')}
                 </p>
                 <ul>
                   {hidden.map((card) => {
@@ -360,8 +358,8 @@ export function createPanel(cards: CardDef[]): any {
                         <span>
                           <i className={card.icon} aria-hidden="true" /> {card.title()}
                         </span>
-                        <button type="button" className="CanelaAdmin-hidden-link" onclick={() => jumpTo(ownerOf(dep))}>
-                          {trans(`${SHELL}.needs`, 'precisa de "{name}"', { name: depTitle(dep) })}
+                        <button type="button" className="LcoyAdmin-hidden-link" onclick={() => jumpTo(ownerOf(dep))}>
+                          {trans(`${SHELL}.needs`, '需要「{name}」', { name: depTitle(dep) })}
                         </button>
                       </li>
                     );

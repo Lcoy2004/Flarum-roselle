@@ -1,8 +1,7 @@
 /*
- * "Responder como discussão vinculada" — uma ação do menu "Tópico ▾" do
- * composer de resposta do Discourse. Troca a resposta por um tópico novo que leva o texto
- * já escrito, um link de volta ("Continuação de [título](link)") e as mesmas
- * tags do tópico de origem.
+ * “作为关联主题回复”——Discourse 回复 composer 中“主题 ▾”菜单
+ * 的一项操作。将回复替换为一个新主题，携带已写好的文本、一个指回
+ * 原主题的链接（“续自 [标题](链接)”）以及源主题的相同标签。
  */
 import app from 'flarum/forum/app';
 import Stream from 'flarum/common/utils/Stream';
@@ -21,7 +20,7 @@ function absoluteDiscussionUrl(discussion: Discussion): string {
   return /^https?:\/\//.test(path) ? path : origin + path;
 }
 
-/** Escapa os colchetes do título para ele não fechar o link markdown antes da hora. */
+/** 转义标题中的方括号，避免它提前闭合 Markdown 链接。 */
 function markdownText(text: string): string {
   return text.replace(/([[\]\\])/g, '\\$1');
 }
@@ -33,24 +32,23 @@ export async function replyAsLinkedTopic(discussion: Discussion): Promise<void> 
   });
   const tags = isTagsEnabled() ? ((discussion as any).tags?.() || []).filter(Boolean) : [];
 
-  // O texto vai junto para o tópico novo, então perguntar "descartar a
-  // resposta?" não faz sentido: a trava de saída do composer é tirada antes.
+  // 文本会随新主题一同带走，因此询问“要丢弃回复吗？”
+  // 没有意义：先解除 composer 的退出拦截。
   (app.composer as any).onExit = null;
 
-  // O rascunho da resposta também: o texto agora é do tópico novo, que terá
-  // o rascunho dele.
+  // 回复的草稿也一样：文本现在属于新主题，新主题会有自己的
+  // 草稿。
   await discardCurrentDraft();
 
-  // O texto entra como `originalContent`: o corpo o põe no campo antes de o
-  // editor montar, e um rascunho de tópico novo que houver não passa por
-  // cima dele (só é restaurado num composer vazio).
+  // 文本以 `originalContent` 传入：主体在编辑器挂载之前就把它放进
+  // 字段，已有新主题草稿不会覆盖它（仅在空 composer 中才会恢复）。
   await app.composer.load(() => import('flarum/forum/components/DiscussionComposer'), {
     user: app.session.user,
     originalContent: `${intro}\n\n${content}`.trimEnd() + '\n',
   });
 
-  // `load` limpa os campos; o flarum/tags lê as tags de `fields.tags`.
-  // Só as que o ator pode usar num tópico novo (as regras do flarum/tags).
+  // `load` 会清空字段；flarum/tags 从 `fields.tags` 读取标签。
+  // 仅保留当前用户可在新主题中使用的标签（flarum/tags 的规则）。
   const allowed = normalizeTags(tags, selectableTags());
   if (allowed.length) (app.composer.fields as any).tags = allowed;
   (app.composer.fields as any).title = Stream('');
@@ -62,14 +60,14 @@ export async function replyAsLinkedTopic(discussion: Discussion): Promise<void> 
 }
 
 /**
- * Se o menu "Tópico ▾" do composer de resposta oferece "Responder como tópico
- * vinculado". O menu em si é desenhado pelo cabeçalho do composer
- * (`composer/ComposerActionTitle`), como o `composer-actions` do Discourse.
+ * 回复 composer 的“主题 ▾”菜单是否提供“作为关联主题回复”。
+ * 菜单本身由 composer 页头（`composer/ComposerActionTitle`）绘制，
+ * 与 Discourse 的 `composer-actions` 一致。
  */
 export function canReplyAsLinkedTopic(): boolean {
   return composerOn('LinkedTopic') && !!app.forum.attribute<boolean>('canStartDiscussion');
 }
 
 export default function installLinkedTopic() {
-  // Nada a registrar: o recurso é uma ação do menu do cabeçalho.
+  // 无需注册任何内容：该功能是页头菜单中的一项操作。
 }

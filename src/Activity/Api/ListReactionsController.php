@@ -26,14 +26,14 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Lcoy\Roselle\Activity\Search\ActivityUser;
 
 /**
- * A subaba "Reações" do perfil: curtidas (flarum/likes) e reações
- * (fof/reactions) numa lista só, da mais nova para a mais antiga. No Canela
- * a curtida é a reação "coração", então as duas são uma coisa só para quem lê.
+ * 个人资料页的"反应"子选项卡：把点赞（flarum/likes）和反应
+ * （fof/reactions）合并到一个列表，按从新到旧排序。在 Lcoy 中
+ * 点赞就是"心形"反应，因此对阅读者来说两者是一回事。
  *
- * Devolve só `{postId, reactionId, createdAt}` (`reactionId` nulo = curtida);
- * os posts vêm depois por `/api/posts?filter[id]=…`, com a visibilidade do
- * core. Aqui a visibilidade também vale: só posts que o visitante vê, e as
- * reações só com a permissão do fof de ver quem reagiu.
+ * 只返回 `{postId, reactionId, createdAt}`（`reactionId` 为 null 表示点赞）；
+ * 帖子随后通过 `/api/posts?filter[id]=…` 获取，并沿用核心的可见性规则。
+ * 这里同样应用可见性：只返回访客可见的帖子，且只有在拥有 fof 的
+ * 查看反应者权限时才返回反应。
  */
 final class ListReactionsController implements RequestHandlerInterface
 {
@@ -83,8 +83,8 @@ final class ListReactionsController implements RequestHandlerInterface
             $query->unionAll($part);
         }
 
-        // Uma linha a mais só para saber se há próxima página.
-        $rows = $query->newQuery()->fromSub($query, 'canela_reactions')
+        // 多取一行，仅用于判断是否还有下一页。
+        $rows = $query->newQuery()->fromSub($query, 'lcoy_reactions')
             ->orderByDesc('created_at')
             ->offset($offset)
             ->limit($limit + 1)

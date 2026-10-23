@@ -1,6 +1,6 @@
 {
     "name": "lcoy/roselle",
-    "description": "Roselle — a Flarum 2 theme forked from Canela (Discourse Horizon inspired), customized for lcoy's forum",
+    "description": "Roselle — 为 lcoy 的论坛打造的 Flarum 2 主题，灵感来自 Discourse Horizon。",
     "keywords": [
         "flarum",
         "theme",
@@ -14,12 +14,6 @@
         {
             "name": "Lcoy",
             "email": "1498127009@qq.com"
-        },
-        {
-            "name": "Ramon Guilherme",
-            "email": "ramon@ramonguilherme.com.br",
-            "homepage": "https://ramonguilherme.com.br",
-            "role": "Original author of Canela"
         }
     ],
     "support": {
@@ -38,23 +32,23 @@
         "fof/polls": "^3.0"
     },
     "suggest": {
-        "flarum/tags": "Categorias e etiquetas na barra lateral, na lista e na página de categorias.",
-        "flarum/subscriptions": "Link \"Seguindo\" e o sino de notificações do tópico.",
-        "flarum/likes": "Curtidas no mapa do tópico e no resumo do perfil.",
-        "flarum/messages": "Aba de mensagens no menu do usuário e no perfil.",
-        "fof/polls": "Enquetes no estilo do plugin poll do Discourse.",
-        "fof/best-answer": "Solução aceita (discourse-solved).",
-        "fof/reactions": "Reações (discourse-reactions).",
-        "fof/upload": "Envio de imagens e arquivos no editor.",
-        "fof/follow-tags": "Observar/silenciar categorias e etiquetas.",
-        "fof/split": "Dividir tópicos.",
-        "fof/merge-discussions": "Mesclar tópicos.",
-        "fof/ignore-users": "Ignorar usuários.",
-        "fof/terms": "Termos e diretrizes no cadastro.",
-        "fof/formatting": "Spoiler, detalhes e mais formatação.",
-        "fof/links": "Links personalizados.",
-        "fof/oauth": "Login social.",
-        "fof/discussion-thumbnail": "Miniaturas na lista de tópicos."
+        "flarum/tags": "侧栏、列表和分类页中的分类与标签。",
+        "flarum/subscriptions": "“关注”链接和主题通知铃铛。",
+        "flarum/likes": "主题信息与个人主页摘要中的赞。",
+        "flarum/messages": "用户菜单和个人主页中的私信标签页。",
+        "fof/polls": "Discourse 投票插件风格的投票。",
+        "fof/best-answer": "已采纳的解决方案（discourse-solved）。",
+        "fof/reactions": "表情回应（discourse-reactions）。",
+        "fof/upload": "在编辑器中上传图片和文件。",
+        "fof/follow-tags": "关注/静音分类与标签。",
+        "fof/split": "拆分主题。",
+        "fof/merge-discussions": "合并主题。",
+        "fof/ignore-users": "忽略用户。",
+        "fof/terms": "注册时的条款与社区准则。",
+        "fof/formatting": "剧透、折叠和更多格式。",
+        "fof/links": "自定义链接。",
+        "fof/oauth": "社交账号登录。",
+        "fof/discussion-thumbnail": "主题列表中的缩略图。"
     },
     "autoload": {
         "psr-4": {

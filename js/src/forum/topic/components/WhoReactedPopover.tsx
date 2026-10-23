@@ -1,13 +1,11 @@
 /*
- * Quem curtiu / quem reagiu: o popover do discourse-reactions que abre ao
- * clicar na contagem da barra do post — cartão branco com sombra, uma seta
- * apontando para a contagem, e a lista (avatar de 32px, nome e, à direita, o
- * coração ou o emoji da reação de cada um). Rola depois de ~8 pessoas.
+ * 谁点了赞 / 谁做出了反应：discourse-reactions 的 popover，点击帖子操作栏的
+ * 计数时打开——带阴影的白色卡片、指向计数的箭头，以及列表（32px 头像、
+ * 名字，右侧是各自的爱心或反应 emoji）。约 8 人之后滚动。
  *
- * Serve às curtidas (flarum/likes) e às reações (fof/reactions): quem abre
- * passa o carregador da lista. Há um popover só para a página, montado num
- * <div> do body — dentro do post ele seria cortado e ficaria preso ao
- * SubtreeRetainer.
+ * 同时服务于点赞（flarum/likes）和反应（fof/reactions）：打开者传入列表
+ * 加载器。每页只有一个 popover，挂载在 body 的一个 <div> 上——放在帖子内部
+ * 会被裁剪，并被 SubtreeRetainer 困住。
  */
 import app from 'flarum/forum/app';
 import Avatar from 'flarum/common/components/Avatar';
@@ -19,7 +17,7 @@ import type Mithril from 'mithril';
 
 export interface ReactorEntry {
   user: User;
-  /** O ícone à direita: o coração vermelho ou o emoji da reação. */
+  /** 右侧的图标：红色爱心或反应 emoji。 */
   icon: Mithril.Children;
 }
 
@@ -31,7 +29,7 @@ interface State {
 let state: State | null = null;
 let root: HTMLElement | null = null;
 
-/** Distância da seta até a contagem e das bordas da janela. */
+/** 箭头到计数的距离，以及到窗口边缘的距离。 */
 const GAP = 10;
 const EDGE = 8;
 
@@ -54,7 +52,7 @@ function ensureRoot() {
   if (root) return;
 
   root = document.createElement('div');
-  root.className = 'CanelaReactorsRoot';
+  root.className = 'LcoyReactorsRoot';
   document.body.appendChild(root);
 
   m.mount(root, { view: () => (state ? <ReactorsPopover anchor={state.anchor} entries={state.entries} /> : null) });
@@ -71,7 +69,7 @@ export function closeWhoReacted(): void {
   m.redraw();
 }
 
-/** Abre (ou fecha, num segundo clique na mesma contagem) a lista de quem reagiu. */
+/** 打开（或在同一计数上再次点击时关闭）做出反应的列表。 */
 export function openWhoReacted(anchor: HTMLElement, load: () => Promise<ReactorEntry[]>): void {
   ensureRoot();
 
@@ -89,8 +87,8 @@ export function openWhoReacted(anchor: HTMLElement, load: () => Promise<ReactorE
     .then((entries) => {
       if (state !== current) return;
 
-      // Ninguém visível (sem permissão, ou a lista falhou): um cartão vazio
-      // não diz nada — o popover simplesmente fecha.
+      // 没有可见项（无权限，或列表请求失败）：空卡片说明不了什么
+      // ——popover 直接关闭。
       if (!entries.length) {
         closeWhoReacted();
         return;
@@ -101,9 +99,9 @@ export function openWhoReacted(anchor: HTMLElement, load: () => Promise<ReactorE
     });
 }
 
-/** O coração vermelho das curtidas (o emoji ❤️ do Discourse). */
+/** 点赞的红色爱心（Discourse 的 ❤️ emoji）。 */
 export function heartIcon(): Mithril.Children {
-  return <i aria-hidden="true" className="icon fas fa-heart CanelaReactors-heart" />;
+  return <i aria-hidden="true" className="icon fas fa-heart LcoyReactors-heart" />;
 }
 
 interface PopoverAttrs {
@@ -116,18 +114,18 @@ class ReactorsPopover {
     const { entries } = vnode.attrs;
 
     return (
-      <div className="CanelaReactors" role="dialog" aria-label={app.translator.trans('lcoy-roselle.forum.topic.post.who_liked', {}, true) as string}>
-        <span className="CanelaReactors-arrow" />
+      <div className="LcoyReactors" role="dialog" aria-label={app.translator.trans('lcoy-roselle.forum.topic.post.who_liked', {}, true) as string}>
+        <span className="LcoyReactors-arrow" />
         {entries === null ? (
           <LoadingIndicator size="small" display="block" />
         ) : (
-          <ul className="CanelaReactors-list">
+          <ul className="LcoyReactors-list">
             {entries.map((entry) => (
               <li>
-                <Link className="CanelaReactors-user" href={app.route.user(entry.user)} onclick={() => closeWhoReacted()}>
+                <Link className="LcoyReactors-user" href={app.route.user(entry.user)} onclick={() => closeWhoReacted()}>
                   <Avatar user={entry.user} />
-                  <span className="CanelaReactors-name">{username(entry.user)}</span>
-                  <span className="CanelaReactors-icon">{entry.icon}</span>
+                  <span className="LcoyReactors-name">{username(entry.user)}</span>
+                  <span className="LcoyReactors-icon">{entry.icon}</span>
                 </Link>
               </li>
             ))}
@@ -145,7 +143,7 @@ class ReactorsPopover {
     this.place(vnode);
   }
 
-  /** Logo abaixo da contagem, centrado nela, sem sair da janela. */
+  /** 紧贴计数下方、以其居中，且不超出窗口。 */
   place(vnode: Mithril.VnodeDOM<PopoverAttrs, this>) {
     const el = vnode.dom as HTMLElement;
     const rect = vnode.attrs.anchor.getBoundingClientRect();
@@ -155,6 +153,6 @@ class ReactorsPopover {
 
     el.style.top = `${rect.bottom + window.scrollY + GAP}px`;
     el.style.left = `${left + window.scrollX}px`;
-    el.style.setProperty('--cn-arrow-left', `${center - left}px`);
+    el.style.setProperty('--lcoy-arrow-left', `${center - left}px`);
   }
 }

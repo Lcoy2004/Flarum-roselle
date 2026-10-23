@@ -7,29 +7,27 @@ namespace Lcoy\Roselle\Stats;
 use Flarum\Settings\SettingsRepositoryInterface;
 
 /**
- * As configurações das estatísticas num lugar só, já convertidas.
+ * 统计相关的设置集中在一处，并已完成转换。
  *
- * O core guarda tudo como string ("1", "0", "8"), e cada parte do recurso —
- * as contagens, o registro de leitura — precisa
- * da mesma leitura com os mesmos padrões; espalhar `(bool) $settings->get()`
- * por elas faria um padrão divergir do outro sem ninguém notar.
+ * 核心把所有值都存成字符串（"1"、"0"、"8"），而该功能的每个部分——
+ * 计数、阅读记录——都需要用相同的默认值做同样的读取；若把
+ * `(bool) $settings->get()` 分散到各处，某个默认值就会在无人察觉的情况下
+ * 与其他默认值不一致。
  */
 final class StatsSettings
 {
-    public const COUNTS_ENABLED = 'canela.stats_counts_enabled';
+    public const COUNTS_ENABLED = 'lcoy.stats_counts_enabled';
 
-    public const NEW_DAYS = 'canela.stats_new_days';
+    public const NEW_DAYS = 'lcoy.stats_new_days';
 
-    public const ACTIVITY_ENABLED = 'canela.stats_activity_enabled';
+    public const ACTIVITY_ENABLED = 'lcoy.stats_activity_enabled';
 
-    public const VISITOR_SALT = 'canela.stats_visitor_salt';
+    /** "浏览量"列的热度区间（topic_views_heat_low/medium/high）。 */
+    public const HEAT_LOW = 'lcoy.topic_views_heat_low';
 
-    /** As faixas de calor da coluna Visualizações (topic_views_heat_low/medium/high). */
-    public const HEAT_LOW = 'canela.topic_views_heat_low';
+    public const HEAT_MEDIUM = 'lcoy.topic_views_heat_medium';
 
-    public const HEAT_MEDIUM = 'canela.topic_views_heat_medium';
-
-    public const HEAT_HIGH = 'canela.topic_views_heat_high';
+    public const HEAT_HIGH = 'lcoy.topic_views_heat_high';
 
     public const DEFAULT_HEAT_LOW = 1000;
 
@@ -37,7 +35,7 @@ final class StatsSettings
 
     public const DEFAULT_HEAT_HIGH = 3500;
 
-    /** "Novo" no Discourse é o tópico criado nos últimos 2 dias que a pessoa não abriu. */
+    /** 在 Discourse 中，"新帖"指最近 2 天内创建、且用户尚未打开过的主题。 */
     public const DEFAULT_NEW_DAYS = 2;
 
     public function __construct(
@@ -55,20 +53,15 @@ final class StatsSettings
         return $this->bool(self::ACTIVITY_ENABLED);
     }
 
-    /** 0 = sem limite de idade: vale só a data do "marcar tudo como lido" ou do cadastro. */
+    /** 0 = 不限制时间范围：只以"全部标记为已读"的日期或注册日期为准。 */
     public function newDays(): int
     {
         return $this->int(self::NEW_DAYS, self::DEFAULT_NEW_DAYS, 0, 365);
     }
 
-    public function visitorSalt(): string
-    {
-        return (string) $this->settings->get(self::VISITOR_SALT, '');
-    }
-
     private function bool(string $key): bool
     {
-        // O padrão (ligado) vem do ->default() do extend; aqui só se converte.
+        // 默认值（开启）来自 extend 的 ->default()；这里只做转换。
         return in_array($this->settings->get($key), [true, 1, '1', 'true'], true);
     }
 

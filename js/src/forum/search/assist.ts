@@ -1,6 +1,6 @@
 /*
- * O que só o painel aberto do menu de busca usa (chunk do SearchPanel): as
- * buscas recentes, as dicas aleatórias e os atalhos do assistente.
+ * 只有打开的搜索菜单面板才会使用（SearchPanel 的 chunk）：
+ * 最近的搜索、随机提示和助手快捷方式。
  */
 import app from 'flarum/forum/app';
 import { GambitType } from 'flarum/common/query/IGambit';
@@ -13,16 +13,16 @@ import { gambitKey } from './query';
 const MAX_RECENT_SEARCHES = 5;
 
 // ---------------------------------------------------------------------------
-// Buscas recentes
+// 最近的搜索
 // ---------------------------------------------------------------------------
-// O Discourse guarda as buscas recentes no servidor (`log_search_queries`);
-// aqui elas ficam no navegador, por usuário: é uma conveniência de quem
-// pesquisa, e não um dado do fórum.
+// Discourse 把最近的搜索保存在服务器上（`log_search_queries`）；
+// 这里按用户保存在浏览器中：这是搜索者的便利，
+// 而不是论坛数据。
 
 function recentKey(): string | null {
   const user = app.session.user;
 
-  return user ? `canela.recentSearches.${user.id()}` : null;
+  return user ? `lcoy.recentSearches.${user.id()}` : null;
 }
 
 export function recentSearches(): string[] {
@@ -50,7 +50,7 @@ export function addRecentSearch(term: string): void {
   try {
     localStorage.setItem(key, JSON.stringify(list));
   } catch {
-    // Sem armazenamento (janela anônima, cota): a busca segue sem histórico.
+    // 没有存储（无痕窗口、配额）：搜索仍可继续，只是没有历史记录。
   }
 }
 
@@ -62,12 +62,12 @@ export function clearRecentSearches(): void {
   try {
     localStorage.removeItem(key);
   } catch {
-    // Idem.
+    // 同上。
   }
 }
 
 // ---------------------------------------------------------------------------
-// Gambits como os atalhos do assistente ("in:title", "status:open" …)
+// 作为助手快捷方式的 Gambits（"in:title"、"status:open"……）
 // ---------------------------------------------------------------------------
 
 function enabledGambits(): IGambit[] {
@@ -78,7 +78,7 @@ function firstKey(key: string | string[]): string {
   return Array.isArray(key) ? key[0] : key;
 }
 
-/** Os grupos booleanos ("é:", "em:") com as chaves de cada um. */
+/** 布尔分组（"is:"、"in:"）及其各自的键。 */
 function groupedKeys(): Map<string, string[]> {
   const groups = new Map<string, string[]>();
 
@@ -96,9 +96,9 @@ function groupedKeys(): Map<string, string[]> {
 }
 
 /**
- * Todos os atalhos, na ordem em que o Discourse os lista: primeiro os
- * booleanos já completos ("é:fixada"), depois as chaves que pedem um valor
- * ("criado:") — exceto autor e tag, que já têm `@` e `#`.
+ * 所有快捷方式，按 Discourse 列出的顺序：先是已完整的
+ * 布尔项（"is:pinned"），然后是请求值的键
+ * （"created:"）——但作者和标签除外，它们已经有 `@` 和 `#`。
  */
 export function suggestionShortcuts(): string[] {
   const shortcuts: string[] = [];
@@ -113,7 +113,7 @@ export function suggestionShortcuts(): string[] {
 }
 
 // ---------------------------------------------------------------------------
-// Dicas aleatórias (`.search-random-quick-tip`)
+// 随机提示（`.search-random-quick-tip`）
 // ---------------------------------------------------------------------------
 
 export interface QuickTip {
@@ -123,7 +123,7 @@ export interface QuickTip {
   clickable?: boolean;
 }
 
-/** Uma dica de atalho de teclado não ajuda quem não tem teclado. */
+/** 对没有键盘的人，键盘快捷键提示没有帮助。 */
 function hasKeyboard(): boolean {
   return typeof window.matchMedia === 'function' && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 }

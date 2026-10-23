@@ -1,6 +1,6 @@
 /*
- * Uma fonte de resultados por aba da página de busca. Cada uma sabe montar o
- * pedido à API a partir da consulta e da ordenação escolhida.
+ * 搜索页面每个标签对应一个结果来源。每个来源都能根据查询和所选
+ * 排序构造 API 请求。
  */
 import app from 'flarum/forum/app';
 import type Model from 'flarum/common/Model';
@@ -16,7 +16,7 @@ export const PAGE_SIZE = 20;
 
 export interface SortOption {
   key: string;
-  /** O valor do `sort` da API; vazio = relevância (a ordem do texto). */
+  /** API `sort` 的值；空表示相关性（文本顺序）。 */
   api: string;
   label: string;
 }
@@ -35,7 +35,7 @@ export function sortOptions(tab: SearchTab, t: (key: string) => string): SortOpt
       { key: 'relevance', api: '', label: t('extras.search.sort_relevance') },
       { key: 'latest', api: '-lastPostedAt', label: t('extras.search.sort_latest_post') },
       { key: 'newest', api: '-createdAt', label: t('extras.search.sort_latest_topic') },
-      ...(likes ? [{ key: 'likes', api: '-canelaLikes', label: t('extras.search.sort_likes') }] : []),
+      ...(likes ? [{ key: 'likes', api: '-lcoyLikes', label: t('extras.search.sort_likes') }] : []),
       ...(pluginProvidesViews() ? [{ key: 'views', api: '-view_count', label: t('extras.search.sort_views') }] : []),
     ];
   }
@@ -44,32 +44,32 @@ export function sortOptions(tab: SearchTab, t: (key: string) => string): SortOpt
     return [
       { key: 'relevance', api: '', label: t('extras.search.sort_relevance') },
       { key: 'latest', api: '-createdAt', label: t('extras.search.sort_latest_post') },
-      ...(likes ? [{ key: 'likes', api: '-canelaLikes', label: t('extras.search.sort_likes') }] : []),
+      ...(likes ? [{ key: 'likes', api: '-lcoyLikes', label: t('extras.search.sort_likes') }] : []),
     ];
   }
 
   return [];
 }
 
-/** Os filtros que a busca de POSTAGENS entende: autor, tags, curtidas e marcadores. */
+/** 帖子搜索支持的筛选条件：作者、标签、点赞和书签。 */
 export function postFilters(query: SearchQuery): { filter: Record<string, any>; ignored: boolean } {
   const all = queryFilters(query);
   const filter: Record<string, any> = { type: 'comment' };
 
   if (all.author) filter.author = all.author;
-  // O filtro de tags das postagens (flarum/tags) recebe ids, não slugs, e
-  // junta a tabela de tags: uma tag só, ou a mesma postagem viria repetida.
-  // Vale a categoria, ou a única etiqueta; mais que isso fica de fora.
+  // 帖子标签筛选（flarum/tags）接收 id 而非 slug，并会连接标签表：
+  // 只支持一个标签，否则同一帖子会重复出现。
+  // 分类或唯一标签有效；更多则被忽略。
   const slugs = [query.category, ...query.tags].filter(Boolean);
   const tag = isTagsEnabled() && slugs.length ? allTags().find((item) => item.slug() === slugs[0]) : undefined;
   if (tag) filter.tag = tag.id();
   const tagsIgnored = slugs.length > 1 || (slugs.length === 1 && !tag) || 'tag' in query.extra;
 
-  // O flarum/likes filtra postagens por quem curtiu (nome de usuário).
+  // flarum/likes 按点赞者（用户名）筛选帖子。
   if (query.liked && app.session.user) filter.likedBy = app.session.user.username();
-  if (query.bookmarked) filter.canelaBookmarked = true;
+  if (query.bookmarked) filter.lcoyBookmarked = true;
 
-  const handled = ['author', 'tag', 'canelaLiked', 'canelaBookmarked'];
+  const handled = ['author', 'tag', 'lcoyLiked', 'lcoyBookmarked'];
   const ignored = tagsIgnored || Object.keys(all).some((key) => !handled.includes(key));
 
   return { filter, ignored };

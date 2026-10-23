@@ -1,11 +1,11 @@
 /*
- * As ações dos marcadores, num lugar só para o botão do post, o do tópico, o
- * modal e a página do perfil falarem a mesma língua com a API e o store.
+ * 书签操作集中于此，使帖子按钮、主题按钮、弹窗和个人资料页
+ * 与 API、store 的交互保持一致。
  *
- * O post carrega o próprio estado (`bookmarkId`, `bookmarkName`,
- * `bookmarkReminderAt`, vindos do PHP): é ele que o botão lê. Criar e editar
- * devolvem o post incluído, e o store atualiza esses atributos sozinho;
- * apagar não devolve nada, então o post é zerado aqui.
+ * 帖子自带状态（`bookmarkId`、`bookmarkName`、`bookmarkReminderAt`，
+ * 由 PHP 下发）：按钮读取的就是它。创建和编辑会返回包含该帖子的
+ * 响应，store 会自动更新这些属性；删除不返回内容，因此在此处
+ * 清空帖子的相关属性。
  */
 import app from 'flarum/forum/app';
 import type Post from 'flarum/common/models/Post';
@@ -15,12 +15,12 @@ import type Bookmark from './Bookmark';
 import { forumBool } from '../../utils/settings';
 
 /**
- * Os marcadores valem para quem está logado e com o recurso ligado. Sem o
- * atributo (o PHP do recurso não carregou), fica desligado: um botão que só
- * receberia 404 da API é pior do que nenhum.
+ * 书签仅对已登录且功能已开启的用户可用。若缺少该属性
+ * （功能的 PHP 未加载），则视为关闭：一个只会收到 API 404 的
+ * 按钮，比没有按钮更糟。
  */
 export function bookmarksEnabled(): boolean {
-  return !!app.session.user && forumBool('canelaBookmarksEnabled', false);
+  return !!app.session.user && forumBool('lcoyBookmarksEnabled', false);
 }
 
 export interface PostBookmarkState {
@@ -29,7 +29,7 @@ export interface PostBookmarkState {
   reminderAt: Date | null;
 }
 
-/** O marcador do ator neste post, como o PHP o descreveu (ou `null`). */
+/** 当前用户在该帖子上的书签，按 PHP 的描述（或 `null`）。 */
 export function postBookmark(post: Post): PostBookmarkState | null {
   const id = post.attribute<number | null | undefined>('bookmarkId');
 
@@ -45,9 +45,9 @@ export function postBookmark(post: Post): PostBookmarkState | null {
 }
 
 /**
- * O marcador do post como registro do store, para salvar ou apagar. Quando o
- * post veio de uma página carregada antes (sem o marcador no store), o
- * registro é montado com o que o post já sabe — evita um GET só para isso.
+ * 将帖子的书签作为 store 记录返回，用于保存或删除。当帖子来自
+ * 较早加载的页面（store 中没有该书签）时，用帖子已有的信息
+ * 构造记录——避免为此单独发起一次 GET。
  */
 export function bookmarkRecord(post: Post): Bookmark | null {
   const state = postBookmark(post);
@@ -69,7 +69,7 @@ export function bookmarkRecord(post: Post): Bookmark | null {
   } as any);
 }
 
-/** Posts com um pedido em andamento: um duplo clique não cria dois pedidos. */
+/** 存在进行中请求的帖子：双击不会创建两个请求。 */
 const pending = new Set<string>();
 
 export function isBusy(post: Post): boolean {
@@ -90,7 +90,7 @@ async function withBusy<T>(post: Post, task: () => Promise<T>): Promise<T> {
 
 export interface BookmarkChanges {
   name?: string | null;
-  /** `undefined` deixa como está; `null` tira o lembrete. */
+  /** `undefined` 表示保持不变；`null` 表示移除提醒。 */
   reminderAt?: Date | null;
 }
 
@@ -103,7 +103,7 @@ function attributesFor(changes: BookmarkChanges): Record<string, unknown> {
   return attributes;
 }
 
-/** Marca o post (ou atualiza o marcador, se já houver um). */
+/** 收藏该帖子（若已有书签则更新）。 */
 export function createBookmark(post: Post, changes: BookmarkChanges = {}): Promise<Bookmark> {
   return withBusy(post, () =>
     app.store.createRecord<Bookmark>('bookmarks').save({
@@ -125,15 +125,14 @@ export function deleteBookmark(post: Post, bookmark: Bookmark | null = bookmarkR
   });
 }
 
-/** Zera os atributos do post depois de desmarcar. */
+/** 取消收藏后清空帖子的相关属性。 */
 export function clearPost(post: Post): void {
   post.pushAttributes({ bookmarked: false, bookmarkId: null, bookmarkName: null, bookmarkReminderAt: null });
 }
 
 /**
- * O primeiro post do tópico, que é o que "Marcar discussão" marca (como no
- * Discourse). Tenta o store antes de ir à API: na página do tópico ele quase
- * sempre já está carregado.
+ * 主题的首帖，也就是“收藏主题”所收藏的对象（与 Discourse 一致）。
+ * 先尝试 store，再请求 API：在主题页上它几乎总是已加载。
  */
 export async function firstPostOf(discussion: Discussion): Promise<Post | null> {
   const linkedId = (discussion.data.relationships as any)?.firstPost?.data?.id;

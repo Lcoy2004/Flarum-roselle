@@ -14,33 +14,33 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
 
 /*
- * Campos do perfil estendido direto na tabela `users`: são um por usuário,
- * lidos sempre junto com ele — uma tabela à parte custaria um join em cada
- * post serializado só para mostrar o emoji do status.
+ * 扩展资料字段直接放在 `users` 表中：每个用户各一份，
+ * 总是与他一起读取 —— 单独建表会让每个序列化的帖子多做一次 join，
+ * 只为显示状态 emoji。
  *
- * Bio, local e site ficam com o fof/user-bio e o fof/socialprofile.
+ * 简介、所在地和网站交给 fof/user-bio 和 fof/socialprofile。
  */
 $columns = [
-    'canela_title',
-    'canela_status_emoji',
-    'canela_status_text',
-    'canela_status_until',
-    'canela_birthday',
+    'lcoy_title',
+    'lcoy_status_emoji',
+    'lcoy_status_text',
+    'lcoy_status_until',
+    'lcoy_birthday',
 ];
 
 return [
     'up' => static function (Builder $schema): void {
-        // Idempotente: uma migração interrompida no meio pode rodar de novo.
+        // 幂等：中途中断的迁移可以再次运行。
         $missing = static fn (string $column): bool => ! $schema->hasColumn('users', $column);
 
         $schema->table('users', static function (Blueprint $table) use ($missing): void {
-            $missing('canela_title') && $table->string('canela_title', 60)->nullable();
-            // O emoji tem até 16 pontos de código (famílias, bandeiras de
-            // regiões), daí a folga.
-            $missing('canela_status_emoji') && $table->string('canela_status_emoji', 32)->nullable();
-            $missing('canela_status_text') && $table->string('canela_status_text', 100)->nullable();
-            $missing('canela_status_until') && $table->dateTime('canela_status_until')->nullable();
-            $missing('canela_birthday') && $table->date('canela_birthday')->nullable();
+            $missing('lcoy_title') && $table->string('lcoy_title', 60)->nullable();
+            // emoji 最多有 16 个码点（家庭、地区旗帜），
+            // 因此留出余量。
+            $missing('lcoy_status_emoji') && $table->string('lcoy_status_emoji', 32)->nullable();
+            $missing('lcoy_status_text') && $table->string('lcoy_status_text', 100)->nullable();
+            $missing('lcoy_status_until') && $table->dateTime('lcoy_status_until')->nullable();
+            $missing('lcoy_birthday') && $table->date('lcoy_birthday')->nullable();
         });
     },
 

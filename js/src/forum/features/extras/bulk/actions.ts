@@ -1,12 +1,10 @@
 /*
- * As ações da barra de seleção em massa. Cada uma vale só para os tópicos
- * marcados em que o usuário TEM a permissão (`canSticky`, `canLock`…): um
- * tópico sem permissão é pulado e entra na contagem de "ignorados", em vez de
- * fazer a ação inteira falhar.
+ * 批量选择工具栏的操作。每项仅对用户确实有权限的已选主题生效
+ * （`canSticky`、`canLock`…）：无权限的主题会被跳过并计入“已忽略”
+ * 数量，而不会导致整个操作失败。
  *
- * As requisições saem uma de cada vez. São poucas (uma página da lista), e em
- * fila o servidor não recebe uma rajada, e a ordem dos alertas de erro faz
- * sentido.
+ * 请求逐个发出。数量不多（一个列表页），排队发送可避免服务端收到
+ * 突发请求，错误提示的顺序也更合理。
  */
 import app from 'flarum/forum/app';
 import type Discussion from 'flarum/common/models/Discussion';
@@ -21,7 +19,7 @@ export interface BulkAction {
   key: string;
   icon: string;
   label: string;
-  /** O tópico aceita a ação? (permissão e estado atual) */
+  /** 该主题是否可执行此操作？（权限与当前状态） */
   applies: (discussion: Moderatable) => boolean;
   run: (discussions: Moderatable[]) => Promise<void> | void;
   danger?: boolean;
@@ -51,8 +49,8 @@ function report(done: number, failed: number, skipped: number): void {
 }
 
 /**
- * Roda `work` nos marcados a que a ação se aplica, avisa o resultado e
- * atualiza a lista quando a ação muda a ordem ou o que aparece nela.
+ * 对适用的已选主题执行 `work`，提示结果，并在操作会改变顺序或
+ * 列表内容时刷新列表。
  */
 async function apply(action: BulkAction, work: (discussion: Moderatable) => Promise<unknown>, refreshList: boolean): Promise<void> {
   const all = selection.selected() as Moderatable[];
@@ -202,9 +200,9 @@ export function bulkActions(): BulkAction[] {
 }
 
 /**
- * "Alterar tags": o seletor do próprio flarum/tags (com os limites de
- * primárias e secundárias do fórum), começando pelas tags do primeiro tópico
- * marcado. O conjunto escolhido SUBSTITUI as tags de todos os marcados.
+ * “更改标签”：使用 flarum/tags 自带的选择器（受论坛的主标签和次标签
+ * 限制），以第一个已选主题的标签为起点。所选集合会替换所有已选
+ * 主题的标签。
  */
 async function changeTags(action: BulkAction): Promise<void> {
   const targets = selection.selected().filter(action.applies) as Moderatable[];

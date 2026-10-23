@@ -12,7 +12,7 @@ import { fetchAbout, pushUsers, type AboutPayload, type StatPeriod } from './api
 import { forumBool, t } from '../../utils/settings';
 import { fullDate } from '../../utils/dates';
 
-/** As linhas da tabela de estatísticas, na ordem do Discourse, com o ícone de cada uma. */
+/** 统计表的各行，按 Discourse 的顺序排列，每行带对应图标。 */
 const STAT_ROWS: [key: string, icon: string][] = [
   ['topics', 'far fa-comments'],
   ['posts', 'far fa-comment'],
@@ -24,8 +24,8 @@ const STAT_ROWS: [key: string, icon: string][] = [
 const STAT_PERIODS: StatPeriod[] = ['day', 'week', 'month', 'all'];
 
 /**
- * A página "Sobre" do Discourse (/about): o fórum, o que o admin escreveu
- * sobre ele, como falar com a equipe, quem é a equipe e os números do site.
+ * Discourse 的“关于”页面（/about）：论坛、管理员撰写的介绍、
+ * 如何联系团队、团队成员以及站点数据。
  */
 export default class AboutPage extends CommunityPage {
   data: AboutPayload | null = null;
@@ -42,11 +42,11 @@ export default class AboutPage extends CommunityPage {
   }
 
   className(): string {
-    return 'CanelaAboutPage';
+    return 'LcoyAboutPage';
   }
 
   enabled(): boolean {
-    return forumBool('canelaAboutEnabled', true);
+    return forumBool('lcoyAboutEnabled', true);
   }
 
   load(): void {
@@ -60,7 +60,7 @@ export default class AboutPage extends CommunityPage {
   }
 
   content(): Mithril.Children {
-    return <div className="CanelaAbout">{this.sectionItems().toArray()}</div>;
+    return <div className="LcoyAbout">{this.sectionItems().toArray()}</div>;
   }
 
   sectionItems(): ItemList<Mithril.Children> {
@@ -70,7 +70,7 @@ export default class AboutPage extends CommunityPage {
     items.add('header', this.header(), 100);
 
     if (this.failed) {
-      items.add('error', <p className="CanelaCommunity-empty">{t('community.load_error')}</p>, 90);
+      items.add('error', <p className="LcoyCommunity-empty">{t('community.load_error')}</p>, 90);
       return items;
     }
 
@@ -81,9 +81,9 @@ export default class AboutPage extends CommunityPage {
 
     items.add(
       'main',
-      <div className="CanelaAbout-main">
-        <div className="CanelaAbout-left">{this.leftItems(data).toArray()}</div>
-        <aside className="CanelaAbout-right">{this.rightItems(data).toArray()}</aside>
+      <div className="LcoyAbout-main">
+        <div className="LcoyAbout-left">{this.leftItems(data).toArray()}</div>
+        <aside className="LcoyAbout-right">{this.rightItems(data).toArray()}</aside>
       </div>,
       80
     );
@@ -94,51 +94,50 @@ export default class AboutPage extends CommunityPage {
   }
 
   /**
-   * Os dados ainda vindo: as duas colunas com as classes das reais (a faixa
-   * de números, a equipe com o cartão do usuário e a atividade do site à
-   * direita), com os títulos já conhecidos e barras de texto no lugar do
-   * resto: o conteúdo chega onde o esqueleto estava.
+   * 数据尚未到达：两列沿用真实内容的类名（数字条、带用户卡片的
+   * 团队以及右侧的站点活跃度），已确定的标题保留，其余位置用
+   * 骨架条占位：内容到达时正落在骨架所在的位置。
    */
   skeleton(): Mithril.Children {
-    const line = (width: string) => <span className="CanelaSkeleton CanelaSkeleton--line" style={{ width }} />;
+    const line = (width: string) => <span className="LcoySkeleton LcoySkeleton--line" style={{ width }} />;
 
     return (
-      <div className="CanelaAbout-main CanelaAbout-main--loading" aria-busy="true">
-        <div className="CanelaAbout-left">
-          <ul className="CanelaAbout-summary">
+      <div className="LcoyAbout-main LcoyAbout-main--loading" aria-busy="true">
+        <div className="LcoyAbout-left">
+          <ul className="LcoyAbout-summary">
             {['6em', '9em', '9em', '9em'].map((width) => (
-              <li className="CanelaAbout-summaryItem">{line(width)}</li>
+              <li className="LcoyAbout-summaryItem">{line(width)}</li>
             ))}
           </ul>
-          <section className="CanelaAbout-staff">
-            <h2 className="CanelaAbout-sectionTitle">{t('community.about.our_admins')}</h2>
-            <ul className="CanelaAbout-users">
+          <section className="LcoyAbout-staff">
+            <h2 className="LcoyAbout-sectionTitle">{t('community.about.our_admins')}</h2>
+            <ul className="LcoyAbout-users">
               <li>
-                <div className="CanelaUserTile CanelaUserTile--normal">
-                  <span className="CanelaUserTile-avatar">
-                    <span className="Avatar CanelaSkeleton" />
+                <div className="LcoyUserTile LcoyUserTile--normal">
+                  <span className="LcoyUserTile-avatar">
+                    <span className="Avatar LcoySkeleton" />
                   </span>
-                  <div className="CanelaUserTile-info">
-                    <span className="CanelaUserTile-name">{line('5em')}</span>
-                    <span className="CanelaUserTile-title">{line('3em')}</span>
+                  <div className="LcoyUserTile-info">
+                    <span className="LcoyUserTile-name">{line('5em')}</span>
+                    <span className="LcoyUserTile-title">{line('3em')}</span>
                   </div>
                 </div>
               </li>
             </ul>
           </section>
         </div>
-        <aside className="CanelaAbout-right">
-          <section className="CanelaAbout-box CanelaAbout-activity">
-            <h2 className="CanelaAbout-sectionTitle">{t('community.about.activity_title')}</h2>
-            <ul className="CanelaAbout-activityList">
+        <aside className="LcoyAbout-right">
+          <section className="LcoyAbout-box LcoyAbout-activity">
+            <h2 className="LcoyAbout-sectionTitle">{t('community.about.activity_title')}</h2>
+            <ul className="LcoyAbout-activityList">
               {['8em', '9em', '7em', '10em', '7em'].map((width) => (
-                <li className="CanelaAbout-activityItem">
-                  <span className="CanelaAbout-activityIcon">
-                    <span className="CanelaSkeleton CanelaSkeleton--word" style={{ width: '1em' }} />
+                <li className="LcoyAbout-activityItem">
+                  <span className="LcoyAbout-activityIcon">
+                    <span className="LcoySkeleton LcoySkeleton--word" style={{ width: '1em' }} />
                   </span>
-                  <span className="CanelaAbout-activityText">
-                    <span className="CanelaAbout-activityCount">{line(width)}</span>
-                    <span className="CanelaAbout-activityPeriod">{line('6em')}</span>
+                  <span className="LcoyAbout-activityText">
+                    <span className="LcoyAbout-activityCount">{line(width)}</span>
+                    <span className="LcoyAbout-activityPeriod">{line('6em')}</span>
                   </span>
                 </li>
               ))}
@@ -149,20 +148,20 @@ export default class AboutPage extends CommunityPage {
     );
   }
 
-  /** As abas do topo (Sobre, Diretrizes, Termos, Privacidade), o nome do fórum e a descrição. */
+  /** 顶部标签（关于、准则、条款、隐私）、论坛名称和描述。 */
   header(): Mithril.Children {
     const description = app.forum.attribute<string>('description');
 
     return (
-      <header className="CanelaAbout-header">
-        {AboutNav('canela.about')}
-        <h1 className="CanelaAbout-title">{app.forum.attribute<string>('title')}</h1>
-        {description && <p className="CanelaAbout-description">{description}</p>}
+      <header className="LcoyAbout-header">
+        {AboutNav('lcoy.about')}
+        <h1 className="LcoyAbout-title">{app.forum.attribute<string>('title')}</h1>
+        {description && <p className="LcoyAbout-description">{description}</p>}
       </header>
     );
   }
 
-  /** A faixa de números logo abaixo do título: membros, equipe e idade do fórum. */
+  /** 标题下方的数字条：成员数、团队人数和论坛年龄。 */
   summary(data: AboutPayload): Mithril.Children {
     const items = new ItemList<Mithril.Children>();
 
@@ -177,7 +176,7 @@ export default class AboutPage extends CommunityPage {
     }
 
     if (data.createdAt) {
-      // "Criado há 11 anos", relativo como no Discourse; a data exata no title.
+      // “创建于 11 年前”，与 Discourse 一样使用相对时间；精确日期放在 title 中。
       const created = new Date(data.createdAt);
       items.add(
         'created',
@@ -186,12 +185,12 @@ export default class AboutPage extends CommunityPage {
       );
     }
 
-    return <ul className="CanelaAbout-summary">{items.toArray()}</ul>;
+    return <ul className="LcoyAbout-summary">{items.toArray()}</ul>;
   }
 
   summaryItem(icon: string, text: string, title?: string): Mithril.Children {
     return (
-      <li className="CanelaAbout-summaryItem" title={title}>
+      <li className="LcoyAbout-summaryItem" title={title}>
         <Icon name={icon} />
         <span>{text}</span>
       </li>
@@ -203,14 +202,14 @@ export default class AboutPage extends CommunityPage {
 
     items.add('summary', this.summary(data), 110);
 
-    // O texto é do admin (HTML que ele mesmo escreveu, ou o Markdown já
-    // renderizado pelo formatador do fórum no servidor).
+    // 文本由管理员提供（他自己编写的 HTML，或由论坛格式化器在
+    // 服务端已渲染的 Markdown）。
     if (data.aboutHtml) {
       items.add(
         'text',
-        <section className="CanelaAbout-about">
-          <h2 className="CanelaAbout-sectionTitle">{t('community.about.title')}</h2>
-          <div className="CanelaAbout-text">{m.trust(data.aboutHtml)}</div>
+        <section className="LcoyAbout-about">
+          <h2 className="LcoyAbout-sectionTitle">{t('community.about.title')}</h2>
+          <div className="LcoyAbout-text">{m.trust(data.aboutHtml)}</div>
         </section>,
         100
       );
@@ -226,9 +225,9 @@ export default class AboutPage extends CommunityPage {
     const users = ids.map((id) => app.store.getById<User>('users', id)).filter((user): user is User => !!user);
 
     return (
-      <section className={`CanelaAbout-staff CanelaAbout-staff--${name}`}>
-        <h2 className="CanelaAbout-sectionTitle">{title}</h2>
-        <ul className="CanelaAbout-users">
+      <section className={`LcoyAbout-staff LcoyAbout-staff--${name}`}>
+        <h2 className="LcoyAbout-sectionTitle">{title}</h2>
+        <ul className="LcoyAbout-users">
           {users.map((user) => (
             <li key={user.id()}>
               <UserTile user={user} />
@@ -250,9 +249,9 @@ export default class AboutPage extends CommunityPage {
 
   contact(data: AboutPayload): Mithril.Children {
     return (
-      <section className="CanelaAbout-box CanelaAbout-contact">
-        <h2 className="CanelaAbout-sectionTitle">{t('community.about.contact_title')}</h2>
-        <p className="CanelaAbout-contactInfo">
+      <section className="LcoyAbout-box LcoyAbout-contact">
+        <h2 className="LcoyAbout-sectionTitle">{t('community.about.contact_title')}</h2>
+        <p className="LcoyAbout-contactInfo">
           {t('community.about.contact_text')} {data.contactEmail && <a href={`mailto:${data.contactEmail}`}>{data.contactEmail}</a>}
           {data.contactEmail && data.contactUrl && ' · '}
           {data.contactUrl && (
@@ -265,27 +264,27 @@ export default class AboutPage extends CommunityPage {
     );
   }
 
-  /** "Atividade do site": a coluna de números da semana do Discourse. */
+  /** “站点活跃度”：Discourse 的周数据列。 */
   activity(stats: NonNullable<AboutPayload['stats']>): Mithril.Children {
     const rows = STAT_ROWS.filter(([key]) => stats[key]);
 
     return (
-      <section className="CanelaAbout-box CanelaAbout-activity">
-        <h2 className="CanelaAbout-sectionTitle">{t('community.about.activity_title')}</h2>
-        <ul className="CanelaAbout-activityList">
+      <section className="LcoyAbout-box LcoyAbout-activity">
+        <h2 className="LcoyAbout-sectionTitle">{t('community.about.activity_title')}</h2>
+        <ul className="LcoyAbout-activityList">
           {rows.map(([key, icon]) => {
-            // A coluna mostra a semana, como o Discourse; a tabela abaixo tem
-            // os outros períodos.
+            // 该列显示一周的数据，与 Discourse 一致；下方表格包含
+            // 其他时间段。
             const count = stats[key].week ?? 0;
 
             return (
-              <li className="CanelaAbout-activityItem">
-                <span className="CanelaAbout-activityIcon">
+              <li className="LcoyAbout-activityItem">
+                <span className="LcoyAbout-activityIcon">
                   <Icon name={icon} />
                 </span>
-                <span className="CanelaAbout-activityText">
-                  <span className="CanelaAbout-activityCount">{t(`community.about.activity.${key}`, { count, formatted: formatNumber(count) })}</span>
-                  <span className="CanelaAbout-activityPeriod">{t('community.about.last_7_days')}</span>
+                <span className="LcoyAbout-activityText">
+                  <span className="LcoyAbout-activityCount">{t(`community.about.activity.${key}`, { count, formatted: formatNumber(count) })}</span>
+                  <span className="LcoyAbout-activityPeriod">{t('community.about.last_7_days')}</span>
                 </span>
               </li>
             );
@@ -299,15 +298,15 @@ export default class AboutPage extends CommunityPage {
     const rows = STAT_ROWS.filter(([key]) => stats[key]);
 
     return (
-      <section className="CanelaAbout-statsSection">
-        <h2 className="CanelaAbout-sectionTitle">{t('community.about.stats_title')}</h2>
-        <div className="CanelaCommunity-tableWrap">
-          <table className="CanelaCommunity-table CanelaAbout-statsTable">
+      <section className="LcoyAbout-statsSection">
+        <h2 className="LcoyAbout-sectionTitle">{t('community.about.stats_title')}</h2>
+        <div className="LcoyCommunity-tableWrap">
+          <table className="LcoyCommunity-table LcoyAbout-statsTable">
             <thead>
               <tr>
                 <th />
                 {STAT_PERIODS.map((period) => (
-                  <th className="CanelaCommunity-num">{t(`community.about.period.${period}`)}</th>
+                  <th className="LcoyCommunity-num">{t(`community.about.period.${period}`)}</th>
                 ))}
               </tr>
             </thead>
@@ -315,13 +314,13 @@ export default class AboutPage extends CommunityPage {
               {rows.map(([key, icon]) => (
                 <tr>
                   <th scope="row">
-                    <Icon name={icon} className="CanelaAbout-statsIcon" />
+                    <Icon name={icon} className="LcoyAbout-statsIcon" />
                     {t(`community.about.stat.${key}`)}
                   </th>
                   {STAT_PERIODS.map((period) => {
                     const value = stats[key][period];
 
-                    return <td className="CanelaCommunity-num">{value === null || value === undefined ? '-' : formatNumber(value)}</td>;
+                    return <td className="LcoyCommunity-num">{value === null || value === undefined ? '-' : formatNumber(value)}</td>;
                   })}
                 </tr>
               ))}

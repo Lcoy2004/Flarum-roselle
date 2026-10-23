@@ -26,27 +26,27 @@ import {
   sortTags,
   tagSymbol,
   tagUrl,
-  type CanelaTag,
+  type LcoyTag,
 } from '../utils/tags';
 
-/** Itens que o flarum/tags põe na navegação do IndexSidebar: aqui eles têm seções próprias. */
+/** flarum/tags 放在 IndexSidebar 导航中的条目：这里它们有自己的区域。 */
 const TAG_NAV_KEYS = /^(tags|separator|moreTags|tag\d+)$/;
 
 /**
- * A barra lateral do Discourse: botão "Iniciar Discussão", a seção da comunidade
- * (Tópicos, Minhas postagens, Mais…), as categorias e as etiquetas, e um
- * rodapé com o tema claro/escuro e os atalhos de teclado.
+ * Discourse 的侧栏：“发起讨论”按钮、社区区域
+ * （主题、我的帖子、更多……）、分类和标签，以及一个
+ * 包含浅色/深色主题和键盘快捷键的页脚。
  *
- * Herda do IndexSidebar para receber de graça o que as extensões põem na
- * navegação da página inicial — Seguindo, por exemplo —, com o `active` que o
- * LinkButton já calcula.
+ * 继承 IndexSidebar，以便免费获得扩展添加到首页
+ * 导航中的内容——例如“关注”——并使用 LinkButton
+ * 已经计算好的 `active`。
  */
-export default class CanelaSidebar extends IndexSidebar {
+export default class LcoySidebar extends IndexSidebar {
   view(): Mithril.Children {
     return (
-      <div className="CanelaSidebar-inner">
-        <div className="CanelaSidebar-sections">{this.sectionItems().toArray()}</div>
-        {forumBool('canelaSidebarFooter', true) && <div className="CanelaSidebar-footer">{this.footerItems().toArray()}</div>}
+      <div className="LcoySidebar-inner">
+        <div className="LcoySidebar-sections">{this.sectionItems().toArray()}</div>
+        {forumBool('lcoySidebarFooter', true) && <div className="LcoySidebar-footer">{this.footerItems().toArray()}</div>}
       </div>
     );
   }
@@ -54,13 +54,13 @@ export default class CanelaSidebar extends IndexSidebar {
   sectionItems(): ItemList<Mithril.Children> {
     const items = new ItemList<Mithril.Children>();
 
-    // Como no Discourse, o botão só aparece para quem está logado (o visitante
-    // tem o "Entrar" do cabeçalho). O admin pode escondê-lo de vez.
-    if (app.session.user && forumBool('canelaSidebarNewTopic', true)) items.add('newTopic', this.newTopicButton(), 100);
+    // 与 Discourse 一样，按钮只对已登录用户显示（访客
+    // 有页头的“登录”）。管理员可以将其完全隐藏。
+    if (app.session.user && forumBool('lcoySidebarNewTopic', true)) items.add('newTopic', this.newTopicButton(), 100);
 
     items.add('community', <SidebarSection name="community">{listItems(this.communitySection().toArray())}</SidebarSection>, 90);
 
-    if (isTagsEnabled() && forumBool('canelaSidebarCategories', true)) {
+    if (isTagsEnabled() && forumBool('lcoySidebarCategories', true)) {
       const categories = this.categoryItems();
 
       if (!categories.isEmpty()) {
@@ -74,7 +74,7 @@ export default class CanelaSidebar extends IndexSidebar {
       }
     }
 
-    if (isTagsEnabled() && forumBool('canelaSidebarTags', true)) {
+    if (isTagsEnabled() && forumBool('lcoySidebarTags', true)) {
       const tags = this.tagItems();
 
       if (!tags.isEmpty()) {
@@ -91,7 +91,7 @@ export default class CanelaSidebar extends IndexSidebar {
     return items;
   }
 
-  /** O lápis de personalizar a seção, como no Discourse. */
+  /** 自定义区域的铅笔图标，如同 Discourse。 */
   editAttrs(section: SidebarSectionName) {
     return {
       editLabel: t(section === 'categories' ? 'sidebar.customize_categories' : 'sidebar.customize_tags'),
@@ -99,8 +99,8 @@ export default class CanelaSidebar extends IndexSidebar {
     };
   }
 
-  /** As tags escolhidas pelo leitor para a seção, na ordem do fórum. */
-  pickedTags(section: SidebarSectionName): CanelaTag[] | null {
+  /** 读者为该区域选择的标签，按论坛顺序排列。 */
+  pickedTags(section: SidebarSectionName): LcoyTag[] | null {
     const picks = getSidebarPicks(section);
 
     if (!picks) return null;
@@ -111,17 +111,17 @@ export default class CanelaSidebar extends IndexSidebar {
   }
 
   newTopicButton(): Mithril.Children {
-    const tag = currentTag() as (CanelaTag & { canStartDiscussion?: () => boolean }) | null;
+    const tag = currentTag() as (LcoyTag & { canStartDiscussion?: () => boolean }) | null;
     const canStart = !app.session.user || (tag?.canStartDiscussion ? tag.canStartDiscussion() : !!app.forum.attribute('canStartDiscussion'));
 
-    // Com rascunhos (fof/drafts), o botão vira o dividido do Discourse:
-    // "✎ Novo tópico" e o "⌄" com a lista de rascunhos.
+    // 有草稿（fof/drafts）时，按钮会变成 Discourse 的分裂按钮：
+    // “✎ 新主题”以及带草稿列表的“⌄”。
     const split = showDraftsMenu();
 
     return (
-      <div className={classList('CanelaSidebar-newTopic', split && 'CanelaSidebar-newTopic--split')}>
+      <div className={classList('LcoySidebar-newTopic', split && 'LcoySidebar-newTopic--split')}>
         <Button
-          className="Button Button--primary CanelaSidebar-newTopicButton"
+          className="Button Button--primary LcoySidebar-newTopicButton"
           icon="fas fa-pen-to-square"
           disabled={!canStart}
           onclick={() => this.newDiscussionAction().catch(() => {})}
@@ -146,8 +146,8 @@ export default class CanelaSidebar extends IndexSidebar {
       100
     );
 
-    // O que as outras extensões põem na navegação (Seguindo, por exemplo),
-    // menos a lista de tags, que aqui tem seção própria.
+    // 其他扩展放在导航中的内容（例如“关注”），
+    // 但不包括标签列表，它在这里有自己的区域。
     const extensionItems = this.navItems();
 
     extensionItems.remove('allDiscussions');
@@ -165,9 +165,9 @@ export default class CanelaSidebar extends IndexSidebar {
         60
       );
 
-      // "Mensagens" e "Admin" ficam fora daqui: os dois já estão no menu do
-      // avatar (o do core, com "Administração", e a aba de mensagens do tema),
-      // e repetir a entrada na barra só ocupava altura.
+      // “私信”和“管理”不在这里：两者都已位于头像菜单中
+      // （核心的菜单带“管理”，以及主题的消息标签页），
+      // 在侧栏重复入口只会占用高度。
     }
 
     items.add('more', this.moreDropdown(), -100);
@@ -176,9 +176,9 @@ export default class CanelaSidebar extends IndexSidebar {
   }
 
   /**
-   * A seção principal depois de todas as extensões terem posto os seus itens:
-   * os que o leitor escolheu esconder vão para dentro do "Mais", e o "Mais"
-   * ganha o "Personalizar" com a lista de todos eles.
+   * 所有扩展都添加完条目后的主区域：
+   * 读者选择隐藏的条目会进入“更多”，而“更多”
+   * 会获得“自定义”以及所有条目的列表。
    */
   communitySection(): ItemList<Mithril.Children> {
     const items = this.communityItems();
@@ -193,7 +193,7 @@ export default class CanelaSidebar extends IndexSidebar {
 
       entries.push({ key, label: vnodeText(vnode) || key, icon: vnode?.attrs?.icon });
 
-      // O item ativo nunca some: quem está na página vê onde está.
+      // 活动中的条目永远不会消失：位于该页面的人能看到自己在哪。
       if (hidden.has(key) && vnode?.attrs?.active !== true && vnode?.attrs?.active !== 'true') {
         moved.push({ key, node: vnode });
         items.remove(key);
@@ -205,7 +205,7 @@ export default class CanelaSidebar extends IndexSidebar {
     return items;
   }
 
-  /** "Tópicos" fica ativo na página inicial sem filtro de tag nem de "Seguindo". */
+  /** “主题”在首页且无标签或“关注”筛选时处于活动状态。 */
   isIndexActive(): boolean {
     const routeName = app.current.get('routeName');
 
@@ -269,23 +269,23 @@ export default class CanelaSidebar extends IndexSidebar {
       );
     }
 
-    // Os itens movidos entram na mesma ItemList do resto: `toArray()` dá
-    // `itemName` a todos, e o Dropdown usa esse nome como key. Misturar vnodes
-    // soltos com o separador fazia o Mithril recusar a lista inteira
-    // ("vnodes must either all have keys or none have keys").
+    // 移动的条目进入与其余条目相同的 ItemList：`toArray()` 会为所有条目
+    // 设置 `itemName`，Dropdown 将该名称作为 key。将散落的 vnode
+    // 与分隔符混在一起会让 Mithril 拒绝整个列表
+    // （"vnodes must either all have keys or none have keys"）。
     const menu = new ItemList<Mithril.Children>();
 
-    // Só prefixa em caso de colisão com as chaves fixas do "Mais"
-    // (categories, notifications, settings, shortcuts…): assim o item movido
-    // mantém a classe `item-<chave>` que o resto do tema/extensões conhece.
+    // 仅在与会话“更多”的固定键（categories、notifications、settings、
+    // shortcuts……）冲突时添加前缀：这样移动的条目
+    // 保留主题/扩展其他部分所知的 `item-<键>` 类。
     moved.forEach(({ key, node }, index) => menu.add(more.has(key) ? `moved-${key}` : key, node, 200 - index));
-    if (moved.length) menu.add('canelaMovedSeparator', <Separator />, 150);
+    if (moved.length) menu.add('lcoyMovedSeparator', <Separator />, 150);
     menu.merge(more);
 
     return (
       <Dropdown
-        className="CanelaSidebar-more"
-        buttonClassName="CanelaSidebar-moreButton"
+        className="LcoySidebar-more"
+        buttonClassName="LcoySidebar-moreButton"
         icon="fas fa-ellipsis-vertical"
         label={t('sidebar.more')}
         caretIcon={null}
@@ -300,15 +300,15 @@ export default class CanelaSidebar extends IndexSidebar {
   categoryItems(): ItemList<Mithril.Children> {
     const items = new ItemList<Mithril.Children>();
     const active = currentTag();
-    const activeRoot = active && active.isChild() ? (active.parent() as CanelaTag) : active;
+    const activeRoot = active && active.isChild() ? (active.parent() as LcoyTag) : active;
 
     (this.pickedTags('categories') ?? primaryTags()).forEach((tag, index) => {
-      items.add(`category${tag.id()}`, this.tagLink(tag, categorySymbol(tag, 'CanelaSidebar-linkIcon'), activeRoot === tag), 100 - index);
+      items.add(`category${tag.id()}`, this.tagLink(tag, categorySymbol(tag, 'LcoySidebar-linkIcon'), activeRoot === tag), 100 - index);
     });
 
     items.add(
       'allCategories',
-      <LinkButton className="CanelaSidebar-link--all" href={categoriesUrl()} icon="fas fa-list">
+      <LinkButton className="LcoySidebar-link--all" href={categoriesUrl()} icon="fas fa-list">
         {t('sidebar.all_categories')}
       </LinkButton>,
       -100
@@ -320,18 +320,18 @@ export default class CanelaSidebar extends IndexSidebar {
   tagItems(): ItemList<Mithril.Children> {
     const items = new ItemList<Mithril.Children>();
     const active = currentTag();
-    const limit = forumInt('canelaSidebarTagsLimit', 6);
+    const limit = forumInt('lcoySidebarTagsLimit', 6);
     const picked = this.pickedTags('tags');
     const tags = picked ?? secondaryTags().slice(0, limit);
 
     tags.forEach((tag, index) => {
-      items.add(`tag${tag.id()}`, this.tagLink(tag, tagSymbol(tag, 'CanelaSidebar-linkIcon', 'fas fa-tag'), active === tag), 100 - index);
+      items.add(`tag${tag.id()}`, this.tagLink(tag, tagSymbol(tag, 'LcoySidebar-linkIcon', 'fas fa-tag'), active === tag), 100 - index);
     });
 
     if (tags.length) {
       items.add(
         'allTags',
-        <LinkButton className="CanelaSidebar-link--all" href={app.route('tags')} icon="fas fa-list">
+        <LinkButton className="LcoySidebar-link--all" href={app.route('tags')} icon="fas fa-list">
           {t('sidebar.all_tags')}
         </LinkButton>,
         -100
@@ -341,10 +341,10 @@ export default class CanelaSidebar extends IndexSidebar {
     return items;
   }
 
-  tagLink(tag: CanelaTag, icon: Mithril.Children, active: boolean): Mithril.Children {
+  tagLink(tag: LcoyTag, icon: Mithril.Children, active: boolean): Mithril.Children {
     return (
       <Link
-        className={classList('LinkButton CanelaSidebar-tagLink', { active })}
+        className={classList('LinkButton LcoySidebar-tagLink', { active })}
         href={tagUrl(tag)}
         active={String(active)}
         title={tag.description() || undefined}
@@ -358,13 +358,13 @@ export default class CanelaSidebar extends IndexSidebar {
   footerItems(): ItemList<Mithril.Children> {
     const items = new ItemList<Mithril.Children>();
 
-    // A paleta à esquerda e o modo de cor, como no rodapé do Discourse.
+    // 左侧的调色板与颜色模式，如同 Discourse 的页脚。
     if (app.allowUserColorScheme) {
       items.add('palette', <FooterPaletteSelector />, 110);
       items.add('theme', <FooterColorMode />, 100);
     }
 
-    // O "+" do rodapé, como o Discourse, só para quem está logado.
+    // 页脚的“+”，如同 Discourse，仅对已登录用户显示。
     if (app.session.user)
       items.add(
         'newTopic',
@@ -381,7 +381,7 @@ export default class CanelaSidebar extends IndexSidebar {
     items.add(
       'shortcuts',
       <Button
-        className="Button Button--icon Button--flat CanelaSidebar-footerShortcuts"
+        className="Button Button--icon Button--flat LcoySidebar-footerShortcuts"
         icon="far fa-keyboard"
         aria-label={t('sidebar.keyboard_shortcuts')}
         title={t('sidebar.keyboard_shortcuts')}
@@ -394,34 +394,34 @@ export default class CanelaSidebar extends IndexSidebar {
   }
 }
 
-/** O texto de um item da barra (o rótulo do LinkButton), para a lista do "Personalizar". */
+/** 侧栏条目的文本（LinkButton 的标签），用于“自定义”列表。 */
 function vnodeText(node: any): string {
   if (node == null || typeof node === 'boolean') return '';
   if (typeof node === 'string' || typeof node === 'number') return String(node);
   if (Array.isArray(node)) return node.map(vnodeText).join('');
-  // O contador ao lado do rótulo (rascunhos, não lidas) não entra.
+  // 标签旁的数量（草稿、未读）不计入。
   if (typeof node.attrs?.className === 'string' && /count|suffix/i.test(node.attrs.className)) return '';
 
   return vnodeText(node.children ?? node.text);
 }
 
 /**
- * O menu do "Mais" abre para FORA da barra lateral: a barra rola (overflow) e
- * cortava o menu. Com position: fixed ele sai dela, colado ao botão, com uma
- * setinha apontando para o "Mais" (como um submenu), e sobe se não couber até
- * o fim da tela.
+ * “更多”菜单向侧栏之外打开：侧栏会滚动（overflow），
+ * 会裁掉菜单。使用 position: fixed 让它脱离侧栏，紧贴按钮，
+ * 并用一个小箭头指向“更多”（如同子菜单）；空间不足时
+ * 会向上移动，直到屏幕底部。
  */
 function placeMoreMenu(): void {
   requestAnimationFrame(() => {
-    const toggle = document.querySelector<HTMLElement>('.CanelaSidebar-more.open .CanelaSidebar-moreButton');
-    const menu = document.querySelector<HTMLElement>('.CanelaSidebar-more.open .Dropdown-menu');
+    const toggle = document.querySelector<HTMLElement>('.LcoySidebar-more.open .LcoySidebar-moreButton');
+    const menu = document.querySelector<HTMLElement>('.LcoySidebar-more.open .Dropdown-menu');
 
     if (!toggle || !menu) return;
 
     const rect = toggle.getBoundingClientRect();
     const phone = window.innerWidth < 768;
 
-    menu.classList.toggle('CanelaSidebar-moreMenu--side', !phone);
+    menu.classList.toggle('LcoySidebar-moreMenu--side', !phone);
     menu.style.position = 'fixed';
     menu.style.right = 'auto';
     menu.style.bottom = 'auto';
@@ -433,7 +433,7 @@ function placeMoreMenu(): void {
     const top = Math.max(8, Math.min(wanted, window.innerHeight - height - 8));
 
     menu.style.top = `${top}px`;
-    // A setinha fica na altura do meio do botão, mesmo que o menu tenha subido.
-    menu.style.setProperty('--canela-more-arrow', `${rect.top + rect.height / 2 - top}px`);
+    // 小箭头保持在按钮中部的高度，即使菜单已经上移。
+    menu.style.setProperty('--lcoy-more-arrow', `${rect.top + rect.height / 2 - top}px`);
   });
 }

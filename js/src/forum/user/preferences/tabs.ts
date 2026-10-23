@@ -1,28 +1,28 @@
 /*
- * As abas das preferências, como as do Discourse (Conta, Segurança, Perfil,
- * Notificações, Acompanhamento, Usuários, Interface, Menu de navegação,
- * Chat). Cada aba é um endereço próprio, `/u/:username/preferences/:tab`.
+ * 设置标签页，与 Discourse 一致（账户、安全、资料、通知、跟踪、用户、
+ * 界面、导航菜单、聊天）。每个标签页是一个独立地址，
+ * `/u/:username/preferences/:tab`。
  *
- * As seções continuam vindo do `settingsItems` do SettingsPage (core e
- * extensões); aqui só se decide em que aba cada uma aparece. Uma seção que
- * nenhuma tabela conhece vai para "Outros", para nunca sumir.
+ * 各区域仍来自 SettingsPage 的 `settingsItems`（核心和扩展）；
+ * 这里只决定每个区域出现在哪个标签页。没有任何映射表认识的分区会进入
+ * “其他”，以免消失。
  *
- * Duas abas são páginas de outro dono: "Segurança" é o UserSecurityPage do
- * core e "Usuários" é a lista de ignorados do fof/ignore-users.
+ * 有两个标签页属于其他组件：“安全”是核心的 UserSecurityPage，
+ * “用户”是 fof/ignore-users 的忽略列表。
  */
 import app from 'flarum/forum/app';
 import type User from 'flarum/common/models/User';
 
 import { isExtensionEnabled } from '../../utils/settings';
 import { isTagsEnabled } from '../../utils/tags';
-import { canEditProfile, profileEnabled } from '../../features/profile/data';
+import { thirdParty } from '../../thirdparty/settings';
 
 export type PrefTab = 'account' | 'security' | 'profile' | 'notifications' | 'tracking' | 'users' | 'interface' | 'navigation-menu' | 'other';
 
 export const TAB_ROUTE = 'user.preferences.tab';
 export const BASE_ROUTE = 'user.preferences';
 
-/** Ícones das abas, os mesmos do `user-navigation-secondary` do Discourse. */
+/** 标签页图标，与 Discourse 的 `user-navigation-secondary` 相同。 */
 export const TAB_ICONS: Record<PrefTab, string> = {
   account: 'fas fa-circle-user',
   security: 'fas fa-lock',
@@ -35,42 +35,42 @@ export const TAB_ICONS: Record<PrefTab, string> = {
   other: 'fas fa-puzzle-piece',
 };
 
-/** Seções conhecidas (chaves do `settingsItems`) e a aba de cada uma. */
+/** 已知分区（`settingsItems` 的键）及各自所属标签页。 */
 const SECTION_TABS: Record<string, PrefTab> = {
   account: 'account',
   privacy: 'account',
-  canelaProfile: 'profile',
+  lcoyProfile: 'profile',
   notifications: 'notifications',
-  canelaAutoTrack: 'tracking',
+  lcoyAutoTrack: 'tracking',
   'fof-follow-tags': 'tracking',
-  canelaInterface: 'interface',
+  lcoyInterface: 'interface',
   wardrobeTheme: 'interface',
   colorScheme: 'interface',
   device: 'interface',
   realtimeItems: 'interface',
   drafts: 'interface',
-  canelaNavMenu: 'navigation-menu',
+  lcoyNavMenu: 'navigation-menu',
 };
 
-/** Itens do `notificationsItems` que, no Discourse, são do "Acompanhamento". */
+/** `notificationsItems` 中在 Discourse 属于“跟踪”的条目。 */
 export const TRACKING_ITEMS = ['followAfterReply', 'followAfterCreate', 'notifyForAllPosts'];
 
 export function sectionTab(key: string): PrefTab {
   return SECTION_TABS[key] || 'other';
 }
 
-/** Lembra se a última página de Configurações tinha seções em "Outros". */
+/** 记住上次设置页是否有位于“其他”中的分区。 */
 let hasOther = false;
 
 export function rememberOther(value: boolean): void {
   hasOther = value;
 }
 
-/** As abas que este usuário tem, na ordem do Discourse. */
+/** 该用户拥有的标签页，按 Discourse 的顺序。 */
 export function visibleTabs(user: User): PrefTab[] {
   const tabs: PrefTab[] = ['account', 'security'];
 
-  if (profileEnabled() && canEditProfile(user)) tabs.push('profile');
+  if (thirdParty.profileCover()) tabs.push('profile');
   tabs.push('notifications');
   if (isExtensionEnabled('flarum-subscriptions') || isExtensionEnabled('fof-follow-tags')) tabs.push('tracking');
   if (app.routes['user.ignoredUsers']) tabs.push('users');
@@ -88,7 +88,7 @@ export function tabUrl(user: User, tab: PrefTab): string {
   return app.route(TAB_ROUTE, { username: user.slug(), tab });
 }
 
-/** A aba aberta agora, ou null fora das preferências. */
+/** 当前打开的标签页；不在设置中时为 null。 */
 export function currentTab(): PrefTab | null {
   const route = app.current.get('routeName');
 

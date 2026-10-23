@@ -1,8 +1,8 @@
 /*
- * Atalhos de teclado do Discourse que fazem sentido no Flarum.
+ * 在 Flarum 中有意义的 Discourse 键盘快捷键。
  *
- * Sequências de duas teclas ("g h") esperam a segunda por um instante, como no
- * Discourse. Nada dispara enquanto se digita num campo ou com um modal aberto.
+ * 双键组合（“g h”）会短暂等待第二个键，如同
+ * Discourse。在字段中输入或弹窗打开时不会触发任何操作。
  */
 import app from 'flarum/forum/app';
 import IndexSidebar from 'flarum/forum/components/IndexSidebar';
@@ -56,10 +56,10 @@ export const SHORTCUT_GROUPS: ShortcutGroup[] = [
   },
 ];
 
-/** Quanto tempo a segunda tecla de uma sequência ("g …") pode demorar. */
+/** 组合键（“g …”）的第二个键最多可以等待多久。 */
 const SEQUENCE_TIMEOUT_MS = 1000;
 
-const SELECTED_CLASS = 'CanelaSelected';
+const SELECTED_CLASS = 'LcoySelected';
 
 let pendingPrefix: string | null = null;
 let prefixTimer: number | undefined;
@@ -69,13 +69,13 @@ function go(url: string) {
 }
 
 function openSearch() {
-  // O campo visível: o do cabeçalho, o do banner ou, no celular, o do drawer.
-  const button = Array.from(document.querySelectorAll<HTMLElement>('.Search-input, .CanelaHeaderSearch')).find((el) => el.offsetParent !== null);
+  // 可见的字段：页头的、横幅的，或者在手机上抽屉中的。
+  const button = Array.from(document.querySelectorAll<HTMLElement>('.Search-input, .LcoyHeaderSearch')).find((el) => el.offsetParent !== null);
 
   button?.click();
 }
 
-/** j/k: anda pelos tópicos da lista destacando o atual, como o Discourse. */
+/** j/k：在列表的讨论间移动并高亮当前项，如同 Discourse。 */
 function moveSelection(step: number) {
   const items = Array.from(document.querySelectorAll<HTMLElement>('.DiscussionList-discussions > li'));
 

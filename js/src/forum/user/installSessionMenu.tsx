@@ -1,8 +1,8 @@
 /*
- * O menu da sessão do Discourse abre com quem está logado: avatar, nome e
- * @usuário, que levam ao perfil. No Flarum o menu começa direto em "Perfil";
- * aqui ele ganha esse cabeçalho, e o resto dos itens (de outras extensões
- * também) segue igual.
+ * Discourse 的会话菜单以当前登录者开头：头像、名字和
+ * @用户名，点击进入资料页。Flarum 的菜单直接以“个人资料”开始；
+ * 这里给它加上这个头部，其余条目（包括其他扩展的）
+ * 保持原样。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -23,17 +23,17 @@ export default function installSessionMenu() {
     const username = user.username();
 
     items.add(
-      'canelaIdentity',
-      <Link className="CanelaSessionIdentity" href={app.route.user(user)}>
-        <Avatar user={user} className="CanelaSessionIdentity-avatar" />
-        <span className="CanelaSessionIdentity-names">
-          <span className="CanelaSessionIdentity-name">{displayName}</span>
-          {displayName !== username && <span className="CanelaSessionIdentity-username">@{username}</span>}
+      'lcoyIdentity',
+      <Link className="LcoySessionIdentity" href={app.route.user(user)}>
+        <Avatar user={user} className="LcoySessionIdentity-avatar" />
+        <span className="LcoySessionIdentity-names">
+          <span className="LcoySessionIdentity-name">{displayName}</span>
+          {displayName !== username && <span className="LcoySessionIdentity-username">@{username}</span>}
         </span>
       </Link>,
       200
     );
 
-    items.add('canelaIdentitySeparator', <Separator />, 150);
+    items.add('lcoyIdentitySeparator', <Separator />, 150);
   });
 }

@@ -1,23 +1,23 @@
 /*
- * O menu de busca do Discourse (`.search-menu`): o próprio campo do cabeçalho
- * é o campo da busca, e o painel (`.search-menu-panel`) abre colado embaixo
- * dele, sem modal e sem escurecer a página.
+ * Discourse 的搜索菜单（`.search-menu`）：页头字段本身
+ * 就是搜索输入框，面板（`.search-menu-panel`）紧贴其下方
+ * 打开，没有弹窗，也不会让页面变暗。
  *
- * - Vazio: uma dica aleatória ("#", "@", "é:", Ctrl+Enter) e as buscas
- *   recentes; numa página de categoria, "em ▪ Categoria".
- * - Digitando: "termo em todos os tópicos e postagens ou pressione Enter",
- *   seguido das categorias, etiquetas e usuários que casam com o termo.
- * - "#", "@" ou "chave:" no fim do termo: o assistente com as sugestões.
- * - Enter: os tópicos, com o ícone de estado, o título, a categoria e o
- *   trecho com o termo em negrito; Enter de novo (ou Ctrl+Enter) abre a
- *   busca de página inteira.
+ * - 空：一条随机提示（"#"、"@"、"is:"、Ctrl+Enter）和最近的
+ *   搜索；在分类页面中，显示“in ▪ 分类”。
+ * - 输入中：“在所有主题和帖子中搜索该词，或按 Enter”，
+ *   后面是与搜索词匹配的分类、标签和用户。
+ * - 搜索词末尾的 "#"、"@" 或 "key:"：带建议的助手。
+ * - Enter：主题，带状态图标、标题、分类，以及
+ *   搜索词加粗的摘要；再次按 Enter（或 Ctrl+Enter）打开
+ *   整页搜索。
  *
- * No celular o cabeçalho mostra só a lupa; tocada, o campo cobre o cabeçalho
- * e o painel ocupa a tela abaixo dele.
+ * 在手机上，页头只显示放大镜；点击后字段覆盖页头，
+ * 面板占据其下方的屏幕。
  *
- * A estrutura e os nomes de classe seguem os componentes `search-menu/*` do
- * Discourse; o CSS (less/forum/Search.less) vale só dentro de
- * `.CanelaSearchMenu`, para não colidir com as classes genéricas.
+ * 结构和类名遵循 Discourse 的 `search-menu/*` 组件；
+ * CSS（less/forum/Search.less）只在
+ * `.LcoySearchMenu` 内生效，以免与通用类名冲突。
  */
 import app from 'flarum/forum/app';
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
@@ -32,11 +32,11 @@ import { advancedSearchAvailable, fullSearchUrl } from './query';
 import { preloadSearchPanel, SearchPanelSlot } from './panelLazy';
 
 export interface SearchMenuAttrs extends ComponentAttrs {
-  /** `header` (o campo do cabeçalho) ou `welcome` (o banner de boas-vindas). */
+  /** `header`（页头字段）或 `welcome`（欢迎横幅）。 */
   location: 'header' | 'welcome';
 }
 
-/** Duas vezes Enter em até 15s abre a busca de página inteira (`SECOND_ENTER_MAX_DELAY`). */
+/** 15 秒内按两次 Enter 会打开整页搜索（`SECOND_ENTER_MAX_DELAY`）。 */
 const SECOND_ENTER_MAX_DELAY = 15000;
 
 let instances = 0;
@@ -59,10 +59,10 @@ export default class SearchMenu extends Component<SearchMenuAttrs> {
   oninit(vnode: Mithril.Vnode<SearchMenuAttrs, this>) {
     super.oninit(vnode);
 
-    // O primeiro menu usa o id do Discourse (`search-term`); o do banner, outro.
+    // 第一个菜单使用 Discourse 的 id（`search-term`）；横幅中的使用另一个。
     this.inputId = instances++ === 0 ? 'search-term' : `search-term-${instances}`;
 
-    // Depois de uma busca na lista (`/?q=`), o campo continua mostrando o termo.
+    // 在列表搜索（`/?q=`）之后，字段继续显示搜索词。
     const active = app.search.state.getValue?.();
 
     if (active && !state.term) state.term = active;
@@ -71,8 +71,8 @@ export default class SearchMenu extends Component<SearchMenuAttrs> {
   oncreate(vnode: Mithril.VnodeDOM<SearchMenuAttrs, this>) {
     super.oncreate(vnode);
 
-    // O painel (resultados, dicas, assistente) é um chunk: desce antes do
-    // primeiro foco — no hover/toque do campo ou, sem isso, no ocioso do boot.
+    // 面板（结果、提示、助手）是一个 chunk：在首次聚焦之前
+    // 下载——在字段悬停/触摸时，或没有这些操作时在启动空闲时。
     this.element.addEventListener('mouseenter', preloadSearchPanel, { once: true });
     this.element.addEventListener('touchstart', preloadSearchPanel, { once: true, passive: true });
     this.element.addEventListener('focusin', preloadSearchPanel, { once: true });
@@ -94,8 +94,8 @@ export default class SearchMenu extends Component<SearchMenuAttrs> {
 
     return (
       <div
-        className={classList('search-menu glimmer-search-menu CanelaSearchMenu', `CanelaSearchMenu--${location}`, {
-          'CanelaSearchMenu--open': this.open,
+        className={classList('search-menu glimmer-search-menu LcoySearchMenu', `LcoySearchMenu--${location}`, {
+          'LcoySearchMenu--open': this.open,
         })}
         role="search"
         onkeydown={(event: KeyboardEvent) => this.onKeydown(event)}
@@ -103,7 +103,7 @@ export default class SearchMenu extends Component<SearchMenuAttrs> {
         {location === 'header' && (
           <button
             type="button"
-            className="CanelaSearchMenu-toggle CanelaHeaderSearch Button Button--icon Button--flat"
+            className="LcoySearchMenu-toggle LcoyHeaderSearch Button Button--icon Button--flat"
             aria-label={t('search_menu.title')}
             title={t('search_menu.title')}
             onclick={() => (this.open ? this.close() : this.openAndFocus())}
@@ -120,7 +120,7 @@ export default class SearchMenu extends Component<SearchMenuAttrs> {
   }
 
   // ---------------------------------------------------------------------
-  // Campo
+  // 字段
   // ---------------------------------------------------------------------
 
   placeholder(): string {
@@ -133,9 +133,9 @@ export default class SearchMenu extends Component<SearchMenuAttrs> {
     return (
       <div className="search-input-wrapper">
         <div
-          className={classList('search-input', `search-input--${this.attrs.location}`, 'CanelaHeaderSearch')}
+          className={classList('search-input', `search-input--${this.attrs.location}`, 'LcoyHeaderSearch')}
           onclick={(event: MouseEvent) => {
-            // O atalho "/" e quem clica fora do texto (na lupa) caem no campo.
+            // 快捷键 “/” 以及点击文本外（放大镜上）的人都会落到字段中。
             if (!(event.target as HTMLElement).closest('a, button, input')) this.input()?.focus();
           }}
         >
@@ -190,8 +190,8 @@ export default class SearchMenu extends Component<SearchMenuAttrs> {
               ]
             )}
           </div>
-          {/* No celular o campo cobre o cabeçalho: este X o fecha. */}
-          <button type="button" className="CanelaSearchMenu-cancel" aria-label={t('search_menu.close')} onclick={() => this.close()}>
+          {/* 在手机上，字段会覆盖页头：这个 X 用于关闭它。 */}
+          <button type="button" className="LcoySearchMenu-cancel" aria-label={t('search_menu.close')} onclick={() => this.close()}>
             <Icon name="fas fa-times" />
           </button>
         </div>
@@ -210,7 +210,7 @@ export default class SearchMenu extends Component<SearchMenuAttrs> {
     m.redraw();
   }
 
-  /** O toque na lupa do celular: o campo precisa existir na tela antes do foco (o teclado só abre dentro do gesto). */
+  /** 在手机上点击放大镜：字段必须在聚焦前已存在于屏幕中（键盘只会在手势内打开）。 */
   openAndFocus(): void {
     this.open = true;
     m.redraw.sync();
@@ -220,7 +220,7 @@ export default class SearchMenu extends Component<SearchMenuAttrs> {
   close(blur = true): void {
     this.open = false;
 
-    // Como no Discourse: sem o foco, focar de novo reabre o painel.
+    // 如同 Discourse：失焦后再次聚焦会重新打开面板。
     if (blur) this.input()?.blur();
 
     m.redraw();
@@ -258,7 +258,7 @@ export default class SearchMenu extends Component<SearchMenuAttrs> {
     this.lastEnter = Date.now();
   }
 
-  /** Esc fecha; as setas andam pelos links do painel e voltam ao campo. */
+  /** Esc 关闭；方向键在面板的链接间移动，并回到字段。 */
   onKeydown(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
       event.preventDefault();

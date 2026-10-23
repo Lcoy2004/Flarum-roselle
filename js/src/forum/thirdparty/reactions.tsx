@@ -1,22 +1,22 @@
 /*
- * fof/reactions no jeito do discourse-reactions.
+ * fof/reactions，按照 discourse-reactions 的方式呈现。
  *
- * Com a barra de ações do tema e o flarum/likes ligados, curtida e reações
- * viram um botão só, como no Discourse:
+ * 在主题的操作栏和 flarum/likes 启用时，点赞与回应
+ * 合并为一个按钮，与 Discourse 相同：
  *
- * - O coração da barra: clicar curte (ou desfaz); passar o mouse (ou o toque
- *   longo, no celular) abre acima o seletor com as reações habilitadas do
- *   fof/reactions, na ordem dele. A reação "heart" do fof, onde estiver na
- *   lista, é a curtida do flarum/likes; as outras são reações do fof. Cada
- *   pessoa tem uma reação por post: escolher um emoji estando curtido
- *   descurte, e escolher o coração estando com um emoji remove a reação.
- *   Depois de reagir, o botão mostra o emoji escolhido; clicar nele desfaz.
- * - À esquerda, um contador só: até três emojis (os mais usados primeiro, o
- *   coração das curtidas incluso) sobrepostos e o total. O clique abre quem
- *   reagiu, cada pessoa com o seu emoji.
+ * - 栏中的心形：点击点赞（或取消）；悬停（或在移动端长按）
+ *   会在上方打开选择器，显示 fof/reactions 已启用的回应，
+ *   按其顺序排列。fof 的 "heart" 回应，无论位于列表何处，
+ *   都是 flarum/likes 的点赞；其他则是 fof 的回应。每个人
+ *   对每个帖子只能有一个回应：在已点赞时选择某个 emoji
+ *   会取消点赞，在已有 emoji 时选择心形会移除该回应。
+ *   回应后，按钮显示所选的 emoji；点击它会取消。
+ * - 左侧只有一个计数：最多三个 emoji（最常用的在前，
+ *   包含点赞的心形）叠加显示，再加上总数。点击会打开
+ *   回应者列表，每人显示自己的 emoji。
  *
- * Sem a barra do tema ou sem o flarum/likes, o botão de reagir do fof continua
- * (com o mesmo seletor em grade) e o resumo vem ao lado das curtidas.
+ * 没有主题的操作栏或没有 flarum/likes 时，fof 的回应按钮
+ * 仍然保留（使用相同的网格选择器），摘要显示在点赞旁边。
  */
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
@@ -36,18 +36,18 @@ import { postUi, topicSettings, type PostUi } from '../topic/ui';
 import { likers } from '../topic/posts';
 import { heartIcon, openWhoReacted, type ReactorEntry } from '../topic/components/WhoReactedPopover';
 
-/** Quantos emojis o resumo mostra (`nth-of-type(1n + 4)` some no Discourse). */
+/** 摘要显示多少个 emoji（Discourse 中 `nth-of-type(1n + 4)` 会隐藏）。 */
 const SUMMARY_EMOJIS = 3;
 
-/** A reação do fof que é a curtida do flarum/likes. */
+/** fof 中代表 flarum/likes 点赞的回应。 */
 const HEART = 'heart';
 
-/** Atrasos do discourse-reactions: abrir no hover, fechar ao sair, toque longo. */
+/** discourse-reactions 的延迟：悬停打开、离开关闭、长按。 */
 const OPEN_DELAY = 250;
 const CLOSE_DELAY = 300;
 const LONG_PRESS = 400;
 
-/** Distância mínima do seletor às bordas da janela. */
+/** 选择器与窗口边缘的最小距离。 */
 const EDGE = 8;
 
 function reactionComponent(): any {
@@ -61,8 +61,8 @@ function reactToPostFn(): ((post: Post, reaction: any, loading: Record<string, b
 }
 
 /**
- * As reações habilitadas do fof/reactions, na ordem dele (a que o admin do
- * fof gerencia): o seletor dos posts e o das mensagens usam esta lista.
+ * fof/reactions 已启用的回应，按其顺序（由 fof 的
+ * 管理员管理）：帖子选择器和私信选择器都使用这个列表。
  */
 export function enabledReactions(): any[] {
   const fromForum = (app.forum as any)?.reactions?.();
@@ -75,7 +75,7 @@ function heartReaction(): any {
   return (app.store.all('reactions') as any[]).find((reaction) => reaction.identifier?.() === HEART) || null;
 }
 
-/** O ❤️ das curtidas: o emoji do fof, para ficar igual aos outros; sem ele, o ícone. */
+/** 点赞的 ❤️：使用 fof 的 emoji，以便与其他保持一致；没有它时用图标。 */
 function heartEmoji(): Mithril.Children {
   const ReactionComponent = reactionComponent();
   const heart = heartReaction();
@@ -102,7 +102,7 @@ function counts(post: Post): Array<[string, number]> {
     .sort((a, b) => b[1] - a[1]);
 }
 
-/** A unificação vale com a barra do tema e as duas extensões. */
+/** 在主题的操作栏和两个扩展都具备时才进行合并。 */
 function unified(): boolean {
   return thirdParty.reactions() && topicSettings.postActions() && isExtensionEnabled('flarum-likes');
 }
@@ -113,7 +113,7 @@ function isLiked(post: Post): boolean {
   return !!user && ((post as any).likes?.() || []).some((liker: any) => liker === user);
 }
 
-/** A reação do fof do leitor neste post (a "heart" conta como curtida). */
+/** 读者在该帖子上的 fof 回应（"heart" 计为点赞）。 */
 function myReaction(post: Post): any {
   const id = (post as any).userReaction?.();
   const counted = id && Number(((post as any).reactionCounts?.() || {})[id]) > 0;
@@ -122,8 +122,8 @@ function myReaction(post: Post): any {
 }
 
 /**
- * Curtir/descurtir como o flarum/likes faz, mas devolvendo a promessa (para
- * trocar a curtida por um emoji em sequência) e já mexendo na contagem.
+ * 按 flarum/likes 的方式点赞/取消点赞，但返回 promise（以便
+ * 随后把点赞换成 emoji），并立即更新计数。
  */
 function setLiked(post: Post, value: boolean): Promise<unknown> {
   const user = app.session.user!;
@@ -137,7 +137,7 @@ function setLiked(post: Post, value: boolean): Promise<unknown> {
   if (value) likes.unshift({ type: 'users', id: user.id()! });
   if (value) haptic('success');
 
-  // Muda a "frescura" do post: o SubtreeRetainer redesenha na hora.
+  // 改变帖子的 "新鲜度"：SubtreeRetainer 会立即重绘。
   post.pushAttributes({ likesCount: Math.max(0, count + (value ? 1 : -1)) } as any);
   m.redraw();
 
@@ -145,10 +145,10 @@ function setLiked(post: Post, value: boolean): Promise<unknown> {
 }
 
 // ---------------------------------------------------------------------------
-// Quem reagiu
+// 回应者
 // ---------------------------------------------------------------------------
 
-/** O id de uma relação (ou do atributo) do PostReaction do fof. */
+/** fof PostReaction 的关系（或属性）id。 */
 function relatedId(item: any, relation: string, attribute: string): string | null {
   const id = item?.data?.relationships?.[relation]?.data?.id ?? item?.attribute?.(attribute);
 
@@ -156,9 +156,9 @@ function relatedId(item: any, relation: string, attribute: string): string | nul
 }
 
 /**
- * Quem reagiu com emoji. O modelo PostReaction do fof 2.x não resolve as
- * relações (`user()` devolve o getter, `reaction()` lê um atributo que não
- * existe): o usuário e a reação vêm pelos ids, já incluídos na resposta.
+ * 使用 emoji 回应的人。fof 2.x 的 PostReaction 模型不会解析
+ * 关系（`user()` 返回 getter，`reaction()` 读取一个不
+ * 存在的属性）：用户和回应通过响应中已包含的 id 获取。
  */
 function reactors(post: Post): Promise<ReactorEntry[]> {
   return app.store
@@ -181,7 +181,7 @@ function reactors(post: Post): Promise<ReactorEntry[]> {
     );
 }
 
-/** Curtidores (com o ❤️) e quem reagiu com emoji, num popover só. */
+/** 点赞者（带 ❤️）和使用 emoji 回应的人，合并在一个弹出层中。 */
 function everyone(post: Post, canSeeReactions: boolean): Promise<ReactorEntry[]> {
   const likes = likers(post)
     .then((entries) => entries.map((entry) => ({ ...entry, icon: heartEmoji() })))
@@ -192,7 +192,7 @@ function everyone(post: Post, canSeeReactions: boolean): Promise<ReactorEntry[]>
 }
 
 // ---------------------------------------------------------------------------
-// O resumo da esquerda
+// 左侧的摘要
 // ---------------------------------------------------------------------------
 
 interface SummaryEntry {
@@ -206,26 +206,20 @@ function summaryButton(entries: SummaryEntry[], onclick: ((event: MouseEvent) =>
   const label = t('thirdparty.reactions.summary', { count: total });
 
   const body = [
-    <span className="CanelaReactions-list">
+    <span className="LcoyReactions-list">
       {entries.slice(0, SUMMARY_EMOJIS).map((entry) => (
-        <span className="CanelaReactions-emoji">{entry.icon}</span>
+        <span className="LcoyReactions-emoji">{entry.icon}</span>
       ))}
     </span>,
-    <span className="CanelaReactions-count">{abbreviateNumber(total)}</span>,
+    <span className="LcoyReactions-count">{abbreviateNumber(total)}</span>,
   ];
 
   return onclick ? (
-    <Button
-      className="Button Button--flat CanelaPostAction CanelaReactions"
-      aria-haspopup="dialog"
-      aria-label={label}
-      title={label}
-      onclick={onclick}
-    >
+    <Button className="Button Button--flat LcoyPostAction LcoyReactions" aria-haspopup="dialog" aria-label={label} title={label} onclick={onclick}>
       {body}
     </Button>
   ) : (
-    <span className="CanelaReactions CanelaReactions--static" aria-label={label} title={label}>
+    <span className="LcoyReactions LcoyReactions--static" aria-label={label} title={label}>
       {body}
     </span>
   );
@@ -247,20 +241,20 @@ function unifiedSummary(post: Post): Mithril.Children {
 
   if (!entries.length) return null;
 
-  // Os mais usados primeiro; no empate, o coração na frente.
+  // 最常用的在前；相同时，心形优先。
   entries.sort((a, b) => b.count - a.count || (a.key === HEART ? -1 : b.key === HEART ? 1 : 0));
 
   const canSee = !!(post.discussion() as any)?.canSeeReactions?.();
 
-  // Sem permissão para ver quem reagiu e sem curtidas (que são públicas), a
-  // lista viria vazia: o resumo fica só como contagem, sem abrir nada.
+  // 没有查看回应者的权限且没有点赞（点赞是公开的）时，
+  // 列表会是空的：摘要只作为计数，不打开任何内容。
   if (!canSee && likeCount === 0) return summaryButton(entries, null);
 
   return summaryButton(entries, (event) => openWhoReacted(event.currentTarget as HTMLElement, () => everyone(post, canSee)));
 }
 
 // ---------------------------------------------------------------------------
-// O botão do coração com o seletor
+// 带选择器的心形按钮
 // ---------------------------------------------------------------------------
 
 interface Choice {
@@ -307,7 +301,7 @@ function choices(post: Post): Choice[] {
     });
   });
 
-  // Sem a "heart" habilitada no fof, a curtida vem na frente, como no Discourse.
+  // 没有在 fof 中启用 "heart" 时，点赞排在最前，与 Discourse 相同。
   if (!heartAdded && canLike) {
     addHeart();
     list.unshift(list.pop()!);
@@ -321,7 +315,7 @@ interface ReactButtonAttrs {
   ui: PostUi;
 }
 
-class CanelaReactButton {
+class LcoyReactButton {
   open = false;
   element: HTMLElement | null = null;
   hoverTimer = 0;
@@ -336,7 +330,7 @@ class CanelaReactButton {
     if (event instanceof KeyboardEvent) {
       if (event.key === 'Escape') {
         this.setOpen(false);
-        (this.element.querySelector('.CanelaReact-button') as HTMLElement | null)?.focus();
+        (this.element.querySelector('.LcoyReact-button') as HTMLElement | null)?.focus();
       }
 
       return;
@@ -353,8 +347,8 @@ class CanelaReactButton {
     const mine = myReaction(post);
     const emojiMine = mine && mine.identifier?.() !== HEART ? mine : null;
     const liked = isLiked(post) || (!!mine && !emojiMine);
-    // Só o coração (sem permissão de reagir, p.ex. no próprio post): o botão
-    // já curte sozinho, então não há seletor — como no Discourse.
+    // 只有心形（例如在自己的帖子上没有回应权限）：按钮
+    // 本身就会点赞，因此没有选择器 —— 与 Discourse 相同。
     const all = choices(post);
     const list = all.length === 1 && all[0].key === HEART ? [] : all;
     const label = guest
@@ -365,7 +359,7 @@ class CanelaReactButton {
 
     return (
       <div
-        className={classList('CanelaReact', { 'is-open': this.open, 'has-reacted': liked || !!emojiMine, 'has-picker': list.length > 0 })}
+        className={classList('LcoyReact', { 'is-open': this.open, 'has-reacted': liked || !!emojiMine, 'has-picker': list.length > 0 })}
         onpointerenter={(event: PointerEvent) => this.hover(event, true)}
         onpointerleave={(event: PointerEvent) => this.hover(event, false)}
         onfocusout={(event: FocusEvent) => {
@@ -373,11 +367,11 @@ class CanelaReactButton {
         }}
       >
         <Button
-          className={classList('Button Button--flat CanelaPostAction CanelaReact-button', {
-            'Button--icon CanelaLike-toggle': !emojiMine,
-            'CanelaLike--liked': !emojiMine && liked,
-            'CanelaLike--bump': !emojiMine && liked && ui.likeBump && Date.now() - ui.likeBump < 1000,
-            'CanelaReact-button--emoji': !!emojiMine,
+          className={classList('Button Button--flat LcoyPostAction LcoyReact-button', {
+            'Button--icon LcoyLike-toggle': !emojiMine,
+            'LcoyLike--liked': !emojiMine && liked,
+            'LcoyLike--bump': !emojiMine && liked && ui.likeBump && Date.now() - ui.likeBump < 1000,
+            'LcoyReact-button--emoji': !!emojiMine,
           })}
           icon={emojiMine ? undefined : liked ? 'fas fa-heart' : 'far fa-heart'}
           aria-label={label}
@@ -397,20 +391,20 @@ class CanelaReactButton {
 
             event.preventDefault();
             this.setOpen(true);
-            (this.element?.querySelector('.CanelaReactPicker-item') as HTMLElement | null)?.focus();
+            (this.element?.querySelector('.LcoyReactPicker-item') as HTMLElement | null)?.focus();
           }}
           onclick={() => this.main()}
         >
           {emojiMine ? reactionEmoji(emojiMine) : null}
         </Button>
         {list.length ? (
-          <div className="CanelaReactPicker" role="menu" aria-label={t('thirdparty.reactions.picker')}>
-            <div className="CanelaReactPicker-container" style={`--cn-react-cols: ${Math.min(7, list.length)}`}>
+          <div className="LcoyReactPicker" role="menu" aria-label={t('thirdparty.reactions.picker')}>
+            <div className="LcoyReactPicker-container" style={`--lcoy-react-cols: ${Math.min(7, list.length)}`}>
               {list.map((choice) => (
                 <button
                   type="button"
                   role="menuitem"
-                  className={classList('CanelaReactPicker-item', { 'is-used': choice.used })}
+                  className={classList('LcoyReactPicker-item', { 'is-used': choice.used })}
                   title={choice.label}
                   aria-label={t('thirdparty.reactions.react_with', { reaction: choice.label })}
                   onclick={(event: MouseEvent) => {
@@ -443,10 +437,10 @@ class CanelaReactButton {
   }
 
   hasPicker(): boolean {
-    return !!this.element?.querySelector('.CanelaReactPicker');
+    return !!this.element?.querySelector('.LcoyReactPicker');
   }
 
-  /** O seletor abre (ou fecha) com o atraso do Discourse, só com o mouse. */
+  /** 选择器以 Discourse 的延迟打开（或关闭），仅限鼠标。 */
   hover(event: PointerEvent, inside: boolean) {
     if (event.pointerType !== 'mouse' || !this.hasPicker()) return;
 
@@ -454,7 +448,7 @@ class CanelaReactButton {
     this.hoverTimer = window.setTimeout(() => this.setOpen(inside), inside ? OPEN_DELAY : CLOSE_DELAY);
   }
 
-  /** No toque, segurar o coração abre o seletor (e o clique que vem depois não curte). */
+  /** 触摸时，按住心形会打开选择器（随后的点击不会点赞）。 */
   press(event: PointerEvent) {
     this.suppressClick = false;
 
@@ -469,8 +463,8 @@ class CanelaReactButton {
   }
 
   /**
-   * Abre/fecha mexendo na classe direto: o post fica guardado pelo
-   * SubtreeRetainer e não se redesenha por um estado só desta peça.
+   * 直接操作类名来打开/关闭：帖子由
+   * SubtreeRetainer 保留，不会因为这一部分的局部状态而重绘。
    */
   setOpen(open: boolean) {
     window.clearTimeout(this.hoverTimer);
@@ -484,7 +478,7 @@ class CanelaReactButton {
     if (!el) return;
 
     el.classList.toggle('is-open', open);
-    el.querySelector('.CanelaReact-button')?.setAttribute('aria-expanded', open ? 'true' : 'false');
+    el.querySelector('.LcoyReact-button')?.setAttribute('aria-expanded', open ? 'true' : 'false');
 
     if (open) {
       this.place();
@@ -500,13 +494,13 @@ class CanelaReactButton {
     document.removeEventListener('keydown', this.onDocument, true);
   }
 
-  /** Alinhado à esquerda do botão (como no Meta), sem sair da janela. */
+  /** 与按钮左对齐（与 Meta 相同），且不超出窗口。 */
   place() {
-    const picker = this.element?.querySelector('.CanelaReactPicker') as HTMLElement | null;
+    const picker = this.element?.querySelector('.LcoyReactPicker') as HTMLElement | null;
 
     if (!picker) return;
 
-    picker.style.setProperty('--cn-react-shift', '0px');
+    picker.style.setProperty('--lcoy-react-shift', '0px');
 
     const rect = picker.getBoundingClientRect();
     const overflowRight = rect.right - (document.documentElement.clientWidth - EDGE);
@@ -515,7 +509,7 @@ class CanelaReactButton {
     if (overflowRight > 0) shift = -overflowRight;
     if (rect.left + shift < EDGE) shift = EDGE - rect.left;
 
-    picker.style.setProperty('--cn-react-shift', `${Math.round(shift)}px`);
+    picker.style.setProperty('--lcoy-react-shift', `${Math.round(shift)}px`);
   }
 
   main() {
@@ -549,7 +543,7 @@ class CanelaReactButton {
       return;
     }
 
-    // Sem poder curtir (o próprio post, por exemplo), o clique abre o seletor.
+    // 无法点赞（例如自己的帖子）时，点击会打开选择器。
     if (this.hasPicker()) this.setOpen(true);
   }
 
@@ -597,11 +591,11 @@ class CanelaReactButton {
 
 function unifiedActions(component: any, post: Post, items: ItemList<Mithril.Children>) {
   items.remove('react');
-  items.remove('canelaLikeCount');
+  items.remove('lcoyLikeCount');
 
   const summary = unifiedSummary(post);
 
-  if (summary) items.add('canelaReactions', summary, 1050);
+  if (summary) items.add('lcoyReactions', summary, 1050);
 
   const guest = !app.session.user;
 
@@ -610,7 +604,7 @@ function unifiedActions(component: any, post: Post, items: ItemList<Mithril.Chil
     return;
   }
 
-  const button = m(CanelaReactButton, { post, ui: postUi(component) });
+  const button = m(LcoyReactButton, { post, ui: postUi(component) });
 
   if (items.has('like')) items.setContent('like', button);
   else items.add('like', button, 20);
@@ -625,7 +619,7 @@ function legacySummary(post: Post, items: ItemList<Mithril.Children>) {
   const entries = list.map(([id, count]) => ({ key: id, count, icon: reactionEmoji(app.store.getById('reactions', id)) }));
 
   items.add(
-    'canelaReactions',
+    'lcoyReactions',
     summaryButton(entries, canSee ? (event) => openWhoReacted(event.currentTarget as HTMLElement, () => reactors(post)) : null),
     1050
   );
@@ -638,8 +632,8 @@ export default function installReactions(): void {
     items.remove('reactionCounts');
   });
 
-  // No beforeMount, como a barra do tema (topic/index.ts): registrado depois
-  // dela, roda depois dela e enxerga o coração que ela já repaginou.
+  // 在 beforeMount 中，与主题的操作栏（topic/index.ts）相同：在它之后
+  // 注册，就在它之后运行，并能看到它已重新处理的点赞按钮。
   app.beforeMount(() => {
     extend(CommentPost.prototype, 'actionItems', function (this: any, items: ItemList<Mithril.Children>) {
       if (!thirdParty.reactions()) return;
@@ -653,21 +647,21 @@ export default function installReactions(): void {
     });
   });
 
-  // O "Ver reações" (coração) que o fof põe nos controles do post repetiria
-  // o resumo à esquerda da barra, que já abre quem reagiu: no Discourse o
-  // coração aparece uma vez só.
+  // fof 放在帖子控件中的 "查看回应"（心形）会与操作栏左侧的
+  // 摘要重复，而摘要本身就能打开回应者：在 Discourse 中
+  // 心形只出现一次。
   app.beforeMount(() => {
     extend(PostControls, 'moderationControls', function (items: ItemList<Mithril.Children>) {
       if (thirdParty.reactions() && topicSettings.postActions() && items.has('viewReactions')) items.remove('viewReactions');
     });
   });
 
-  // O botão do fof some na unificação, mesmo que ele entre depois do tema.
+  // 合并时 fof 的按钮消失，即使它在主题之后加入。
   override('ext:fof/reactions/forum/components/PostReactAction', 'view', function (this: any, original: () => Mithril.Children) {
     return unified() ? null : original();
   });
 
-  // Fora da unificação: o seletor do fof com as reações habilitadas, na ordem dele.
+  // 不合并时：使用 fof 的选择器，显示已启用的回应，按其顺序。
   override('ext:fof/reactions/forum/components/PostReactAction', 'unreactButton', function (this: any, original: () => Mithril.Children) {
     if (!thirdParty.reactions()) return original();
 
@@ -681,7 +675,7 @@ export default function installReactions(): void {
 
     return (
       <Button
-        className="Button Button--link Reactions--ShowReactions CanelaReactions-mine"
+        className="Button Button--link Reactions--ShowReactions LcoyReactions-mine"
         title={label}
         aria-label={label}
         loading={this.loading?.[null as any]}

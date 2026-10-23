@@ -1,18 +1,18 @@
 // ---------------------------------------------------------------------
-// Modais de formulário longo (como no brechó): mais largos no desktop, os
-// campos em duas colunas agrupadas por assunto, só o corpo rola e o botão de
-// salvar fica sempre à vista no rodapé. No celular e no tablet estreito volta
-// a uma coluna. Os modais curtos não entram aqui e continuam compactos.
-// Só leiaute: nenhum campo muda de lugar no formulário nem na gravação.
+// 长表单弹窗（旧货店风格）：桌面端更宽，字段按主题
+// 分为两栏，只有主体滚动，保存按钮
+// 始终显示在页脚。在手机和窄平板上回到
+// 单栏。短弹窗不在此列，仍保持紧凑。
+// 仅布局：表单和保存时任何字段的位置都不变。
 // ---------------------------------------------------------------------
 
-// Duas colunas a partir do tablet (modal de ~720px: ~340px por coluna).
-@cn-modal-two-cols: ~"(min-width: 768px)";
+// 从平板起两栏（约 720px 的弹窗：每栏约 340px）。
+@lcoy-modal-two-cols: ~"(min-width: 768px)";
 
-// Cabeçalho fixo em cima, corpo rolável e o modal nunca maior que a janela.
-// Restrito aos modais listados: um corpo com `overflow` cortaria menus
-// suspensos de outros modais.
-.cn-modal-long(@width: 860px) {
+// 头部固定在顶部，主体可滚动，弹窗永不大于窗口。
+// 仅限所列弹窗：带 `overflow` 的主体
+// 会裁剪其他弹窗的悬浮菜单。
+.lcoy-modal-long(@width: 860px) {
   .Modal-content {
     display: flex;
     flex-direction: column;
@@ -36,8 +36,8 @@
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
-    // O rodapé grudado ocupa o fim do corpo; sem isto sobraria uma faixa
-    // vazia embaixo dele.
+    // 吸底页脚占据主体末端；否则其下方会留下
+    // 一条空白带。
     padding-bottom: 0;
   }
 
@@ -51,8 +51,8 @@
     }
   }
 
-  // O botão de salvar vira o rodapé: grudado no fim da área que rola, da
-  // largura toda do modal, sobre o fundo do cartão.
+  // 保存按钮成为页脚：吸附在滚动区域的底部，
+  // 占弹窗整宽，位于卡片背景之上。
   .Form-body > .Form-controls,
   .Form-body > .PollForm-submit {
     position: sticky;
@@ -60,16 +60,16 @@
     z-index: 1;
     align-self: stretch;
     width: auto;
-    margin: 0 ~"calc(-1 * var(--cn-modal-pad-x))";
-    padding: 12px var(--cn-modal-pad-x);
-    border-top: 1px solid var(--cn-primary-low);
-    background: var(--cn-surface);
+    margin: 0 ~"calc(-1 * var(--lcoy-modal-pad-x))";
+    padding: 12px var(--lcoy-modal-pad-x);
+    border-top: 1px solid var(--lcoy-primary-low);
+    background: var(--lcoy-surface);
   }
 
-  // Duas colunas: cada campo ocupa uma; quem precisa da linha toda (textos
-  // longos, listas, o rodapé) pede `1 / -1`. `dense` deixa um campo curto
-  // subir para o buraco ao lado do anterior.
-  @media @cn-modal-two-cols {
+  // 两栏：每个字段占一栏；需要整行的（长文本、
+  // 列表、页脚）使用 `1 / -1`。`dense` 让短字段
+  // 上移到前一个旁边的空位。
+  @media @lcoy-modal-two-cols {
     .Form-body {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -90,35 +90,30 @@
   }
 }
 
-// Editar usuário: só vira modal largo quando tem campos para isso (o próprio
-// usuário, ou quem só mexe nos grupos, vê três ou quatro itens e o modal
-// continua pequeno).
+// 编辑用户：仅当有相应字段时才变为宽弹窗（用户
+// 本人，或只管理分组的人，看到三四个条目，弹窗
+// 保持小尺寸）。
 .EditUserModal:has(.Form-body > :nth-child(5)) {
-  .cn-modal-long();
+  .lcoy-modal-long();
 
-  // Conta primeiro, depois o perfil, e por fim as limpezas, os grupos e o
-  // rodapé — a mesma ordem numa coluna (celular) e em duas (conta à
-  // esquerda, perfil à direita, o resto na linha toda).
+  // 先是账户，然后个人资料，最后是分组和页脚——
+  // 单栏（手机）和双栏下的顺序相同（账户在左，个人资料在
+  // 右，其余占整行）。
   .Form-body {
-    > [data-item=nickname],
-    > [data-item=canelaTitle] {
+    > [data-item=nickname] {
       order: 1;
     }
 
-    > [data-item=canelaClear] {
+    > [data-item=groups] {
       order: 2;
     }
 
-    > [data-item=groups] {
-      order: 3;
-    }
-
     > [data-item=submit] {
-      order: 4;
+      order: 3;
     }
   }
 
-  @media @cn-modal-two-cols {
+  @media @lcoy-modal-two-cols {
     .Form-body {
       > [data-item=username],
       > [data-item=email],
@@ -126,12 +121,10 @@
         grid-column: 1;
       }
 
-      > [data-item=nickname],
-      > [data-item=canelaTitle] {
+      > [data-item=nickname] {
         grid-column: 2;
       }
 
-      > [data-item=canelaClear],
       > [data-item=groups],
       > [data-item=submit] {
         grid-column: ~"1 / -1";
@@ -140,24 +133,12 @@
   }
 }
 
-// A caixa de limpeza (status) numa linha só.
-.EditUserModal [data-item=canelaClear] {
-  display: flex;
-  flex-flow: row wrap;
-  gap: 8px 24px;
-
-  > .checkbox {
-    width: auto;
-    margin: 0;
-  }
-}
-
-// Grupos em grade de fichas: a caixa, o selo e o nome numa ficha clicável,
-// várias por linha, a marcada destacada na cor de destaque.
+// 卡片网格形式的分组：框、徽章和名称组成可点击的卡片，
+// 每行多个，选中项以高亮色突出。
 .EditUserModal-groups > div {
   display: grid;
-  // O `.Form-group` do core é uma coluna flexível alinhada ao início: sem
-  // isto a grade encolhe para a largura de uma ficha.
+  // 核心的 `.Form-group` 是顶部对齐的 flex 列：没有
+  // 这一点，网格会收缩到一个卡片的宽度。
   align-self: stretch;
   width: 100%;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -170,8 +151,8 @@
     min-width: 0;
     margin: 0;
     padding: 8px 10px;
-    border: 1px solid var(--cn-primary-low);
-    border-radius: var(--cn-radius);
+    border: 1px solid var(--lcoy-primary-low);
+    border-radius: var(--lcoy-radius);
     cursor: pointer;
     overflow-wrap: anywhere;
 
@@ -181,12 +162,12 @@
     }
 
     &:hover {
-      background: var(--cn-primary-very-low);
+      background: var(--lcoy-primary-very-low);
     }
 
     &:has(input:checked) {
-      border-color: var(--cn-accent);
-      background: var(--cn-accent-low);
+      border-color: var(--lcoy-accent);
+      background: var(--lcoy-accent-low);
     }
 
     &:has(input:disabled) {
@@ -196,12 +177,12 @@
   }
 }
 
-// Enquete (criar/editar, fof/polls): pergunta | subtítulo, imagem | data
-// final; respostas e opções de votação na linha toda, em duas colunas.
+// 投票（创建/编辑，fof/polls）：问题 | 副标题、图片 | 截止
+// 日期；回答和投票选项占整行，分两栏。
 .PollDiscussionModal {
-  .cn-modal-long();
+  .lcoy-modal-long();
 
-  @media @cn-modal-two-cols {
+  @media @lcoy-modal-two-cols {
     .Form-body {
       > .PollForm-answers,
       > .FieldSet:has(.PollForm-setting) {
@@ -224,12 +205,3 @@
   }
 }
 
-// Convites: o formulário é curto (fica na largura média), mas a lista cresce
-// com o uso; o cabeçalho fica e só o corpo rola.
-.CanelaInviteModal {
-  .cn-modal-long(600px);
-}
-
-.CanelaInviteModal .Modal-body {
-  padding-bottom: var(--cn-modal-pad-y);
-}

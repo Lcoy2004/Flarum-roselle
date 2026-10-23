@@ -14,24 +14,24 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
 
 /*
- * Histórico de edições: uma linha por edição, com o texto que existia ANTES
- * dela (o atual mora na própria postagem).
+ * 编辑历史：每次编辑一行，保存编辑之前存在的内容
+ * （当前内容保存在帖子自身中）。
  *
- * - `post_id` apaga em cascata: postagem excluída leva o histórico junto, e
- *   nada fica órfão guardando texto de algo que não existe mais.
- * - `user_id` fica nulo quando o editor é excluído, para a versão continuar
- *   no histórico (só sem o nome de quem editou).
- * - `content` é `mediumText`, a mesma coluna das postagens do core.
+ * - `post_id` 级联删除：帖子被删除时历史一并删除，
+ *   不会留下保存着已不存在内容的孤立记录。
+ * - 编辑者被删除时 `user_id` 置空，让该版本仍留在
+ *   历史中（只是没有编辑者的名字）。
+ * - `content` 是 `mediumText`，与核心帖子的列相同。
  */
 return [
     'up' => static function (Builder $schema): void {
-        // Idempotente: quem vem do Canela já tem a tabela, mas a migração
-        // antiga não está registrada com este nome.
-        if ($schema->hasTable('canela_post_revisions')) {
+        // 幂等：来自 Lcoy 的用户已经有该表，但旧的迁移
+        // 没有以这个名称注册。
+        if ($schema->hasTable('lcoy_post_revisions')) {
             return;
         }
 
-        $schema->create('canela_post_revisions', static function (Blueprint $table): void {
+        $schema->create('lcoy_post_revisions', static function (Blueprint $table): void {
             $table->increments('id');
             $table->unsignedInteger('post_id');
             $table->unsignedInteger('user_id')->nullable();
@@ -46,6 +46,6 @@ return [
     },
 
     'down' => static function (Builder $schema): void {
-        $schema->dropIfExists('canela_post_revisions');
+        $schema->dropIfExists('lcoy_post_revisions');
     },
 ];

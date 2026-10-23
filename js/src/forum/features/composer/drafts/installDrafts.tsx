@@ -1,18 +1,18 @@
 /*
- * Rascunhos à moda do Discourse, guardados pelo fof/drafts.
+ * Discourse 风格的草稿，由 fof/drafts 保存。
  *
- * - O composer de tópico novo e o de resposta salvam sozinhos dois segundos
- *   depois que a pessoa para de escrever (o autosave do fof é opcional e vem
- *   desligado; quem o ligou nas preferências fica com o dele).
- * - Responder num tópico que tem rascunho retoma o rascunho.
- * - Fechar com texto pergunta descartar / guardar / continuar; trocar de
- *   composer guarda sem perguntar.
- * - Sem botão de salvar (o disquete do fof sai dos controles): o rodapé do
- *   editor diz discretamente "Salvando…" / "Rascunho salvo", e avisa se falhar.
- * - A lista fica no "⌄" do botão "Iniciar Discussão", no menu do usuário e na aba
- *   "Rascunhos" do perfil.
+ * - 新主题 composer 和回复 composer 在用户停止输入两秒后自动保存
+ *   （fof 的自动保存是可选项且默认关闭；在偏好设置中启用了它的
+ *   用户沿用其设置）。
+ * - 在有草稿的主题中回复会恢复该草稿。
+ * - 含文本时关闭会询问丢弃/保存/继续；切换 composer 则直接保存，
+ *   不做询问。
+ * - 没有保存按钮（fof 的软盘按钮会从控制项中移除）：编辑器页脚
+ *   以低调方式显示“保存中……”/“草稿已保存”，失败时给出提示。
+ * - 列表位于“发起主题”按钮的“⌄”、用户菜单以及个人资料页的
+ *   “草稿”标签中。
  *
- * Tudo depende de `draftsOn()`: sem o fof-drafts habilitado, nada aparece.
+ * 一切都取决于 `draftsOn()`：未启用 fof-drafts 时均不显示。
  */
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
@@ -47,15 +47,14 @@ import { t } from '../../../utils/settings';
 const SAVE_DELAY = 2000;
 const TICK = 500;
 
-/** Quem ligou o autosave do fof nas preferências fica com o dele (sem salvar em dobro). */
+/** 在偏好设置中启用了 fof 自动保存的用户沿用其设置（避免重复保存）。 */
 function fofAutosave(): boolean {
   return !!(app.session.user as any)?.preferences?.()?.draftAutosaveEnable;
 }
 
 /**
- * Salva sozinho: a cada meio segundo compara o que está no composer; dois
- * segundos sem mudança e com algo novo, grava. Enviando (o fof apaga o
- * rascunho ao publicar), não grava.
+ * 自动保存：每半秒比较 composer 中的内容；两秒无变化且存在新内容时
+ * 写入。正在发送时不写入（fof 在发布时会删除草稿）。
  */
 function startAutosave(body: any): () => void {
   let lastSeen = '';
@@ -89,9 +88,8 @@ function startAutosave(body: any): () => void {
 }
 
 /**
- * Resposta aberta sem rascunho escolhido: se a pessoa tem um rascunho desse
- * tópico, o composer o retoma (o Discourse faz o mesmo). Uma citação inserida
- * ao abrir não é sobrescrita.
+ * 打开的回复尚未选择草稿：若用户在该主题中有草稿，composer 会恢复它
+ * （Discourse 也是如此）。打开时插入的引用不会被覆盖。
  */
 function restoreReplyDraft(body: any): void {
   const discussion = body.attrs?.discussion;
@@ -138,29 +136,29 @@ function confirmClose(composer: ComposerState): void {
 }
 
 export default function installDrafts() {
-  // A rota existe sempre (o initializer roda antes de o fórum carregar as
-  // opções); sem rascunhos a página manda para as postagens.
+  // 路由始终存在（initializer 在论坛加载配置之前运行）；没有草稿时，
+  // 该页面会跳转到帖子页。
   app.routes['user.drafts'] = {
     path: '/u/:username/drafts',
     component: DraftsUserPage,
     resolverClass: UserPageResolver,
   } as any;
 
-  // Pelo nome do módulo: o ComposerBody vem num pedaço carregado sob demanda.
+  // 按模块名扩展：ComposerBody 位于按需加载的 chunk 中。
   extend('flarum/forum/components/ComposerBody' as any, 'oninit', function (this: any) {
     if (!draftsOn() || !draftableBody()) return;
 
-    (app.composer as any).canelaDraftError = false;
-    this.canelaStopAutosave = startAutosave(this);
+    (app.composer as any).lcoyDraftError = false;
+    this.lcoyStopAutosave = startAutosave(this);
     restoreReplyDraft(this);
   });
 
   extend('flarum/forum/components/ComposerBody' as any, 'onremove', function (this: any) {
-    this.canelaStopAutosave?.();
+    this.lcoyStopAutosave?.();
   });
 
-  // Trocar de composer (abrir outra resposta, um tópico novo) não pergunta
-  // nada: o texto fica guardado como rascunho.
+  // 切换 composer（打开另一个回复、新主题）不做任何询问：
+  // 文本会作为草稿保存。
   override(ComposerState.prototype, 'preventExit', function (this: ComposerState, original: () => boolean | void) {
     if (this.isVisible() && draftsOn() && hasContent()) {
       saveCurrentDraft();
@@ -178,14 +176,14 @@ export default function installDrafts() {
       return;
     }
 
-    // Apagou todo o texto: o rascunho deixa de existir, como no Discourse.
+    // 文本已全部删除：草稿不再存在，与 Discourse 一致。
     discardCurrentDraft();
     this.hide();
   });
 
-  // O fof põe um disquete ("salvar rascunho") nos controles do composer. O
-  // Discourse não tem botão: salva sozinho. O initializer do fof roda depois
-  // do tema, então a remoção é registrada no `mount`, depois do dele.
+  // fof 会在 composer 控制项中放置一个软盘（“保存草稿”）。Discourse
+  // 没有该按钮：而是自动保存。fof 的 initializer 在主题之后运行，
+  // 因此在 `mount` 中注册移除操作，排在其后。
   override(app as any, 'mount', function (this: any, original: (...args: any[]) => unknown, ...args: any[]) {
     extend('flarum/forum/components/Composer' as any, 'controlItems', function (items: ItemList<Mithril.Children>) {
       if (items.has('save-draft')) items.remove('save-draft');
@@ -194,8 +192,8 @@ export default function installDrafts() {
     return original(...args);
   });
 
-  // Rodapé do editor: o `#draft-status` do Discourse, discreto — "Salvando…",
-  // "Rascunho salvo" por alguns segundos, ou o erro.
+  // 编辑器页脚：Discourse 的 `#draft-status`，低调显示——“保存中……”，
+  // “草稿已保存”持续几秒，或错误信息。
   extend(TextEditor.prototype, 'controlItems', function (this: TextEditor, items: ItemList<Mithril.Children>) {
     const status = draftStatus();
 
@@ -205,10 +203,10 @@ export default function installDrafts() {
     const icon = status === 'error' ? 'fas fa-triangle-exclamation' : status === 'saved' ? 'fas fa-check' : null;
 
     items.add(
-      'canelaDraft',
-      <span className={`CanelaDraftStatus CanelaDraftStatus--${status}`} role={status === 'error' ? 'alert' : 'status'} title={label}>
+      'lcoyDraft',
+      <span className={`LcoyDraftStatus LcoyDraftStatus--${status}`} role={status === 'error' ? 'alert' : 'status'} title={label}>
         {icon && <Icon name={icon} />}
-        <span className="CanelaDraftStatus-label">{label}</span>
+        <span className="LcoyDraftStatus-label">{label}</span>
       </span>,
       -100
     );
@@ -222,12 +220,12 @@ export default function installDrafts() {
     const count = draftCount();
 
     items.add(
-      'canelaDrafts',
+      'lcoyDrafts',
       <LinkButton icon="fas fa-pen-ruler" href={app.route('user.drafts', { username: user.slug() })}>
         {t('composer.drafts.nav')}
-        {count > 0 && <span className="CanelaDrafts-count">{count}</span>}
+        {count > 0 && <span className="LcoyDrafts-count">{count}</span>}
       </LinkButton>,
-      // Logo depois de "Perfil" (100) e antes de "Configurações" (50).
+      // 紧接在“个人资料”（100）之后、“设置”（50）之前。
       90
     );
   });
@@ -238,13 +236,13 @@ export default function installDrafts() {
     const count = draftCount();
 
     items.add(
-      'canelaDrafts',
+      'lcoyDrafts',
       <LinkButton href={app.route('user.drafts', { username: this.user.slug() })} icon="fas fa-pen-ruler">
         {t('composer.drafts.nav')}
-        {/* "Rascunhos (2)", como na subaba do Discourse. */}
+        {/* “草稿 (2)”，与 Discourse 的子标签一致。 */}
         {count > 0 && ` (${count})`}
       </LinkButton>,
-      // Depois de Postagens (100) e Tópicos (90), antes das abas de outras extensões.
+      // 位于帖子（100）和主题（90）之后，其他扩展的标签之前。
       70
     );
   });

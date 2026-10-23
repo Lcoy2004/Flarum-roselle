@@ -1,7 +1,6 @@
 /*
- * Os resultados da página de busca, como no Discourse: avatar à esquerda,
- * título grande, categoria e etiquetas, e "data - trecho" com as palavras
- * pesquisadas em negrito.
+ * 搜索页面的结果，与 Discourse 一致：左侧头像、大标题、分类和标签，
+ * 以及“日期 - 摘录”，其中搜索词加粗显示。
  */
 import app from 'flarum/forum/app';
 import Avatar from 'flarum/common/components/Avatar';
@@ -14,15 +13,15 @@ import type User from 'flarum/common/models/User';
 import type Mithril from 'mithril';
 
 import { shortDate } from '../../../utils/dates';
-import { categoryBadge, discussionBadges, labelBadge, type CanelaTag } from '../../../utils/tags';
+import { categoryBadge, discussionBadges, labelBadge, type LcoyTag } from '../../../utils/tags';
 import { isCategory } from './query';
 
-/** Tamanho do trecho, em caracteres — o do Discourse (`blurb`). */
+/** 摘录长度（字符数）——与 Discourse 的 `blurb` 一致。 */
 const BLURB_LENGTH = 220;
 
 function avatarLink(user: User | null | false | undefined): Mithril.Children {
   return (
-    <div className="CanelaSearchResult-avatar">
+    <div className="LcoySearchResult-avatar">
       {user ? (
         <Link href={app.route.user(user)} aria-label={user.displayName()} tabindex="-1">
           <Avatar user={user} title="" />
@@ -41,8 +40,8 @@ function blurb(post: Post | null | false | undefined, pattern: RegExp | undefine
   const date = post.createdAt();
 
   return (
-    <div className="CanelaSearchResult-blurb">
-      {date && <span className="CanelaSearchResult-date">{shortDate(date)}</span>}
+    <div className="LcoySearchResult-blurb">
+      {date && <span className="LcoySearchResult-date">{shortDate(date)}</span>}
       {date && text ? ' - ' : null}
       {text ? highlight(text, pattern, BLURB_LENGTH) : null}
     </div>
@@ -50,24 +49,23 @@ function blurb(post: Post | null | false | undefined, pattern: RegExp | undefine
 }
 
 /**
- * Resultados ainda vindo (a primeira página de uma busca): linhas com as
- * classes das reais (avatar, título, badges e o trecho de duas linhas), com
- * barras de texto no lugar do texto, para os resultados chegarem onde o
- * esqueleto estava.
+ * 结果尚未到达（搜索的第一页）：各行沿用真实结果的类名（头像、标题、
+ * 徽章以及两行摘录），用骨架条代替文本，使结果到达时正落在骨架
+ * 所在的位置。
  */
 export function resultSkeleton(rows = 5): Mithril.Children[] {
-  const line = (width: string) => <span className="CanelaSkeleton CanelaSkeleton--line" style={{ width }} />;
+  const line = (width: string) => <span className="LcoySkeleton LcoySkeleton--line" style={{ width }} />;
   const titles = ['58%', '42%', '66%', '36%', '50%'];
 
   return Array.from({ length: rows }, (_, index) => (
-    <li className="CanelaSearchResult CanelaSearchResult--skeleton" key={`skeleton-${index}`} aria-hidden="true">
-      <div className="CanelaSearchResult-avatar">
-        <span className="Avatar CanelaSkeleton" />
+    <li className="LcoySearchResult LcoySearchResult--skeleton" key={`skeleton-${index}`} aria-hidden="true">
+      <div className="LcoySearchResult-avatar">
+        <span className="Avatar LcoySkeleton" />
       </div>
-      <div className="CanelaSearchResult-main">
-        <div className="CanelaSearchResult-titleLine">{line(titles[index % titles.length])}</div>
-        <div className="CanelaSearchResult-meta">{line(index % 2 ? '7em' : '5em')}</div>
-        <div className="CanelaSearchResult-blurb">
+      <div className="LcoySearchResult-main">
+        <div className="LcoySearchResult-titleLine">{line(titles[index % titles.length])}</div>
+        <div className="LcoySearchResult-meta">{line(index % 2 ? '7em' : '5em')}</div>
+        <div className="LcoySearchResult-blurb">
           {line('100%')}
           {line('64%')}
         </div>
@@ -77,24 +75,24 @@ export function resultSkeleton(rows = 5): Mithril.Children[] {
 }
 
 export function discussionResult(discussion: Discussion, pattern: RegExp | undefined): Mithril.Children {
-  // Com texto, o trecho é o da postagem que mais casou; sem texto (só
-  // filtros), o da abertura do tópico.
+  // 有文本时，摘录取自匹配度最高的帖子；无文本（仅筛选）时，
+  // 取主题的首帖。
   const post = discussion.mostRelevantPost() || discussion.firstPost();
   const user = (post && post.user()) || discussion.user();
   const statusBadges = discussion.badges().toArray();
   const near = post && post.number() > 1 ? post.number() : undefined;
 
   return (
-    <li className="CanelaSearchResult" key={`d${discussion.id()}`} data-id={discussion.id()}>
+    <li className="LcoySearchResult" key={`d${discussion.id()}`} data-id={discussion.id()}>
       {avatarLink(user)}
-      <div className="CanelaSearchResult-main">
-        <div className="CanelaSearchResult-titleLine">
-          {statusBadges.length > 0 && <span className="CanelaSearchResult-status">{statusBadges}</span>}
-          <Link className="CanelaSearchResult-title" href={app.route.discussion(discussion, near)}>
+      <div className="LcoySearchResult-main">
+        <div className="LcoySearchResult-titleLine">
+          {statusBadges.length > 0 && <span className="LcoySearchResult-status">{statusBadges}</span>}
+          <Link className="LcoySearchResult-title" href={app.route.discussion(discussion, near)}>
             {highlight(discussion.title(), pattern)}
           </Link>
         </div>
-        <div className="CanelaSearchResult-meta">{discussionBadges(discussion)}</div>
+        <div className="LcoySearchResult-meta">{discussionBadges(discussion)}</div>
         {blurb(post, pattern)}
       </div>
     </li>
@@ -107,18 +105,18 @@ export function postResult(post: Post, pattern: RegExp | undefined): Mithril.Chi
   if (!discussion) return null;
 
   return (
-    <li className="CanelaSearchResult CanelaSearchResult--post" key={`p${post.id()}`} data-id={post.id()}>
+    <li className="LcoySearchResult LcoySearchResult--post" key={`p${post.id()}`} data-id={post.id()}>
       {avatarLink(post.user())}
-      <div className="CanelaSearchResult-main">
-        <div className="CanelaSearchResult-titleLine">
-          <Link className="CanelaSearchResult-title" href={app.route.post(post)}>
+      <div className="LcoySearchResult-main">
+        <div className="LcoySearchResult-titleLine">
+          <Link className="LcoySearchResult-title" href={app.route.post(post)}>
             {highlight(discussion.title(), pattern)}
           </Link>
-          {post.number() > 1 && <span className="CanelaSearchResult-number">#{post.number()}</span>}
+          {post.number() > 1 && <span className="LcoySearchResult-number">#{post.number()}</span>}
         </div>
-        <div className="CanelaSearchResult-meta">
+        <div className="LcoySearchResult-meta">
           {discussionBadges(discussion)}
-          <span className="CanelaSearchResult-author">{username(post.user())}</span>
+          <span className="LcoySearchResult-author">{username(post.user())}</span>
         </div>
         {blurb(post, pattern)}
       </div>
@@ -126,16 +124,16 @@ export function postResult(post: Post, pattern: RegExp | undefined): Mithril.Chi
   );
 }
 
-export function tagResult(tag: CanelaTag, pattern: RegExp | undefined): Mithril.Children {
+export function tagResult(tag: LcoyTag, pattern: RegExp | undefined): Mithril.Children {
   const description = tag.description();
 
   return (
-    <li className="CanelaSearchResult CanelaSearchResult--tag" key={`t${tag.id()}`}>
-      <div className="CanelaSearchResult-main">
-        <div className="CanelaSearchResult-titleLine">{isCategory(tag) ? categoryBadge(tag) : labelBadge(tag)}</div>
-        {description && <div className="CanelaSearchResult-blurb">{highlight(description, pattern, BLURB_LENGTH)}</div>}
+    <li className="LcoySearchResult LcoySearchResult--tag" key={`t${tag.id()}`}>
+      <div className="LcoySearchResult-main">
+        <div className="LcoySearchResult-titleLine">{isCategory(tag) ? categoryBadge(tag) : labelBadge(tag)}</div>
+        {description && <div className="LcoySearchResult-blurb">{highlight(description, pattern, BLURB_LENGTH)}</div>}
       </div>
-      <div className="CanelaSearchResult-count">{tag.discussionCount()}</div>
+      <div className="LcoySearchResult-count">{tag.discussionCount()}</div>
     </li>
   );
 }
@@ -145,14 +143,14 @@ export function userResult(user: User, pattern: RegExp | undefined): Mithril.Chi
   const handle = user.username();
 
   return (
-    <li className="CanelaSearchResult CanelaSearchResult--user" key={`u${user.id()}`}>
+    <li className="LcoySearchResult LcoySearchResult--user" key={`u${user.id()}`}>
       {avatarLink(user)}
-      <div className="CanelaSearchResult-main">
-        <div className="CanelaSearchResult-titleLine">
-          <Link className="CanelaSearchResult-title" href={app.route.user(user)}>
+      <div className="LcoySearchResult-main">
+        <div className="LcoySearchResult-titleLine">
+          <Link className="LcoySearchResult-title" href={app.route.user(user)}>
             {highlight(name, pattern)}
           </Link>
-          {handle !== name && <span className="CanelaSearchResult-handle">@{highlight(handle, pattern)}</span>}
+          {handle !== name && <span className="LcoySearchResult-handle">@{highlight(handle, pattern)}</span>}
         </div>
       </div>
     </li>

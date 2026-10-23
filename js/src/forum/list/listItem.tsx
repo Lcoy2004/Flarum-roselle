@@ -1,10 +1,10 @@
 /*
- * A linha da lista de tópicos do Discourse: [Tópico | Postadores | Respostas |
- * Visualizações | Atividade] no desktop; avatar, título e contagem no celular.
+ * Discourse 主题列表的一行：[主题 | 发帖人 | 回复 |
+ * 浏览量 | 活动] 于桌面端；移动端显示头像、标题和计数。
  *
- * Mexe só nas ItemLists do DiscussionListItem: o que outras extensões põem em
- * infoItems (o excerto do sticky, a digitação do realtime) e em statsItems
- * continua aparecendo, só que no lugar do Discourse.
+ * 只改动 DiscussionListItem 的 ItemList：其他扩展放入
+ * infoItems（置顶帖摘录、实时输入状态）和 statsItems 的内容
+ * 仍会显示，只是放在 Discourse 对应的位置。
  */
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
@@ -31,9 +31,9 @@ import { activityCold, discussionViews, repliesHeat } from './metrics';
 import { viewsHeat, viewsNumber } from '../utils/views';
 
 /**
- * O atributo `canelaParticipants` (extend/topic.php): só o que o avatar da
- * linha desenha. Vem como objeto simples, e não como relação de `users`, para
- * a lista não pagar a serialização (e as consultas) de cada usuário.
+ * `lcoyParticipants` 属性（extend/topic.php）：只包含该行头像所需的
+ * 数据。它以普通对象形式传入，而不是 `users` 关系，以免
+ * 列表为每个用户付出序列化（和查询）开销。
  */
 interface Participant {
   id: string;
@@ -44,7 +44,7 @@ interface Participant {
   avatarSrcset: string | null;
 }
 
-/** Um usuário já carregado pela linha, no mesmo formato do atributo. */
+/** 已由该行加载的用户，格式与属性相同。 */
 function fromUser(user: User): Participant {
   return {
     id: String(user.id()),
@@ -57,46 +57,46 @@ function fromUser(user: User): Participant {
 }
 
 /**
- * Chaves do infoItems que a linha nova desenha em outro lugar (ou dispensa).
+ * 新行会在别处绘制（或省略）的 infoItems 键。
  *
- * `discussion-views` é o "👁 56" do fof/discussion-views: o número dele é o
- * mesmo que a coluna de visualizações do tema mostra (o tema lê o atributo
- * `views` da extensão), então o olho sairia repetindo a informação.
+ * `discussion-views` 是 fof/discussion-views 的 "👁 56"：它的数字与
+ * 主题的浏览量列相同（主题读取该扩展的 `views`
+ * 属性），所以这只眼睛会重复同样的信息。
  *
- * O fof/synopsis põe o mesmo excerto em duas chaves (`excerpt` para
- * desktop/tablet e `excerptM` para o celular, cada uma escondida no outro
- * tamanho de tela). Como o tema desenha o excerto com a cara do Discourse em
- * qualquer tela (`.CanelaTopic-excerpt`), as duas saem da lista — senão no
- * celular o `excerptM` ficava visível ao lado do excerto do tema, duplicado.
+ * fof/synopsis 把同一段摘录放在两个键中（`excerpt` 用于
+ * 桌面/平板，`excerptM` 用于移动端，各自在另一种
+ * 屏幕尺寸下隐藏）。由于主题在任何屏幕上都以 Discourse 的外观
+ * 绘制摘录（`.LcoyTopic-excerpt`），两者都从列表中移除 ——
+ * 否则在移动端 `excerptM` 会与主题的摘录并排显示，造成重复。
  */
 const MOVED_INFO = ['tags', 'terminalPost', 'excerpt', 'excerptM', 'discussion-views'];
 
 /**
- * O MinimalDiscussionListItem (resultados do modal de busca) herda desta
- * classe; lá a linha compacta do core continua valendo. A classe CSS é o único
- * jeito estável de reconhecê-lo — o módulo pode nem estar carregado. (Por isso
- * o tema não estende elementAttrs: a checagem chama elementAttrs e entraria em
- * laço; o CSS da linha mira `.CanelaList .DiscussionListItem`.)
+ * MinimalDiscussionListItem（搜索弹窗的结果）继承自这个
+ * 类；在那里，核心的紧凑行仍然有效。CSS 类是唯一
+ * 稳定的识别方式 —— 该模块甚至可能尚未加载。（因此
+ * 主题不扩展 elementAttrs：该检查会调用 elementAttrs 并陷入
+ * 循环；行的 CSS 针对 `.LcoyList .DiscussionListItem`。）
  */
 function isMinimal(item: DiscussionListItem): boolean {
   return String(item.elementAttrs().className || '').includes('MinimalDiscussionListItem');
 }
 
 function heatClass(heat: string | null, kind: 'heat' | 'cold' = 'heat'): string | undefined {
-  return heat && forumBool('canelaListHeat', true) ? `CanelaCell--${kind}-${heat}` : undefined;
+  return heat && forumBool('lcoyListHeat', true) ? `LcoyCell--${kind}-${heat}` : undefined;
 }
 
 /**
- * O avatar da coluna, desenhado do objeto enxuto: `<img>` quando há imagem e
- * a inicial sobre a cor derivada do nome quando não há — o mesmo fallback do
- * `Avatar` do core, sem precisar de um modelo `User`.
+ * 该列的头像，由精简对象绘制：有图片时用 `<img>`，
+ * 没有时用名称派生颜色上的首字母 —— 与核心的
+ * `Avatar` 相同的回退方式，无需 `User` 模型。
  */
 function posterAvatar(poster: Participant, role: string, className = ''): Mithril.Children {
   const label = `${poster.displayName}: ${role}`;
 
   return (
     <Tooltip text={label}>
-      <Link href={app.route('user', { username: poster.slug })} className={classList('CanelaPosters-avatar', className)} aria-label={label}>
+      <Link href={app.route('user', { username: poster.slug })} className={classList('LcoyPosters-avatar', className)} aria-label={label}>
         {poster.avatarUrl ? (
           <img className="Avatar" src={poster.avatarUrl} srcSet={poster.avatarSrcset || undefined} alt="" loading="lazy" />
         ) : (
@@ -110,9 +110,9 @@ function posterAvatar(poster: Participant, role: string, className = ''): Mithri
 }
 
 export default function installListItem(): void {
-  // Ao voltar de um tópico, o Discourse pinta a linha dele com --tertiary-low
-  // e apaga em 2,5s (`.topic-list-item.highlighted`). O core já guarda qual
-  // foi (lastDiscussion) e rola até ela; o tema só acende a linha.
+  // 从主题返回时，Discourse 会用 --tertiary-low 点亮该行
+  // 并在 2.5 秒后消失（`.topic-list-item.highlighted`）。核心已经记录
+  // 是哪一个（lastDiscussion）并滚动到它；主题只负责点亮该行。
   extend(IndexPage.prototype, 'oncreate', function (this: IndexPage) {
     const last = this.lastDiscussion;
 
@@ -122,41 +122,41 @@ export default function installListItem(): void {
 
     if (!row) return;
 
-    row.classList.add('CanelaListItem--highlighted');
-    row.addEventListener('animationend', () => row.classList.remove('CanelaListItem--highlighted'), { once: true });
+    row.classList.add('LcoyListItem--highlighted');
+    row.addEventListener('animationend', () => row.classList.remove('LcoyListItem--highlighted'), { once: true });
   });
 
   extend(DiscussionListItem.prototype, 'contentItems', function (this: DiscussionListItem, items: ItemList<Mithril.Children>) {
     if (isMinimal(this)) return;
 
-    // O avatar grande da esquerda e a coluna de estatísticas do core saem:
-    // o Discourse mostra os postadores e os números em colunas próprias.
+    // 左侧的大头像和核心的统计列移除：
+    // Discourse 在各自的列中显示发帖人和数字。
     items.remove('author');
     items.remove('stats');
 
-    // Só no celular (o CSS esconde no desktop), como o avatar de 48px do Discourse.
-    items.add('canelaAvatar', avatarView(this), 100);
+    // 仅在移动端显示（CSS 在桌面端隐藏），与 Discourse 的 48px 头像相同。
+    items.add('lcoyAvatar', avatarView(this), 100);
 
-    if (forumBool('canelaListPosters', true)) {
-      items.add('canelaPosters', postersView(this), 60);
+    if (forumBool('lcoyListPosters', true)) {
+      items.add('lcoyPosters', postersView(this), 60);
     }
 
-    items.add('canelaReplies', repliesView(this), 50);
+    items.add('lcoyReplies', repliesView(this), 50);
 
-    if (forumBool('canelaListViews', true)) {
-      // Sempre desenhada: quem decide se a coluna aparece é a lista inteira
-      // (classe no DiscussionList), não cada linha. O número vem do tema ou do
-      // fof/discussion-views — ver `discussionViews` em ./metrics.
-      items.add('canelaViews', viewsView(this), 40);
+    if (forumBool('lcoyListViews', true)) {
+      // 始终绘制：是否显示该列由整个列表决定
+      // （DiscussionList 上的类），而不是每一行。数字来自主题或
+      // fof/discussion-views —— 见 ./metrics 中的 `discussionViews`。
+      items.add('lcoyViews', viewsView(this), 40);
     }
 
-    items.add('canelaActivity', activityView(this), 30);
+    items.add('lcoyActivity', activityView(this), 30);
   });
 
-  // O tryhackx/flarum-thumb-sliders injeta o slider em qualquer contentItems,
-  // inclusive no MinimalDiscussionListItem do modal de busca, onde a linha é
-  // compacta e ele não cabe. Sai depois de todas as extensões, por isso um
-  // override (e não um extend).
+  // tryhackx/flarum-thumb-sliders 会把滑块注入任何 contentItems，
+  // 包括搜索弹窗中的 MinimalDiscussionListItem，那里行是
+  // 紧凑的，放不下它。它在所有扩展之后运行，所以使用
+  // override（而不是 extend）。
   override(DiscussionListItem.prototype, 'contentItems', function (this: DiscussionListItem, original: () => ItemList<Mithril.Children>) {
     const items = original();
 
@@ -173,47 +173,47 @@ export default function installListItem(): void {
     const info = this.infoItems();
     const searching = !!this.attrs.params.q;
 
-    // O excerto do fixado é opcional; o da busca, não — ele é o resultado.
+    // 置顶帖的摘录是可选的；搜索的摘录不是 —— 它就是搜索结果。
     const excerpt =
-      info.has('excerpt') && (searching || forumBool('canelaListExcerpts', true)) ? excerptView(this, info.get('excerpt'), searching) : null;
+      info.has('excerpt') && (searching || forumBool('lcoyListExcerpts', true)) ? excerptView(this, info.get('excerpt'), searching) : null;
 
     MOVED_INFO.forEach((key) => info.remove(key));
 
-    // statsItems de extensões (curtidas, por exemplo) não têm coluna própria:
-    // vão para a linha das etiquetas. A contagem de respostas já é coluna.
+    // 扩展的 statsItems（例如点赞）没有自己的列：
+    // 放到标签行。回复数已经是独立列。
     const extraStats = this.statsItems();
     extraStats.remove('replyCount');
 
     const badgeList = discussion.badges();
 
-    // No Discourse o cadeado (fechado) vem antes do alfinete (fixado).
+    // 在 Discourse 中，挂锁（已关闭）位于图钉（置顶）之前。
     if (badgeList.has('locked')) badgeList.setPriority('locked', 1000);
 
     const badges = badgeList.toArray();
 
     return (
-      <div className="DiscussionListItem-main CanelaTopic">
-        <h2 className="DiscussionListItem-title CanelaTopic-titleLine">
-          {badges.length > 0 && <span className="CanelaTopic-status">{badges}</span>}
-          <Link href={app.route.discussion(discussion, jumpTo)} className="CanelaTopic-title">
+      <div className="DiscussionListItem-main LcoyTopic">
+        <h2 className="DiscussionListItem-title LcoyTopic-titleLine">
+          {badges.length > 0 && <span className="LcoyTopic-status">{badges}</span>}
+          <Link href={app.route.discussion(discussion, jumpTo)} className="LcoyTopic-title">
             {highlight(discussion.title(), this.highlightRegExp)}
           </Link>
           {unreadView(this)}
         </h2>
-        <div className="CanelaTopic-meta">
+        <div className="LcoyTopic-meta">
           {discussionBadges(discussion)}
-          {!info.isEmpty() && <ul className="DiscussionListItem-info CanelaTopic-info">{listItems(info.toArray())}</ul>}
-          {!extraStats.isEmpty() && <span className="CanelaTopic-stats">{extraStats.toArray()}</span>}
+          {!info.isEmpty() && <ul className="DiscussionListItem-info LcoyTopic-info">{listItems(info.toArray())}</ul>}
+          {!extraStats.isEmpty() && <span className="LcoyTopic-stats">{extraStats.toArray()}</span>}
         </div>
-        {excerpt ? <div className="CanelaTopic-excerpt">{excerpt}</div> : null}
+        {excerpt ? <div className="LcoyTopic-excerpt">{excerpt}</div> : null}
       </div>
     );
   });
 }
 
 /**
- * Bolinha de "tópico novo" (nunca aberto) ou pílula com as não lidas, como o
- * Discourse. As duas marcam como lido ao clicar, igual à contagem do core.
+ * "新主题"（从未打开）的小圆点，或显示未读数的胶囊，与
+ * Discourse 相同。两者在点击时都标记为已读，与核心的计数一致。
  */
 function unreadView(item: DiscussionListItem): Mithril.Children {
   const discussion = item.attrs.discussion;
@@ -226,7 +226,7 @@ function unreadView(item: DiscussionListItem): Mithril.Children {
   return (
     <button
       type="button"
-      className={classList('Button--ua-reset CanelaUnread', neverRead ? 'CanelaUnread--new' : 'CanelaUnread--count')}
+      className={classList('Button--ua-reset LcoyUnread', neverRead ? 'LcoyUnread--new' : 'LcoyUnread--count')}
       title={`${label}: ${t('list.mark_read')}`}
       aria-label={`${label}: ${t('list.mark_read')}`}
       onclick={(event: MouseEvent) => {
@@ -240,10 +240,10 @@ function unreadView(item: DiscussionListItem): Mithril.Children {
 }
 
 /**
- * O excerto do fixado termina com "… ler mais" quando foi cortado, como o
- * `.topic-excerpt-more` do Discourse. O flarum/sticky entrega o texto já
- * truncado dentro de um div; o tema refaz o corte para pôr o link na mesma
- * linha. O da busca (trecho com destaque) fica como veio.
+ * 被截断时，置顶帖的摘录以 "… 阅读更多" 结尾，与 Discourse 的
+ * `.topic-excerpt-more` 相同。flarum/sticky 在 div 中提供已
+ * 截断的文本；主题重新截断，以便把链接放在同一
+ * 行。搜索的摘录（带高亮的片段）保持原样。
  */
 function excerptView(item: DiscussionListItem, original: Mithril.Children, searching: boolean): Mithril.Children {
   const discussion = item.attrs.discussion;
@@ -258,7 +258,7 @@ function excerptView(item: DiscussionListItem, original: Mithril.Children, searc
   return [
     truncate(text, limit),
     ' ',
-    <Link href={app.route.discussion(discussion)} className="CanelaTopic-excerptMore">
+    <Link href={app.route.discussion(discussion)} className="LcoyTopic-excerptMore">
       {t('list.read_more')}
     </Link>,
   ];
@@ -268,7 +268,7 @@ function avatarView(item: DiscussionListItem): Mithril.Children {
   const user = item.attrs.author || item.attrs.discussion.user();
 
   return (
-    <div className="CanelaListItem-avatar">
+    <div className="LcoyListItem-avatar">
       {user ? (
         <Link href={app.route.user(user)} aria-label={user.displayName()}>
           <Avatar user={user} title="" />
@@ -287,21 +287,21 @@ function postersView(item: DiscussionListItem): Mithril.Children {
   const relevantPost = item.attrs.params.q ? discussion.mostRelevantPost() : null;
   const relevant = relevantPost ? relevantPost.user() : null;
 
-  // O "último postador" do Discourse (`a.latest`): quem respondeu por último
-  // ou, sem respostas, o próprio autor. É o único avatar que sobra no tablet.
+  // Discourse 的 "最后发帖人"（`a.latest`）：最后回复的人
+  // 或（没有回复时）作者本人。它是平板上唯一保留的头像。
   const latest = last || author;
 
-  // O API manda até cinco participantes por discussão (o autor primeiro,
-  // depois os mais recentes): quatro vão à vista e o quinto vira o "+".
-  const participants = discussion.attribute<Participant[]>('canelaParticipants') || [];
+  // API 为每个讨论发送最多五位参与者（作者在首位，
+  // 然后是最近的）：前四个直接显示，第五个变成 "+"。
+  const participants = discussion.attribute<Participant[]>('lcoyParticipants') || [];
 
   let posters: Participant[];
 
   if (participants.length) {
     posters = participants;
   } else {
-    // Sem o atributo (resultado de busca, payload antigo): monta com o que a
-    // linha já tem — autor, post relevante e último postador.
+    // 没有该属性（搜索结果、旧 payload）时：用该行已有的内容
+    // 组装 —— 作者、相关帖子和最后发帖人。
     const seen = new Set<string>();
     const fallback: Participant[] = [];
 
@@ -331,19 +331,19 @@ function postersView(item: DiscussionListItem): Mithril.Children {
       poster,
       role,
       classList({
-        'CanelaPosters-avatar--latest': isLatest,
-        // O autor que também postou por último brilha, se houver outros
-        // avatares ao lado (`.avatar.latest:not(.single)`).
-        'CanelaPosters-avatar--glow': isLatest && poster.id === shown[0].id && shown.length > 1,
+        'LcoyPosters-avatar--latest': isLatest,
+        // 同样最后发帖的作者会发光，前提是旁边还有其他
+        // 头像（`.avatar.latest:not(.single)`）。
+        'LcoyPosters-avatar--glow': isLatest && poster.id === shown[0].id && shown.length > 1,
       })
     );
   });
 
   return (
-    <div className="CanelaCell CanelaCell--posters CanelaPosters">
+    <div className="LcoyCell LcoyCell--posters LcoyPosters">
       {avatars}
       {posters.length > shown.length ? (
-        <span className="CanelaPosters-more" title={t('list.more_participants')} aria-label={t('list.more_participants')}>
+        <span className="LcoyPosters-more" title={t('list.more_participants')} aria-label={t('list.more_participants')}>
           +
         </span>
       ) : null}
@@ -355,7 +355,7 @@ function repliesView(item: DiscussionListItem): Mithril.Children {
   const count = item.attrs.discussion.replyCount() ?? 0;
 
   return (
-    <div className={classList('CanelaCell CanelaCell--replies', heatClass(repliesHeat(count)))}>
+    <div className={classList('LcoyCell LcoyCell--replies', heatClass(repliesHeat(count)))}>
       <span aria-hidden="true">{abbreviateNumber(count)}</span>
       <span className="visually-hidden">{t('list.replies_a11y', { count })}</span>
     </div>
@@ -366,8 +366,8 @@ function viewsView(item: DiscussionListItem): Mithril.Children {
   const views = discussionViews(item.attrs.discussion);
 
   return (
-    <div className={classList('CanelaCell CanelaCell--views', views !== null && heatClass(viewsHeat(views)))}>
-      {/* O `dNumber … numberKey="views_long"` do Discourse: "1,2k" com o title por extenso. */}
+    <div className={classList('LcoyCell LcoyCell--views', views !== null && heatClass(viewsHeat(views)))}>
+      {/* Discourse 的 `dNumber … numberKey="views_long"`："1,2k" 加上完整的 title。 */}
       {views === null ? null : viewsNumber(views)}
     </div>
   );
@@ -385,8 +385,8 @@ function activityView(item: DiscussionListItem): Mithril.Children {
     .join('\n');
 
   return (
-    <div className={classList('CanelaCell CanelaCell--activity', heatClass(activityCold(discussion), 'cold'))} title={title}>
-      <Link href={app.route.discussion(discussion, discussion.lastPostNumber() ?? undefined)} className="CanelaActivity">
+    <div className={classList('LcoyCell LcoyCell--activity', heatClass(activityCold(discussion), 'cold'))} title={title}>
+      <Link href={app.route.discussion(discussion, discussion.lastPostNumber() ?? undefined)} className="LcoyActivity">
         {shortAge(last)}
       </Link>
     </div>

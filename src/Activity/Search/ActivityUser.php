@@ -19,8 +19,8 @@ use Flarum\User\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
- * A pessoa dona da aba: os filtros recebem o slug do perfil (como o `author`
- * do core), que pode ser o nome ou o id, conforme o driver de slug.
+ * 选项卡所属的用户：这些过滤器接收资料页的 slug（类似核心的 `author`），
+ * 按 slug 驱动的不同，它可能是用户名，也可能是 id。
  */
 final class ActivityUser
 {
@@ -47,7 +47,7 @@ final class ActivityUser
         return $user instanceof User ? $user : null;
     }
 
-    /** O que é pessoal (Lidos): só a própria pessoa e quem administra. */
+    /** 属于个人隐私的内容（"已读"）：仅本人和管理员可见。 */
     public static function canSeePrivate(User $actor, User $user): bool
     {
         return ! $actor->isGuest() && ($actor->id === $user->id || $actor->isAdmin());

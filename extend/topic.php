@@ -11,9 +11,9 @@
  */
 
 /*
- * Página do tópico: o "Marcar não lido" do rodapé (Discourse). O fórum
- * anuncia `canelaMarkUnread` para o JS só mostrar o botão quando este
- * arquivo está carregado.
+ * 主题页面：底部的 "标记为未读"（Discourse）。论坛会暴露
+ * `lcoyMarkUnread`，以便 JS 仅在这个文件被加载时
+ * 显示该按钮。
  */
 
 use Flarum\Api\Context;
@@ -29,9 +29,9 @@ return [
     (new Extend\ApiResource(DiscussionResource::class))
         ->fields(DiscussionMarkUnreadField::class)
         ->fields(DiscussionParticipantsField::class)
-        // A lista mostra até quatro avatares de participantes em cada linha.
-        // O atributo é enxuto (não inclui os usuários como recursos) e a página
-        // inteira sai em duas consultas, graças ao prefetch abaixo.
+        // 列表中每行最多显示四位参与者的头像。
+        // 该属性很精简（不把用户作为资源包含），整页只需两次查询，
+        // 得益于下面的 prefetch。
         ->endpoint(Index::class, fn (Index $endpoint) => $endpoint
             ->beforeSerialization(static function (Context $context, array $results): void {
                 resolve(DiscussionParticipantsField::class)->prefetch($results['models'] ?? []);
@@ -39,6 +39,6 @@ return [
 
     (new Extend\ApiResource(ForumResource::class))
         ->fields(fn () => [
-            Schema\Boolean::make('canelaMarkUnread')->get(fn () => true),
+            Schema\Boolean::make('lcoyMarkUnread')->get(fn () => true),
         ]),
 ];

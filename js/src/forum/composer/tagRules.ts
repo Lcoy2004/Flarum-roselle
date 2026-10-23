@@ -1,29 +1,29 @@
 /*
- * As regras de escolha de tags do flarum/tags, para os seletores próprios do
- * tema (a linha "tag primária | tags secundárias" do composer, as sugestões
- * da IA, o tópico vinculado). São as mesmas do TagDiscussionModal e da
- * validação do servidor (`DiscussionResourceFields`):
+ * flarum/tags 的标签选择规则，供主题自己的选择器使用
+ * （编辑器中的 "主标签 | 二级标签" 一行、AI 建议、
+ * 关联主题）。与 TagDiscussionModal 及服务端校验
+ * （`DiscussionResourceFields`）相同：
  *
- * - só entram as tags de `getSelectableTags`: as que o ator pode usar para
- *   iniciar discussão ou, editando uma discussão, as que pode adicionar a ela
- *   (mais as que ela já tem);
- * - uma tag filha só vale com a tag pai escolhida (`requireParentTag`); sem o
- *   pai, as filhas dele saem junto;
- * - "primária" é a primária de primeiro nível (`isPrimaryParent`); as filhas
- *   contam como secundárias, como o servidor conta;
- * - mínimos e máximos de `flarum-tags.*` (`minPrimaryTags` etc.), com a
- *   permissão "ignorar requisitos de tags" (`canBypassTagCounts`) dispensando
- *   os mínimos, como o modal do core permite publicar sem eles.
+ * - 只纳入 `getSelectableTags` 中的标签：操作者可用来
+ *   发起讨论的标签，或在编辑讨论时可添加到该讨论的标签
+ *   （以及它已有的标签）；
+ * - 子标签只有在父标签已选时有效（`requireParentTag`）；没有
+ *   父标签时，其子标签一并移除；
+ * - "主标签" 是一级主标签（`isPrimaryParent`）；子标签
+ *   按服务端的方式计为二级标签；
+ * - `flarum-tags.*` 的最小值和最大值（`minPrimaryTags` 等），
+ *   拥有 "忽略标签要求" 权限（`canBypassTagCounts`）时可豁免
+ *   下限，与核心弹窗允许无下限发布相同。
  *
- * Sempre que o flarum/tags expõe a função (`getSelectableTags`, `sortTags`),
- * ela é usada no lugar da cópia daqui, para seguir o comportamento dele.
+ * 只要 flarum/tags 暴露了相应函数（`getSelectableTags`、`sortTags`），
+ * 就使用它而不是这里的副本，以跟随其行为。
  */
 import app from 'flarum/forum/app';
 import type Discussion from 'flarum/common/models/Discussion';
 
-import { allTags, isTagsEnabled, sortTags as themeSortTags, type CanelaTag } from '../utils/tags';
+import { allTags, isTagsEnabled, sortTags as themeSortTags, type LcoyTag } from '../utils/tags';
 
-export type RuleTag = CanelaTag & {
+export type RuleTag = LcoyTag & {
   canStartDiscussion?: () => boolean;
   canAddToDiscussion?: () => boolean;
 };
@@ -33,11 +33,11 @@ export interface TagLimits {
   maxPrimary: number;
   minSecondary: number;
   maxSecondary: number;
-  /** "Ignorar requisitos de tags": dispensa os mínimos. */
+  /** "忽略标签要求"：豁免下限。 */
   bypass: boolean;
 }
 
-/** Os padrões da migration do flarum/tags, para quando o atributo falta. */
+/** flarum/tags 迁移中的默认值，用于属性缺失时。 */
 const DEFAULTS = { minPrimaryTags: 1, maxPrimaryTags: 1, minSecondaryTags: 0, maxSecondaryTags: 3 };
 
 function setting(name: keyof typeof DEFAULTS): number {
@@ -55,16 +55,16 @@ export function tagLimits(): TagLimits {
   };
 }
 
-/** O pai de uma filha (pelo atributo `isChild`, que vem sempre). */
-export function parentTag(tag: CanelaTag): CanelaTag | null {
+/** 子标签的父标签（通过 `isChild` 属性，该属性总是存在）。 */
+export function parentTag(tag: LcoyTag): LcoyTag | null {
   if (!tag.isChild()) return null;
 
   const parent = tag.parent();
   return parent ? parent : null;
 }
 
-/** Primária de primeiro nível: a única que conta como "primária" no servidor. */
-export function isPrimaryParent(tag: CanelaTag): boolean {
+/** 一级主标签：服务端唯一视为 "主标签" 的那种。 */
+export function isPrimaryParent(tag: LcoyTag): boolean {
   return tag.position() !== null && tag.position() !== undefined && !tag.isChild();
 }
 
@@ -76,7 +76,7 @@ function flarumTags(path: string): any {
   }
 }
 
-/** `getSelectableTags` do flarum/tags (com cópia de reserva). */
+/** flarum/tags 的 `getSelectableTags`（带备用副本）。 */
 export function selectableTags(discussion?: Discussion | null): RuleTag[] {
   if (!isTagsEnabled()) return [];
 
@@ -93,22 +93,22 @@ export function selectableTags(discussion?: Discussion | null): RuleTag[] {
   return tags.filter((tag) => !!tag.canStartDiscussion?.());
 }
 
-/** A ordem do TagSelectionModal (`sortTags` do flarum/tags). */
-export function sortSelectable<T extends CanelaTag>(tags: T[]): T[] {
+/** TagSelectionModal 的顺序（flarum/tags 的 `sortTags`）。 */
+export function sortSelectable<T extends LcoyTag>(tags: T[]): T[] {
   const own = flarumTags('common/utils/sortTags');
   return (typeof own === 'function' ? own(tags) : themeSortTags(tags)) as T[];
 }
 
-export function countTags(selected: CanelaTag[]): { primary: number; secondary: number } {
+export function countTags(selected: LcoyTag[]): { primary: number; secondary: number } {
   const primary = selected.filter(isPrimaryParent).length;
   return { primary, secondary: selected.length - primary };
 }
 
 /**
- * Tira o que o flarum/tags não aceitaria na seleção: repetidas, filhas cujo
- * pai saiu e, se `allowed` vier, as tags fora dele.
+ * 移除 flarum/tags 不会接受的内容：重复项、父标签已移除的子标签，
+ * 以及（若传入 `allowed`）不在其中的标签。
  */
-export function normalizeTags<T extends CanelaTag>(selected: T[], allowed?: CanelaTag[]): T[] {
+export function normalizeTags<T extends LcoyTag>(selected: T[], allowed?: LcoyTag[]): T[] {
   const result: T[] = [];
 
   for (const tag of selected) {
@@ -123,23 +123,23 @@ export function normalizeTags<T extends CanelaTag>(selected: T[], allowed?: Cane
   });
 }
 
-/** Tira a tag e, como o modal do core, as filhas dela. */
-export function removeTag<T extends CanelaTag>(selected: T[], tag: T): T[] {
+/** 移除该标签，并与核心弹窗一样移除它的子标签。 */
+export function removeTag<T extends LcoyTag>(selected: T[], tag: T): T[] {
   return selected.filter((item) => item !== tag && parentTag(item) !== tag);
 }
 
-/** Se ainda cabe mais uma tag desse tipo (os máximos valem para todos). */
-export function hasRoomFor(tag: CanelaTag, selected: CanelaTag[], limits = tagLimits()): boolean {
+/** 该类型的标签是否还能再加一个（上限对所有人都适用）。 */
+export function hasRoomFor(tag: LcoyTag, selected: LcoyTag[], limits = tagLimits()): boolean {
   const { primary, secondary } = countTags(selected);
 
   return isPrimaryParent(tag) ? primary < limits.maxPrimary : secondary < limits.maxSecondary;
 }
 
 /**
- * Se a tag pode entrar agora: está entre as selecionáveis, o pai dela (se
- * for filha) já foi escolhido e o máximo do tipo dela não foi atingido.
+ * 该标签现在能否加入：它在可选列表中、它的父标签（如果
+ * 是子标签）已被选中，且该类型的上限尚未达到。
  */
-export function canAddTag(tag: CanelaTag, selected: CanelaTag[], selectable: CanelaTag[] = selectableTags(), limits = tagLimits()): boolean {
+export function canAddTag(tag: LcoyTag, selected: LcoyTag[], selectable: LcoyTag[] = selectableTags(), limits = tagLimits()): boolean {
   if (selected.includes(tag) || !selectable.includes(tag)) return false;
 
   const parent = parentTag(tag);
@@ -149,11 +149,11 @@ export function canAddTag(tag: CanelaTag, selected: CanelaTag[], selectable: Can
 }
 
 /**
- * Acrescenta a tag respeitando as regras. Uma filha sugerida sem o pai leva o
- * pai junto (como o `addTag` do modal), se o pai couber. Devolve `null`
- * quando não dá para acrescentar.
+ * 按规则添加标签。被建议的子标签若没有父标签，会一并带上
+ * 父标签（与弹窗的 `addTag` 相同），前提是父标签还有余量。无法添加时
+ * 返回 `null`。
  */
-export function addTag<T extends CanelaTag>(selected: T[], tag: T, selectable: CanelaTag[] = selectableTags(), limits = tagLimits()): T[] | null {
+export function addTag<T extends LcoyTag>(selected: T[], tag: T, selectable: LcoyTag[] = selectableTags(), limits = tagLimits()): T[] | null {
   const parent = parentTag(tag) as T | null;
   let base = selected;
 
@@ -166,10 +166,10 @@ export function addTag<T extends CanelaTag>(selected: T[], tag: T, selectable: C
 }
 
 /**
- * O que falta para publicar, com o texto do próprio flarum/tags; `null`
- * quando a seleção atende aos mínimos (ou o ator pode ignorá-los).
+ * 发布前还缺什么，使用 flarum/tags 自己的文本；当选择满足下限
+ * （或操作者可以忽略下限）时返回 `null`。
  */
-export function missingTagsMessage(selected: CanelaTag[], limits = tagLimits()): { kind: 'primary' | 'secondary'; message: string } | null {
+export function missingTagsMessage(selected: LcoyTag[], limits = tagLimits()): { kind: 'primary' | 'secondary'; message: string } | null {
   if (limits.bypass) return null;
 
   const { primary, secondary } = countTags(selected);

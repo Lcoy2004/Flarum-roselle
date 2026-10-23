@@ -18,8 +18,8 @@ use Flarum\Search\Database\DatabaseSearchState;
 use Flarum\Search\SearchCriteria;
 
 /**
- * "Mais curtidos" na busca de postagens (`sort=-canelaLikes`): as curtidas da
- * própria postagem. Veja SortsByLikes.
+ * 帖子搜索中的"最多点赞"（`sort=-lcoyLikes`）：统计帖子自身的点赞数。
+ * 见 SortsByLikes。
  */
 final class PostSearchMutator
 {

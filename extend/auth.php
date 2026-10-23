@@ -11,32 +11,31 @@
  */
 
 /*
- * As páginas de entrar e de cadastro do Discourse (/login e /signup): o
- * formulário em página cheia, e não no modal. Só o documento do fórum, sem
- * conteúdo pré-carregado — o JS desenha a página com a lógica dos modais do
- * core (validações, campos de extensões, login social).
+ * Discourse 的登录与注册页面（/login 和 /signup）：整页表单，而不是弹窗。
+ * 只输出论坛文档，不含预加载内容 —— JS 借助核心弹窗的逻辑来渲染页面
+ * （校验、扩展字段、社交登录）。
  *
- * O core só tem POST /login e POST /register: o GET /login, o /signup e o
- * /forgot-password são livres. O GET /reset/{token} (a página solta do core)
- * vira página do fórum com o mesmo nome de rota, `resetPassword`, que é o que
- * o e-mail de redefinição usa para montar o link; o POST /reset continua o do
- * core. Nada de variáveis soltas: o extend.php faz `require` deste arquivo.
+ * 核心只有 POST /login 和 POST /register：GET /login、/signup 和
+ * /forgot-password 都是空的。GET /reset/{token}（核心的独立页面）会变成
+ * 论坛页面，路由名同为 `resetPassword`，重置邮件正是用它来拼接链接；
+ * POST /reset 仍由核心提供。不要留下散落的变量：extend.php 会 `require`
+ * 这个文件。
  */
 
 use Flarum\Extend;
 use Lcoy\Roselle\Auth\ResetPasswordContent;
 
 return [
-    // O cabeçalho só leva a estas páginas quando este arquivo está carregado
-    // (senão um F5 em /login daria 404): o atributo é a prova disso.
+    // 只有在这个文件被加载时，页眉才会链接到这些页面
+    // （否则在 /login 上按 F5 会 404）：这个属性就是证据。
     (new Extend\Settings())
-        ->default('canela.auth_routes_backend', true)
-        ->serializeToForum('canelaAuthRoutes', 'canela.auth_routes_backend', fn () => true),
+        ->default('lcoy.auth_routes_backend', true)
+        ->serializeToForum('lcoyAuthRoutes', 'lcoy.auth_routes_backend', fn () => true),
 
     (new Extend\Frontend('forum'))
-        ->route('/login', 'canela.login')
-        ->route('/signup', 'canela.signup')
-        ->route('/forgot-password', 'canela.forgot')
+        ->route('/login', 'lcoy.login')
+        ->route('/signup', 'lcoy.signup')
+        ->route('/forgot-password', 'lcoy.forgot')
         ->removeRoute('resetPassword')
         ->route('/reset/{token}', 'resetPassword', ResetPasswordContent::class),
 ];

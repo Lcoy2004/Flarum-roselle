@@ -19,15 +19,14 @@ use Flarum\Http\RouteCollection;
 use Psr\Log\LoggerInterface;
 
 /**
- * Rotas do tema que outra extensão já ocupa saem, em vez de derrubar o fórum.
+ * 主题中已被其他扩展占用的路由会被移除，而不是让论坛崩溃。
  *
- * O FastRoute não aceita duas rotas com o mesmo método e caminho (`GET /chat`
- * do tema e de uma extensão de chat, `GET /search` do tema e de uma extensão
- * de busca…): o fórum inteiro cai com BadRouteException no boot. Aqui, depois
- * que todas as extensões registraram as suas (afterResolving roda depois de
- * todos os extend/resolving da coleção), cada caminho repetido fica com a rota
- * da outra extensão e a do tema (nome `canela.*`) é retirada — o recurso do
- * tema que dependia dela simplesmente não aparece naquele endereço.
+ * FastRoute 不接受方法和路径都相同的两条路由（主题的 `GET /chat` 与聊天
+ * 扩展的、主题的 `GET /search` 与搜索扩展的……）：整个论坛会在 boot 时因
+ * BadRouteException 崩溃。这里在所有扩展都注册完自己的路由之后
+ * （afterResolving 会在集合的所有 extend/resolving 之后运行），每个重复
+ * 路径保留其他扩展的路由，移除主题的（名称 `lcoy.*`）——因此依赖该路由的
+ * 主题功能在那个地址上直接不出现。
  */
 final class RouteConflictGuard extends AbstractServiceProvider
 {
@@ -49,14 +48,14 @@ final class RouteConflictGuard extends AbstractServiceProvider
                 $routes->removeRoute($name);
             }
 
-            $this->logger()?->info("[canela] rota {$frontend} {$key} já registrada por outra extensão; a do tema foi retirada: ".implode(', ', $drop));
+            $this->logger()?->info("[lcoy] 路由 {$frontend} {$key} 已由其他扩展注册；主题的路由已被移除: ".implode(', ', $drop));
         }
     }
 
     /**
-     * Para cada "MÉTODO caminho" repetido, os nomes a retirar: os do tema
-     * (`canela*`) quando outra extensão tem a mesma rota; só o tema repetindo
-     * a si mesmo, todas menos a primeira.
+     * 对于每个重复的"方法 路径"，返回要移除的名称：当其他扩展有相同路由
+     * 时，移除主题的（`lcoy*`）；若只是主题自身重复，则移除除第一个之外
+     * 的全部。
      *
      * @param array<string, array{method: string, path: string}> $routes
      * @return array<string, list<string>>
@@ -76,7 +75,7 @@ final class RouteConflictGuard extends AbstractServiceProvider
                 continue;
             }
 
-            $ours = array_values(array_filter($names, static fn (string $name): bool => str_starts_with($name, 'canela')));
+            $ours = array_values(array_filter($names, static fn (string $name): bool => str_starts_with($name, 'lcoy')));
             $drop = count($ours) === count($names) ? array_slice($ours, 1) : $ours;
 
             if ($drop !== []) {

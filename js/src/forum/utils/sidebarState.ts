@@ -1,19 +1,19 @@
 /*
- * Barra lateral aberta ou fechada, como o botão de hambúrguer do Discourse.
+ * 侧栏打开或关闭，如同 Discourse 的汉堡按钮。
  *
- * Do tablet para cima (≥ 768px, como no Discourse) ela fica encaixada ao lado do conteúdo, e a escolha do
- * leitor vai para o localStorage; enquanto ele não escolheu, vale o padrão do
- * admin. No celular ela vira o painel do hambúrguer, por cima do conteúdo,
- * que começa fechado a cada página.
+ * 平板及以上（≥ 768px，与 Discourse 相同）它会停靠在内容旁，读者的
+ * 选择会写入 localStorage；在读者选择之前，使用管理员的
+ * 默认值。在手机上它变成汉堡面板，覆盖在内容之上，
+ * 每个页面开始时都是关闭的。
  */
 import { forumBool } from './settings';
 
-const STORAGE_KEY = 'canela.sidebarOpen';
+const STORAGE_KEY = 'lcoy.sidebarOpen';
 const DOCKED_QUERY = '(min-width: 768px)';
 
-export const SHELL_CLASS = 'Canela';
-export const OPEN_CLASS = 'Canela--sidebarOpen';
-export const OVERLAY_CLASS = 'Canela--sidebarOverlay';
+export const SHELL_CLASS = 'Lcoy';
+export const OPEN_CLASS = 'Lcoy--sidebarOpen';
+export const OVERLAY_CLASS = 'Lcoy--sidebarOverlay';
 
 let dockedChoice: boolean | null = null;
 let overlayOpen = false;
@@ -36,7 +36,7 @@ export function isSidebarOpen(): boolean {
   if (!isDocked()) return overlayOpen;
 
   if (dockedChoice === null) {
-    dockedChoice = readStoredChoice() ?? forumBool('canelaSidebarOpenDefault', true);
+    dockedChoice = readStoredChoice() ?? forumBool('lcoySidebarOpenDefault', true);
   }
 
   return dockedChoice;
@@ -58,7 +58,7 @@ export function toggleSidebar(): void {
     try {
       localStorage.setItem(STORAGE_KEY, dockedChoice ? '1' : '0');
     } catch {
-      // Sem armazenamento a escolha vale só até recarregar a página.
+      // 没有存储时，该选择仅在页面重新加载前有效。
     }
   } else {
     overlayOpen = !overlayOpen;
@@ -67,7 +67,7 @@ export function toggleSidebar(): void {
   applySidebarState();
 }
 
-/** Fecha o painel sobreposto — ao navegar ou clicar fora dele. */
+/** 关闭覆盖面板——在导航时或点击其外部时。 */
 export function closeOverlaySidebar(): void {
   if (!overlayOpen) return;
 

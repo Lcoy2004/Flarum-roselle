@@ -1,11 +1,11 @@
 /*
- * O conteúdo de cada aba do menu do usuário (o `.quick-access-panel` do
- * Discourse): a lista (`items-list`), o rodapé com "ver todas" (⌄) e
- * "Descartar", e o estado vazio com os textos do Discourse.
+ * 用户菜单每个标签页的内容（Discourse 的 `.quick-access-panel`）：
+ * 列表（`items-list`）、带“查看全部”（⌄）和“忽略”的底部，以及
+ * 使用 Discourse 文案的空状态。
  *
- * As listas usam os estados que o core e as extensões já mantêm
- * (`app.notifications`, `app.dialogs` do flarum/messages, `app.flags` do
- * flarum/flags) — o que o menu carrega serve também às páginas deles.
+ * 列表使用核心和扩展已经维护的状态（`app.notifications`、flarum/messages 的
+ * `app.dialogs`、flarum/flags 的 `app.flags`）——菜单加载的内容也能供它们的
+ * 页面使用。
  */
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
@@ -33,31 +33,31 @@ import { userMenu } from './state';
 import { isExtensionEnabled } from '../utils/settings';
 import { umText } from './text';
 
-/** Tradução rica (com `<a>`, `<b>` e ícones): o `t()` do tema devolve só texto. */
+/** 富文本翻译（含 `<a>`、`<b>` 和图标）：主题的 `t()` 只返回文本。 */
 export function um(key: string, params: Record<string, unknown> = {}): Mithril.Children {
   return app.translator.trans(`lcoy-roselle.forum.usermenu.${key}`, params) as any;
 }
 
-/** A mesma, como texto (title, aria-label); mora em text.ts, que o pacote principal usa. */
+/** 同上的文本形式（title、aria-label）；位于 text.ts，主包也会使用。 */
 export { umText };
 
 /**
- * A lista ainda não recebeu nenhuma resposta (nem vazia)? O PaginatedListState
- * guarda uma página por resposta, mesmo sem itens: sem página, "nenhum item"
- * ainda não significa nada e o aviso de lista vazia piscaria antes dos itens.
+ * 列表是否还从未收到任何响应（连空响应也没有）？PaginatedListState
+ * 每次响应保存一页，即使没有条目：没有页时，“没有条目”
+ * 还不能说明什么，空列表提示会在条目之前闪现。
  */
 export function neverLoaded(state: any): boolean {
   return !!state && typeof state.getPages === 'function' && state.getPages().length === 0;
 }
 
-/** As "preferências de notificação" do Flarum ficam nas Configurações. */
+/** Flarum 的“通知设置”位于设置页。 */
 export function preferencesLink(): Mithril.Vnode<any, any> {
   return <Link href={app.route('settings')} onclick={() => userMenu.close()} />;
 }
 
 // ---------------------------------------------------------------------
-// Estado vazio (`DEmptyState`): título e um parágrafo, com o `<br><br>` do
-// Discourse entre as duas frases.
+// 空状态（`DEmptyState`）：标题和一段文字，两句之间使用 Discourse 的
+// `<br><br>`。
 // ---------------------------------------------------------------------
 
 export function EmptyState(title: Mithril.Children, body?: Mithril.Children[]): Mithril.Children {
@@ -71,10 +71,10 @@ export function EmptyState(title: Mithril.Children, body?: Mithril.Children[]): 
 
   return (
     <div>
-      <div className="CanelaUserMenu-empty">
-        <div className="CanelaUserMenu-emptyTitle">{title}</div>
+      <div className="LcoyUserMenu-empty">
+        <div className="LcoyUserMenu-emptyTitle">{title}</div>
         {paragraph.length ? (
-          <div className="CanelaUserMenu-emptyBody">
+          <div className="LcoyUserMenu-emptyBody">
             <p>{paragraph}</p>
           </div>
         ) : null}
@@ -93,7 +93,7 @@ export const emptyStates = {
     ]),
   likes: () => EmptyState(um('empty.likes_title'), [um('empty.likes_body_1'), um('empty.likes_body_2', { a: preferencesLink() })]),
   messages: () => {
-    const about = app.routes['canela.about'] ? app.route('canela.about') : app.route('index');
+    const about = app.routes['lcoy.about'] ? app.route('lcoy.about') : app.route('index');
 
     return EmptyState(um('empty.messages_title'), [
       um('empty.messages_body_1', { icon: menuIcon('mail') }),
@@ -116,28 +116,27 @@ export const emptyStates = {
 
 export function Spinner(): Mithril.Children {
   return (
-    <div className="CanelaUserMenu-spinnerContainer">
-      <div className="CanelaUserMenu-spinner" />
+    <div className="LcoyUserMenu-spinnerContainer">
+      <div className="LcoyUserMenu-spinner" />
     </div>
   );
 }
 
 /**
- * A lista de notificações ainda sem resposta: linhas com a altura de um item
- * (avatar e duas linhas de texto, cada barra com a altura de uma linha do
- * texto real), em vez do spinner: o painel já abre no tamanho de uma lista e
- * não salta quando ela chega.
+ * 尚未收到响应的通知列表：按条目高度显示行（头像加两行文本，每条
+ * 横条与真实文本的一行等高），而不是 spinner：面板打开时已是列表的
+ * 尺寸，列表到达时不会跳动。
  */
 export function NotificationSkeleton(rows = 8): Mithril.Children {
   return (
-    <ul className="CanelaUserMenu-list CanelaUserMenu-list--loading" aria-busy="true">
+    <ul className="LcoyUserMenu-list LcoyUserMenu-list--loading" aria-busy="true">
       {Array.from({ length: rows }, (_, index) => (
-        <li className="CanelaUserMenu-item CanelaUserMenu-item--skeleton">
-          <div className="CanelaUserMenu-skeletonRow">
-            <span className="CanelaSkeleton CanelaUserMenu-skeletonAvatar" />
-            <span className="CanelaUserMenu-itemText">
-              <span className="CanelaSkeleton CanelaSkeleton--line" style={{ width: `${45 + ((index * 17) % 30)}%` }} />
-              <span className="CanelaSkeleton CanelaSkeleton--line" style={{ width: `${70 + ((index * 11) % 25)}%` }} />
+        <li className="LcoyUserMenu-item LcoyUserMenu-item--skeleton">
+          <div className="LcoyUserMenu-skeletonRow">
+            <span className="LcoySkeleton LcoyUserMenu-skeletonAvatar" />
+            <span className="LcoyUserMenu-itemText">
+              <span className="LcoySkeleton LcoySkeleton--line" style={{ width: `${45 + ((index * 17) % 30)}%` }} />
+              <span className="LcoySkeleton LcoySkeleton--line" style={{ width: `${70 + ((index * 11) % 25)}%` }} />
             </span>
           </div>
         </li>
@@ -147,28 +146,28 @@ export function NotificationSkeleton(rows = 8): Mithril.Children {
 }
 
 /**
- * O `.panel-body-bottom`: o botão largo com a setinha leva à página completa
- * da aba; "Descartar" marca como lidas.
+ * `.panel-body-bottom`：带小箭头的宽按钮进入该标签页的完整页面；
+ * “忽略”把它们标为已读。
  */
 export function PanelBottom(attrs: { showAllHref?: string | null; showAllTitle?: string; dismiss?: (() => unknown) | null; dismissTitle?: string }) {
   return (
-    <div className="CanelaUserMenu-bottom">
+    <div className="LcoyUserMenu-bottom">
       {attrs.showAllHref ? (
         <Link
-          className="Button CanelaUserMenu-showAll"
+          className="Button LcoyUserMenu-showAll"
           href={attrs.showAllHref}
           title={attrs.showAllTitle}
           aria-label={attrs.showAllTitle}
           onclick={() => userMenu.close()}
         >
-          {/* Só o chevron (o `show-all` do Discourse) não dizia o que fazia. */}
-          <span className="CanelaUserMenu-showAllLabel">{um('view_all')}</span>
+          {/* 只有 chevron（Discourse 的 `show-all`）不能说明它的作用。 */}
+          <span className="LcoyUserMenu-showAllLabel">{um('view_all')}</span>
         </Link>
       ) : null}
       {attrs.dismiss ? (
-        <button type="button" className="Button CanelaUserMenu-dismiss" title={attrs.dismissTitle} onclick={() => attrs.dismiss!()}>
+        <button type="button" className="Button LcoyUserMenu-dismiss" title={attrs.dismissTitle} onclick={() => attrs.dismiss!()}>
           {menuIcon('check')}
-          <span className="CanelaUserMenu-dismissLabel">{um('dismiss')}</span>
+          <span className="LcoyUserMenu-dismissLabel">{um('dismiss')}</span>
         </button>
       ) : null}
     </div>
@@ -176,7 +175,7 @@ export function PanelBottom(attrs: { showAllHref?: string | null; showAllTitle?:
 }
 
 // ---------------------------------------------------------------------
-// Notificações (todas, respostas, curtidas, chat, outras)
+// 通知（全部、回复、点赞、聊天、其他）
 // ---------------------------------------------------------------------
 
 export interface NotificationsPanelAttrs extends ComponentAttrs {
@@ -185,11 +184,11 @@ export interface NotificationsPanelAttrs extends ComponentAttrs {
   showAllHref?: string | null;
   showAllTitle?: string;
   dismissTitle?: string;
-  /** Itens extras antes das notificações (os marcadores usam). */
+  /** 通知之前的额外条目（书签会用到）。 */
   extra?: () => Mithril.Children[];
 }
 
-/** Quantas páginas a mais buscar para encher uma aba filtrada (a API não filtra por tipo). */
+/** 为填满一个过滤标签页还要额外请求多少页（API 不按类型过滤）。 */
 const MAX_EXTRA_PAGES = 3;
 const MIN_ITEMS = 10;
 
@@ -206,25 +205,24 @@ export class NotificationsPanel extends Component<NotificationsPanelAttrs> {
     if (loading) return NotificationSkeleton();
 
     if (!items.length) {
-      // Ainda pode haver do tipo nas próximas páginas.
+      // 后续页面中可能仍有该类型的条目。
       if (this.wantsMore()) return Spinner();
 
       return this.attrs.empty();
     }
 
-    // "Marcar todas como lidas": aparece se há alguma não lida — a contagem do
-    // usuário ou qualquer item já carregado na lista (a contagem pode chegar
-    // atrasada em relação ao que a aba mostra).
+    // “全部标为已读”：存在未读时显示——用户计数或列表中任一已加载
+    // 条目（计数可能相对于标签页显示的内容有所延迟）。
     const anyUnread =
       (app.session.user?.unreadNotificationCount() ?? 0) > 0 || notifications.some((notification: Notification) => !notification.isRead());
 
     return [
-      <ul className="CanelaUserMenu-list">{items}</ul>,
+      <ul className="LcoyUserMenu-list">{items}</ul>,
       PanelBottom({
         showAllHref: this.attrs.showAllHref,
         showAllTitle: this.attrs.showAllTitle,
-        // O Discourse mostra "Descartar" em qualquer aba de notificações quando
-        // há alguma não lida, e descarta só os tipos daquela aba.
+        // 只要存在未读，Discourse 就在任何通知标签页显示“忽略”，
+        // 且只忽略该标签页中的类型。
         dismiss: anyUnread ? () => dismissNotifications(this.attrs.filter) : null,
         dismissTitle: this.attrs.dismissTitle || umText('dismiss_notifications_tooltip'),
       }),
@@ -248,7 +246,7 @@ export class NotificationsPanel extends Component<NotificationsPanelAttrs> {
     return filtered && state.hasNext() && this.extraPages < MAX_EXTRA_PAGES && filteredNotifications(this.attrs.filter).length < MIN_ITEMS;
   }
 
-  /** Numa aba filtrada com poucos itens, busca as próximas páginas (até 3). */
+  /** 在条目很少的过滤标签页中，请求后续页面（最多 3 页）。 */
   fill(): void {
     const state: any = app.notifications;
 
@@ -260,14 +258,13 @@ export class NotificationsPanel extends Component<NotificationsPanelAttrs> {
 }
 
 // ---------------------------------------------------------------------
-// Mensagens (flarum/messages): as conversas, a não lida em destaque.
+// 消息（flarum/messages）：会话列表，未读项突出显示。
 // ---------------------------------------------------------------------
 
 export class MessagesPanel extends Component {
   /**
-   * Já houve uma resposta da lista? Antes dela, "nenhuma conversa" ainda não
-   * quer dizer nada: o primeiro desenho acontecia antes do pedido começar e o
-   * aviso de "Você não tem mensagens" piscava antes dos itens.
+   * 列表是否已经有过一次响应？在此之前，“没有会话”还不能说明什么：
+   * 第一次绘制发生在请求开始之前，“你没有消息”的提示会在条目之前闪现。
    */
   ready = false;
 
@@ -302,7 +299,7 @@ export class MessagesPanel extends Component {
     const unread = (app.session.user?.attribute<number>('unreadDialogCount') ?? 0) > 0;
 
     return [
-      <ul className="CanelaUserMenu-list">
+      <ul className="LcoyUserMenu-list">
         {dialogs.map((dialog) => {
           const recipient: User | null = dialog.recipient?.() || null;
           const lastMessage: any = dialog.lastMessage?.();
@@ -310,7 +307,7 @@ export class MessagesPanel extends Component {
           const name = recipient ? recipient.displayName() : '';
 
           return MenuItem({
-            className: 'CanelaUserMenu-item--message',
+            className: 'LcoyUserMenu-item--message',
             unread: !!dialog.unreadCount?.(),
             href: (app.route as any).dialog ? (app.route as any).dialog(dialog) : app.route('messages'),
             title: name,
@@ -331,8 +328,8 @@ export class MessagesPanel extends Component {
 }
 
 // ---------------------------------------------------------------------
-// Marcadores (recurso `bookmarks` do tema): os lembretes não lidos primeiro,
-// depois os marcadores mais recentes.
+// 书签（主题的 `bookmarks` 功能）：未读提醒在前，
+// 然后是较新的书签。
 // ---------------------------------------------------------------------
 
 export class BookmarksPanel extends Component {
@@ -370,7 +367,7 @@ export class BookmarksPanel extends Component {
         const discussion: any = post.discussion();
 
         return MenuItem({
-          className: 'CanelaUserMenu-item--bookmark bookmark',
+          className: 'LcoyUserMenu-item--bookmark bookmark',
           href: app.route.post(post),
           title: bookmark.name?.() || discussion?.title?.() || '',
           avatar: IconAvatar(user, bookmark.hasPendingReminder?.() ? 'fas fa-clock' : 'far fa-bookmark'),
@@ -385,7 +382,7 @@ export class BookmarksPanel extends Component {
     const user = app.session.user!;
 
     return [
-      <ul className="CanelaUserMenu-list">{items}</ul>,
+      <ul className="LcoyUserMenu-list">{items}</ul>,
       PanelBottom({
         showAllHref: app.routes['user.bookmarks'] ? app.route('user.bookmarks', { username: user.slug() }) : null,
         showAllTitle: umText('view_all_bookmarks'),
@@ -397,7 +394,7 @@ export class BookmarksPanel extends Component {
 }
 
 // ---------------------------------------------------------------------
-// Revisão (flarum/flags): os posts sinalizados, para a moderação.
+// 审核（flarum/flags）：被举报的帖子，供管理使用。
 // ---------------------------------------------------------------------
 
 export class ReviewPanel extends Component {
@@ -408,7 +405,7 @@ export class ReviewPanel extends Component {
 
     if (app.forum.attribute('canViewFlags') && state && typeof state.load === 'function') {
       Promise.resolve(state.load())
-        // A API marcou a fila como vista (`read_flags_at`): a bandeira do avatar sai.
+        // API 已把队列标记为已查看（`read_flags_at`）：头像上的旗帜消失。
         .then(() => app.session.user?.pushAttributes({ newFlagCount: 0 }))
         .catch(() => {});
     }
@@ -430,7 +427,7 @@ export class ReviewPanel extends Component {
       rows.push({
         date: flag.createdAt?.()?.getTime?.() || 0,
         item: MenuItem({
-          className: 'CanelaUserMenu-item--reviewable reviewable pending',
+          className: 'LcoyUserMenu-item--reviewable reviewable pending',
           unread: true,
           href: app.route.post(post),
           title: post.contentPlain?.() || '',
@@ -448,7 +445,7 @@ export class ReviewPanel extends Component {
     }
 
     return [
-      <ul className="CanelaUserMenu-list">{rows.sort((a, b) => b.date - a.date).map((row) => row.item)}</ul>,
+      <ul className="LcoyUserMenu-list">{rows.sort((a, b) => b.date - a.date).map((row) => row.item)}</ul>,
       PanelBottom({
         showAllHref: app.routes['flags'] ? app.route('flags') : null,
         showAllTitle: umText('view_all_reviewables'),
@@ -458,17 +455,17 @@ export class ReviewPanel extends Component {
 }
 
 // ---------------------------------------------------------------------
-// Perfil: os itens do menu da sessão (os do core, os do tema e os de
-// qualquer extensão que estenda `SessionDropdown.prototype.items`).
+// 个人资料：会话菜单的条目（核心的、主题的以及任何扩展
+// 扩展 `SessionDropdown.prototype.items` 添加的）。
 // ---------------------------------------------------------------------
 
 export function ProfilePanel(items: ItemList<Mithril.Children>): Mithril.Children {
   return (
     <ul
-      className="CanelaUserMenu-profile"
+      className="LcoyUserMenu-profile"
       onclick={(e: MouseEvent) => {
-        // Seguir um item (ou sair, ou trocar o tema) fecha o menu, como o
-        // `closeUserMenu` do Discourse.
+        // 跟随条目（或退出、切换主题）会关闭菜单，与 Discourse 的
+        // `closeUserMenu` 一致。
         if ((e.target as HTMLElement).closest('a, button')) userMenu.close();
       }}
     >

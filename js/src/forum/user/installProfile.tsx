@@ -1,18 +1,17 @@
 /*
- * O perfil do Discourse sobre o UserPage do core.
+ * 基于核心 UserPage 的 Discourse 资料页。
  *
- * O core desenha o perfil como um hero colorido de largura total e uma coluna
- * de navegação à esquerda. O Discourse põe tudo dentro do cartão: capa no
- * topo, avatar grande, nomes, uma linha de estatísticas e as abas embaixo.
- * O agente da casca já move o hero para dentro do cartão (PageStructure);
- * aqui o UserCard ganha as peças que faltam e a navegação vira abas.
+ * 核心把资料绘制成占满宽度的彩色 hero 和左侧导航栏。Discourse 把所有内容
+ * 放进卡片：顶部封面、大头像、名字、一行统计以及下方的标签页。
+ * 外壳的代理已经把 hero 移进卡片（PageStructure）；
+ * 这里为 UserCard 补上缺少的部件，并把导航变成标签页。
  *
- * Como no Discourse, o cabeçalho completo (capa, bio, estatísticas) só
- * aparece no Resumo; nas outras abas ele encolhe para avatar pequeno e nomes
- * (`.collapsed-info`), e a lista ocupa a tela.
+ * 与 Discourse 一致，完整头部（封面、简介、统计）只在摘要页显示；
+ * 其他标签页中它收缩为小头像和名字（`.collapsed-info`），
+ * 列表占据整个屏幕。
  *
- * Tudo só vale para o cartão do perfil (`.UserHero`): o mesmo UserCard
- * aparece como popover nos posts, e lá fica como está.
+ * 所有这些只对资料卡片（`.UserHero`）生效：同一个 UserCard 也会作为
+ * 帖子中的 popover 出现，那里保持原样。
  */
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
@@ -42,34 +41,32 @@ import { currentTab, tabUrl, TAB_ICONS, visibleTabs } from './preferences/tabs';
 import { isTagsEnabled } from '../utils/tags';
 import PostListState from 'flarum/forum/states/PostListState';
 import { userIcons } from '../utils/userIcons';
-import { userCoverUrl } from '../features/profile';
+import { userCoverUrl } from '../thirdparty/profileCover';
 
-/** Itens do UserCard que a linha de estatísticas passa a mostrar. */
+/** 改由统计行显示的 UserCard 条目。 */
 const INFO_MOVED_TO_STATS = ['lastSeen', 'joined'];
 
 /**
- * O `ul.UserCard-info` recebe de tudo: aniversário (do tema), local e site
- * (do fof/socialprofile), a biografia (do fof/user-bio), best answer,
- * seguidores, pontos e insígnias (das extensões). Numa linha flex só, isso
- * vira duas fileiras desalinhadas com a biografia espremida ao lado dos
- * números. O perfil separa em três faixas: fatos do perfil, cápsulas de
- * números/insígnias e a biografia.
+ * `ul.UserCard-info` 会收到各种内容：位置和网站
+ *（来自 fof/socialprofile）、简介（来自 fof/user-bio）、最佳答案、
+ * 关注者、积分和徽章（来自扩展）。在单行 flex 中，这会变成
+ * 两排错位的内容，简介被挤在数字旁边。资料页把它分成三条：资料事实、
+ * 数字/徽章胶囊以及简介。
  */
-const INFO_FACTS = ['canelaBirthday', 'lastSeen', 'joined'];
+const INFO_FACTS = ['lastSeen', 'joined'];
 const INFO_BIO = ['bio'];
 
 /**
- * As abas de primeiro nível do Discourse (Resumo, Atividade, Notificações,
- * Mensagens, Convites, Emblemas, Preferências). Todo o resto — postagens,
- * tópicos, curtidas, menções e o que as extensões acrescentarem — vai para
- * a segunda linha, dentro de "Atividade".
+ * Discourse 的一级标签页（摘要、活动、通知、消息、徽章、设置）。
+ * 其余一切——帖子、主题、点赞、提及以及扩展添加的内容——进入
+ * 第二行，位于“活动”之内。
  */
-const PRIMARY_NAV_KEYS = ['summary', 'badges', 'settings', 'security', 'notifications', 'messages', 'invites'];
+const PRIMARY_NAV_KEYS = ['summary', 'badges', 'settings', 'security', 'notifications', 'messages'];
 
-/** Páginas do perfil que, para o próprio usuário, são abas das preferências. */
+/** 对用户本人而言属于设置标签页的资料页面。 */
 const PREFERENCE_PAGES = ['security', 'ignored-users'];
 
-/** As abas de "Atividade" com o nome e o ícone do Discourse. */
+/** “活动”标签页，使用 Discourse 的名称和图标。 */
 const ACTIVITY_LABELS: Record<string, { icon: string; label?: string }> = {
   posts: { icon: 'fas fa-bars', label: 'user.nav.posts' },
   discussions: { icon: 'fas fa-list-ul', label: 'user.nav.discussions' },
@@ -82,19 +79,19 @@ function isProfileHero(card: any): boolean {
 }
 
 function statsEnabled(): boolean {
-  return forumBool('canelaUserStats', true);
+  return forumBool('lcoyUserStats', true);
 }
 
 function summaryEnabled(): boolean {
-  return forumBool('canelaUserSummary', true);
+  return forumBool('lcoyUserSummary', true);
 }
 
-/** Fora do Resumo o cabeçalho encolhe, como o `.collapsed-info` do Discourse. */
+/** 摘要页之外头部会收缩，类似 Discourse 的 `.collapsed-info`。 */
 export function profileCollapsed(): boolean {
   return summaryEnabled() && app.current.get('routeName') !== 'user.summary';
 }
 
-/** O grupo cujo ícone vira o "flair" do avatar: o primeiro com ícone. */
+/** 图标成为头像“flair”的分组：第一个带图标的分组。 */
 function flairGroup(user: User): Group | null {
   const groups = ((user.groups() || []) as (Group | undefined)[]).filter((group): group is Group => !!group);
 
@@ -108,14 +105,14 @@ export default function installProfile() {
 }
 
 /**
- * As abas de postagens do perfil (Postagens, Curtidas, Menções) como o
- * `user-stream-item` do Discourse: avatar de 48px, o título do tópico como
- * link, categoria e data embaixo e o começo do texto — sem o post inteiro com
- * seus botões, que é o que o PostListItem do core desenha.
+ * 资料的帖子标签页（帖子、点赞、提及）采用 Discourse 的
+ * `user-stream-item`：48px 头像、作为链接的主题标题、
+ * 下方的分类和日期以及正文开头——不是带按钮的整篇帖子，
+ * 而那正是核心 PostListItem 绘制的内容。
  */
 function extendUserStream() {
-  // A categoria do item ("Bug • 5 dias atrás") vem das etiquetas do tópico,
-  // que a lista de postagens do core não inclui.
+  // 条目的分类（“Bug • 5 天前”）来自主题的标签，
+  // 而核心的帖子列表不包含它们。
   extend(PostListState.prototype, 'requestParams' as any, function (this: PostListState, params: any) {
     if (!isTagsEnabled() || !params) return;
 
@@ -135,18 +132,18 @@ function extendUserStream() {
 }
 
 function extendUserPage() {
-  // A classe própria liga o layout em coluna (cartão, abas, conteúdo) sem
-  // depender do `Page--vertical` do core, que foi pensado para o IndexPage.
+  // 独立的类启用列布局（卡片、标签页、内容），
+  // 不依赖核心为 IndexPage 设计的 `Page--vertical`。
   extend(UserPage.prototype, 'view', function (this: UserPage, vnode: Mithril.Vnode<any, any>) {
     if (!vnode || !vnode.attrs) return;
 
-    vnode.attrs.className = classList(vnode.attrs.className, 'CanelaUserPage', {
-      'CanelaUserPage--collapsed': profileCollapsed(),
+    vnode.attrs.className = classList(vnode.attrs.className, 'LcoyUserPage', {
+      'LcoyUserPage--collapsed': profileCollapsed(),
     });
   });
 
-  // Sem o AffixedSidebar nem o SelectDropdown: duas linhas de abas no fluxo,
-  // abaixo do cartão, como a `user-navigation` do Discourse.
+  // 不用 AffixedSidebar 和 SelectDropdown：在卡片下方、文档流中放两行
+  // 标签页，类似 Discourse 的 `user-navigation`。
   override(UserPage.prototype, 'sidebar', function (this: UserPage) {
     const nav = this.navItems();
     const primary = new ItemList<Mithril.Children>();
@@ -157,13 +154,13 @@ function extendUserPage() {
 
     Object.entries(nav.toObject()).forEach(([key, item]) => {
       if (/separator/i.test(key)) return;
-      // Segurança e Ignorados viram abas das preferências, como no Discourse.
+      // 安全与忽略成为设置标签页，与 Discourse 一致。
       if (self && PREFERENCE_PAGES.includes(key)) return;
 
       const content = item.content as any;
 
-      // "Configurações" é a entrada das preferências: abre na aba Conta e
-      // fica ativa em todas as abas.
+      // “设置”是设置页的入口：在“账户”标签页打开，
+      // 并在所有标签页中保持激活。
       if (key === 'settings' && self && content?.attrs) {
         content.attrs.href = tabUrl(this.user!, 'account');
         content.attrs.active = !!prefTab;
@@ -171,8 +168,8 @@ function extendUserPage() {
       }
       const relabel = ACTIVITY_LABELS[key];
 
-      // Os nomes e ícones do `user-navigation-secondary` do Discourse
-      // ("Postagens", "Tópicos", o coração das curtidas) no lugar dos do core.
+      // 用 Discourse 的 `user-navigation-secondary` 中的名称和图标
+      //（“帖子”、“主题”、点赞的爱心）取代核心的。
       if (relabel && content?.attrs) {
         content.attrs.icon = relabel.icon;
         if (relabel.label) content.children = [t(relabel.label)];
@@ -183,9 +180,9 @@ function extendUserPage() {
         return;
       }
 
-      // A ordem do Discourse (Tópicos, Respostas, Lidos, Rascunhos, Curtidas,
-      // Favoritos, Reações, Votos, Resolvido…); as abas de outras extensões
-      // vêm depois, na ordem delas.
+      // Discourse 的顺序（主题、回复、已读、草稿、点赞、
+      // 收藏、反应、投票、已解决…）；其他扩展的标签页
+      // 随后按它们自己的顺序排列。
       const order = ACTIVITY_ORDER.indexOf(key);
       activity.add(key, content as Mithril.Children, order === -1 ? item.priority : 1000 - order);
     });
@@ -204,11 +201,11 @@ function extendUserPage() {
     }
 
     return (
-      <nav className="UserPage-nav CanelaUserNav">
-        <ul className="CanelaUserNav-primary">{listItems(primary.toArray())}</ul>
-        {activityActive && <ScrollNav className="CanelaUserNav-secondary">{listItems(activity.toArray())}</ScrollNav>}
+      <nav className="UserPage-nav LcoyUserNav">
+        <ul className="LcoyUserNav-primary">{listItems(primary.toArray())}</ul>
+        {activityActive && <ScrollNav className="LcoyUserNav-secondary">{listItems(activity.toArray())}</ScrollNav>}
         {prefTab && (
-          <ul className="CanelaUserNav-secondary CanelaUserNav-prefs">
+          <ul className="LcoyUserNav-secondary LcoyUserNav-prefs">
             {visibleTabs(this.user!).map((tab) => (
               <li className={`item-${tab}`}>
                 <LinkButton href={tabUrl(this.user!, tab)} icon={TAB_ICONS[tab]} active={tab === prefTab}>
@@ -229,26 +226,26 @@ function extendProfileHero() {
 
     const user: User = this.attrs.user;
     const collapsed = profileCollapsed();
-    // Sem imagem de capa enviada, a faixa não aparece: o perfil fica com o
-    // topo limpo, em vez de um degradê genérico (pedido do usuário).
-    const cover = forumBool('canelaUserCover', true) && !collapsed && !!userCoverUrl(user);
+    // 未上传封面图时不显示该条带：资料页保持干净的顶部，
+    // 而不是使用通用渐变（用户要求）。
+    const cover = forumBool('lcoyUserCover', true) && !collapsed && !!userCoverUrl(user);
 
-    vnode.attrs.className = classList(vnode.attrs.className, 'CanelaUserHero', {
-      'CanelaUserHero--cover': cover,
-      'CanelaUserHero--collapsed': collapsed,
+    vnode.attrs.className = classList(vnode.attrs.className, 'LcoyUserHero', {
+      'LcoyUserHero--cover': cover,
+      'LcoyUserHero--collapsed': collapsed,
     });
 
     const children = (Array.isArray(vnode.children) ? vnode.children : [vnode.children]) as Mithril.Children[];
 
-    if (cover) children.unshift(<div className="CanelaUserHero-cover" aria-hidden="true" />);
+    if (cover) children.unshift(<div className="LcoyUserHero-cover" aria-hidden="true" />);
 
     if (statsEnabled() && !collapsed) children.push(<UserStats user={user} />);
 
     vnode.children = children as any;
   });
 
-  // O "flair" do Discourse: o ícone do grupo num círculo na cor dele, no canto
-  // do avatar.
+  // Discourse 的“flair”：分组图标放在其颜色的圆圈中，
+  // 位于头像角落。
   extend(UserCard.prototype, 'profileItems', function (this: any, items: ItemList<Mithril.Children>) {
     if (!isProfileHero(this) || !items.has('avatar')) return;
 
@@ -256,11 +253,11 @@ function extendProfileHero() {
 
     items.setContent(
       'avatar',
-      <div className="CanelaUserHero-avatar">
+      <div className="LcoyUserHero-avatar">
         {items.get('avatar')}
         {group && (
           <span
-            className={classList('CanelaAvatarFlair', { 'CanelaAvatarFlair--colored': !!group.color() })}
+            className={classList('LcoyAvatarFlair', { 'LcoyAvatarFlair--colored': !!group.color() })}
             style={group.color() ? { '--group-color': group.color() } : undefined}
             title={group.nameSingular()}
           >
@@ -283,13 +280,12 @@ function extendProfileHero() {
     const user: User = this.attrs.user;
     const groups = ((user.groups() || []) as (Group | undefined)[]).filter((group): group is Group => !!group);
 
-    // Os grupos vão para a linha de estatísticas ("Grupos Admin, …") e o
-    // primeiro com ícone vira o flair do avatar; as insígnias redondas que
-    // sobram (suspenso, por exemplo) ficam ao lado do nome, não soltas no
-    // meio do perfil.
+    // 分组进入统计行（“分组 Admin, …”），第一个带图标的成为
+    // 头像的 flair；剩下那些圆形徽章（例如“已暂停”）放在名字
+    // 旁边，而不是散落在资料页中间。
     const badges = user.badges();
     groups.forEach((group) => badges.has(`group${group.id()}`) && badges.remove(`group${group.id()}`));
-    const badgeList = badges.isEmpty() ? null : <ul className="UserCard-badges badges CanelaUserHero-badges">{listItems(badges.toArray())}</ul>;
+    const badgeList = badges.isEmpty() ? null : <ul className="UserCard-badges badges LcoyUserHero-badges">{listItems(badges.toArray())}</ul>;
 
     if (items.has('identity')) {
       items.setContent('identity', identity(user, badgeList));
@@ -297,11 +293,10 @@ function extendProfileHero() {
 
     if (items.has('badges')) items.remove('badges');
 
-    // O `ul.UserCard-info` do core é uma linha flex livre: local/site/bio,
-    // best answer, seguidores, pontos, insígnias e a biografia (bloco) ficam
-    // todos na mesma fileira e desalinham. Aqui ele vira três faixas: fatos,
-    // cápsulas de números/insígnias e a biografia (ver CanelaProfileInfo em
-    // less/forum/User.less).
+    // 核心的 `ul.UserCard-info` 是一条自由的 flex 行：位置/网站/简介、
+    // 最佳答案、关注者、积分、徽章和简介（块级）全在同一行中，
+    // 会错位。这里把它变成三条：事实、
+    // 数字/徽章胶囊以及简介（见 less/forum/User.less 中的 LcoyProfileInfo）。
     if (items.has('info')) {
       const info = this.infoItems();
 
@@ -313,7 +308,7 @@ function extendProfileHero() {
         let bio: Mithril.Children = null;
 
         info.toArray().forEach((content: any) => {
-          // `toArray()` devolve o próprio conteúdo, com `itemName` anexado.
+          // `toArray()` 返回内容本身，并附带 `itemName`。
           const key = content?.itemName as string;
           const priority = key ? info.getPriority(key) : 0;
 
@@ -328,10 +323,10 @@ function extendProfileHero() {
 
         items.setContent(
           'info',
-          <div className="CanelaProfileInfo">
-            {!facts.isEmpty() && <ul className="CanelaProfileInfo-facts">{listItems(facts.toArray())}</ul>}
-            {!chips.isEmpty() && <ul className="CanelaProfileInfo-chips">{listItems(chips.toArray())}</ul>}
-            {bio && <div className="CanelaProfileInfo-bio">{bio}</div>}
+          <div className="LcoyProfileInfo">
+            {!facts.isEmpty() && <ul className="LcoyProfileInfo-facts">{listItems(facts.toArray())}</ul>}
+            {!chips.isEmpty() && <ul className="LcoyProfileInfo-chips">{listItems(chips.toArray())}</ul>}
+            {bio && <div className="LcoyProfileInfo-bio">{bio}</div>}
           </div>
         );
       }
@@ -344,15 +339,15 @@ function extendProfileHero() {
     const user: User = this.attrs.user;
     const controls: ItemList<Mithril.Children> = UserControls.controls(user, this);
 
-    // "Mensagem" (flarum/messages) sai do menu e vira o botão primário à
-    // direita, como no Discourse.
+    // “发消息”（flarum/messages）从菜单移出，变成右侧的主按钮，
+    // 与 Discourse 一致。
     if (controls.has('sendMessage')) {
       const message = controls.get('sendMessage') as any;
       controls.remove('sendMessage');
 
       items.add(
-        'canelaMessage',
-        <Button {...(message?.attrs || {})} className="Button Button--primary CanelaUserHero-message">
+        'lcoyMessage',
+        <Button {...(message?.attrs || {})} className="Button Button--primary LcoyUserHero-message">
           {message?.children}
         </Button>,
         110
@@ -366,10 +361,10 @@ function extendProfileHero() {
       return;
     }
 
-    // O menu de controles vira um botão redondo de ícone (⋮).
+    // 控制菜单变成一个圆形的图标按钮（⋮）。
     const dropdown = (
       <Dropdown
-        className="App-primaryControl CanelaUserHero-controls"
+        className="App-primaryControl LcoyUserHero-controls"
         menuClassName="Dropdown-menu--right"
         buttonClassName="Button Button--icon"
         label={app.translator.trans('core.forum.user_controls.button')}
@@ -386,22 +381,22 @@ function extendProfileHero() {
 }
 
 /**
- * O nome de exibição (o apelido do flarum/nicknames, como nos posts) enorme em
- * negrito, na mesma linha os ícones (selo de verificado, utils/userIcons) e as
- * insígnias; se for diferente, o username embaixo.
+ * 以粗体显示的超大显示名（flarum/nicknames 的昵称，与帖子中一致），
+ * 同一行放图标（认证徽章、utils/userIcons）和徽章；
+ * 如果不同，下方是 username。
  */
 function identity(user: User, badges: Mithril.Children = null): Mithril.Children {
   const username = user.username();
   const displayName = user.displayName() || username;
 
   return (
-    <div className="CanelaUserHero-names">
-      <h1 className="UserCard-identity CanelaUserHero-username">
+    <div className="LcoyUserHero-names">
+      <h1 className="UserCard-identity LcoyUserHero-username">
         <span className="username">{displayName}</span>
         {userIcons(user, 'profile')}
         {badges}
       </h1>
-      {displayName !== username && <h2 className="CanelaUserHero-displayName">{username}</h2>}
+      {displayName !== username && <h2 className="LcoyUserHero-displayName">{username}</h2>}
     </div>
   );
 }

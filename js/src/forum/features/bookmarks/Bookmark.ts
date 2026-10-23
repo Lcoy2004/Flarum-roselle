@@ -1,5 +1,5 @@
 /*
- * O marcador no store (`bookmarks`), espelho do BookmarkResource do PHP.
+ * store 中的书签模型（`bookmarks`），与 PHP 的 BookmarkResource 对应。
  */
 import Model from 'flarum/common/Model';
 import type Post from 'flarum/common/models/Post';
@@ -29,7 +29,7 @@ export default class Bookmark extends Model {
     return Model.hasOne<Post>('post').call(this);
   }
 
-  /** Lembrete marcado e ainda não enviado. */
+  /** 已设置提醒且尚未发送。 */
   hasPendingReminder(): boolean {
     return !!this.reminderAt() && !this.remindedAt();
   }

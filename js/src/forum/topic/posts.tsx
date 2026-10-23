@@ -1,16 +1,14 @@
 /*
- * O post no jeito do Discourse.
+ * Discourse 风格的帖子。
  *
- * - Cabeçalho: nome em negrito, nome de usuário e grupo em cinza, "em resposta
- *   a" com avatar, o lápis de editado e a data curta (link para o post).
- * - Barra de ações embaixo, alinhada à direita, só com ícones: contagem de
- *   curtidas (abre os avatares de quem curtiu) + coração, link (popover com o
- *   endereço do post), "…" que expande ali mesmo os controles do post, e
- *   "Responder" com texto. À esquerda, "N respostas", que abre as respostas
- *   embutidas abaixo do post.
+ * - 头部：粗体姓名、灰色的用户名和分组、“回复给”带头像、已编辑的铅笔
+ *   以及短日期（链接到该帖）。
+ * - 下方右对齐的操作栏，只有图标：点赞数（打开点赞者头像）+ 爱心、链接
+ *  （带帖子地址的 popover）、就地展开帖子控制项的“…”，以及带文字的“回复”。
+ *   左侧是“N 条回复”，在帖子下方展开内嵌回复。
  *
- * Os itens das extensões (likes, mentions, flags, approval…) continuam os
- * mesmos: o tema só troca a aparência e reaproveita o onclick deles.
+ * 各扩展的条目（likes、mentions、flags、approval…）保持不变：主题只更换
+ * 外观并复用它们的 onclick。
  */
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
@@ -46,7 +44,7 @@ import { decorateQuotes } from './quotes';
 import { userIcons } from '../utils/userIcons';
 import { heartIcon, openWhoReacted, type ReactorEntry } from './components/WhoReactedPopover';
 
-/** Posts respondidos já pedidos ao servidor (para não buscar de novo a cada redesenho). */
+/** 已向服务器请求过的被回复帖子（避免每次重绘都重新请求）。 */
 const requestedParents = new Set<string>();
 
 export default function installPosts(): void {
@@ -60,29 +58,29 @@ export default function installPosts(): void {
     window.clearTimeout(postUi(this).copiedTimer);
   });
 
-  // O avatar dentro de um bloco próprio, com o "flair" do grupo no canto:
-  // assim os dois descem juntos com a leitura (o avatar do Discourse é sticky).
+  // 头像放在独立的块中，角落带分组的“flair”：
+  // 这样两者随阅读一起下移（Discourse 的头像是 sticky 的）。
   extend(CommentPost.prototype, 'sideItems', function (this: any, items: ItemList<Mithril.Children>) {
     if (!items.has('avatar')) return;
 
     const user = this.attrs.post.user();
     const badges = user ? user.badges().toArray() : [];
-    // A presença como no meta.discourse.org (plugin who's online, modo "ring"):
-    // um anel verde em volta do avatar, sem pontinho.
+    // 在线状态与 meta.discourse.org 一致（who's online 插件，"ring" 模式）：
+    // 头像外一圈绿色圆环，不带圆点。
     const online = !!user && user.isOnline();
 
     items.setContent(
       'avatar',
-      <div className={online ? 'CanelaPostAvatar CanelaPostAvatar--online' : 'CanelaPostAvatar'}>
+      <div className={online ? 'LcoyPostAvatar LcoyPostAvatar--online' : 'LcoyPostAvatar'}>
         {items.get('avatar')}
-        {badges.length ? <ul className="CanelaPostAvatar-flair badges">{listItems(badges)}</ul> : null}
+        {badges.length ? <ul className="LcoyPostAvatar-flair badges">{listItems(badges)}</ul> : null}
       </div>
     );
   });
 
-  // Os ícones depois do nome (selo de verificado, emoji de status: ver
-  // utils/userIcons) ficam fora do link do autor, na linha do nome: o clique
-  // neles não abre o cartão, e o popover do selo funciona.
+  // 名字后的图标（认证徽章、状态 emoji：见 utils/userIcons）
+  // 放在作者链接之外、名字所在行：点击它们不会打开卡片，
+  // 徽章的 popover 也能正常工作。
   extend(PostUser.prototype, 'userViewItems', function (this: any, items: ItemList<Mithril.Children>, user: User) {
     const icons = userIcons(user, 'post');
     const name = items.has('postUser-name') ? (items.get('postUser-name') as any) : null;
@@ -92,21 +90,21 @@ export default function installPosts(): void {
     items.setContent('postUser-name', m(name.tag, name.attrs, [...name.children, icons]));
   });
 
-  // Citações com cabeçalho e a menção de "respondendo a" escondida: mexe no
-  // HTML já renderizado, então roda depois de cada desenho do conteúdo.
+  // 带头部的引用以及被隐藏的“回复给”提及：直接操作已渲染的
+  // HTML，因此在每次内容绘制之后运行。
   extend(CommentPost.prototype, ['oncreate', 'onupdate'], function (this: any) {
     const body = this.element?.querySelector?.('.Post-body');
 
     if (body) {
-      // A menção que marca a resposta sai do texto quando o "em resposta a"
-      // mora no cabeçalho (nos dois estilos dele).
+      // 当“回复给”位于头部（两种样式都算）时，标记回复的
+      // 提及从文本中移出。
       const replyInHeader = topicSettings.embeddedReplies() || topicSettings.replyToLine();
       decorateQuotes(body, this.attrs.post, replyInHeader ? replyMarkerId(this.attrs.post) : null);
       markUnavailableMentions(body);
     }
   });
 
-  // Sem o dropdown do core: o "…" do tema expande os controles na barra.
+  // 不用核心的 dropdown：主题的“…”在操作栏中就地展开控制项。
   override(CommentPost.prototype, 'controls', function (this: any, original: () => Mithril.Children[]) {
     return topicSettings.postActions() ? [] : original();
   });
@@ -123,7 +121,7 @@ export default function installPosts(): void {
     buildHeader(this, items);
   });
 
-  // O post respondido abre acima do post inteiro, como o "embedded post" do topo.
+  // 被回复的帖子在整篇帖子上方展开，类似顶部的 “embedded post”。
   extend(CommentPost.prototype, 'content', function (this: any, content: Mithril.Children[]) {
     const ui = postUi(this);
 
@@ -134,9 +132,8 @@ export default function installPosts(): void {
     if (parentId) content.unshift(<ParentPost id={parentId} ui={ui} />);
   });
 
-  // A data curta do Discourse ("4 h", "8 jun") com a completa no title, mas
-  // o clique continua abrindo o menu do core (data completa + link do post),
-  // como o usuário pediu.
+  // Discourse 的短日期（"4 h"、"6月8日"），完整日期放在 title 中，
+  // 但点击仍然打开核心的菜单（完整日期 + 帖子链接），按用户要求。
   extend(PostMeta.prototype, 'viewItems', function (this: any, items: ItemList<Mithril.Children>) {
     const post = this.attrs.post;
     const time: Date | undefined = post.createdAt?.();
@@ -149,18 +146,15 @@ export default function installPosts(): void {
     items.setContent('time', m(original?.tag || 'button', { ...(original?.attrs || {}), title: fullDate(time) }, label));
   });
 
-  // "Editado" vira o lápis do Discourse, com o mesmo tooltip de quem editou.
+  // “已编辑”变成 Discourse 的铅笔，并带与编辑者一致的 tooltip。
   override(PostEdited.prototype, 'view', function (this: any, original: () => Mithril.Children) {
     const post = this.attrs.post;
 
-    // Com revisões guardadas, vale o lápis do histórico (features/extras/
-    // history), que abre o modal comparando as versões, como no Discourse.
-    if (Number(post.attribute('canelaRevisionCount')) > 0) return original();
     const info = app.translator.trans('core.forum.post.edited_tooltip', { user: post.editedUser(), ago: humanTime(post.editedAt()) });
 
     return (
       <Tooltip text={extractText(info)}>
-        <span className="PostEdited CanelaPostEdited" aria-label={extractText(info)}>
+        <span className="PostEdited LcoyPostEdited" aria-label={extractText(info)}>
           <Icon name="fas fa-pencil-alt" />
         </span>
       </Tooltip>
@@ -169,28 +163,28 @@ export default function installPosts(): void {
 }
 
 // ---------------------------------------------------------------------------
-// Cabeçalho
+// 头部
 // ---------------------------------------------------------------------------
 
 function buildHeader(post: any, items: ItemList<Mithril.Children>) {
   const model: PostModel = post.attrs.post;
   const user = model.user();
 
-  // A ordem do Discourse: nome em negrito, o nome de usuário (quando é
-  // outro) e o título em cinza (features/profile). O grupo não entra em
-  // texto: ele já aparece como flair no avatar.
+  // Discourse 的顺序：粗体姓名，然后是用户名（不同名时）。
+  // 分组不出现在文字中：
+  // 它已经作为 flair 显示在头像上。
   if (user && user.username() !== user.displayName()) {
     items.add(
-      'canelaNames',
-      <span className="CanelaPostNames">
-        <span className="CanelaPostNames-username">{user.username()}</span>
+      'lcoyNames',
+      <span className="LcoyPostNames">
+        <span className="LcoyPostNames-username">{user.username()}</span>
       </span>,
       95
     );
   }
 
-  // O "…" do core que mostra o conteúdo do post excluído repetia o "…" da
-  // barra de ações logo abaixo: vira um olho, com rótulo.
+  // 核心中用于显示已删除帖子内容的“…”与紧邻下方操作栏的“…”
+  // 重复：改为带标签的眼睛图标。
   if (items.has('toggle')) {
     const original = items.get('toggle') as any;
     const open = !!post.revealContent;
@@ -200,7 +194,7 @@ function buildHeader(post: any, items: ItemList<Mithril.Children>) {
       'toggle',
       <Button
         {...(original?.attrs || {})}
-        className="Button Button--icon Button--flat Button--more CanelaPostReveal"
+        className="Button Button--icon Button--flat Button--more LcoyPostReveal"
         icon={open ? 'far fa-eye-slash' : 'far fa-eye'}
         aria-label={label}
         aria-pressed={open ? 'true' : 'false'}
@@ -209,8 +203,8 @@ function buildHeader(post: any, items: ItemList<Mithril.Children>) {
     );
   }
 
-  // O "em resposta a" do avocado: uma linha embaixo do nome ("↳ Em resposta
-  // a [avatar] Fulano") no lugar do "↩ Fulano" à direita do cabeçalho.
+  // avocado 的“回复给”：名字下方一行（“↳ 回复给 [头像] 某某”），
+  // 取代头部右侧的“↩ 某某”。
   const line = topicSettings.replyToLine();
   const embedded = topicSettings.embeddedReplies();
 
@@ -218,15 +212,15 @@ function buildHeader(post: any, items: ItemList<Mithril.Children>) {
 
   const parentId = parentPostId(model);
 
-  // Na linha do avocado ele aparece também quando o post respondido é o de
-  // cima; o do Discourse só quando não é (logo acima, ele é óbvio).
+  // 在 avocado 的样式中，被回复帖子就是上一楼时也会显示；
+  // Discourse 的样式只在不是上一楼时显示（就在上面，显而易见）。
   if (parentId && (line || !isPreviousPost(model, parentId))) {
     const ui = postUi(post);
     const parent = app.store.getById<PostModel>('posts', parentId);
-    const mentioned = mentionText(model, parentId);
-    // O post respondido pode não estar carregado (fora da página atual do
-    // stream): o autor sai do store pelo nome da menção e, se nem ele estiver,
-    // o post é buscado uma vez para o avatar aparecer.
+    const mentioned = mentionInfo(model).text;
+    // 被回复的帖子可能尚未加载（不在 stream 当前页中）：
+    // 作者按提及名从 store 中取；如果连作者也没有，
+    // 则请求一次帖子以显示头像。
     const parentUser =
       (parent ? parent.user() : null) ||
       (typeof mentioned === 'string' ? app.store.getBy<any>('users', 'username', mentioned.replace(/^@/, '')) || null : null);
@@ -241,8 +235,8 @@ function buildHeader(post: any, items: ItemList<Mithril.Children>) {
 
     const name = parentUser ? username(parentUser) : mentioned;
 
-    // Com as respostas embutidas o clique abre o post respondido acima deste;
-    // sem elas (só na linha do avocado), leva até ele.
+    // 启用内嵌回复时，点击在上方打开被回复的帖子；
+    // 未启用时（仅 avocado 样式），跳转到它。
     const onclick = () => {
       if (embedded) {
         togglePostUi(ui, 'parent');
@@ -252,18 +246,18 @@ function buildHeader(post: any, items: ItemList<Mithril.Children>) {
     };
 
     items.add(
-      'canelaReplyTo',
+      'lcoyReplyTo',
       <button
         type="button"
-        className={classList('CanelaReplyTo', { 'CanelaReplyTo--open': embedded && ui.parent, 'CanelaReplyTo--line': line })}
+        className={classList('LcoyReplyTo', { 'LcoyReplyTo--open': embedded && ui.parent, 'LcoyReplyTo--line': line })}
         aria-expanded={embedded ? (ui.parent ? 'true' : 'false') : undefined}
         title={t('topic.post.in_reply_to')}
         onclick={onclick}
       >
-        <Icon name={line ? 'fas fa-reply' : 'fas fa-share'} className="CanelaReplyTo-icon" />
-        {line ? <span className="CanelaReplyTo-label">{t('topic.post.reply_to_label')}</span> : null}
+        <Icon name={line ? 'fas fa-reply' : 'fas fa-share'} className="LcoyReplyTo-icon" />
+        {line ? <span className="LcoyReplyTo-label">{t('topic.post.reply_to_label')}</span> : null}
         {parentUser ? <Avatar user={parentUser} /> : null}
-        <span className="CanelaReplyTo-name">{name}</span>
+        <span className="LcoyReplyTo-name">{name}</span>
         {userIcons(parentUser || null, 'replyTo')}
       </button>,
       5
@@ -272,8 +266,8 @@ function buildHeader(post: any, items: ItemList<Mithril.Children>) {
 }
 
 /**
- * O Discourse só mostra o "em resposta a" quando o post respondido não é o
- * imediatamente anterior — logo acima, ele é óbvio.
+ * Discourse 只在被回复的帖子不是紧邻的上一楼时才显示“回复给”
+ * ——就在上面的话显而易见。
  */
 function isPreviousPost(post: PostModel, parentId: string): boolean {
   const parent = app.store.getById<PostModel>('posts', parentId);
@@ -281,49 +275,69 @@ function isPreviousPost(post: PostModel, parentId: string): boolean {
   return !!parent && parent.discussion() === post.discussion() && parent.number() === post.number() - 1;
 }
 
+interface MentionInfo {
+  /** 本楼所回复的帖子，如果该提及是帖子提及。 */
+  id: string | null;
+  /** 提及的名字（“某某”），用于被回复帖子尚未加载时。 */
+  text: string | null;
+  /** 该提及位于第一段开头：这是“回复给”的标记。 */
+  marker: boolean;
+}
+
 /**
- * O post a que este responde: a primeira menção de post (`@fulano#123`) do
- * conteúdo. O Flarum não guarda um "respondendo a" como o Discourse, mas a
- * resposta do mentions sempre começa com essa menção.
+ * 内容中的帖子提及（`@某某#123`），每个 HTML 版本只解析一次：
+ * 帖子头部在每次绘制时都会重建，而长主题中每次绘制都新建一个
+ * DOMParser 开销很大。
+ *
+ * 本楼所回复的帖子是第一个帖子提及；Flarum 不像 Discourse 那样
+ * 保存“回复给”，但 mentions 生成的回复总是以该提及开头。
  */
-function parentPostId(post: PostModel): string | null {
+function mentionInfo(post: PostModel): MentionInfo {
   const html = post.contentHtml() || '';
-  const cache = (post as any).canelaParent as { html: string; id: string | null } | undefined;
+  const cache = (post as any).lcoyMention as { html: string; info: MentionInfo } | undefined;
 
-  if (cache && cache.html === html) return cache.id;
+  if (cache && cache.html === html) return cache.info;
 
-  let id: string | null = null;
+  const info: MentionInfo = { id: null, text: null, marker: false };
 
   if (html.indexOf('PostMention') !== -1) {
-    const link = parseHtml(html).querySelector('a.PostMention:not(.PostMention--deleted)[data-id]');
-    id = link?.getAttribute('data-id') || null;
+    const body = parseHtml(html);
+    const link = body.querySelector('a.PostMention:not(.PostMention--deleted)[data-id]');
+    const id = link?.getAttribute('data-id') || null;
+
+    if (id) {
+      const mention = body.querySelector(`a.PostMention[data-id="${id}"]`);
+
+      info.id = id;
+      info.text = (mention?.textContent || '').replace(/^@/, '').trim() || null;
+      // “回复给”的标记是位于第一段开头的提及
+      // （引用中的提及会变成引用头部）。
+      info.marker = /^\s*<p>\s*<a [^>]*class="PostMention"/.test(html);
+    }
   }
 
-  (post as any).canelaParent = { html, id };
+  (post as any).lcoyMention = { html, info };
 
-  return id;
+  return info;
+}
+
+function parentPostId(post: PostModel): string | null {
+  return mentionInfo(post).id;
 }
 
 /**
- * A menção que marca a resposta: a que abre o primeiro parágrafo (e não a de
- * uma citação, que o tema transforma em cabeçalho).
+ * 标记回复的提及：位于第一段开头的那个（而不是引用中的那个，
+ * 主题会把它变成头部）。
  */
 function replyMarkerId(post: PostModel): string | null {
-  const id = parentPostId(post);
+  const info = mentionInfo(post);
 
-  return id && /^\s*<p>\s*<a [^>]*class="PostMention"/.test(post.contentHtml() || '') ? id : null;
+  return info.marker ? info.id : null;
 }
 
-// DOMParser, e não innerHTML num <div>: o documento inerte não baixa as imagens do post.
+// 用 DOMParser，而不是 innerHTML 到 <div>：惰性文档不会下载帖子中的图片。
 function parseHtml(html: string): HTMLElement {
   return new DOMParser().parseFromString(html, 'text/html').body;
-}
-
-/** O texto da menção ("Fulano") quando o post respondido ainda não foi carregado. */
-function mentionText(post: PostModel, id: string): string {
-  const link = parseHtml(post.contentHtml() || '').querySelector(`a.PostMention[data-id="${id}"]`);
-
-  return (link?.textContent || '').replace(/^@/, '').trim();
 }
 
 interface ParentPostAttrs {
@@ -332,9 +346,9 @@ interface ParentPostAttrs {
 }
 
 /**
- * Busca o post respondido (se preciso) e o mostra embutido no topo. Um post
- * apagado ou invisível só deixa de aparecer: o alerta de erro do core seria
- * barulho demais para um clique de "ver mais".
+ * 拉取被回复的帖子（如有必要），并将其嵌入显示在顶部。已删除或不可见的
+ * 帖子就直接不显示：核心的错误提示对于一次“查看更多”点击来说
+ * 过于吵闹。
  */
 class ParentPost {
   loading = false;
@@ -361,7 +375,7 @@ class ParentPost {
     const post = app.store.getById<PostModel>('posts', vnode.attrs.id);
 
     return (
-      <div className="CanelaEmbedded CanelaEmbedded--top">
+      <div className="LcoyEmbedded LcoyEmbedded--top">
         {this.loading ? embeddedLoading() : post && !this.failed ? <EmbeddedPost post={post} direction="up" /> : null}
       </div>
     );
@@ -369,29 +383,29 @@ class ParentPost {
 }
 
 // ---------------------------------------------------------------------------
-// Barra de ações
+// 操作栏
 // ---------------------------------------------------------------------------
 
 function buildActions(component: any, items: ItemList<Mithril.Children>) {
   const post: PostModel = component.attrs.post;
   const ui = postUi(component);
 
-  // O post oculto fica como no Flarum: só os controles de moderação
-  // (restaurar, excluir de vez) — curtir, reagir e responder não valem para ele.
+  // 隐藏帖保持 Flarum 的做法：只有管理控制项
+  //（恢复、彻底删除）——点赞、反应和回复对它都不适用。
   if (post.isHidden()) {
-    ['like', 'react', 'reply', 'canelaReactions', 'canelaLikeCount'].forEach((key) => items.has(key) && items.remove(key));
+    ['like', 'react', 'reply', 'lcoyReactions', 'lcoyLikeCount'].forEach((key) => items.has(key) && items.remove(key));
     addMore(component, post, ui, items);
     return;
   }
 
   addRepliesToggle(post, ui, items);
   restyleLike(post, ui, items);
-  items.add('canelaShare', <ShareAction post={post} ui={ui} />, -10);
+  items.add('lcoyShare', <ShareAction post={post} ui={ui} />, -10);
   addMore(component, post, ui, items);
   restyleReply(post, items);
 }
 
-/** "N respostas ▾" à esquerda, que expande as respostas embutidas. */
+/** 左侧的“N 条回复 ▾”，用于展开内嵌回复。 */
 function addRepliesToggle(post: PostModel, ui: PostUi, items: ItemList<Mithril.Children>) {
   if (!topicSettings.embeddedReplies()) return;
 
@@ -400,23 +414,23 @@ function addRepliesToggle(post: PostModel, ui: PostUi, items: ItemList<Mithril.C
   if (!count) return;
 
   items.add(
-    'canelaReplies',
+    'lcoyReplies',
     <Button
-      className={classList('Button Button--flat CanelaPostAction CanelaPostAction--replies', { active: ui.replies })}
+      className={classList('Button Button--flat LcoyPostAction LcoyPostAction--replies', { active: ui.replies })}
       aria-expanded={ui.replies ? 'true' : 'false'}
       onclick={() => togglePostUi(ui, 'replies')}
     >
       {t('topic.post.replies', { count })}
-      <Icon name={ui.replies ? 'fas fa-chevron-up' : 'fas fa-chevron-down'} className="CanelaPostAction-chevron" />
+      <Icon name={ui.replies ? 'fas fa-chevron-up' : 'fas fa-chevron-down'} className="LcoyPostAction-chevron" />
     </Button>,
     1000
   );
 }
 
 /**
- * Curtidas como no Meta: à esquerda, o coração cheio com a contagem (abre os
- * avatares de quem curtiu); à direita, só o coração de curtir. Visitante vê o
- * coração e, ao clicar, a janela de entrar — o Discourse manda para o login.
+ * 与 Meta 一致的点赞：左侧是实心爱心加计数（打开点赞者头像）；
+ * 右侧只有点赞爱心。访客看到爱心，点击后出现登录窗口——
+ * Discourse 则直接跳转登录。
  */
 function restyleLike(post: PostModel, ui: PostUi, items: ItemList<Mithril.Children>) {
   if (!isExtensionEnabled('flarum-likes') || post.isHidden()) return;
@@ -428,16 +442,16 @@ function restyleLike(post: PostModel, ui: PostUi, items: ItemList<Mithril.Childr
 
   if (count > 0) {
     items.add(
-      'canelaLikeCount',
+      'lcoyLikeCount',
       <Button
-        className="Button Button--flat CanelaPostAction CanelaLikeCount"
+        className="Button Button--flat LcoyPostAction LcoyLikeCount"
         icon="fas fa-heart"
         aria-haspopup="dialog"
         aria-label={t('topic.post.who_liked')}
         title={t('topic.post.who_liked')}
         onclick={(event: MouseEvent) => openWhoReacted(event.currentTarget as HTMLElement, () => likers(post))}
       >
-        <span className="CanelaLikeCount-number">{abbreviateNumber(count)}</span>
+        <span className="LcoyLikeCount-number">{abbreviateNumber(count)}</span>
       </Button>,
       1100
     );
@@ -454,7 +468,7 @@ function restyleLike(post: PostModel, ui: PostUi, items: ItemList<Mithril.Childr
       return;
     }
 
-    // A batida do coração do Discourse (heartBump) ao curtir.
+    // 点赞时 Discourse 的心跳动画（heartBump）。
     if (!liked) ui.likeBump = Date.now();
 
     return original?.attrs?.onclick?.(event);
@@ -462,9 +476,9 @@ function restyleLike(post: PostModel, ui: PostUi, items: ItemList<Mithril.Childr
 
   const content = (
     <Button
-      className={classList('Button Button--icon Button--flat CanelaPostAction CanelaLike-toggle', {
-        'CanelaLike--liked': liked,
-        'CanelaLike--bump': liked && ui.likeBump && Date.now() - ui.likeBump < 1000,
+      className={classList('Button Button--icon Button--flat LcoyPostAction LcoyLike-toggle', {
+        'LcoyLike--liked': liked,
+        'LcoyLike--bump': liked && ui.likeBump && Date.now() - ui.likeBump < 1000,
       })}
       icon={liked ? 'fas fa-heart' : 'far fa-heart'}
       aria-label={label}
@@ -479,11 +493,11 @@ function restyleLike(post: PostModel, ui: PostUi, items: ItemList<Mithril.Childr
 }
 
 /**
- * O "Responder" do mentions (ou o do tema, sem ele), com ícone e texto. O
- * visitante não vê: no Discourse ele responde pelo botão do fim do tópico.
+ * mentions 的“回复”（没有它时用主题自带的），带图标和文字。
+ * 访客看不到：在 Discourse 中他通过主题末尾的按钮回复。
  */
 function restyleReply(post: PostModel, items: ItemList<Mithril.Children>) {
-  const className = 'Button Button--flat CanelaPostAction CanelaPostAction--reply';
+  const className = 'Button Button--flat LcoyPostAction LcoyPostAction--reply';
 
   if (!app.session.user) {
     if (items.has('reply')) items.remove('reply');
@@ -516,31 +530,31 @@ function restyleReply(post: PostModel, items: ItemList<Mithril.Children>) {
   );
 }
 
-/** O "…" do Discourse: some e dá lugar aos controles, como ícones na barra. */
+/** Discourse 的“…”：消失并让位给控制项，作为操作栏中的图标。 */
 function addMore(component: any, post: PostModel, ui: PostUi, items: ItemList<Mithril.Children>) {
   const list = PostControls.controls(post, component).toArray();
 
-  // Algumas extensões entregam o item como lista de vnodes (o "Dividir a
-  // partir daqui" do fof/split): achatada só para saber se há o que mostrar.
+  // 有些扩展把条目作为 vnode 列表返回（fof/split 的
+  // “从此处拆分”）：展平只是为了判断是否有内容可显示。
   if (!flattenControls(list).length) return;
 
-  // O "…" abre um menu com os controles (ícone + texto), em vez de espalhar
-  // os ícones na barra: com moderação, extensões e post oculto eram muitos
-  // botões numa linha (pedido do usuário).
+  // “…”打开一个带控制项（图标 + 文字）的菜单，而不是把图标
+  // 铺在操作栏上：有管理操作、扩展和隐藏帖时，一行里会有太多
+  // 按钮（用户要求）。
   items.add(
-    'canelaMore',
-    // A dica do "…" some com o menu aberto (ficaria por cima dos itens).
+    'lcoyMore',
+    // “…”的提示在菜单打开时隐藏（否则会盖在条目上）。
     <Tooltip text={t('topic.post.more_short')} tooltipVisible={ui.more ? false : undefined}>
       <Dropdown
-        className="CanelaPostMore"
-        buttonClassName="Button Button--icon Button--flat CanelaPostAction CanelaPostAction--more"
+        className="LcoyPostMore"
+        buttonClassName="Button Button--icon Button--flat LcoyPostAction LcoyPostAction--more"
         menuClassName="Dropdown-menu--right"
         icon="fas fa-ellipsis-h"
         caretIcon=""
         label=""
         accessibleToggleLabel={t('topic.post.show_more')}
-        // O post só redesenha quando `ui.version` muda (SubtreeRetainer):
-        // sem isto, o menu não reabria na segunda vez.
+        // 帖子只在 `ui.version` 变化时重绘（SubtreeRetainer）：
+        // 没有这一手，菜单第二次打不开。
         onshow={() => {
           togglePostUi(ui, 'more', true);
           m.redraw();
@@ -557,7 +571,7 @@ function addMore(component: any, post: PostModel, ui: PostUi, items: ItemList<Mi
   );
 }
 
-/** Achata os itens dos controles (vnode, lista de vnodes ou item vazio) e tira os separadores. */
+/** 展平控制项条目（vnode、vnode 列表或空条目）并去掉分隔符。 */
 function flattenControls(list: any[]): any[] {
   const out: any[] = [];
 
@@ -568,7 +582,7 @@ function flattenControls(list: any[]): any[] {
       const inner = flattenControls(item);
       const name = (item as any).itemName as string | undefined;
 
-      // O nome do item (itemName) fica na lista; os botões de dentro herdam.
+      // 条目名（itemName）保留在列表上；内部的按钮继承它。
       inner.forEach((child, i) => {
         if (child && typeof child === 'object' && !child.itemName) child.itemName = inner.length > 1 ? `${name || 'item'}-${i}` : name;
       });
@@ -587,12 +601,12 @@ interface ShareActionAttrs {
   ui: PostUi;
 }
 
-/** Quanto tempo o ícone fica como "copiado". */
+/** 图标保持“已复制”状态的时间。 */
 const COPIED_MS = 2000;
 
 /**
- * O link do Discourse: o clique copia o endereço do post na hora (sem
- * janela) e o ícone vira um "certo" por um instante.
+ * Discourse 的链接：点击立即复制帖子地址（不弹窗口），
+ * 图标短暂变成一个“对勾”。
  */
 class ShareAction {
   view(vnode: Mithril.Vnode<ShareActionAttrs, this>) {
@@ -613,12 +627,12 @@ class ShareAction {
       copyText(url).then((ok) => ok && done());
     };
 
-    // Logo depois de copiar, o retorno "Link copiado!" (motion/feedback)
-    // ocupa o lugar da dica em cima do botão.
+    // 刚复制完时，“链接已复制！”的反馈（motion/feedback）
+    // 占据按钮上方提示的位置。
     return (
       <Tooltip text={t('topic.post.share_short')} tooltipVisible={ui.share ? false : undefined}>
         <Button
-          className={classList('Button Button--icon Button--flat CanelaPostAction CanelaPostAction--share', { 'CanelaPostAction--copied': ui.share })}
+          className={classList('Button Button--icon Button--flat LcoyPostAction LcoyPostAction--share', { 'LcoyPostAction--copied': ui.share })}
           icon="fas fa-link"
           aria-label={t('topic.post.share')}
           onclick={copy}
@@ -629,7 +643,7 @@ class ShareAction {
 }
 
 // ---------------------------------------------------------------------------
-// Rodapé: quem curtiu e respostas embutidas
+// 页脚：点赞者和内嵌回复
 // ---------------------------------------------------------------------------
 
 function buildFooter(component: any, items: ItemList<Mithril.Children>) {
@@ -637,21 +651,21 @@ function buildFooter(component: any, items: ItemList<Mithril.Children>) {
   const ui = postUi(component);
 
   if (topicSettings.postActions() && isExtensionEnabled('flarum-likes')) {
-    // A frase "Fulano curtiu isto" vira o popover de quem curtiu, aberto pela
-    // contagem à esquerda da barra.
+    // “某某赞了这篇”这句话变成点赞者 popover，由操作栏左侧的
+    // 计数打开。
     items.remove('liked');
   }
 
   if (topicSettings.embeddedReplies()) {
     items.remove('replies');
 
-    if (ui.replies) items.add('canelaEmbeddedReplies', <EmbeddedReplies post={post} ui={ui} />, 90);
+    if (ui.replies) items.add('lcoyEmbeddedReplies', <EmbeddedReplies post={post} ui={ui} />, 90);
   }
 }
 
 /**
- * Quem curtiu, para o popover: os que vieram com o post e, se a contagem diz
- * que há mais, a lista inteira pela API (o filtro `liked` do flarum/likes).
+ * 点赞者，供 popover 使用：随帖子返回的用户；如果计数显示还有更多，
+ * 则通过 API 取完整列表（flarum/likes 的 `liked` 过滤器）。
  */
 export function likers(post: PostModel): Promise<ReactorEntry[]> {
   const loaded: User[] = ((post as any).likes?.() || []).filter(Boolean);
@@ -703,10 +717,10 @@ class EmbeddedReplies {
     const MentionedByModal = (flarum as any).reg.checkModule('flarum-mentions', 'forum/components/MentionedByModal');
 
     return (
-      <div className="CanelaEmbedded CanelaEmbedded--bottom">
+      <div className="LcoyEmbedded LcoyEmbedded--bottom">
         {this.loading ? embeddedLoading() : replies.map((reply) => <EmbeddedPost post={reply} direction="down" />)}
         {!this.loading && total > replies.length && MentionedByModal && (
-          <Button className="Button Button--flat CanelaEmbedded-more" onclick={() => app.modal.show(MentionedByModal, { post })}>
+          <Button className="Button Button--flat LcoyEmbedded-more" onclick={() => app.modal.show(MentionedByModal, { post })}>
             {t('topic.post.more_replies', { count: total - replies.length })}
           </Button>
         )}
@@ -716,10 +730,9 @@ class EmbeddedReplies {
 }
 
 /**
- * Menção a uma postagem que o leitor não pode ver (oculta, apagada ou num
- * tópico restrito): o mentions escreve "[desconhecido]" dentro da pílula de
- * resposta. Vira um texto discreto, sem a pílula nem o link, que não levaria
- * a lugar nenhum para quem lê.
+ * 提及了一篇读者看不到的帖子（隐藏、已删除或位于受限主题）：
+ * mentions 会在回复胶囊中写“[未知]”。改为不带胶囊和链接的普通文字，
+ * 因为对读者来说它哪里也去不了。
  */
 function markUnavailableMentions(body: HTMLElement): void {
   const unknown = extractText(app.translator.trans('flarum-mentions.forum.post_mention.deleted_text'));
@@ -727,7 +740,7 @@ function markUnavailableMentions(body: HTMLElement): void {
   body.querySelectorAll<HTMLElement>('.PostMention').forEach((link) => {
     if (link.classList.contains('PostMention--deleted') || (unknown && link.textContent?.trim() === unknown)) {
       const span = document.createElement('span');
-      span.className = 'CanelaMention-unavailable';
+      span.className = 'LcoyMention-unavailable';
       span.textContent = t('topic.post.mention_unavailable');
       link.replaceWith(span);
     }

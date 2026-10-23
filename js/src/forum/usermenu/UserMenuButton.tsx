@@ -1,15 +1,13 @@
 /*
- * O avatar do cabeçalho, que abre o menu do usuário (`.header-dropdown-toggle
- * .current-user` do Discourse). Ele herda o conteúdo do botão do menu da
- * sessão do core (`SessionDropdown.getButtonContent`), então o que outras
- * áreas põem ali — o emoji do status do perfil — continua aparecendo; só o
- * nome sai, como no Discourse.
+ * 头部的头像，用于打开用户菜单（Discourse 的 `.header-dropdown-toggle
+ * .current-user`）。它继承核心会话菜单按钮的内容
+ *（`SessionDropdown.getButtonContent`），因此其他区域放在那里的内容——
+ * 资料状态 emoji——仍然会显示；只有名字被移除，与 Discourse 一致。
  *
- * A bolha, na ordem do `user-dropdown/notifications` do Discourse: o envelope
- * verde para mensagens não lidas (`.new-pms`); a bandeira vermelha para itens
- * de revisão ainda não vistos (`.new-reviewables`); senão o número de tudo o
- * que espera no menu — as notificações não lidas (de qualquer aba, não só as
- * "novas") mais os itens pendentes da fila de revisão.
+ * 气泡按 Discourse 的 `user-dropdown/notifications` 顺序：未读消息用
+ * 绿色信封（`.new-pms`）；尚未查看的审核项用红旗（`.new-reviewables`）；
+ * 否则显示菜单中等待处理的全部数量——未读通知（任意标签页，不只是
+ * “新”通知）加上审核队列中的待处理项。
  */
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
@@ -23,14 +21,14 @@ import { umText } from './text';
 import { loadMenu } from './lazy';
 import { lazyComponent } from '../utils/lazy';
 
-// O menu aberto vem num chunk; o ponteiro ou o foco no avatar já o pede.
+// 打开的菜单在 chunk 中；指针或焦点落在头像上时就会请求。
 const UserMenu = lazyComponent(() => loadMenu().then((chunk) => chunk.UserMenu));
 const preload = () => void loadMenu().catch(() => {});
 
 export default class UserMenuButton extends Component {
   view() {
-    // Ao navegar, o menu fecha (o `routeDidChange` do Discourse). O cabeçalho
-    // é redesenhado a cada troca de rota, então basta conferir aqui.
+    // 导航时菜单关闭（Discourse 的 `routeDidChange`）。头部
+    // 每次路由切换都会重绘，因此在这里检查即可。
     if (userMenu.open && userMenu.route !== m.route.get()) userMenu.close();
 
     const user = app.session.user!;
@@ -42,13 +40,13 @@ export default class UserMenuButton extends Component {
     const label = umText('toggle');
 
     return (
-      <div className={classList('CanelaUserMenuWrap', { 'CanelaUserMenuWrap--open': userMenu.open })}>
+      <div className={classList('LcoyUserMenuWrap', { 'LcoyUserMenuWrap--open': userMenu.open })}>
         <button
           type="button"
-          className={classList('Button Button--flat CanelaUserMenuButton', { active: userMenu.open })}
+          className={classList('Button Button--flat LcoyUserMenuButton', { active: userMenu.open })}
           aria-haspopup="true"
           aria-expanded={userMenu.open ? 'true' : 'false'}
-          aria-controls="canela-user-menu"
+          aria-controls="lcoy-user-menu"
           aria-label={label}
           title={label}
           onmouseenter={preload}
@@ -61,21 +59,18 @@ export default class UserMenuButton extends Component {
         >
           {this.avatarContent()}
           {unreadDialogs > 0 ? (
-            <span
-              className="CanelaUserMenuButton-badge CanelaUserMenuButton-badge--pms"
-              title={umText('badge.new_messages', { count: unreadDialogs })}
-            >
+            <span className="LcoyUserMenuButton-badge LcoyUserMenuButton-badge--pms" title={umText('badge.new_messages', { count: unreadDialogs })}>
               <Icon name="fas fa-envelope" />
             </span>
           ) : newReviewables > 0 ? (
             <span
-              className="CanelaUserMenuButton-badge CanelaUserMenuButton-badge--reviewables"
+              className="LcoyUserMenuButton-badge LcoyUserMenuButton-badge--reviewables"
               title={umText('badge.new_reviewables', { count: newReviewables })}
             >
               <Icon name="fas fa-flag" />
             </span>
           ) : total > 0 ? (
-            <span className="CanelaUserMenuButton-badge CanelaUserMenuButton-badge--unread" title={umText('badge.unread', { count: total })}>
+            <span className="LcoyUserMenuButton-badge LcoyUserMenuButton-badge--unread" title={umText('badge.unread', { count: total })}>
               {total}
             </span>
           ) : null}
@@ -85,7 +80,7 @@ export default class UserMenuButton extends Component {
     );
   }
 
-  /** O avatar (e o que se acrescenta a ele), sem o nome de usuário. */
+  /** 头像（以及附加到它的内容），不含用户名。 */
   avatarContent(): Mithril.Children {
     const session: any = Object.create(SessionDropdown.prototype);
     session.attrs = {};
@@ -103,10 +98,10 @@ export default class UserMenuButton extends Component {
   onupdate(vnode: Mithril.VnodeDOM<any, this>) {
     super.onupdate(vnode);
 
-    // Fechado pelo Esc: o foco volta ao avatar.
+    // 通过 Esc 关闭：焦点回到头像。
     if (!userMenu.open && userMenu.restoreFocus) {
       userMenu.restoreFocus = false;
-      (this.element.querySelector('.CanelaUserMenuButton') as HTMLElement | null)?.focus();
+      (this.element.querySelector('.LcoyUserMenuButton') as HTMLElement | null)?.focus();
     }
   }
 }

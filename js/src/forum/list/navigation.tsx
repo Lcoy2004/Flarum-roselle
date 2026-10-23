@@ -1,7 +1,7 @@
 /*
- * Troca a toolbar do core (dropdown de ordenação + botões) pela barra de
- * navegação do Discourse. Só o item `toolbar` muda: o aviso de novidades do
- * realtime e o que mais as extensões puserem em contentItems fica onde está.
+ * 用 Discourse 的导航栏替换核心的工具栏（排序下拉菜单 + 按钮）。
+ * 只改变 `toolbar` 项：realtime 的新内容提示以及扩展放入
+ * contentItems 的其他内容保持原位。
  */
 import { extend } from 'flarum/common/extend';
 import IndexPage from 'flarum/forum/components/IndexPage';

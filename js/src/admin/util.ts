@@ -1,14 +1,14 @@
 /*
- * Helpers do painel do tema no admin: tradução com fallback, leitura das
- * configurações (que o core guarda como string), o POST que grava cada uma (com
- * o estado "Salvando…/Salvo" que o painel mostra) e o registro de dependências
- * entre as chaves.
+ * Admin 主题面板的辅助函数：带兜底的翻译、配置读取
+ * （核心以字符串形式保存）、保存每一项的 POST（带有
+ * 面板显示的“保存中…/已保存”状态）以及键之间的
+ * 依赖关系注册。
  */
 import app from 'flarum/admin/app';
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
 import isExtensionEnabled from 'flarum/admin/utils/isExtensionEnabled';
 
-/** Os controles recebem attrs de formato livre (settingKey, label, help…). */
+/** 控件接收自由格式的 attrs（settingKey、label、help……）。 */
 export type LooseAttrs = ComponentAttrs & Record<string, any>;
 
 export abstract class AdminComponent<A extends LooseAttrs = LooseAttrs> extends Component<A> {}
@@ -16,16 +16,16 @@ export abstract class AdminComponent<A extends LooseAttrs = LooseAttrs> extends 
 export const settings = (): Record<string, any> => (app.data as any).settings;
 
 export const trans = (key: string, fallback: string, params: Record<string, any> = {}): string => {
-  // `extract: true` faz o Translator devolver string, e não filhos do Mithril.
+  // `extract: true` 让 Translator 返回字符串，而不是 Mithril 的子节点。
   //
-  // O try/catch é obrigatório: o formatter ICU lança SyntaxError quando uma
-  // tradução da comunidade vem com tags desbalanceadas, e uma única string
-  // quebrada derrubaria a página inteira de configurações.
+  // try/catch 是必需的：当社区翻译带有不匹配的标签时，
+  // ICU formatter 会抛出 SyntaxError，而单个损坏的字符串
+  // 会导致整个设置页面崩溃。
   try {
     const translated = app.translator?.trans(key, params, true);
     if (typeof translated === 'string' && translated !== key) return translated;
   } catch (error) {
-    console.warn(`[canela] tradução inválida em "${key}"; usando o texto padrão.`, error);
+    console.warn(`[lcoy] 键 "${key}" 的翻译无效；使用默认文本。`, error);
   }
 
   return Object.entries(params).reduce<string>((text, [name, value]) => text.replace(new RegExp(`\\{${name}\\}`, 'g'), String(value)), fallback);
@@ -40,33 +40,34 @@ export const getBool = (key: string): boolean => {
 export const getStr = (key: string, fallback = ''): string => String(settings()[key] ?? fallback);
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Gravação + "Salvo"
+// 保存 + “已保存”
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
-/** Estado da gravação, lido pelo indicador da barra do painel. */
+/** 保存状态，由面板栏上的指示器读取。 */
 export const saveState: { status: SaveStatus; pending: number } = { status: 'idle', pending: 0 };
 
 let idleTimer: ReturnType<typeof setTimeout> | undefined;
 
 /**
- * O card em que a pessoa mexeu por último (clique ou foco). O "Salvo" aparece
- * nele sem que cada controle precise saber em que card mora: o painel anota o
- * card no `pointerdown`/`focusin` e a gravação o marca quando termina.
+ * 用户最后操作的卡片（点击或聚焦）。“已保存”会显示在
+ * 那张卡片上，而无需每个控件知道自己位于哪张卡片：
+ * 面板在 `pointerdown`/`focusin` 时记录卡片，
+ * 保存完成时标记它。
  */
 let lastCard: HTMLElement | null = null;
 
 export const noteInteraction = (target: EventTarget | null): void => {
-  const card = (target as HTMLElement | null)?.closest?.('.CanelaAdmin-card') as HTMLElement | null;
+  const card = (target as HTMLElement | null)?.closest?.('.LcoyAdmin-card') as HTMLElement | null;
   if (card) lastCard = card;
 };
 
 const flashCard = (card: HTMLElement | null): void => {
   if (!card?.isConnected) return;
 
-  // Atributo de dados, e não classe: o Mithril reescreve `className` quando o
-  // card muda de estado, mas não toca num atributo que ele não conhece.
+  // 使用数据属性而不是类：卡片状态变化时 Mithril 会重写
+  // `className`，但不会碰它不认识的属性。
   card.setAttribute('data-saved', String(Date.now()));
   const stamp = card.getAttribute('data-saved');
   setTimeout(() => {
@@ -74,7 +75,7 @@ const flashCard = (card: HTMLElement | null): void => {
   }, 1800);
 };
 
-/** Grava direto na API — todos os controles do painel salvam sozinhos. */
+/** 直接写入 API——面板的所有控件都会自动保存。 */
 export const saveSetting = (payload: Record<string, any>) => {
   const apiUrl = ((app.forum.attribute<string>('apiUrl') as string) || '/api').replace(/\/+$/, '');
   const card = lastCard;
@@ -110,10 +111,10 @@ export const saveSetting = (payload: Record<string, any>) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Extensões
+// 扩展
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Nomes das extensões que o tema usa, para quando ela nem está instalada. */
+/** 主题使用的扩展名称，用于扩展甚至未安装的情况。 */
 const EXTENSION_NAMES: Record<string, string> = {
   'flarum-tags': 'Tags',
   'flarum-likes': 'Likes',
@@ -140,11 +141,11 @@ export const extensionInstalled = (id: string): boolean => !!installedExtension(
 
 export const extensionOn = (id: string): boolean => isExtensionEnabled(id);
 
-/** A primeira extensão da lista que está desligada (ou não instalada). */
+/** 列表中的第一个未启用（或未安装）的扩展。 */
 export const missingExtension = (ids: string[] = []): string | null => ids.find((id) => !isExtensionEnabled(id)) ?? null;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Dependências entre chaves
+// 键之间的依赖关系
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface DepEntry {
@@ -154,10 +155,9 @@ interface DepEntry {
 }
 
 /**
- * O que cada chave liga/desliga exige para valer. Os cards registram o próprio
- * `master` (ver index.tsx); os controles registram as suas ao desenhar. Assim
- * desligar a barra lateral apaga, em cascata, tudo que depende de algo que
- * depende dela.
+ * 每个开关键生效所需的条件。卡片注册自己的
+ * `master`（见 index.tsx）；控件在绘制时注册自己的条件。
+ * 这样关闭侧边栏会级联清除所有依赖它的内容。
  */
 const DEPS: Record<string, DepEntry> = {};
 
@@ -172,7 +172,7 @@ export const registerDeps = (key: string, entry: Partial<DepEntry>): void => {
   };
 };
 
-/** A chave está ligada E tudo de que ela depende também (recursivo). */
+/** 该键已开启，并且它所依赖的一切也都开启（递归）。 */
 export const isOn = (key: string, seen: Set<string> = new Set()): boolean => {
   if (!getBool(key)) return false;
   if (seen.has(key)) return true;
@@ -186,8 +186,8 @@ export const isOn = (key: string, seen: Set<string> = new Set()): boolean => {
   return entry.deps.every((dep) => isOn(dep, seen));
 };
 
-/** A primeira dependência desligada da lista, ou `null` quando todas valem. */
+/** 列表中第一个未开启的依赖，或当所有依赖都成立时为 `null`。 */
 export const firstOff = (deps?: string | string[]): string | null => toList(deps).find((dep) => !isOn(dep)) ?? null;
 
-/** Desenha os filhos só se as dependências valem — as opções que dependem de algo desligado somem. */
+/** 仅当依赖成立时才绘制子元素——依赖已关闭内容的选项会消失。 */
 export const when = (deps: string | string[], children: any): any => (firstOff(deps) ? null : children);

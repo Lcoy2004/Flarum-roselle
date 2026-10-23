@@ -1,4 +1,4 @@
-/* O conteúdo do chunk do menu do usuário (ver lazy.ts). */
+/* 用户菜单 chunk 的内容（见 lazy.ts）。 */
 import UserMenu from './UserMenu';
 import NotificationsPageView from './NotificationsPageView';
 

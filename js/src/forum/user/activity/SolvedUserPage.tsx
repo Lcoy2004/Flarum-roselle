@@ -1,7 +1,7 @@
 /*
- * A aba "Resolvido" do perfil (como a do discourse-solved): as respostas da
- * pessoa escolhidas como melhor resposta, pelo filtro `solution` do próprio
- * fof/best-answer. Os itens são os `user-stream-item` das outras abas.
+ * 资料的“已解决”标签页（类似 discourse-solved）：此人被选为最佳答案的
+ * 回复，使用 fof/best-answer 自身的 `solution` 过滤器。条目是其他标签页
+ * 所用的 `user-stream-item`。
  */
 import PostsUserPage from 'flarum/forum/components/PostsUserPage';
 import type User from 'flarum/common/models/User';

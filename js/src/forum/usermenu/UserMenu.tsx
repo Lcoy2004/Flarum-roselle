@@ -1,26 +1,25 @@
 /*
- * O menu do usuário do Discourse (`.user-menu.revamped.menu-panel`): a lista
- * da aba ativa à esquerda (`.quick-access-panel`, 320px) e a coluna de abas
- * de ícones à direita (`.menu-tabs-container`), com as abas de cima
- * (notificações por tipo) e as de baixo (perfil) separadas por uma linha.
+ * Discourse 的用户菜单（`.user-menu.revamped.menu-panel`）：左侧是当前标签页的列表
+ *（`.quick-access-panel`，320px），右侧是一列图标标签页
+ *（`.menu-tabs-container`），上方标签页（按类型的通知）与下方标签页
+ *（个人资料）之间用一条线分隔。
  *
- * Ponto de extensão: `UserMenu.prototype.tabItems()` (abas de cima) e
- * `bottomTabItems()` (de baixo) são ItemLists de `UserMenuTab`. Outra
- * extensão acrescenta a sua aba com `extend`:
+ * 扩展点：`UserMenu.prototype.tabItems()`（上方标签页）和
+ * `bottomTabItems()`（下方标签页）是 `UserMenuTab` 的 ItemList。
+ * 其他扩展用 `extend` 添加自己的标签页：
  *
  *   extend(UserMenu.prototype, 'tabItems', function (items) {
  *     items.add('minhaAba', { id: 'minha-aba', icon: menuIcon('flag'), … }, 50);
  *   });
  *
- * Os tipos de notificação que uma aba declara em `types` saem da aba
- * "Outras notificações", como no Discourse.
+ * 某个标签页在 `types` 中声明的通知类型会从“其他通知”标签页中移出，
+ * 与 Discourse 一致。
  */
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
 import type { ComponentAttrs } from 'flarum/common/Component';
 import Button from 'flarum/common/components/Button';
 import LinkButton from 'flarum/common/components/LinkButton';
-import Separator from 'flarum/common/components/Separator';
 import SessionDropdown from 'flarum/forum/components/SessionDropdown';
 import ThemeSwitcher from 'flarum/forum/components/ThemeSwitcher';
 import ItemList from 'flarum/common/utils/ItemList';
@@ -32,29 +31,27 @@ import { DEFAULT_TAB, userMenu } from './state';
 import { LIKE_TYPES, MESSAGE_TYPES, BOOKMARK_TYPES, REPLY_TYPES, unreadCount, type NotificationFilter } from './notifications';
 import { BookmarksPanel, MessagesPanel, NotificationsPanel, ProfilePanel, ReviewPanel, emptyStates, isMessagesEnabled, um, umText } from './panels';
 import { forumBool } from '../utils/settings';
-import { profileField, userStatus } from '../features/profile/data';
-import { DEFAULT_STATUS_EMOJI, statusUntilLabel } from '../features/profile/components';
 
 export interface UserMenuTab {
-  /** Único entre as abas; vira `#quick-access-{id}` e `#user-menu-button-{id}`. */
+  /** 在标签页之间唯一；生成 `#quick-access-{id}` 和 `#user-menu-button-{id}`。 */
   id: string;
-  /** O ícone da aba (um `menuIcon(...)` ou qualquer vnode). */
+  /** 标签页图标（一个 `menuIcon(...)` 或任意 vnode）。 */
   icon: Mithril.Children;
-  /** Rótulo para `title`/`aria-label` (sem o número). */
+  /** 用于 `title`/`aria-label` 的标签（不含数字）。 */
   title: string;
-  /** Rótulo com o número de não lidas, quando houver. */
+  /** 有未读时带数字的标签。 */
   titleWithUnread?: (count: number) => string;
-  /** O número da bolha da aba; zero esconde. */
+  /** 标签页气泡上的数字；为零时隐藏。 */
   count?: () => number;
-  /** Clicar na aba já ativa leva a esta página (o `linkWhenActive`). */
+  /** 点击已激活的标签页会进入此页面（`linkWhenActive`）。 */
   href?: () => string | null;
-  /** Os tipos de notificação da aba (saem de "Outras notificações"). */
+  /** 该标签页的通知类型（从“其他通知”中移出）。 */
   types?: string[];
-  /** Aba de notificações filtradas: também vira aba na página /notifications. */
+  /** 过滤通知的标签页：也会成为 /notifications 页面的标签页。 */
   filter?: NotificationFilter;
-  /** Rótulo curto da aba na página /notifications. */
+  /** 在 /notifications 页面中标签页的短名称。 */
   pageLabel?: string;
-  /** O conteúdo da aba. */
+  /** 标签页的内容。 */
   panel: () => Mithril.Children;
 }
 
@@ -75,28 +72,23 @@ export default class UserMenu extends Component<UserMenuAttrs> {
 
     return (
       <div
-        className={classList('CanelaUserMenu', 'user-menu', 'show-avatars')}
-        id="canela-user-menu"
+        className={classList('LcoyUserMenu', 'user-menu', 'show-avatars')}
+        id="lcoy-user-menu"
         data-tab-id={current?.id}
         onkeydown={this.onkeydown.bind(this)}
       >
-        <div className="CanelaUserMenu-bodyContents">
-          <div className="CanelaUserMenu-tabs" role="tablist" aria-orientation="vertical" aria-label={umText('sr_menu_tabs')}>
-            <div className="CanelaUserMenu-tabList CanelaUserMenu-tabList--top">{top.map((tab, index) => this.tabButton(tab, index))}</div>
-            <div className="CanelaUserMenu-tabList CanelaUserMenu-tabList--bottom">
+        <div className="LcoyUserMenu-bodyContents">
+          <div className="LcoyUserMenu-tabs" role="tablist" aria-orientation="vertical" aria-label={umText('sr_menu_tabs')}>
+            <div className="LcoyUserMenu-tabList LcoyUserMenu-tabList--top">{top.map((tab, index) => this.tabButton(tab, index))}</div>
+            <div className="LcoyUserMenu-tabList LcoyUserMenu-tabList--bottom">
               {bottom.map((tab, index) => this.tabButton(tab, top.length + index))}
             </div>
           </div>
-          <div
-            className="CanelaUserMenu-panel"
-            id={`quick-access-${current?.id}`}
-            role="tabpanel"
-            aria-labelledby={`user-menu-button-${current?.id}`}
-          >
-            {/* A chave recria o conteúdo ao trocar de aba (cada uma carrega o seu). */}
+          <div className="LcoyUserMenu-panel" id={`quick-access-${current?.id}`} role="tabpanel" aria-labelledby={`user-menu-button-${current?.id}`}>
+            {/* key 会在切换标签页时重建内容（每个标签页加载自己的内容）。 */}
             {current
               ? [
-                  <div key={current.id} className="CanelaUserMenu-panelInner">
+                  <div key={current.id} className="LcoyUserMenu-panelInner">
                     {current.panel()}
                   </div>,
                 ]
@@ -110,13 +102,13 @@ export default class UserMenu extends Component<UserMenuAttrs> {
   oncreate(vnode: Mithril.VnodeDOM<UserMenuAttrs, this>) {
     super.oncreate(vnode);
 
-    // Como o `focusFirstTab` do Discourse: o foco vai para a aba ativa.
-    (this.element.querySelector('.CanelaUserMenu-tab.active') as HTMLElement | null)?.focus({ preventScroll: true });
+    // 与 Discourse 的 `focusFirstTab` 一致：焦点移到激活的标签页。
+    (this.element.querySelector('.LcoyUserMenu-tab.active') as HTMLElement | null)?.focus({ preventScroll: true });
   }
 
   /**
-   * As abas de cima, na ordem do Discourse: todas, respostas, curtidas,
-   * mensagens, marcadores, (abas de extensões), revisão e "outras".
+   * 上方标签页，按 Discourse 的顺序：全部、回复、点赞、
+   * 消息、书签、（扩展标签页）、审核和“其他”。
    */
   tabItems(): ItemList<UserMenuTab> {
     const items = new ItemList<UserMenuTab>();
@@ -210,7 +202,7 @@ export default class UserMenu extends Component<UserMenuAttrs> {
       );
     }
 
-    if (user && forumBool('canelaBookmarksEnabled', false) && app.routes['user.bookmarks']) {
+    if (user && forumBool('lcoyBookmarksEnabled', false) && app.routes['user.bookmarks']) {
       items.add(
         'bookmarks',
         {
@@ -227,7 +219,7 @@ export default class UserMenu extends Component<UserMenuAttrs> {
       );
     }
 
-    // A fila de revisão: os posts sinalizados (flarum/flags), para quem os vê.
+    // 审核队列：被举报的帖子（flarum/flags），对能看到的人显示。
     if (app.forum.attribute('canViewFlags') && (app as any).flags) {
       items.add(
         'review-queue',
@@ -247,7 +239,7 @@ export default class UserMenu extends Component<UserMenuAttrs> {
     return items;
   }
 
-  /** As abas de cima mais a "Outras notificações", com os tipos que sobraram. */
+  /** 上方标签页再加上“其他通知”，包含剩余的类型。 */
   resolvedTopTabs(): UserMenuTab[] {
     const items = this.tabItems();
 
@@ -308,9 +300,9 @@ export default class UserMenu extends Component<UserMenuAttrs> {
   }
 
   /**
-   * Os itens da aba Perfil: tudo o que o menu da sessão oferece (core, tema
-   * e extensões), mais o que o Discourse tem ali e o Flarum não: status,
-   * Resumo, Atividade, Mensagens e o modo claro/escuro.
+   * “个人资料”标签页的条目：会话菜单提供的一切（核心、主题
+   * 和扩展），再加上 Discourse 有而 Flarum 没有的：摘要、
+   * 活动、消息以及浅色/深色模式。
    */
   profileItems(): ItemList<Mithril.Children> {
     const user = app.session.user!;
@@ -319,39 +311,17 @@ export default class UserMenu extends Component<UserMenuAttrs> {
 
     const items: ItemList<Mithril.Children> = SessionDropdown.prototype.items.call(session);
 
-    // A identidade (avatar e nome) do menu da sessão não existe na aba do
-    // Discourse: o avatar já está no cabeçalho.
-    ['canelaIdentity', 'canelaIdentitySeparator'].forEach((key) => items.has(key) && items.remove(key));
+    // 会话菜单的身份（头像和名字）不在 Discourse 的
+    // 标签页中：头像已经在头部。
+    ['lcoyIdentity', 'lcoyIdentitySeparator'].forEach((key) => items.has(key) && items.remove(key));
 
-    if (profileField('status') && !items.has('canelaStatus')) {
-      const status = userStatus(user);
+    // 不要“摘要”：“个人资料”已经打开摘要（资料的默认标签页）。
 
-      items.add(
-        'canelaStatus',
-        <LinkButton className="CanelaUserMenu-status" href={app.route('settings')} icon={status ? undefined : 'fas fa-circle-plus'}>
-          {status
-            ? [
-                <span className="CanelaUserMenu-statusEmoji" aria-hidden="true">
-                  {status.emoji || DEFAULT_STATUS_EMOJI}
-                </span>,
-                <span className="CanelaUserMenu-statusText">{status.text}</span>,
-                status.until ? <span className="CanelaUserMenu-statusUntil">{statusUntilLabel(status.until)}</span> : null,
-              ]
-            : um('profile.set_custom_status')}
-        </LinkButton>,
-        200
-      );
-
-      items.add('canelaStatusSeparator', <Separator />, 150);
-    }
-
-    // Sem "Resumo": o "Perfil" já abre o resumo (aba padrão do perfil).
-
-    if (!items.has('canelaActivity')) {
+    if (!items.has('lcoyActivity')) {
       const route = app.routes['user.activity'] ? 'user.activity' : 'user.posts';
 
       items.add(
-        'canelaActivity',
+        'lcoyActivity',
         <LinkButton icon="fas fa-bars-staggered" href={app.route(route, { username: user.slug() })}>
           {um('profile.activity')}
         </LinkButton>,
@@ -378,7 +348,7 @@ export default class UserMenu extends Component<UserMenuAttrs> {
       const dark = resolved.startsWith('dark');
 
       items.add(
-        'canelaColorScheme',
+        'lcoyColorScheme',
         <Button icon={dark ? 'far fa-sun' : 'far fa-moon'} onclick={() => ThemeSwitcher.prototype.select.call(switcher, dark ? 'light' : 'dark')}>
           {um(dark ? 'profile.light_mode' : 'profile.dark_mode')}
         </Button>,
@@ -397,7 +367,7 @@ export default class UserMenu extends Component<UserMenuAttrs> {
 
     return (
       <a
-        className={classList('CanelaUserMenu-tab', `CanelaUserMenu-tab--${tab.id}`, { active })}
+        className={classList('LcoyUserMenu-tab', `LcoyUserMenu-tab--${tab.id}`, { active })}
         id={`user-menu-button-${tab.id}`}
         role="tab"
         href={href || undefined}
@@ -409,9 +379,9 @@ export default class UserMenu extends Component<UserMenuAttrs> {
         data-tab-number={position}
         onclick={(e: MouseEvent) => this.selectTab(tab, e)}
       >
-        <span className="CanelaUserMenu-tabIcon">{tab.icon}</span>
+        <span className="LcoyUserMenu-tabIcon">{tab.icon}</span>
         {count ? (
-          <span className="CanelaUserMenu-badge" aria-hidden="true">
+          <span className="LcoyUserMenu-badge" aria-hidden="true">
             {count}
           </span>
         ) : null}
@@ -420,9 +390,8 @@ export default class UserMenu extends Component<UserMenuAttrs> {
   }
 
   /**
-   * Como o `handleTabClick` do Discourse: numa aba já ativa (ou abrindo em
-   * nova aba) o link segue para a página completa; nas outras, só troca o
-   * conteúdo.
+   * 与 Discourse 的 `handleTabClick` 一致：在已激活的标签页（或在新标签页
+   * 打开）上，链接进入完整页面；其他情况只切换内容。
    */
   selectTab(tab: UserMenuTab, e: MouseEvent | KeyboardEvent): void {
     const newWindow = e instanceof MouseEvent && (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1);
@@ -444,11 +413,11 @@ export default class UserMenu extends Component<UserMenuAttrs> {
     userMenu.tab = tab.id;
   }
 
-  /** Setas para cima e para baixo percorrem as abas (`role="tablist"` vertical). */
+  /** 上下方向键在标签页间移动（纵向 `role="tablist"`）。 */
   onkeydown(e: KeyboardEvent): void {
     const target = e.target as HTMLElement;
 
-    if (!target.classList?.contains('CanelaUserMenu-tab')) return;
+    if (!target.classList?.contains('LcoyUserMenu-tab')) return;
 
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -458,7 +427,7 @@ export default class UserMenu extends Component<UserMenuAttrs> {
 
     if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) return;
 
-    const tabs = Array.from(this.element.querySelectorAll<HTMLElement>('.CanelaUserMenu-tab'));
+    const tabs = Array.from(this.element.querySelectorAll<HTMLElement>('.LcoyUserMenu-tab'));
     const index = tabs.indexOf(target);
     let next = index;
 

@@ -1,7 +1,7 @@
 /*
- * Copiar texto para a área de transferência, devolvendo se deu certo. O
- * Clipboard API só existe em contexto seguro; fora dele (http numa rede
- * local) vale o velho execCommand com um campo temporário.
+ * 将文本复制到剪贴板，并返回是否成功。
+ * Clipboard API 只在安全上下文中存在；在它之外（本地网络中的 http）
+ * 使用带临时字段的旧 execCommand。
  */
 function legacyCopy(text: string): boolean {
   const field = document.createElement('textarea');

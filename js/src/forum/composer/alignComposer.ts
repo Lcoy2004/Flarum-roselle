@@ -1,8 +1,8 @@
 /*
- * O composer (sem a prévia) fica alinhado ao cartão do conteúdo. O CSS fazia a
- * conta com --cn-main-max, o que só funciona em px: com a largura do conteúdo
- * em porcentagem (90%, largura toda) a conta saía errada e o composer ia para
- * cima da barra lateral. Aqui a posição real do cartão vira variáveis CSS.
+ * 编辑器（不含预览）与内容卡片对齐。CSS 以前用
+ * --lcoy-main-max 计算，这只在 px 下有效：当内容宽度为
+ * 百分比（90%、全宽）时计算会出错，编辑器会跑到
+ * 侧边栏上方。这里把卡片的实际位置转成 CSS 变量。
  */
 import app from 'flarum/forum/app';
 
@@ -15,15 +15,15 @@ function measure(): void {
   const root = document.documentElement;
 
   if (!card || window.innerWidth < 768) {
-    root.style.removeProperty('--cn-composer-card-left');
-    root.style.removeProperty('--cn-composer-card-room');
+    root.style.removeProperty('--lcoy-composer-card-left');
+    root.style.removeProperty('--lcoy-composer-card-room');
     return;
   }
 
   const rect = card.getBoundingClientRect();
 
-  root.style.setProperty('--cn-composer-card-left', `${Math.round(rect.left)}px`);
-  root.style.setProperty('--cn-composer-card-room', `${Math.round(rect.width)}px`);
+  root.style.setProperty('--lcoy-composer-card-left', `${Math.round(rect.left)}px`);
+  root.style.setProperty('--lcoy-composer-card-room', `${Math.round(rect.width)}px`);
 }
 
 function schedule(): void {
@@ -33,8 +33,8 @@ function schedule(): void {
 export default function installAlignComposer(): void {
   window.addEventListener('resize', schedule, { passive: true });
 
-  // O cartão muda de lugar quando a barra lateral abre/fecha (a área de
-  // conteúdo muda de largura) e é recriado a cada troca de página.
+  // 侧边栏开合时卡片会移动（内容区域宽度改变），
+  // 并且每次切换页面都会重建。
   app.beforeMount(() => {
     requestAnimationFrame(() => {
       const content = document.getElementById('content');

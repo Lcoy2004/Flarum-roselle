@@ -1,39 +1,39 @@
 /*
- * Tipos do painel do admin, num arquivo próprio para que os recursos com
- * backend (./features/*) declarem os cards deles sem importar o index.
+ * Admin 面板的类型，单独放在一个文件中，以便带后端的
+ * 功能（./features/*）声明各自的卡片而无需导入 index。
  */
 export type GroupKey = 'appearance' | 'navigation' | 'list' | 'topic' | 'composer' | 'people' | 'community' | 'moderation' | 'integrations';
 
 export interface CardDef {
-  /** Identificador estável: âncora do card, chave do Mithril e alvo dos links "depende de". */
+  /** 稳定标识符：卡片的锚点、Mithril 的键以及“依赖”链接的目标。 */
   id: string;
   group: GroupKey;
   icon: string;
   title: () => string;
-  /** O que o recurso faz, abaixo do título — continua à vista com o recurso desligado. */
+  /** 功能的作用，位于标题下方——功能关闭时仍然可见。 */
   description?: () => string;
-  /** Palavras extras para a busca — o que se digitaria procurando o card. */
+  /** 搜索的额外关键词——查找该卡片时会输入的内容。 */
   keywords: string;
   /**
-   * A chave liga/desliga do recurso, desenhada no cabeçalho do card. Desligada,
-   * o miolo some inteiro (não fica só apagado) e os cards e opções que
-   * dependem dela somem também.
+   * 功能的开关，绘制在卡片标题栏中。关闭时，
+   * 整个内容消失（不是仅被禁用），依赖它的卡片和选项
+   * 也会消失。
    */
   master?: string;
   /**
-   * Chaves que precisam estar ligadas para o card existir — normalmente o
-   * `master` de outro card. Sem elas o card some do grupo (e aparece só na
-   * nota "Ocultos" do fim, com o link para o que falta ligar).
+   * 卡片存在所必须开启的键——通常是另一张卡片的
+   * `master`。缺少它们时卡片会从组中消失（只出现在
+   * 末尾的“隐藏”说明中，并带有需要开启内容的链接）。
    */
   dependsOn?: string | string[];
   /**
-   * Extensões sem as quais o recurso não funciona (ids do Flarum, como
-   * `fof-drafts`). Sem elas o card fica à vista, mas trancado, com
-   * "Precisa da extensão X".
+   * 功能运行所必需的扩展（Flarum 的 id，例如
+   * `fof-drafts`）。缺少它们时卡片仍然可见但被锁定，
+   * 并显示“需要扩展 X”。
    */
   extensions?: string[];
-  /** Outro motivo para trancar o card (backend não carregado, provedor sem chave…), ou `null`. */
+  /** 锁定卡片的其他原因（后端未加载、提供方没有密钥……），或 `null`。 */
   lockedBy?: () => string | null;
-  /** O miolo; omitido nos cards que são só a chave do cabeçalho. */
+  /** 内容区；仅在只有标题栏开关的卡片中省略。 */
   body?: () => any;
 }

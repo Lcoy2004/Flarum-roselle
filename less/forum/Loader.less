@@ -1,25 +1,25 @@
 // ---------------------------------------------------------------------
-// Indicador de carregamento com SVG (admin: Aparência > Indicador de
-// carregamento; variáveis em src/Theme/Loader/LoaderLess.php).
+// 带 SVG 的加载指示器（后台：外观 > 加载
+// 指示器；变量位于 src/Theme/Loader/LoaderLess.php）。
 //
-// Uma regra só troca o desenho de todo `LoadingIndicator` do core, que é o
-// que a lista, os posts, o perfil, os modais, os menus, os botões com
-// `loading`, o composer e as extensões usam:
-// o anel de borda some e o SVG entra como máscara pintada com `currentColor`.
-// Assim a cor continua vindo de fora (a escolhida no admin, ou o texto do
-// botão), no claro, no escuro e com qualquer cor primária. Um SVG próprio
-// com as cores dele entra como fundo, sem máscara.
+// 一条规则即可替换核心所有 `LoadingIndicator` 的图形，使用它的包括
+// 列表、帖子、个人资料、弹窗、菜单、带 `loading` 的按钮、
+// 编辑器和扩展：
+// 边框圆环消失，SVG 作为用 `currentColor` 着色的遮罩进入。
+// 这样颜色仍来自外部（后台所选颜色，或按钮的文字色），
+// 在浅色、深色以及任意主色下都成立。自带颜色的 SVG
+// 则作为背景进入，不使用遮罩。
 //
-// Fica depois de Motion.less, que ajusta o anel do Flarum: com o padrão do
-// Flarum escolhido, nada daqui entra na folha.
+// 它位于 Motion.less 之后，后者会调整 Flarum 的圆环：若选择 Flarum
+// 默认样式，本文件不会进入样式表。
 // ---------------------------------------------------------------------
 
-// O desenho: máscara (uma cor, a do texto) ou imagem (as cores do SVG). Sem o
-// atalho `mask: … center / contain`: o less.php leria a barra como divisão.
-.cn-loader-paint() when (@config-canela-loader-tint = true) {
+// 图形：遮罩（单色，即文字色）或图片（SVG 本身的颜色）。不要用
+// 简写 `mask: … center / contain`：less.php 会把斜杠读作除法。
+.lcoy-loader-paint() when (@config-lcoy-loader-tint = true) {
   background: currentColor;
-  -webkit-mask-image: var(--cn-loader);
-  mask-image: var(--cn-loader);
+  -webkit-mask-image: var(--lcoy-loader);
+  mask-image: var(--lcoy-loader);
   -webkit-mask-position: center;
   mask-position: center;
   -webkit-mask-size: contain;
@@ -28,75 +28,75 @@
   mask-repeat: no-repeat;
 }
 
-.cn-loader-paint() when not (@config-canela-loader-tint = true) {
+.lcoy-loader-paint() when not (@config-lcoy-loader-tint = true) {
   background-color: transparent;
-  background-image: var(--cn-loader);
+  background-image: var(--lcoy-loader);
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
 }
 
-& when (@config-canela-loader-on = true) {
+& when (@config-lcoy-loader-on = true) {
   :root {
-    --cn-loader: @config-canela-loader-image;
-    --cn-loader-color: @config-canela-loader-color;
-    --cn-loader-scale: @config-canela-loader-scale;
+    --lcoy-loader: @config-lcoy-loader-image;
+    --lcoy-loader-color: @config-lcoy-loader-color;
+    --lcoy-loader-scale: @config-lcoy-loader-scale;
   }
 
   .LoadingIndicator-container {
-    color: var(--cn-loader-color);
+    color: var(--lcoy-loader-color);
   }
 
-  // Num botão, num switch ou num alerta, o indicador segue a cor do texto
-  // (como o anel do core): a cor do tema sumiria num botão primário.
+  // 在按钮、开关或提示中，指示器跟随文字颜色
+  // （与核心圆环一致）：主题色在主色按钮上会看不见。
   .Button .LoadingIndicator-container,
   .Checkbox .LoadingIndicator-container,
   .Alert .LoadingIndicator-container {
     color: inherit;
   }
 
-  // Os `!important` vencem regras de extensões que redesenham o anel (borda,
-  // cantos, giro): com elas, a máscara sairia recortada num círculo girando.
+  // 这些 `!important` 用于胜过重绘圆环的扩展规则（边框、
+  // 圆角、旋转）：否则遮罩会被裁切在一个旋转的圆中。
   .LoadingIndicator {
-    --cn-loader-box: calc(var(--size) * var(--cn-loader-scale));
+    --lcoy-loader-box: calc(var(--size) * var(--lcoy-loader-scale));
 
     flex-shrink: 0;
-    width: var(--cn-loader-box);
-    height: var(--cn-loader-box);
+    width: var(--lcoy-loader-box);
+    height: var(--lcoy-loader-box);
     border-width: 0 !important;
     border-radius: 0 !important;
     animation: none !important;
-    .cn-loader-paint();
+    .lcoy-loader-paint();
   }
 
-  // Dentro de botões e switches o tamanho acompanha o texto (o `--size` de
-  // lá), e não o tamanho escolhido: o botão não pode crescer no `loading`.
+  // 在按钮和开关内部，尺寸跟随文字（那里的 `--size`），
+  // 而不是所选尺寸：按钮不能在 `loading` 时变大。
   .Button .LoadingIndicator,
   .Checkbox .LoadingIndicator {
-    --cn-loader-box: var(--size);
+    --lcoy-loader-box: var(--size);
   }
 
-  // A primeira carga (antes do JS): o "Carregando…" do core vira o desenho,
-  // e o texto fica para os leitores de tela.
+  // 首次加载（JS 之前）：核心的"加载中…"变为该图形，
+  // 文字则留给屏幕阅读器。
   #flarum-loading {
     padding: 72px 0;
     font-size: 0;
     line-height: 0;
-    color: var(--cn-loader-color);
+    color: var(--lcoy-loader-color);
 
     &::before {
       content: "";
       display: block;
-      width: calc(40px * var(--cn-loader-scale));
-      height: calc(40px * var(--cn-loader-scale));
+      width: calc(40px * var(--lcoy-loader-scale));
+      height: calc(40px * var(--lcoy-loader-scale));
       margin: 0 auto;
-      .cn-loader-paint();
+      .lcoy-loader-paint();
     }
   }
 
-  // O ícone de "carregando" do Font Awesome (`fa-spinner`/`fa-circle-notch`
-  // girando), que algumas extensões usam no lugar do componente. Vale para o
-  // <i> e para o <svg> do Lucide que herda as classes dele.
+  // Font Awesome 的"加载中"图标（旋转的 `fa-spinner`/`fa-circle-notch`），
+  // 某些扩展用它代替该组件。适用于 <i> 以及继承其类的
+  // Lucide <svg>。
   .fa-spinner.fa-spin,
   .fa-circle-notch.fa-spin {
     display: inline-block;
@@ -104,7 +104,7 @@
     height: 1em;
     vertical-align: -0.125em;
     animation: none !important;
-    .cn-loader-paint();
+    .lcoy-loader-paint();
 
     &::before,
     > * {
@@ -112,23 +112,23 @@
     }
   }
 
-  // Sem movimento: entra a versão parada do SVG (sem as animações de CSS e de
-  // SMIL, ver LoaderLess::still) e o desenho só respira, devagar, para ainda
-  // dizer que algo está carregando.
+  // 减少动效：改用 SVG 的静止版本（不含 CSS 和
+  // SMIL 动画，见 LoaderLess::still），图形只是缓慢呼吸，
+  // 仍能表达正在加载。
   @media (prefers-reduced-motion: reduce) {
     :root {
-      --cn-loader: @config-canela-loader-still;
+      --lcoy-loader: @config-lcoy-loader-still;
     }
 
     .LoadingIndicator,
     #flarum-loading::before,
     .fa-spinner.fa-spin,
     .fa-circle-notch.fa-spin {
-      animation: cn-loader-breathe 2.4s ease-in-out infinite !important;
+      animation: lcoy-loader-breathe 2.4s ease-in-out infinite !important;
     }
   }
 
-  @keyframes cn-loader-breathe {
+  @keyframes lcoy-loader-breathe {
     0%,
     100% {
       opacity: 1;

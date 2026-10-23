@@ -1,20 +1,20 @@
 /*
- * Uma opção liga/desliga que salva sozinha.
+ * 一个自动保存的开关选项。
  *
- * - `dependsOn`: chaves que precisam valer; sem elas a opção SOME (não fica
- *   só apagada) — o pedido do painel é que o que não vale não apareça.
- * - `extension`: extensão sem a qual a opção não faz nada; sem ela a opção
- *   fica à vista, trancada, com "Precisa da extensão X" — para se saber que
- *   existe e o que falta.
+ * - `dependsOn`：必须成立的键；缺少它们时该选项会消失（而不是
+ *   仅被禁用）——面板的要求是不成立的选项不显示。
+ * - `extension`：缺少该扩展时选项不起作用；没有它时选项
+ *   仍然可见但被锁定，并显示“需要扩展 X”——以便知道它
+ *   存在以及缺少什么。
  */
 import app from 'flarum/admin/app';
 import { AdminComponent, extensionName, firstOff, getBool, missingExtension, registerDeps, saveSetting, toList, trans } from '../util';
 import { AdminSwitch } from './AdminSwitch';
 
 /**
- * Liga/desliga na hora (o painel redesenha as dependências) e grava. Se a
- * gravação falhar, a chave volta ao valor anterior: o painel não pode mostrar
- * como ligado algo que o servidor não guardou.
+ * 立即切换（面板会重绘依赖项）并保存。如果保存失败，
+ * 开关会回到之前的值：面板不能把服务器未保存的内容
+ * 显示为已开启。
  */
 export const setBool = (settingKey: string, checked: boolean) => {
   const previous = app.data.settings[settingKey];
@@ -30,9 +30,9 @@ export const setBool = (settingKey: string, checked: boolean) => {
 export const ExtensionBadge: any = {
   view({ attrs: { id } }: any) {
     return (
-      <span className="CanelaAdmin-extBadge">
+      <span className="LcoyAdmin-extBadge">
         <i className="fas fa-plug-circle-xmark" aria-hidden="true" />
-        {trans('lcoy-roselle.admin.settings.shell.requires_extension', 'Precisa da extensão {name}', { name: extensionName(id) })}
+        {trans('lcoy-roselle.admin.settings.shell.requires_extension', '需要 {name} 扩展', { name: extensionName(id) })}
       </span>
     );
   },
@@ -50,12 +50,12 @@ export default class AdminToggle extends AdminComponent {
     if (firstOff(deps)) return null;
 
     const missing = missingExtension(extensions);
-    const id = `CanelaAdmin-${String(settingKey).replace(/\W+/g, '-')}`;
+    const id = `LcoyAdmin-${String(settingKey).replace(/\W+/g, '-')}`;
 
     return (
-      <div className={`Form-group CanelaAdmin-toggle${missing ? ' is-locked' : ''}`}>
-        <div className="CanelaAdmin-toggleRow">
-          <label className="CanelaAdmin-toggleLabel" for={id}>
+      <div className={`Form-group LcoyAdmin-toggle${missing ? ' is-locked' : ''}`}>
+        <div className="LcoyAdmin-toggleRow">
+          <label className="LcoyAdmin-toggleLabel" for={id}>
             {label}
             {missing && <ExtensionBadge id={missing} />}
           </label>

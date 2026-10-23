@@ -13,17 +13,17 @@
 use Illuminate\Database\Schema\Builder;
 
 /*
- * Leva as cores do fórum para a paleta do Horizon (o tema padrão do Discourse):
- * a primária vira o violeta #595bca, de onde o tema deriva fundo, seleção e
- * links. Só troca o que ainda está no padrão — do core ou da primeira versão do
- * Canela, que usava verde e lima. Uma cor escolhida pelo admin fica como está.
+ * 将论坛颜色切换到 Horizon 调色板（Discourse 的默认主题）：
+ * 主色变为紫色 #595bca，主题由它派生背景色、选中态和链接色。
+ * 只替换仍为默认值的项 —— 无论来自核心还是 Lcoy 的第一版（当时用绿色和
+ * 青柠色）。管理员已选定的颜色保持原样。
  */
 return [
     'up' => static function (Builder $schema): void {
         $connection = $schema->getConnection();
 
-        // Uma query nova por chamada: o query builder acumula os where, e
-        // reaproveitá-lo faria a segunda cor procurar as duas chaves ao mesmo tempo.
+        // 每次调用都新建一个查询：查询构造器会累积 where 条件，
+        // 复用它会让第二个颜色同时查找两个键。
         $replace = static function (string $key, array $defaults, string $color) use ($connection): void {
             $current = $connection->table('settings')->where('key', $key)->value('value');
 
@@ -42,8 +42,8 @@ return [
         $replace('theme_secondary_color', ['#4d698e', '#c3df00'], '#3b3e56');
     },
 
-    // Desinstalar o tema não devolve as cores: a esta altura o admin já pode
-    // ter ajustado a paleta a partir delas.
+    // 卸载主题不会还原颜色：此时管理员可能已经
+    // 基于这些颜色调整过调色板。
     'down' => static function (Builder $schema): void {
     },
 ];

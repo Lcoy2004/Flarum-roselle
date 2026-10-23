@@ -7,8 +7,8 @@ namespace Lcoy\Roselle\Tests\Support;
 use Flarum\Settings\SettingsRepositoryInterface;
 
 /**
- * Configurações em memória: as classes de configuração do tema só leem
- * `get()`, e os testes não precisam do banco para isso.
+ * 内存中的配置：主题的配置类只读取 `get()`，
+ * 测试不需要为此使用数据库。
  */
 final class ArraySettings implements SettingsRepositoryInterface
 {

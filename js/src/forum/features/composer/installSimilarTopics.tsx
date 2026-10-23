@@ -1,11 +1,9 @@
 /*
- * "Sua discussão é semelhante a…" — enquanto a pessoa escreve o título de um
- * tópico novo, o Discourse procura tópicos parecidos e os mostra num balão ao
- * lado do composer, para evitar a pergunta repetida.
+ * “你的主题与以下内容相似……”——用户撰写新主题标题时，Discourse
+ * 会查找相似主题并显示在 composer 旁的气泡中，以避免提出重复问题。
  *
- * A busca começa com três palavras ou mais e espera a pessoa parar de digitar.
- * O balão some quando ela o fecha (até o título mudar de novo de verdade) ou
- * quando não há resultados.
+ * 搜索在输入三个及以上单词时开始，并等待用户停止输入。气泡在用户
+ * 关闭后消失（直到标题确实再次改变），或在没有结果时消失。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -27,7 +25,7 @@ const WAIT_MS = 700;
 
 interface SimilarState {
   title: string;
-  /** O título da última busca — só busca de novo quando ele muda de verdade. */
+  /** 上次搜索的标题——仅当它真正改变时才重新搜索。 */
   searched: string;
   results: Discussion[];
   dismissedFor: string | null;
@@ -53,7 +51,7 @@ export default function installSimilarTopics() {
         app.store
           .find<Discussion[]>('discussions', { filter: { q: title }, page: { limit: LIMIT } } as any, undefined, { errorHandler: () => {} } as any)
           .then((results) => {
-            // Uma busca mais nova já saiu: esta resposta chegou atrasada.
+            // 已发起更新的搜索：此响应属于迟到。
             if (current !== request) return;
 
             state.results = Array.from(results);
@@ -63,16 +61,16 @@ export default function installSimilarTopics() {
       }),
     };
 
-    this.canelaSimilar = state;
+    this.lcoySimilar = state;
   });
 
   extend('flarum/forum/components/DiscussionComposer', 'headerItems', function (this: any, items: ItemList<Mithril.Children>) {
-    const state: SimilarState | undefined = this.canelaSimilar;
+    const state: SimilarState | undefined = this.lcoySimilar;
 
     if (!state || !composerOn('Similar')) return;
 
-    // O headerItems roda a cada redesenho, e cada tecla no título redesenha:
-    // é aqui que a mudança do título é percebida.
+    // headerItems 在每次重绘时运行，标题中的每次按键都会触发重绘：
+    // 标题的变化正是在此被感知。
     const title = normalizeTitle(this.title?.() || '');
 
     if (title !== state.title) {
@@ -94,13 +92,13 @@ export default function installSimilarTopics() {
     if (minimized || !state.results.length || state.dismissedFor === state.searched) return;
 
     items.add(
-      'canelaSimilar',
-      <div className="CanelaSimilarTopics" role="region" aria-label={t('composer.similar.title')}>
-        <div className="CanelaSimilarTopics-header">
-          <h4 className="CanelaSimilarTopics-title">{t('composer.similar.title')}</h4>
+      'lcoySimilar',
+      <div className="LcoySimilarTopics" role="region" aria-label={t('composer.similar.title')}>
+        <div className="LcoySimilarTopics-header">
+          <h4 className="LcoySimilarTopics-title">{t('composer.similar.title')}</h4>
           <button
             type="button"
-            className="Button Button--icon Button--link CanelaSimilarTopics-close"
+            className="Button Button--icon Button--link LcoySimilarTopics-close"
             aria-label={t('composer.similar.close')}
             title={t('composer.similar.close')}
             onclick={() => (state.dismissedFor = state.searched)}
@@ -108,20 +106,20 @@ export default function installSimilarTopics() {
             <Icon name="fas fa-xmark" />
           </button>
         </div>
-        <ul className="CanelaSimilarTopics-list">
+        <ul className="LcoySimilarTopics-list">
           {state.results.map((discussion) => (
             <li key={discussion.id()}>
               <Link
-                className="CanelaSimilarTopics-item"
+                className="LcoySimilarTopics-item"
                 href={app.route.discussion(discussion)}
-                // O composer fica aberto na troca de página (é do app, não da
-                // página); minimizado, a pessoa lê o tópico e volta a ele.
+                // 切换页面时 composer 保持打开（它属于 app，而非
+                // 页面）；最小化后，用户阅读主题再返回其中。
                 onclick={() => app.composer.minimize()}
               >
-                <span className="CanelaSimilarTopics-itemTitle">{discussion.title()}</span>
-                <span className="CanelaSimilarTopics-itemMeta">
+                <span className="LcoySimilarTopics-itemTitle">{discussion.title()}</span>
+                <span className="LcoySimilarTopics-itemMeta">
                   {discussionBadges(discussion, false)}
-                  <span className="CanelaSimilarTopics-itemStats" title={fullDate(discussion.lastPostedAt() || discussion.createdAt())}>
+                  <span className="LcoySimilarTopics-itemStats" title={fullDate(discussion.lastPostedAt() || discussion.createdAt())}>
                     <Icon name="far fa-comment" /> {discussion.replyCount()} · {shortAge(discussion.lastPostedAt() || discussion.createdAt())}
                   </span>
                 </span>

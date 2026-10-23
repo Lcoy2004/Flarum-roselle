@@ -1,11 +1,11 @@
 /*
- * A barra de navegação da lista do Discourse (`.list-controls` no Horizon):
- * dropdowns de categoria/etiqueta, as abas de ordenação (Recentes, Em alta,
- * Novos, Não lidos, Melhores…), o link de Categorias, os botões de ação e o
- * "Iniciar Discussão". Fica grudada no topo do cartão ao rolar.
+ * Discourse 的列表导航栏（Horizon 中的 `.list-controls`）：
+ * 分类/标签下拉菜单、排序标签（最新、热门、
+ * 新帖、未读、最佳……）、分类链接、操作按钮以及
+ * "发起讨论"。滚动时固定在卡片顶部。
  *
- * Substitui só o item `toolbar` do IndexPage: o que extensões põem em
- * viewItems/actionItems/toolbarItems continua aqui dentro.
+ * 只替换 IndexPage 的 `toolbar` 项：扩展放入
+ * viewItems/actionItems/toolbarItems 的内容仍在这里面。
  */
 import app from 'flarum/forum/app';
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
@@ -33,18 +33,18 @@ import {
   secondaryTags,
   sortTags,
   tagSymbol,
-  type CanelaTag,
+  type LcoyTag,
 } from '../utils/tags';
 import { CORE_SORTS, activeSort, sortLabel } from './sorts';
 import SelectKit from '../composer/SelectKit';
 import { currentSortRoute, routeForSort } from './routes';
 
 export interface ListNavigationAttrs extends ComponentAttrs {
-  /** A página que fornece viewItems/actionItems — ausente na página de categorias. */
+  /** 提供 viewItems/actionItems 的页面 —— 分类页中没有。 */
   page?: IndexPage;
 }
 
-/** Ordenações do core que o Discourse não tem como aba: ficam no menu "mais". */
+/** Discourse 没有作为标签的核心排序：放在 "更多" 菜单中。 */
 const OVERFLOW_SORTS = ['oldest', 'az', 'za'];
 
 interface NavTab {
@@ -58,15 +58,15 @@ function onIndex(): boolean {
   return app.current.matches(IndexPage);
 }
 
-/** URL da lista na ordenação pedida, mantendo tag/filtros da página atual. */
+/** 按指定排序方式的列表 URL，保留当前页面的标签/过滤器。 */
 function sortHref(sort: string): string {
   const index = onIndex();
   const params: Record<string, any> = index ? { ...app.search.state.params() } : {};
   let routeName = index ? app.current.get('routeName') || 'index' : 'index';
 
-  // Na lista geral, as abas levam aos endereços do Discourse (/latest, /hot,
-  // /top…), com a ordenação na própria rota.
-  const sortRoute = forumBool('canelaListRoutes', false) ? routeForSort(sort) : null;
+  // 在总列表中，标签指向 Discourse 的地址（/latest、/hot、
+  // /top……），排序方式包含在路由本身中。
+  const sortRoute = forumBool('lcoyListRoutes', false) ? routeForSort(sort) : null;
 
   if (sortRoute && (routeName === 'index' || currentSortRoute())) {
     delete params.sort;
@@ -80,7 +80,7 @@ function sortHref(sort: string): string {
     params.sort = sort;
   }
 
-  // Parâmetros vazios só sujariam a URL ("?q=&filter=").
+  // 空参数只会弄脏 URL（"?q=&filter="）。
   Object.keys(params).forEach((key) => {
     const value = params[key];
 
@@ -90,29 +90,29 @@ function sortHref(sort: string): string {
   return app.route(routeName, params);
 }
 
-/** Linha de um dropdown da barra: uma tag ou uma opção especial. */
+/** 工具栏下拉菜单的一行：一个标签或一个特殊选项。 */
 interface DropRow {
   key: string;
   href: string;
-  tag?: CanelaTag;
-  parent?: CanelaTag;
+  tag?: LcoyTag;
+  parent?: LcoyTag;
   label?: string;
   special?: boolean;
   selected?: boolean;
 }
 
-/** `max_tags_in_filter_list` do Discourse: o resto aparece ao filtrar. */
+/** Discourse 的 `max_tags_in_filter_list`：其余的会在过滤时出现。 */
 const MAX_TAGS_IN_LIST = 30;
 
-/** Acima disso, "sem tags secundárias" viraria uma consulta com subconsultas demais. */
+/** 超过此数量时，"无二级标签" 会变成子查询过多的查询。 */
 const MAX_NEGATED_TAGS = 50;
 
 /**
- * URL de uma tag preservando a ordenação escolhida, como os dropdowns do
- * Discourse. `filter` entra na query (`filter[-tag][]=…`): o IndexPage o
- * repassa à API, e o servidor também o usa no carregamento inicial.
+ * 标签的 URL，保留所选排序，与 Discourse 的下拉菜单
+ * 相同。`filter` 进入查询（`filter[-tag][]=…`）：IndexPage 会把它
+ * 传给 API，服务端也会在初始加载时使用它。
  */
-function tagHref(tag: CanelaTag | null, filter?: Record<string, string[]>): string {
+function tagHref(tag: LcoyTag | null, filter?: Record<string, string[]>): string {
   const sort = onIndex() ? app.search.state.params().sort : undefined;
   const params: Record<string, any> = sort ? { sort } : {};
 
@@ -121,7 +121,7 @@ function tagHref(tag: CanelaTag | null, filter?: Record<string, string[]>): stri
   return tag ? app.route('tag', { tags: tag.slug(), ...params }) : app.route('index', params);
 }
 
-/** As tags negadas na URL atual (`filter[-tag]`), para marcar "nenhuma…"/"sem…". */
+/** 当前 URL 中被排除的标签（`filter[-tag]`），用于标记 "无……"/"不含……"。 */
 function negatedSlugs(): string[] {
   if (!onIndex()) return [];
 
@@ -131,42 +131,42 @@ function negatedSlugs(): string[] {
   return list.flatMap((item) => String(item).split(','));
 }
 
-/** O cabeçalho com a categoria escolhida: o badge dela, "Pai ▪ Filha" não — só ela. */
-function categoryHeader(tag: CanelaTag, parent: CanelaTag | null = null): Mithril.Children {
+/** 带所选分类的页眉：显示它的徽章，"父 ▪ 子" 不显示 —— 只有它本身。 */
+function categoryHeader(tag: LcoyTag, parent: LcoyTag | null = null): Mithril.Children {
   return (
-    <span className="CanelaNav-dropBadge">
+    <span className="LcoyNav-dropBadge">
       {parent && !tag.icon() ? splitSymbol(tag, parent) : categorySymbol(tag)}
-      <span className="CanelaNav-dropName">{tag.name()}</span>
+      <span className="LcoyNav-dropName">{tag.name()}</span>
     </span>
   );
 }
 
-/** O quadradinho em duas cores da subcategoria sem ícone. */
-function splitSymbol(tag: CanelaTag, parent: CanelaTag): Mithril.Children {
+/** 没有图标的子分类所用的双色小方块。 */
+function splitSymbol(tag: LcoyTag, parent: LcoyTag): Mithril.Children {
   const symbol: any = categorySymbol(tag);
 
   if (symbol?.attrs) {
-    symbol.attrs.className = classList(symbol.attrs.className, 'CanelaCategorySymbol--split');
-    symbol.attrs.style = { ...(symbol.attrs.style || {}), '--category-parent-color': parent.color() || 'var(--cn-primary-medium)' };
+    symbol.attrs.className = classList(symbol.attrs.className, 'LcoyCategorySymbol--split');
+    symbol.attrs.style = { ...(symbol.attrs.style || {}), '--category-parent-color': parent.color() || 'var(--lcoy-primary-medium)' };
   }
 
   return symbol;
 }
 
-/** "ícone Nome × N" (+ a descrição para visitantes), como a `category-row`. */
+/** "图标 名称 × N"（访客还会看到描述），与 `category-row` 相同。 */
 function dropRowContent(row: DropRow, symbols: boolean, showDescription: boolean): Mithril.Children {
   const tag = row.tag!;
   const count = tag.discussionCount();
   const description = symbols && showDescription ? tag.description() : null;
 
   return (
-    <span className="CanelaNav-dropRow">
-      <span className="CanelaNav-dropStatus">
-        {symbols ? (row.parent && !tag.icon() ? splitSymbol(tag, row.parent) : categorySymbol(tag)) : tagSymbol(tag, 'CanelaNav-dropTagIcon')}
-        <span className="CanelaNav-dropName">{tag.name()}</span>
-        {symbols && count > 0 && <span className="CanelaNav-dropCount">× {count}</span>}
+    <span className="LcoyNav-dropRow">
+      <span className="LcoyNav-dropStatus">
+        {symbols ? (row.parent && !tag.icon() ? splitSymbol(tag, row.parent) : categorySymbol(tag)) : tagSymbol(tag, 'LcoyNav-dropTagIcon')}
+        <span className="LcoyNav-dropName">{tag.name()}</span>
+        {symbols && count > 0 && <span className="LcoyNav-dropCount">× {count}</span>}
       </span>
-      {description && <span className="CanelaNav-dropDesc">{description}</span>}
+      {description && <span className="LcoyNav-dropDesc">{description}</span>}
     </span>
   );
 }
@@ -174,10 +174,10 @@ function dropRowContent(row: DropRow, symbols: boolean, showDescription: boolean
 export default class ListNavigation extends Component<ListNavigationAttrs> {
   view(): Mithril.Children {
     return (
-      // Grudar no topo é opção: o Horizon gruda, o meta.discourse.org não.
-      <nav className={classList('CanelaNav', { 'CanelaNav--sticky': forumBool('canelaNavSticky', false) })} aria-label={t('nav.label')}>
-        <div className="CanelaNav-start">{this.startItems().toArray()}</div>
-        <div className="CanelaNav-end">{this.endItems().toArray()}</div>
+      // 固定在顶部是可选项：Horizon 会固定，meta.discourse.org 不会。
+      <nav className={classList('LcoyNav', { 'LcoyNav--sticky': forumBool('lcoyNavSticky', false) })} aria-label={t('nav.label')}>
+        <div className="LcoyNav-start">{this.startItems().toArray()}</div>
+        <div className="LcoyNav-end">{this.endItems().toArray()}</div>
       </nav>
     );
   }
@@ -186,8 +186,8 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
     const items = new ItemList<Mithril.Children>();
     const page = this.attrs.page;
 
-    if (isTagsEnabled() && forumBool('canelaNavDropdowns', true)) {
-      items.add('dropdowns', <div className="CanelaNav-dropdowns">{this.dropdownItems().toArray()}</div>, 100);
+    if (isTagsEnabled() && forumBool('lcoyNavDropdowns', true)) {
+      items.add('dropdowns', <div className="LcoyNav-dropdowns">{this.dropdownItems().toArray()}</div>, 100);
     }
 
     const tabs = this.tabs();
@@ -195,34 +195,34 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
 
     items.add(
       'tabs',
-      <ul className="CanelaNav-tabs">
+      <ul className="LcoyNav-tabs">
         {tabs.map((tab) => (
-          <li className={classList('CanelaNav-tab', `CanelaNav-tab--${tab.key}`, { active: tab.active })}>
+          <li className={classList('LcoyNav-tab', `LcoyNav-tab--${tab.key}`, { active: tab.active })}>
             <Link href={tab.href} force={true} aria-current={tab.active ? 'page' : undefined}>
               {tab.label}
             </Link>
           </li>
         ))}
-        {overflow.length > 0 && <li className="CanelaNav-tab CanelaNav-tab--more">{this.overflowDropdown(overflow)}</li>}
+        {overflow.length > 0 && <li className="LcoyNav-tab LcoyNav-tab--more">{this.overflowDropdown(overflow)}</li>}
       </ul>,
       90
     );
 
-    // No celular as abas viram um seletor só ("Recentes ⇅").
-    items.add('select', <div className="CanelaNav-select">{this.compactSelect([...tabs, ...overflow])}</div>, 80);
+    // 在移动端，标签页变成一个选择器（"最新 ⇅"）。
+    items.add('select', <div className="LcoyNav-select">{this.compactSelect([...tabs, ...overflow])}</div>, 80);
 
     if (page) {
-      // Itens que extensões põem ao lado da ordenação (filtros, por exemplo).
+      // 扩展放在排序旁边的项（例如过滤器）。
       const view = page.viewItems();
       view.remove('sort');
 
-      if (!view.isEmpty()) items.add('view', <ul className="CanelaNav-view">{listItems(view.toArray())}</ul>, 70);
+      if (!view.isEmpty()) items.add('view', <ul className="LcoyNav-view">{listItems(view.toArray())}</ul>, 70);
 
       const toolbar = page.toolbarItems();
       toolbar.remove('view');
       toolbar.remove('action');
 
-      if (!toolbar.isEmpty()) items.add('toolbar', <div className="CanelaNav-extra">{toolbar.toArray()}</div>, 60);
+      if (!toolbar.isEmpty()) items.add('toolbar', <div className="LcoyNav-extra">{toolbar.toArray()}</div>, 60);
     }
 
     return items;
@@ -235,19 +235,19 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
     if (page) {
       const actions = page.actionItems();
 
-      // A lupa que o core põe aqui no celular repetiria a do cabeçalho.
+      // 核心在移动端放在这里的放大镜会与页眉的重复。
       actions.remove('search');
 
-      if (!actions.isEmpty()) items.add('actions', <ul className="CanelaNav-actions">{listItems(actions.toArray())}</ul>, 100);
+      if (!actions.isEmpty()) items.add('actions', <ul className="LcoyNav-actions">{listItems(actions.toArray())}</ul>, 100);
     }
 
-    // O Discourse só mostra "Iniciar Discussão" a quem está logado.
+    // Discourse 只向已登录用户显示 "发起讨论"。
     if (app.session.user) items.add('newTopic', this.newTopicButton(), 50);
 
     return items;
   }
 
-  /** As abas na ordem do Discourse; ordenações de extensões entram depois de "Melhores". */
+  /** 按 Discourse 顺序排列的标签页；扩展的排序方式排在 "最佳" 之后。 */
   tabs(): NavTab[] {
     const sortMap = app.discussions.sortMap();
     const index = onIndex();
@@ -266,8 +266,8 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
       active: current === key,
     }));
 
-    // Dentro de uma categoria o Discourse não mostra a aba "Categorias".
-    if (isTagsEnabled() && forumBool('canelaNavCategoriesLink', true) && !currentTag()) {
+    // 在分类内部，Discourse 不显示 "分类" 标签。
+    if (isTagsEnabled() && forumBool('lcoyNavCategoriesLink', true) && !currentTag()) {
       tabs.push({
         key: 'categories',
         label: t('nav.categories_link'),
@@ -280,10 +280,10 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
   }
 
   /**
-   * Ordenações que vão para o menu "mais". "Novos" do Discourse é a lista de
-   * tópicos não vistos, que só existe para quem está logado; para visitantes
-   * o "mais novos" do Flarum fica no menu, e as abas são as do Meta
-   * deslogado (Recentes, Em alta, Melhores, Categorias).
+   * 放入 "更多" 菜单的排序方式。Discourse 的 "新帖" 是未查看主题
+   * 的列表，只对已登录用户存在；对访客来说，
+   * Flarum 的 "最新" 留在菜单中，标签页则是 Meta
+   * 未登录状态下的那些（最新、热门、最佳、分类）。
    */
   overflowKeys(): string[] {
     return app.session.user ? OVERFLOW_SORTS : ['newest', ...OVERFLOW_SORTS];
@@ -308,8 +308,8 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
 
     return (
       <Dropdown
-        className={classList('CanelaNav-more', { active: !!active })}
-        buttonClassName="Button Button--text CanelaNav-moreButton"
+        className={classList('LcoyNav-more', { active: !!active })}
+        buttonClassName="Button Button--text LcoyNav-moreButton"
         menuClassName="Dropdown-menu--right"
         label={active ? active.label : <Icon name="fas fa-ellipsis-h" />}
         caretIcon={active ? 'fas fa-caret-down' : ''}
@@ -327,7 +327,7 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
   compactSelect(tabs: NavTab[]): Mithril.Children {
     return (
       <SelectDropdown
-        buttonClassName="Button Button--text CanelaNav-selectButton"
+        buttonClassName="Button Button--text LcoyNav-selectButton"
         caretIcon="fas fa-discourse-chevron-expand"
         defaultLabel={t('nav.latest')}
         accessibleToggleLabel={t('nav.sort_label')}
@@ -345,10 +345,10 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
     const items = new ItemList<Mithril.Children>();
     const tag = currentTag();
 
-    // Na página de uma categoria filha, o primeiro dropdown mostra a mãe e o
-    // segundo, a filha — como "Suporte › Instalação" no Discourse.
+    // 在子分类页面上，第一个下拉菜单显示父分类，第二个
+    // 显示子分类 —— 与 Discourse 中的 "支持 › 安装" 相同。
     const isCategory = !!tag && (tag.position() !== null || tag.isChild());
-    const parent = tag && tag.isChild() ? (tag.parent() as CanelaTag | null) || null : null;
+    const parent = tag && tag.isChild() ? (tag.parent() as LcoyTag | null) || null : null;
     const category = isCategory ? parent || tag : null;
     const subcategory = isCategory && parent ? tag : null;
     const label = tag && !isCategory ? tag : null;
@@ -366,7 +366,7 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
       items.add(
         'categories',
         this.drop({
-          className: 'CanelaNav-drop--categories',
+          className: 'LcoyNav-drop--categories',
           selected: !!category,
           header: category ? categoryHeader(category) : t('nav.categories'),
           label: t('nav.categories'),
@@ -377,12 +377,12 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
       );
     }
 
-    const children = category ? sortTags(((category.children() || []) as CanelaTag[]).filter(Boolean)) : [];
+    const children = category ? sortTags(((category.children() || []) as LcoyTag[]).filter(Boolean)) : [];
 
     if (category && children.length) {
-      // "nenhuma tag filha": a categoria mãe sem nenhuma das filhas, com o
-      // filtro negado do flarum/tags (`filter[-tag][]=filha`, um grupo por
-      // filha, para valer "nenhuma" e não "não todas").
+      // "不含子标签"：父分类且不含任何子标签，使用 flarum/tags 的
+      // 排除过滤器（`filter[-tag][]=子标签`，每个子标签一组，
+      // 以便表示 "都不含" 而不是 "不全部含"）。
       const childSlugs = children.map((child) => child.slug());
       const noSub = !subcategory && childSlugs.length > 0 && childSlugs.every((slug) => negated.includes(slug));
       const rows: DropRow[] = [];
@@ -397,7 +397,7 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
       items.add(
         'subcategories',
         this.drop({
-          className: 'CanelaNav-drop--subcategories',
+          className: 'LcoyNav-drop--subcategories',
           selected: !!subcategory || noSub,
           header: subcategory ? categoryHeader(subcategory, category) : noSub ? t('nav.no_subcategory') : t('nav.subcategories'),
           label: t('nav.subcategories'),
@@ -411,8 +411,8 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
     const labels = secondaryTags();
 
     if (labels.length) {
-      // "sem tags secundárias": nenhuma das etiquetas (as categorias ficam de fora,
-      // como no Discourse). Com etiquetas demais, a consulta ficaria pesada.
+      // "不含二级标签"：不包含任何标签（分类除外，
+      // 与 Discourse 相同）。标签过多时，查询会变得很重。
       const labelSlugs = labels.map((item) => item.slug());
       const noTagsSupported = labelSlugs.length <= MAX_NEGATED_TAGS;
       const noTags = noTagsSupported && labelSlugs.every((slug) => negated.includes(slug));
@@ -427,12 +427,12 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
       items.add(
         'tags',
         this.drop({
-          className: 'CanelaNav-drop--tags',
+          className: 'LcoyNav-drop--tags',
           selected: !!label || noTags,
           header: label ? (
-            <span className="CanelaNav-dropBadge">
-              {tagSymbol(label, 'CanelaNav-dropTagIcon')}
-              <span className="CanelaNav-dropName">{label.name()}</span>
+            <span className="LcoyNav-dropBadge">
+              {tagSymbol(label, 'LcoyNav-dropTagIcon')}
+              <span className="LcoyNav-dropName">{label.name()}</span>
             </span>
           ) : noTags ? (
             t('nav.no_tags')
@@ -452,9 +452,9 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
   }
 
   /**
-   * O `category-drop`/`tag-drop` do Discourse: cabeçalho com "›" que vira
-   * "⌄" aberto, corpo com "Pesquisar…" e a lupa, as opções especiais em
-   * negrito na cor de destaque e as categorias "ícone Nome × N".
+   * Discourse 的 `category-drop`/`tag-drop`：带 "›" 的页眉打开后
+   * 变成 "⌄"，主体中有 "搜索…" 和放大镜，特殊选项以
+   * 强调色加粗显示，分类为 "图标 名称 × N"。
    */
   drop(options: {
     className: string;
@@ -466,8 +466,8 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
     limit?: number;
   }): Mithril.Children {
     const { rows, limit } = options;
-    // A descrição das categorias só para visitantes (o Discourse a esconde
-    // de quem já tem conta com nível de confiança).
+    // 分类描述仅对访客显示（Discourse 会向已有
+    // 信任等级的账号隐藏它）。
     const showDescription = !app.session.user;
 
     const filtered = (filter: string): DropRow[] => {
@@ -482,7 +482,7 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
 
     return (
       <SelectKit
-        className={classList('CanelaNav-drop', options.className, { 'has-selection': options.selected })}
+        className={classList('LcoyNav-drop', options.className, { 'has-selection': options.selected })}
         header={options.header}
         caret="fas fa-angle-right"
         caretOpen="fas fa-angle-down"
@@ -496,12 +496,12 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
             key: row.key,
             selected: row.selected,
             title: row.tag?.name() || row.label,
-            content: row.special ? <span className="CanelaNav-dropSpecial">{row.label}</span> : dropRowContent(row, options.symbols, showDescription),
+            content: row.special ? <span className="LcoyNav-dropSpecial">{row.label}</span> : dropRowContent(row, options.symbols, showDescription),
           }))
         }
         after={(filter: string) =>
           limit && !filter.trim() && rows.filter((row) => !row.special).length > limit ? (
-            <div className="CanelaNav-dropMore">{t('nav.filter_for_more')}</div>
+            <div className="LcoyNav-dropMore">{t('nav.filter_for_more')}</div>
           ) : null
         }
         onselect={(key: string) => {
@@ -514,20 +514,20 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
   }
 
   newTopicButton(): Mithril.Children {
-    const tag = currentTag() as (CanelaTag & { canStartDiscussion?: () => boolean }) | null;
+    const tag = currentTag() as (LcoyTag & { canStartDiscussion?: () => boolean }) | null;
     const canStart = !app.session.user || (tag?.canStartDiscussion ? tag.canStartDiscussion() : !!app.forum.attribute('canStartDiscussion'));
     const label = canStart ? t('nav.new_topic') : (app.translator.trans('core.forum.index.cannot_start_discussion_button', {}, true) as string);
 
     return (
       <Button
         icon="fas fa-edit"
-        className="Button Button--primary CanelaNav-newTopic"
+        className="Button Button--primary LcoyNav-newTopic"
         aria-label={label}
         title={label}
         disabled={!canStart}
         onclick={() =>
-          // Reaproveita a ação do core: abre o composer (ou o login) e deixa o
-          // flarum/tags preencher a tag atual, que ele pendura nesse método.
+          // 复用核心的操作：打开编辑器（或登录），并让
+          // flarum/tags 填入当前标签，它挂在该方法上。
           IndexSidebar.prototype.newDiscussionAction.call(IndexSidebar.prototype).catch(() => {})
         }
       >

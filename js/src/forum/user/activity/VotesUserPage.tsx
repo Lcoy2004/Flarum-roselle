@@ -1,8 +1,7 @@
 /*
- * A aba "Votos" do perfil: as postagens com enquetes do fof/polls em que a
- * pessoa votou (`filter[canelaVoter]`, de extend/activity.php). O servidor
- * só devolve as enquetes que mostram os votantes, ou todas para a própria
- * pessoa.
+ * 资料的“投票”标签页：此人投票过的 fof/polls 带投票帖子
+ *（`filter[lcoyVoter]`，来自 extend/activity.php）。服务器只返回
+ * 显示投票者的投票，对本人则返回全部。
  */
 import PostsUserPage from 'flarum/forum/components/PostsUserPage';
 import type User from 'flarum/common/models/User';
@@ -17,6 +16,6 @@ export default class VotesUserPage extends PostsUserPage {
   }
 
   params(user: User) {
-    return { filter: { canelaVoter: user.slug() } } as any;
+    return { filter: { lcoyVoter: user.slug() } } as any;
   }
 }

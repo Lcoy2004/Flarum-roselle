@@ -1,9 +1,9 @@
 /*
- * "Antes deste chunk, o nosso": quando o registro do Flarum vai baixar um
- * chunk de outro pacote (o core, o flarum/messages…), um chunk do tema que o
- * estende desce primeiro. Assim as extensões do tema entram na fila do
- * `flarum.reg.onLoad` (ou o componente que o tema desenha já está pronto)
- * quando o módulo de lá chega, sem um desenho sem o tema.
+ * “在这个 chunk 之前，先加载我们的”：当 Flarum 的注册表要下载
+ * 另一个包（核心、flarum/messages……）的 chunk 时，主题中扩展它的
+ * chunk 会先下载。这样主题的扩展会进入
+ * `flarum.reg.onLoad` 的队列（或者主题绘制的组件已经准备好），
+ * 当那边的模块到达时，不会出现没有主题的绘制。
  */
 type Gate = { matches: (namespace: string, url: string) => boolean; load: () => Promise<unknown> };
 
@@ -17,7 +17,7 @@ function install(): void {
   const reg: any = flarum.reg;
   const original = reg.loadChunk;
 
-  // Assinatura do core: (original, url, done, key, chunkId, namespace).
+  // 核心的签名：(original, url, done, key, chunkId, namespace)。
   reg.loadChunk = function (this: unknown, ...args: any[]) {
     const url = String(args[1] ?? '');
     const namespace = String(args[5] ?? '');
@@ -29,7 +29,7 @@ function install(): void {
   };
 }
 
-/** Uma vez só por carga: a promessa fica guardada (e é refeita se falhar). */
+/** 每次加载只执行一次：promise 会被缓存（失败时重新创建）。 */
 export function once<T>(load: () => Promise<T>): () => Promise<T> {
   let promise: Promise<T> | null = null;
 

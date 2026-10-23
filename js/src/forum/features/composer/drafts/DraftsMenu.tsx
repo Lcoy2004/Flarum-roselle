@@ -1,15 +1,15 @@
 /*
- * O "⌄" à direita do botão "Iniciar Discussão" (o `topic-drafts-menu` do
- * Discourse): abre os rascunhos do fof/drafts, um por linha com o ícone do
- * tipo e o título truncado ("RE: …" nas respostas). Clicar reabre o composer
- * com o rascunho. Mostra até quatro, como o Discourse, e "Ver todos" leva à
- * aba Rascunhos do perfil.
+ * “发起主题”按钮右侧的“⌄”（Discourse 的 `topic-drafts-menu`）：
+ * 打开 fof/drafts 的草稿，每行一个，带类型图标和截断的标题
+ * （回复为“RE: …”）。点击即可携带草稿重新打开 composer。与
+ * Discourse 一样最多显示四个，点击“查看全部”进入个人资料页的
+ * 草稿标签。
  *
- * Como no Discourse, o menu abre À DIREITA do botão, fora da barra lateral e
- * por cima do conteúdo (topo alinhado ao do botão, 8px depois do "⌄", até
- * 540px de largura). A barra corta o que transborda, então a posição é fixa,
- * calculada a partir do botão. No celular, abre embaixo, da largura da barra.
- * Fechar ao clicar fora ou com Esc é do Dropdown do core.
+ * 与 Discourse 一致，菜单在按钮右侧打开，位于侧边栏之外并覆盖
+ * 内容（顶部与按钮对齐，“⌄”之后 8px，最大宽度 540px）。侧边栏
+ * 会裁剪溢出内容，因此位置为固定定位，依据按钮计算。在手机上，
+ * 菜单在下方打开，宽度与侧边栏相同。点击外部或按 Esc 关闭由核心
+ * 的 Dropdown 处理。
  */
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
@@ -27,14 +27,14 @@ const LIMIT = 4;
 const GAP = 8;
 const MAX_WIDTH = 540;
 
-/** O ⌄ só existe com rascunhos (e com o fof-drafts ligado). */
+/** ⌄ 仅在存在草稿时出现（且 fof-drafts 已启用）。 */
 export function showDraftsMenu(): boolean {
   return draftsOn() && draftCount() > 0;
 }
 
 /**
- * O tooltip do "⌄" abre para fora da barra lateral (à direita), preso ao
- * <body>: dentro da barra, que rola, ele era cortado e quebrava em linhas.
+ * “⌄”的 tooltip 向侧边栏外（右侧）展开，并附着到
+ * <body>：放在会滚动的侧边栏内时它会被裁剪并换行。
  */
 class DraftsDropdown extends Dropdown {
   getButton(children: Mithril.ChildArray): Mithril.Vnode<any, any> {
@@ -51,8 +51,8 @@ class DraftsDropdown extends Dropdown {
 export default class DraftsMenu extends Component {
   private readonly place = () => {
     const root = this.element as HTMLElement | undefined;
-    const menu = root?.querySelector<HTMLElement>('.CanelaDraftsMenu-menu');
-    const anchor = root?.closest<HTMLElement>('.CanelaSidebar-newTopic') || root;
+    const menu = root?.querySelector<HTMLElement>('.LcoyDraftsMenu-menu');
+    const anchor = root?.closest<HTMLElement>('.LcoySidebar-newTopic') || root;
 
     if (!root || !menu || !anchor || !root.classList.contains('open')) return;
 
@@ -61,7 +61,7 @@ export default class DraftsMenu extends Component {
     const left = phone ? rect.left : rect.right + GAP;
     const width = phone ? rect.width : Math.max(240, Math.min(MAX_WIDTH, window.innerWidth - left - 16));
 
-    // `important`: o Dropdown do core troca as classes --top/--right ao abrir.
+    // `important`：核心的 Dropdown 会在打开时切换 --top/--right 类。
     const set = (prop: string, value: string) => menu.style.setProperty(prop, value, 'important');
 
     set('position', 'fixed');
@@ -72,7 +72,7 @@ export default class DraftsMenu extends Component {
     set('width', `${width}px`);
     set('max-width', 'none');
     set('margin', '0');
-    // No celular o core desenha os menus como folha de baixo (com respiro embaixo).
+    // 在手机上，核心会把菜单绘制为底部抽屉（底部留有间距）。
     set('padding', '4px 0');
     set('max-height', `${Math.max(160, window.innerHeight - (phone ? rect.bottom + 4 : rect.top) - 16)}px`);
     set('overflow-y', 'auto');
@@ -81,7 +81,7 @@ export default class DraftsMenu extends Component {
   oninit(vnode: Mithril.Vnode) {
     super.oninit(vnode);
 
-    // Já traz a lista: o menu abre com os títulos prontos.
+    // 提前加载列表：菜单打开时标题已就绪。
     if (!draftsLoaded()) loadDrafts().then(() => m.redraw());
   }
 
@@ -110,9 +110,9 @@ export default class DraftsMenu extends Component {
 
     return (
       <DraftsDropdown
-        className="CanelaDraftsMenu"
-        buttonClassName="Button Button--primary CanelaDraftsMenu-toggle"
-        menuClassName="CanelaDraftsMenu-menu"
+        className="LcoyDraftsMenu"
+        buttonClassName="Button Button--primary LcoyDraftsMenu-toggle"
+        menuClassName="LcoyDraftsMenu-menu"
         icon="fas fa-chevron-down"
         caretIcon=""
         label=""
@@ -120,11 +120,11 @@ export default class DraftsMenu extends Component {
         tooltip={label}
         lazyDraw
         onshow={() => {
-          // O tooltip "Abrir rascunhos" mora no <body> (fora da barra): com o
-          // menu aberto ele some, senão ficava por cima do menu.
-          $(this.element).find('.CanelaDraftsMenu-toggle').tooltip('hide');
+          // “打开草稿”的 tooltip 位于 <body>（侧边栏之外）：菜单打开时
+          // 将其隐藏，否则会覆盖在菜单上方。
+          $(this.element).find('.LcoyDraftsMenu-toggle').tooltip('hide');
           this.place();
-          // O core reposiciona o menu logo depois do onshow: confere de novo.
+          // 核心会在 onshow 之后立即重新定位菜单：再确认一次。
           requestAnimationFrame(this.place);
         }}
       >
@@ -144,8 +144,8 @@ export default class DraftsMenu extends Component {
       const title = draftTitle(draft);
 
       return (
-        <Button className="CanelaDraftsMenu-item" icon={draftIcon(draft)} title={title} onclick={() => openDraft(draft)}>
-          <span className="CanelaDraftsMenu-title">{title}</span>
+        <Button className="LcoyDraftsMenu-item" icon={draftIcon(draft)} title={title} onclick={() => openDraft(draft)}>
+          <span className="LcoyDraftsMenu-title">{title}</span>
         </Button>
       );
     });
@@ -154,7 +154,7 @@ export default class DraftsMenu extends Component {
 
     if (user && draftCount() > LIMIT) {
       items.push(
-        <LinkButton className="CanelaDraftsMenu-all" href={app.route('user.drafts', { username: user.slug() })}>
+        <LinkButton className="LcoyDraftsMenu-all" href={app.route('user.drafts', { username: user.slug() })}>
           {t('composer.drafts.view_all', { count: draftCount() })}
         </LinkButton>
       );

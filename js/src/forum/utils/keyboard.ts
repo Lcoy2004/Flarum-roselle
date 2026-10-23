@@ -1,7 +1,6 @@
 /*
- * Alvos de digitação: campos, selects e áreas editáveis. Os atalhos de teclado
- * do tema e os do Discourse consultam isto para não roubar uma tecla de quem
- * está escrevendo.
+ * 输入目标：字段、下拉框和可编辑区域。主题和 Discourse 的键盘
+ * 快捷键会检查它，以免抢走正在输入的人的按键。
  */
 export function isTypingTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;

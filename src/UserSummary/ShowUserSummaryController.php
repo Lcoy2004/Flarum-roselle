@@ -27,45 +27,37 @@ use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Lcoy\Roselle\Links\LinkClicks;
 
 /**
- * GET /api/canela-user-summary/{id} — as listas do Resumo do perfil do
- * Discourse (`user_summary`): com quem a pessoa mais conversa e onde.
+ * GET /api/lcoy-user-summary/{id}——Discourse 资料摘要（`user_summary`）中的
+ * 列表：用户最常与谁交流，以及在何处交流。
  *
- * - `mostRepliedTo`: a quem ela mais respondeu (as citações do flarum/mentions
- *   fazem o papel do `reply_to_user_id`);
- * - `mostLikedBy`: quem mais curtiu as postagens dela;
- * - `mostLiked`: de quem ela mais curtiu;
- * - `topCategories`: as categorias (etiquetas primárias) com mais tópicos e
- *   respostas dela;
- * - `topLinks`: os links das postagens dela com mais cliques (recurso `links`;
- *   null com ele desligado).
+ * - `mostRepliedTo`：用户回复最多的人（flarum/mentions 的引用承担了
+ *   `reply_to_user_id` 的角色）；
+ * - `mostLikedBy`：点赞其帖子最多的人；
+ * - `mostLiked`：其点赞最多的人；
+ * - `topCategories`：其主题和回复最多的分类（主标签）。
  *
- * Tudo conta só postagens que quem pede pode ver (tópicos privados, etiquetas
- * restritas, postagens ocultas ficam de fora) e só mostra pessoas visíveis a
- * ele. Uma consulta que falhe esvazia só a própria lista: o perfil nunca
- * recebe um erro por causa do resumo.
+ * 全部只统计请求者可见的帖子（私密主题、受限标签、隐藏帖子都被排除），
+ * 并且只显示对其可见的人。某个查询失败只会清空对应的列表：资料页绝不会
+ * 因为摘要而报错。
  *
- * A resposta fica alguns minutos em cache por (pessoa, quem pergunta), como o
- * Discourse faz com o `user_summary` (lá, uma hora): o perfil pré-carrega o
- * resumo em toda visita, e são uma dúzia de agregações sobre as postagens.
- * Quem pergunta entra na chave, então ninguém recebe o que só outro veria; o
- * número de postagens e tópicos da pessoa também, para uma postagem nova dela
- * já aparecer.
+ * 响应按（用户, 请求者）缓存几分钟，与 Discourse 对 `user_summary` 的做法
+ * 相同（那边是一小时）：资料页每次访问都会预加载摘要，而这是一打针对
+ * 帖子的聚合查询。请求者会进入缓存键，因此谁都不会收到只有别人能看到的
+ * 内容；用户的帖子数和主题数也会进入键，使其新发的帖子立即出现。
  */
 final class ShowUserSummaryController implements RequestHandlerInterface
 {
-    /** Quantos itens por lista, como no Discourse. */
+    /** 每个列表的条目数，与 Discourse 一致。 */
     private const LIMIT = 6;
 
-    /** Segundos de cache da resposta. */
+    /** 响应的缓存秒数。 */
     public const CACHE_TTL = 300;
 
     public function __construct(
         private readonly ConnectionInterface $db,
         private readonly ExtensionManager $extensions,
-        private readonly LinkClicks $links,
         private readonly Cache $cache,
     ) {
     }
@@ -83,7 +75,7 @@ final class ShowUserSummaryController implements RequestHandlerInterface
             return new JsonResponse(['errors' => [['status' => '404', 'code' => 'not_found']]], 404);
         }
 
-        $key = sprintf('canela.user-summary.%d.%d.%d.%d', $user->id, (int) $actor->id, (int) $user->comment_count, (int) $user->discussion_count);
+        $key = sprintf('lcoy.user-summary.%d.%d.%d.%d', $user->id, (int) $actor->id, (int) $user->comment_count, (int) $user->discussion_count);
 
         return new JsonResponse($this->cache->remember($key, self::CACHE_TTL, fn (): array => $this->summary($user, $actor)));
     }
@@ -91,14 +83,14 @@ final class ShowUserSummaryController implements RequestHandlerInterface
     /** @return array<string, mixed> */
     private function summary(User $user, User $actor): array
     {
-        // Os ids das postagens que o ator vê: a base de todas as contas.
+        // 操作者可见的帖子 id：所有统计的基础。
         $visiblePosts = static fn (): Builder => Post::whereVisibleTo($actor)->select('posts.id')->toBase();
 
         $likes = $this->extensions->isEnabled('flarum-likes');
         $mentions = $this->extensions->isEnabled('flarum-mentions');
         $tags = $this->extensions->isEnabled('flarum-tags');
 
-        // As três listas de pessoas buscam os usuários numa consulta só.
+        // 三个人员列表共用一次查询获取用户。
         $lists = [
             'mostRepliedTo' => $mentions ? $this->safely(fn (): Collection => $this->mostRepliedTo($user, $visiblePosts)) : null,
             'mostLikedBy' => $likes ? $this->safely(fn (): Collection => $this->mostLikedBy($user, $visiblePosts)) : null,
@@ -106,7 +98,7 @@ final class ShowUserSummaryController implements RequestHandlerInterface
         ];
         $people = $this->safely(fn (): array => $this->users($lists, $actor));
 
-        // Lista desligada continua null; se a busca dos usuários falhar, as ligadas ficam vazias.
+        // 关闭的列表仍为 null；若用户查询失败，已开启的列表会为空。
         foreach ($lists as $name => $rows) {
             $people[$name] ??= $rows === null ? null : [];
         }
@@ -116,7 +108,6 @@ final class ShowUserSummaryController implements RequestHandlerInterface
             'mostLikedBy' => $people['mostLikedBy'],
             'mostLiked' => $people['mostLiked'],
             'topCategories' => $tags ? $this->safely(fn (): array => $this->topCategories($user, $actor, $visiblePosts)) : null,
-            'topLinks' => $this->links->enabled() ? $this->safely(fn (): array => $this->links->topForUser((int) $user->id, $visiblePosts(), self::LIMIT)) : null,
         ];
     }
 
@@ -130,7 +121,7 @@ final class ShowUserSummaryController implements RequestHandlerInterface
         try {
             return $build();
         } catch (\Throwable $error) {
-            error_log('[lcoy/roselle] resumo do perfil: '.$error->getMessage());
+            error_log('[lcoy/roselle] 资料摘要: '.$error->getMessage());
 
             return [];
         }
@@ -195,15 +186,15 @@ final class ShowUserSummaryController implements RequestHandlerInterface
     }
 
     /**
-     * As categorias com mais participação: tópicos que a pessoa abriu e
-     * respostas (postagens depois da primeira) em cada etiqueta primária.
+     * 参与最多的分类：用户发起的主题以及在每个主标签中的回复
+     * （首帖之后的帖子）。
      *
      * @param callable(): Builder $visiblePosts
      * @return array<int, array<string, mixed>>
      */
     private function topCategories(User $user, User $actor, callable $visiblePosts): array
     {
-        // A classe vem do flarum/tags: só existe com ele instalado.
+        // 该类来自 flarum/tags：只有安装它才存在。
         $tagClass = 'Flarum\\Tags\\Tag';
 
         if (! class_exists($tagClass)) {
@@ -254,9 +245,8 @@ final class ShowUserSummaryController implements RequestHandlerInterface
     }
 
     /**
-     * As pessoas de cada lista de linhas (user_id, total), só as que o ator
-     * pode ver, com o que o fórum precisa para desenhar o avatar e o link.
-     * Uma consulta para todas as listas.
+     * 各列表（user_id, total）中出现的人，仅限操作者可见者，并带上论坛绘制
+     * 头像和链接所需的信息。所有列表共用一次查询。
      *
      * @param array<string, Collection<int, object>|array{}|null> $lists
      * @return array<string, array<int, array<string, mixed>>>

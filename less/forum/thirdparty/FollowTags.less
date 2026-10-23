@@ -1,26 +1,26 @@
 // ---------------------------------------------------------------------
-// fof/follow-tags: o botão de notificações da categoria do Discourse
-// (`.category-notifications-button`, um btn-default só com o ícone) e a
-// janela de opções no formato das opções de notificação do Discourse.
-// Quem decide onde o botão aparece é a barra da lista; aqui só o visual.
+// fof/follow-tags：Discourse 的分类通知按钮
+// （`.category-notifications-button`，仅图标的 btn-default）以及
+// 采用 Discourse 通知选项形式的选项窗口。
+// 按钮出现的位置由列表栏决定；这里只处理外观。
 // ---------------------------------------------------------------------
 .SubscriptionButton.Button {
   width: auto;
   height: 34px;
   padding: 6.5px 10px;
   border: 0;
-  border-radius: var(--cn-radius);
-  background: var(--cn-primary-100);
-  color: var(--cn-primary-high);
-  font-size: var(--cn-font-0);
+  border-radius: var(--lcoy-radius);
+  background: var(--lcoy-primary-100);
+  color: var(--lcoy-primary-high);
+  font-size: var(--lcoy-font-0);
   box-shadow: none;
 
   .Button-icon {
     margin: 0;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
   }
 
-  // Só o ícone, como no Discourse; o rótulo fica para leitores de tela.
+  // 仅图标，与 Discourse 一致；标签留给屏幕阅读器。
   .Button-label {
     position: absolute;
     width: 1px;
@@ -32,39 +32,39 @@
 
   &:hover,
   &:focus-visible {
-    background: var(--cn-primary-200);
-    color: var(--cn-primary);
+    background: var(--lcoy-primary-200);
+    color: var(--lcoy-primary);
 
     .Button-icon {
-      color: var(--cn-primary);
+      color: var(--lcoy-primary);
     }
   }
 
-  // Seguindo / espiando: o ícone na cor do destaque (os estados do sino).
+  // 关注 / 旁观：图标为高亮色（铃铛状态）。
   &.SubscriptionButton--follow,
   &.SubscriptionButton--lurk {
-    background: var(--cn-primary-100);
-    color: var(--cn-primary-high);
+    background: var(--lcoy-primary-100);
+    color: var(--lcoy-primary-high);
 
     .Button-icon {
-      color: var(--cn-accent);
+      color: var(--lcoy-accent);
     }
   }
 }
 
 .SubscriptionModal {
   .Modal-body {
-    color: var(--cn-primary);
+    color: var(--lcoy-primary);
   }
 
   .Button.Button--primary {
-    background: var(--cn-accent);
-    color: var(--cn-accent-text);
+    background: var(--lcoy-accent);
+    color: var(--lcoy-accent-text);
   }
 }
 
-// Cada opção: ícone à esquerda, título e descrição em duas linhas, o certo
-// à direita na escolhida; a escolhida com o fundo de seleção.
+// 每个选项：图标在左，标题和描述两行，选中项
+// 右侧为对勾；选中项带选中背景。
 .SubscriptionOption {
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr) auto;
@@ -72,21 +72,21 @@
     "icon title check"
     "icon desc check";
   align-items: start;
-  column-gap: var(--cn-space-2);
+  column-gap: var(--lcoy-space-2);
   margin: 0;
-  padding: var(--cn-space-2) var(--cn-space-3);
+  padding: var(--lcoy-space-2) var(--lcoy-space-3);
   border: 0;
-  border-radius: var(--cn-radius);
+  border-radius: var(--lcoy-radius);
   background: none;
-  color: var(--cn-primary);
+  color: var(--lcoy-primary);
 
   &:hover {
-    background: var(--cn-hover);
+    background: var(--lcoy-hover);
   }
 
   &.selected {
-    background: var(--cn-selected);
-    color: var(--cn-primary);
+    background: var(--lcoy-selected);
+    color: var(--lcoy-primary);
 
     .SubscriptionOption-icon,
     .SubscriptionOption-title,
@@ -104,7 +104,7 @@
     margin-top: 0.2em;
     font-size: 1em;
     text-align: center;
-    color: var(--cn-primary-high);
+    color: var(--lcoy-primary-high);
   }
 
   .SubscriptionOption-title {
@@ -115,13 +115,13 @@
 
   .SubscriptionOption-description {
     grid-area: desc;
-    color: var(--cn-primary-medium);
-    font-size: var(--cn-font-down-1);
+    color: var(--lcoy-primary-medium);
+    font-size: var(--lcoy-font-down-1);
   }
 
   .SubscriptionOption-selectedIcon {
     grid-area: check;
     align-self: center;
-    color: var(--cn-success);
+    color: var(--lcoy-success);
   }
 }

@@ -26,10 +26,10 @@ use Lcoy\Roselle\Community\Community;
 use Lcoy\Roselle\Community\GuidelinesPage;
 
 /**
- * GET /api/canela-guidelines — as "Diretrizes" (/guidelines e /faq do
- * Discourse). Com o fof/pages e uma página escolhida no admin, o conteúdo dela
- * (com a visibilidade do próprio fof/pages); senão o texto do admin, ou o
- * padrão do tema no idioma do fórum.
+ * GET /api/lcoy-guidelines——"指南"（Discourse 的 /guidelines 与 /faq）。
+ * 若启用了 fof/pages 且管理员选择了页面，则返回该页面的内容（遵循
+ * fof/pages 自身的可见性）；否则返回管理员的文本，或主题在论坛语言下的
+ * 默认内容。
  */
 final class ShowGuidelinesController implements RequestHandlerInterface
 {
@@ -62,8 +62,8 @@ final class ShowGuidelinesController implements RequestHandlerInterface
     }
 
     /**
-     * A página do fof/pages escolhida, se a extensão estiver ligada, a página
-     * existir e o ator puder vê-la; null para cair no texto do tema.
+     * 选定的 fof/pages 页面，前提是扩展已启用、页面存在且操作者可以查看；
+     * 否则返回 null，退回主题文本。
      *
      * @return array{html: string, custom: true, title: string, pageId: int}|null
      */

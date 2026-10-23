@@ -18,8 +18,8 @@ use Flarum\Api\Controller\UploadLogoController;
 use Flarum\Foundation\AbstractServiceProvider;
 
 /**
- * A rota POST /api/logo do core resolve o controlador pelo container: trocá-lo
- * aqui faz o campo de logo padrão do Flarum aceitar SVG.
+ * 核心的 POST /api/logo 路由通过容器解析控制器：在这里替换它，就能让
+ * Flarum 默认的 logo 字段接受 SVG。
  */
 final class SvgLogoServiceProvider extends AbstractServiceProvider
 {
