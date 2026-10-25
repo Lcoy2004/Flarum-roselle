@@ -646,9 +646,11 @@
     left: 0;
     right: 0;
     width: auto;
-    max-height: ~"calc(100dvh - var(--lcoy-header-height))";
+    max-height: ~"calc(var(--lcoy-visual-height, 100dvh) - var(--lcoy-header-height))";
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     border-width: 1px 0;
     border-radius: 0;
+    box-sizing: border-box;
   }
 
   .LcoyUserMenu-panel {

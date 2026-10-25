@@ -153,28 +153,10 @@
     color: var(--lcoy-primary-medium);
   }
 
-  // 列表：最高 40vh，搜索下方无分隔线，以及 select-kit 的
-  // 10px 灰色滚动条，圆角 5。
+  // 列表：最高 40vh，搜索下方无分隔线。
   .LcoySelectKit-collection {
     max-height: 40vh;
     border-top: 0;
-    scrollbar-width: auto;
-    scrollbar-color: auto;
-
-    &::-webkit-scrollbar {
-      appearance: none;
-      width: 10px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      border-radius: 5px;
-      background: var(--lcoy-primary-medium);
-      cursor: pointer;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
   }
 
   &.is-above .LcoySelectKit-collection {

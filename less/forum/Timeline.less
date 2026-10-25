@@ -337,7 +337,7 @@
   .LcoyTopic--timeline .PostStreamScrubber > .Dropdown-toggle {
     position: fixed;
     right: 27px;
-    bottom: var(--lcoy-composer-height, 0px);
+    bottom: ~"calc(var(--lcoy-composer-height, 0px) + env(safe-area-inset-bottom, 0px))";
     z-index: var(--zindex-header);
     display: flex;
     align-items: center;
@@ -412,8 +412,11 @@
   }
 
   .LcoyTopic--timeline .PostStreamScrubber.open > .Dropdown-menu {
-    max-height: 700px;
-    padding: 20px 1em;
+    // 小屏上不要盖满整屏：给底部按钮和页头留出空间。
+    max-height: ~"min(700px, calc(var(--lcoy-visual-height, 100dvh) - 80px))";
+    padding: 20px 1em ~"calc(20px + env(safe-area-inset-bottom, 0px))";
+    overflow-y: auto;
+    overscroll-behavior: contain;
     visibility: visible;
     transition: max-height 0.4s ease-out, visibility 0s;
   }

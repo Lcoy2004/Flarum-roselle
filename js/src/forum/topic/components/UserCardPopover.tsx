@@ -5,6 +5,11 @@
  *
  * 整个页面只有一个卡片，挂载在 body 中自己的 <div> 上：放在帖子内部会被
  * 内容的 overflow 裁掉，并被 SubtreeRetainer 困住，而它不会无故重绘帖子。
+ *
+ * 卡片一次长成：先隐藏挂载，等完整资料（阅读时长、获赞……）和大头像
+ * 到位（或超时）后才显示并播放入场动画。否则首次打开会先显示帖子
+ * 自带的那点数据，再随着请求返回逐渐变高。鼠标移入或聚焦时就开始
+ * 预取，点击时通常已经齐了。
  */
 import app from 'flarum/forum/app';
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
@@ -30,6 +35,9 @@ import { userIcons } from '../../utils/userIcons';
 const GAP = 8;
 const EDGE = 16;
 
+/** 等资料和大头像的上限（毫秒）；超时就用已经拿到的内容显示。 */
+const MAX_WAIT = 1200;
+
 interface CardState {
   user: User;
   anchor: HTMLElement;
@@ -37,7 +45,52 @@ interface CardState {
 
 let state: CardState | null = null;
 let root: HTMLElement | null = null;
-const requested = new Set<string>();
+/** 资料和大头像已就绪：卡片可以显示。 */
+let ready = false;
+/** 每个用户一次会话只预取一次。 */
+const profiles = new Map<string, Promise<unknown>>();
+
+const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+/** 完整资料和统计数据。帖子自带的用户只有概要，详情要单独请求。 */
+export function prefetchUserCard(user: User): Promise<unknown> {
+  const id = user.id();
+
+  if (!id) return Promise.resolve();
+
+  if (!profiles.has(id)) {
+    profiles.set(
+      id,
+      app.store.find('users', id, {}, { errorHandler: () => {} }).catch(() => {})
+    );
+  }
+
+  return profiles.get(id)!;
+}
+
+/** 卡片里的大头像已经显示（或加载失败，或本来就没有照片）。 */
+function avatarReady(): Promise<unknown> {
+  const img = root?.querySelector<HTMLImageElement>('.LcoyUserCard-avatar img');
+
+  if (!img || img.complete) return Promise.resolve();
+
+  return new Promise((resolve) => {
+    img.addEventListener('load', resolve, { once: true });
+    img.addEventListener('error', resolve, { once: true });
+  });
+}
+
+async function reveal(user: User): Promise<void> {
+  await Promise.race([prefetchUserCard(user), wait(MAX_WAIT)]);
+  // 等卡片先渲染出来，再盯头像的加载。
+  await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+  await Promise.race([avatarReady(), wait(MAX_WAIT)]);
+
+  if (state?.user !== user) return;
+
+  ready = true;
+  m.redraw();
+}
 
 function onDocumentEvent(event: Event) {
   if (!state) return;
@@ -78,18 +131,11 @@ export function openUserCard(user: User, anchor: HTMLElement): void {
   }
 
   state = { user, anchor };
+  ready = false;
 
-  // 随帖子返回的用户可能信息不全（加入时间、
-  // 计数）：每个会话拉取一次完整资料。
-  const id = user.id();
-
-  if (id && !requested.has(id) && user.joinTime() === undefined) {
-    requested.add(id);
-    app.store
-      .find('users', id, {}, { errorHandler: () => {} })
-      .catch(() => {})
-      .then(() => m.redraw());
-  }
+  // 资料在这里开始拉取；鼠标移入时通常已经预取过。
+  // 拿到之前卡片保持隐藏，避免先小后大地“长个子”。
+  reveal(user);
 
   m.redraw();
 }
@@ -108,6 +154,7 @@ export function closeUserCard(): void {
   if (!state) return;
 
   state = null;
+  ready = false;
   m.redraw();
 }
 
@@ -178,7 +225,10 @@ class LcoyUserCard extends Component<LcoyUserCardAttrs> {
 
     return (
       <div
-        className={classList('LcoyUserCard', { 'LcoyProfile--hasCardBg': !!profileImageStyle(user)['--lcoy-user-card-bg'] })}
+        className={classList('LcoyUserCard', {
+          'LcoyUserCard--ready': ready,
+          'LcoyProfile--hasCardBg': !!profileImageStyle(user)['--lcoy-user-card-bg'],
+        })}
         role="dialog"
         aria-label={user.displayName()}
         style={{ '--usercard-color': user.color() || undefined, ...profileImageStyle(user) }}

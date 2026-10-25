@@ -214,7 +214,6 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;
-    scrollbar-color: var(--lcoy-primary-low-mid) transparent;
   }
 
   .results {
@@ -645,7 +644,7 @@
       top: var(--lcoy-header-height, 52px);
       left: 0;
       right: 0;
-      height: ~"calc(100dvh - var(--lcoy-header-height, 52px))";
+      height: ~"calc(var(--lcoy-visual-height, 100dvh) - var(--lcoy-header-height, 52px))";
       max-height: none;
       border: 0;
       border-top: 1px solid var(--lcoy-border);

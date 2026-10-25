@@ -1,11 +1,14 @@
 /*
  * 点击作者头像和名字会打开用户卡片，与 Discourse 一致，
  * 取代核心中鼠标悬停时出现的卡片。
+ *
+ * 鼠标移入或键盘聚焦时就开始预取资料：点击时卡片通常已经
+ * 拿到全部数据，一次显示完整。
  */
 import { override } from 'flarum/common/extend';
 import CommentPost from 'flarum/forum/components/CommentPost';
 
-import { openUserCard } from './components/UserCardPopover';
+import { openUserCard, prefetchUserCard } from './components/UserCardPopover';
 import { topicSettings } from './ui';
 
 const TRIGGERS = '.Post-side .Post-avatar, .PostUser-name a';
@@ -13,6 +16,15 @@ const TRIGGERS = '.Post-side .Post-avatar, .PostUser-name a';
 export default function installUserCard(): void {
   override(CommentPost.prototype, 'listenForCard', function (this: any, original: () => void) {
     if (!topicSettings.userCard()) return original();
+
+    const prefetch = (event: Event) => {
+      const user = this.attrs.post.user();
+
+      if (user && (event.target as HTMLElement).closest?.(TRIGGERS)) prefetchUserCard(user);
+    };
+
+    this.element.addEventListener('pointerover', prefetch);
+    this.element.addEventListener('focusin', prefetch);
 
     // 在捕获阶段：点击在这里终止，先于头像的 Link 导航到个人资料。
     this.element.addEventListener(

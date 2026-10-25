@@ -175,7 +175,6 @@
   overscroll-behavior: contain;
   list-style: none;
   scrollbar-width: thin;
-  scrollbar-color: var(--lcoy-primary-low) transparent;
 }
 
 .LcoyTagList-heading {
@@ -325,8 +324,8 @@
   }
 
   .LcoyTagModal .Modal-content {
-    height: 100dvh;
-    max-height: 100dvh;
+    height: var(--lcoy-visual-height, 100dvh);
+    max-height: var(--lcoy-visual-height, 100dvh);
     overflow: hidden;
     border-radius: 0;
   }

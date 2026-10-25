@@ -667,6 +667,13 @@ button.LcoyTopicMap-stat {
   animation: lcoyFloatDown 250ms ease forwards;
 }
 
+// 资料、徽章和大头像到位前只占位不显示：卡片一次长成，
+// 入场动画也等到那时才开始。
+.LcoyUserCard:not(.LcoyUserCard--ready) {
+  visibility: hidden;
+  animation: none;
+}
+
 // 不再使用个人资料功能的双层遮罩：遮罩就是内容层。
 .LcoyUserCardRoot .LcoyUserCard.LcoyProfile--hasCardBg {
   background-image: var(--lcoy-user-card-bg);

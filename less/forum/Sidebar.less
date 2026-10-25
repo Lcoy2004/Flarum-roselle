@@ -39,6 +39,12 @@
   display: none;
 }
 
+// 覆盖面板打开时锁住页面滚动，避免背后的内容跟着手指移动。
+html.Lcoy--overlayLock,
+html.Lcoy--overlayLock body {
+  overflow: hidden;
+}
+
 .LcoySidebar-inner {
   display: flex;
   flex-direction: column;
@@ -50,15 +56,6 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 0 var(--lcoy-space-2) var(--lcoy-space-4);
-  // 滚动条仅在鼠标悬停时出现：移出 0.5s 后
-  // 消失，与 Discourse 的 .sidebar-sections 一致。
-  scrollbar-color: transparent transparent;
-  transition: scrollbar-color 0.25s ease-in-out 0.5s;
-
-  &:hover {
-    scrollbar-color: var(--lcoy-primary-100) transparent;
-    transition-delay: 0s;
-  }
 }
 
 // 全宽的"新话题"位于顶部（仅登录用户可见，与
@@ -635,8 +632,12 @@
 @media @phone {
   #lcoy-sidebar {
     top: 0;
+    bottom: auto;
+    height: 100vh;
+    height: 100dvh;
     width: ~"min(360px, 80vw)";
     padding: var(--lcoy-space-2);
+    padding-bottom: ~"max(var(--lcoy-space-2), env(safe-area-inset-bottom, 0px))";
     border: 1px solid var(--lcoy-primary-low);
     box-shadow: var(--lcoy-panel-shadow);
     overflow-y: auto;

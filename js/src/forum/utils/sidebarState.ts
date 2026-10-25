@@ -47,8 +47,11 @@ export function applySidebarState(): void {
 
   if (!app) return;
 
+  const overlay = !isDocked() && overlayOpen;
+
   app.classList.toggle(OPEN_CLASS, isSidebarOpen());
-  app.classList.toggle(OVERLAY_CLASS, !isDocked() && overlayOpen);
+  app.classList.toggle(OVERLAY_CLASS, overlay);
+  document.documentElement.classList.toggle('Lcoy--overlayLock', overlay);
 }
 
 export function toggleSidebar(): void {
@@ -80,4 +83,21 @@ export function watchViewport(): void {
     overlayOpen = false;
     applySidebarState();
   });
+}
+
+/** 覆盖面板打开时，点击面板外的链接或前进/后退都应关闭它。 */
+export function watchSidebarNavigation(): void {
+  document.addEventListener(
+    'click',
+    (event) => {
+      if (!overlayOpen) return;
+
+      const link = (event.target as HTMLElement | null)?.closest?.('a');
+
+      if (link && !link.closest('#lcoy-sidebar')) closeOverlaySidebar();
+    },
+    true
+  );
+
+  window.addEventListener('popstate', closeOverlaySidebar);
 }

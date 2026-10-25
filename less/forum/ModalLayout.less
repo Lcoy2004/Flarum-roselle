@@ -51,6 +51,14 @@
     }
   }
 
+  // 手机上键盘弹出时，让长表单跟着可视区域缩短，
+  // 吸底页脚不会被键盘盖住。
+  @media @phone {
+    .Modal-content {
+      max-height: var(--lcoy-visual-height, 100dvh);
+    }
+  }
+
   // 保存按钮成为页脚：吸附在滚动区域的底部，
   // 占弹窗整宽，位于卡片背景之上。
   .Form-body > .Form-controls,

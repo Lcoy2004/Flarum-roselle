@@ -8,6 +8,7 @@
  * - 会话菜单顶部显示用户身份。
  * - 补齐 Discourse 缺失的“活动”子标签页（已读、反应、
  *   投票、已解决），位于 activity/。
+ * - 头像在任意尺寸下都清晰（avatarSizes）。
  *
  * 通用组件（按钮、弹窗、composer、搜索、设置）
  * 只用 LESS：核心的标记已经够用。
@@ -17,6 +18,7 @@ import installSummary from './installSummary';
 import installSessionMenu from './installSessionMenu';
 import installPreferences from './preferences/install';
 import installActivity from './activity/install';
+import installAvatarSizes from './avatarSizes';
 
 export default function installUser() {
   installProfile();
@@ -24,4 +26,5 @@ export default function installUser() {
   installSessionMenu();
   installPreferences();
   installActivity();
+  installAvatarSizes();
 }

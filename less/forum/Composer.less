@@ -687,7 +687,6 @@
   list-style: none;
   border-top: 1px solid var(--lcoy-primary-low);
   scrollbar-width: thin;
-  scrollbar-color: var(--lcoy-primary-low) transparent;
 
   .is-above & {
     border-top: 0;
@@ -1400,10 +1399,12 @@
 
     &:not(.minimized) {
       top: 0;
-      bottom: 0;
-      height: 100% !important;
-      max-height: none;
+      bottom: auto;
+      height: 100vh !important;
+      height: var(--lcoy-visual-height, 100dvh) !important;
+      max-height: var(--lcoy-visual-height, 100dvh);
       padding-top: 0;
+      overscroll-behavior: contain;
 
       &::before {
         display: none;

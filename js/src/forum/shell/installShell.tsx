@@ -25,13 +25,16 @@ import extendHeader from './extendHeader';
 import installThemePreview from './themePreview';
 import installModalLayout from './modalLayout';
 import { forumBool, t } from '../utils/settings';
-import { SHELL_CLASS, applySidebarState, closeOverlaySidebar, watchViewport } from '../utils/sidebarState';
+import { SHELL_CLASS, applySidebarState, closeOverlaySidebar, watchSidebarNavigation, watchViewport } from '../utils/sidebarState';
 import { installColorMode } from './colorMode';
+import installMobileViewport from './mobileViewport';
 
 /** 在这些页面中，hero 会进入卡片内部，如同 Discourse。 */
 const INLINE_HERO_PAGES = /\b(DiscussionPage|UserPage)\b/;
 
 export default function installShell() {
+  installMobileViewport();
+
   // 扩展实例，而不是原型：核心 2.0 不会在模块注册表中
   // 导出 ForumApplication 类。initializer 在 mount 之前运行。
   extend(app as any, 'mount', function () {
@@ -63,6 +66,7 @@ export default function installShell() {
       mountSidebar(appElement);
       applySidebarState();
       watchViewport();
+      watchSidebarNavigation();
     }
 
     mountBackdrop(appElement);
