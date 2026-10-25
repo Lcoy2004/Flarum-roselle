@@ -87,17 +87,21 @@ function adjustCount(delta: number): void {
   if (attributes) attributes.draftCount = Math.max(0, (Number(attributes.draftCount) || 0) + delta);
 }
 
+/** 共享的在途请求：菜单、composer、草稿页同时调用时只发一次。 */
+let loading: Promise<void> | null = null;
+
 /** 向 fof 请求第一页（每个会话一次），完成后返回。 */
 export function loadDrafts(): Promise<void> {
   const state = fofState();
 
   if (!state || !draftsOn()) return Promise.resolve();
   if (draftsLoaded()) return Promise.resolve();
+  if (loading) return loading;
 
   state.load();
 
   // fof 的 `load()` 不返回 promise：等待 `loading` 变为 false。
-  return new Promise((resolve) => {
+  const promise = new Promise<void>((resolve) => {
     const started = Date.now();
     const timer = setInterval(() => {
       if ((!state.loading && draftsLoaded()) || Date.now() - started > 15000) {
@@ -106,6 +110,11 @@ export function loadDrafts(): Promise<void> {
       }
     }, 150);
   });
+
+  loading = promise;
+  promise.then(() => (loading = null));
+
+  return promise;
 }
 
 // ---------------------------------------------------------------------

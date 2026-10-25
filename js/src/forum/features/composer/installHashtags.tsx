@@ -100,6 +100,13 @@ export default function installHashtags() {
   extend(CommentPost.prototype, ['oncreate', 'onupdate'], function (this: CommentPost) {
     if (!composerOn('Hashtags')) return;
 
+    // 打开编辑器等操作会让所有帖子重绘；内容没变时不必重复扫描 DOM。
+    const post = this.attrs.post;
+    const signature = `${post.id()}:${String(post.contentHtml() ?? '').length}:${String(post.editedAt?.()?.getTime?.() ?? '')}`;
+
+    if ((this as any).lcoyHashtagsFor === signature) return;
+    (this as any).lcoyHashtagsFor = signature;
+
     const body = this.element?.querySelector<HTMLElement>('.Post-body');
 
     if (body) decorateHashtags(body);

@@ -24,6 +24,8 @@ import installSidebarHome from './sidebarHome';
 import installCategoryNotifications from './integrations/categoryNotifications';
 import installGapNotifications from './backend/notifications';
 
+let installed = false;
+
 export function installGaps(): void {
   installMentionCards();
   installGapShortcuts();
@@ -31,8 +33,11 @@ export function installGaps(): void {
   installGapNotifications();
 
   // 与主题的 topic 一样在 beforeMount：最后注册的 extend 最后运行，
-  // 能看到其他扩展和区域放进去的内容。
+  // 能看到其他扩展和区域放进去的内容。保持幂等，重复调用也不会叠加。
   app.beforeMount(() => {
+    if (installed) return;
+    installed = true;
+
     installCookedDecorators();
     installReadState();
     installTimelineBack();

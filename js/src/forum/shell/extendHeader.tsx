@@ -13,15 +13,21 @@ import type Mithril from 'mithril';
 import { forumBool } from '../utils/settings';
 import LocaleFlags from './LocaleFlags';
 
+let draftsRemovalInstalled = false;
+
 export default function extendHeader() {
   // fof/drafts 会在页头放一个羽毛图标（DraftsDropdown，键 `Drafts`）。
   // Discourse 没有这个图标：草稿位于“新主题”按钮的
   // “⌄”中。fof 的 initializer 在主题之后运行，所以移除操作
   // 注册在 `mount` 中，此时所有条目都已添加完毕。
   override(app as any, 'mount', function (this: any, original: (...args: any[]) => unknown, ...args: any[]) {
-    extend(HeaderSecondary.prototype, 'items', function (items: ItemList<Mithril.Children>) {
-      if (items.has('Drafts')) items.remove('Drafts');
-    });
+    if (!draftsRemovalInstalled) {
+      draftsRemovalInstalled = true;
+
+      extend(HeaderSecondary.prototype, 'items', function (items: ItemList<Mithril.Children>) {
+        if (items.has('Drafts')) items.remove('Drafts');
+      });
+    }
 
     return original(...args);
   });

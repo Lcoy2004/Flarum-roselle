@@ -68,7 +68,13 @@ function schedule() {
   frame = requestAnimationFrame(update);
 }
 
+let watching = false;
+
 export function watchHeaderTopic() {
+  // 监听器只挂一次：安装器被重复调用时也不会累积。
+  if (watching) return;
+  watching = true;
+
   window.addEventListener('scroll', schedule, { passive: true });
   window.addEventListener('resize', schedule, { passive: true });
 }

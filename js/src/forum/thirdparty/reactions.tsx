@@ -625,6 +625,9 @@ function legacySummary(post: Post, items: ItemList<Mithril.Children>) {
   );
 }
 
+let actionsInstalled = false;
+let controlsInstalled = false;
+
 export default function installReactions(): void {
   extend(CommentPost.prototype, 'footerItems', function (items: ItemList<Mithril.Children>) {
     if (!thirdParty.reactions()) return;
@@ -635,6 +638,9 @@ export default function installReactions(): void {
   // 在 beforeMount 中，与主题的操作栏（topic/index.ts）相同：在它之后
   // 注册，就在它之后运行，并能看到它已重新处理的点赞按钮。
   app.beforeMount(() => {
+    if (actionsInstalled) return;
+    actionsInstalled = true;
+
     extend(CommentPost.prototype, 'actionItems', function (this: any, items: ItemList<Mithril.Children>) {
       if (!thirdParty.reactions()) return;
 
@@ -651,6 +657,9 @@ export default function installReactions(): void {
   // 摘要重复，而摘要本身就能打开回应者：在 Discourse 中
   // 心形只出现一次。
   app.beforeMount(() => {
+    if (controlsInstalled) return;
+    controlsInstalled = true;
+
     extend(PostControls, 'moderationControls', function (items: ItemList<Mithril.Children>) {
       if (thirdParty.reactions() && topicSettings.postActions() && items.has('viewReactions')) items.remove('viewReactions');
     });

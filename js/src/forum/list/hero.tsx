@@ -22,6 +22,8 @@ export function welcomeBannerVisible(): boolean {
   return !(forumBool('lcoyWelcomeBannerGuestsOnly', false) && app.session.user);
 }
 
+let installed = false;
+
 export default function installHero(): void {
   override(IndexPage.prototype, 'hero', function (original: () => Mithril.Children) {
     const tag = currentTag();
@@ -44,6 +46,9 @@ export default function installHero(): void {
   // 把 hero 换成灰色条带，该 override 在此之后运行。在 beforeMount 中
   // 主题排在最后，页面获得与分类相同的顶部。
   app.beforeMount(() => {
+    if (installed) return;
+    installed = true;
+
     override(IndexPage.prototype, 'hero', function (original: () => Mithril.Children) {
       if (app.current.get('routeName') !== 'following') return original();
 

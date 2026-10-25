@@ -91,6 +91,8 @@ function bell(tag: any): Mithril.Children {
   );
 }
 
+let installed = false;
+
 export default function installCategoryNotifications(): void {
   extend(ListNavigation.prototype, 'endItems', function (items: ItemList<Mithril.Children>) {
     if (!isExtensionEnabled('fof-follow-tags') || !app.session.user) return;
@@ -107,6 +109,9 @@ export default function installCategoryNotifications(): void {
   // 头部）会与铃铛重复：移除。放在 beforeMount，以便在 follow-tags
   // 自身的 extend 之后运行——它注册在主题之后。
   app.beforeMount(() => {
+    if (installed) return;
+    installed = true;
+
     extend(IndexSidebar.prototype, 'items', function (items: ItemList<Mithril.Children>) {
       if (isExtensionEnabled('fof-follow-tags') && items.has('subscriptionButton')) items.remove('subscriptionButton');
     });

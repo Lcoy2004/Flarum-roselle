@@ -35,11 +35,16 @@ export function userMenuEnabled(): boolean {
 /** 菜单吸收的头部条目。 */
 const ABSORBED_HEADER_ITEMS = ['notifications', 'flags', 'messages'];
 
+let headerItemsExtended = false;
+
 export default function installUserMenu(): void {
   // 在 `mount` 中注册，早于首次绘制：主题之后加载的扩展 initializer
   //（例如 flarum/messages）已经添加了它们的条目，
   // 移除必须最后运行。
   override(app as any, 'mount', function (this: any, original: (...args: any[]) => unknown, ...args: any[]) {
+    if (headerItemsExtended) return original(...args);
+    headerItemsExtended = true;
+
     extend(HeaderSecondary.prototype, 'items', function (items: ItemList<Mithril.Children>) {
       if (!userMenuEnabled()) return;
 

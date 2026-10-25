@@ -366,14 +366,15 @@ textarea.FormControl {
     border-radius: 50%;
     background: var(--lcoy-secondary);
     box-shadow: none;
-    transition: left 0.25s;
+    transform: translateX(0);
+    transition: transform 0.25s;
   }
 
   .on& {
     background: var(--lcoy-accent);
 
     &::before {
-      left: 24px;
+      transform: translateX(21px);
     }
   }
 

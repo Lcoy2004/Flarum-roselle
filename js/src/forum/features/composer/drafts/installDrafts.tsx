@@ -141,6 +141,8 @@ function confirmClose(composer: ComposerState): void {
   });
 }
 
+let draftControlInstalled = false;
+
 export default function installDrafts() {
   // 路由始终存在（initializer 在论坛加载配置之前运行）；没有草稿时，
   // 该页面会跳转到帖子页。
@@ -191,9 +193,13 @@ export default function installDrafts() {
   // 没有该按钮：而是自动保存。fof 的 initializer 在主题之后运行，
   // 因此在 `mount` 中注册移除操作，排在其后。
   override(app as any, 'mount', function (this: any, original: (...args: any[]) => unknown, ...args: any[]) {
-    extend('flarum/forum/components/Composer' as any, 'controlItems', function (items: ItemList<Mithril.Children>) {
-      if (items.has('save-draft')) items.remove('save-draft');
-    });
+    if (!draftControlInstalled) {
+      draftControlInstalled = true;
+
+      extend('flarum/forum/components/Composer' as any, 'controlItems', function (items: ItemList<Mithril.Children>) {
+        if (items.has('save-draft')) items.remove('save-draft');
+      });
+    }
 
     return original(...args);
   });

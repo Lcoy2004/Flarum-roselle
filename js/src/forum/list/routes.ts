@@ -53,10 +53,13 @@ export default function installRoutes(): void {
   app.routes['lcoy.categories'] = { path: '/categories', component: TagsPage || IndexPage };
 
   // 在 /top（以及其他路由）上，URL 未带 `sort` 时排序来自路由。
+  // 「最新」例外：它必须不写 sort，API 才会把这次请求当作默认排序
+  //（`sortIsDefault`），flarum/sticky 与 stickiest 才会把置顶主题放到最前。
   extend(GlobalSearchState.prototype, 'stickyParams', function (params: any) {
     const route = currentSortRoute();
+    const sort = route ? SORT_ROUTES[route] : null;
 
-    if (route && !params.sort) params.sort = SORT_ROUTES[route];
+    if (sort && sort !== 'latest' && !params.sort) params.sort = sort;
   });
 
   // 在这些路由上切换排序会跳到新排序的路由（或带

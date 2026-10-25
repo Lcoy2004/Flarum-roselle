@@ -329,7 +329,7 @@ export default class ListNavigation extends Component<ListNavigationAttrs> {
       <SelectDropdown
         buttonClassName="Button Button--text LcoyNav-selectButton"
         caretIcon="fas fa-discourse-chevron-expand"
-        defaultLabel={t('nav.latest')}
+        defaultLabel={t('nav.default')}
         accessibleToggleLabel={t('nav.sort_label')}
       >
         {tabs.map((tab) => (

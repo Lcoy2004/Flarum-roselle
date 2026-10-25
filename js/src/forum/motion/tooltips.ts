@@ -14,11 +14,15 @@ let scheduled = false;
 function sync(element: HTMLElement) {
   if (!element.isConnected) return;
 
+  const own = element.dataset.lcoyTitle;
+
+  // 已经处理过且标签没变：跳过 jQuery 检查和文本读取。
+  if (own && element.getAttribute('title') === own && element.getAttribute('aria-label') === own) return;
+
   // 核心的 <Tooltip> 已经显示提示（并把文本存在 jQuery 中）。
   const $ = (window as any).$;
   if ($ && $(element).data('bs.tooltip')) return;
 
-  const own = element.dataset.lcoyTitle;
   const current = element.getAttribute('title');
 
   // 组件自带的标题优先。

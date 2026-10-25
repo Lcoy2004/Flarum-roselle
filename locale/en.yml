@@ -912,6 +912,7 @@ lcoy-roselle:
     nav:
       label: Discussion list navigation
       latest: Latest
+      default: Default
       hot: Hot
       newest: New
       unread: Unread

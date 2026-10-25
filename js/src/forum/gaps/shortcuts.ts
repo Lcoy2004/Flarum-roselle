@@ -576,11 +576,16 @@ function onKeydown(event: KeyboardEvent): void {
   if (app.current.matches(IndexPage) && listKey(event)) handled();
 }
 
+let helpAdded = false;
+
 export default function installGapShortcuts(): void {
   // 在 mount 中注册，而不是这里：只有那时论坛配置才已加载，
-  // 且“?”窗口不应列出已关闭的快捷键。
+  // 且“?”窗口不应列出已关闭的快捷键。帮助条目只添加一次。
   extend(app as any, 'mount', () => {
-    if (gaps.postShortcuts()) addHelp();
+    if (gaps.postShortcuts() && !helpAdded) {
+      helpAdded = true;
+      addHelp();
+    }
   });
 
   // 在捕获阶段：先于外壳的监听器运行，后者处于冒泡阶段。

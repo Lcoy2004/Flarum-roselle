@@ -147,7 +147,10 @@ function mountHeader(sidebarEnabled: boolean) {
       container.insertBefore(toggleSlot, title);
     }
 
-    m.mount(toggleSlot, HeaderToggle);
+    if (!(toggleSlot as any).lcoyMounted) {
+      (toggleSlot as any).lcoyMounted = true;
+      m.mount(toggleSlot, HeaderToggle);
+    }
   }
 
   // 即使没有搜索，页头中部也存在：滚动时主题标题
@@ -160,7 +163,11 @@ function mountHeader(sidebarEnabled: boolean) {
     container.insertBefore(centerSlot, document.getElementById('header-secondary'));
   }
 
-  m.mount(centerSlot, HeaderCenter);
+  if (!(centerSlot as any).lcoyMounted) {
+    (centerSlot as any).lcoyMounted = true;
+    m.mount(centerSlot, HeaderCenter);
+  }
+
   watchHeaderTopic();
 
   if (!forumBool('lcoyShowTitleWithLogo', false)) {

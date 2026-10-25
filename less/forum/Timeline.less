@@ -364,9 +364,11 @@
       content: "";
       position: absolute;
       inset: 0 auto 0 0;
-      width: calc(var(--lcoy-progress, 0) * 100%);
+      width: 100%;
       background: var(--lcoy-accent-low);
-      transition: width 0.15s ease-out;
+      transform: scaleX(var(--lcoy-progress, 0));
+      transform-origin: left center;
+      transition: transform 0.15s ease-out;
     }
 
     .Scrubber-index,

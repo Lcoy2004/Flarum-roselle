@@ -94,14 +94,19 @@ function isPinned(discussion: Discussion): boolean {
   return !!discussion.attribute<boolean>('isSticky');
 }
 
+let visibilityWatched = false;
+
 export default function installLastVisit(): void {
   extend(app as any, 'mount', () => {
     touchVisit();
 
-    // 整夜开着的标签页：重新切回它算作一次新访问。
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') touchVisit();
-    });
+    // 整夜开着的标签页：重新切回它算作一次新访问。监听器只挂一次。
+    if (!visibilityWatched) {
+      visibilityWatched = true;
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') touchVisit();
+      });
+    }
   });
 
   extend(IndexPage.prototype, 'oninit', () => touchVisit());

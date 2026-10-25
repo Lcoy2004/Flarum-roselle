@@ -50,6 +50,7 @@ class DraftsDropdown extends Dropdown {
 
 export default class DraftsMenu extends Component {
   private frame = 0;
+  private loadTimer: number | undefined;
 
   /** 滚动/缩放时每帧最多重算一次位置，避免逐事件读写布局。 */
   private readonly schedulePlace = () => {
@@ -93,8 +94,13 @@ export default class DraftsMenu extends Component {
   oninit(vnode: Mithril.Vnode) {
     super.oninit(vnode);
 
-    // 提前加载列表：菜单打开时标题已就绪。
-    if (!draftsLoaded()) loadDrafts().then(() => m.redraw());
+    // 提前加载列表：菜单打开时标题已就绪。延后到弹出动画之后，
+    // 避免接口返回时的重绘打断动画。
+    if (!draftsLoaded()) {
+      this.loadTimer = window.setTimeout(() => {
+        if (!draftsLoaded()) loadDrafts().then(() => m.redraw());
+      }, 300);
+    }
   }
 
   oncreate(vnode: Mithril.VnodeDOM) {
@@ -116,6 +122,7 @@ export default class DraftsMenu extends Component {
     window.removeEventListener('resize', this.schedulePlace);
     window.removeEventListener('scroll', this.schedulePlace, true);
     cancelAnimationFrame(this.frame);
+    window.clearTimeout(this.loadTimer);
   }
 
   view() {

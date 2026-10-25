@@ -90,7 +90,12 @@ function apply(mode: Mode, highContrast: boolean): void {
  * （只在系统要求高对比度时才加上 `-hc`）；这里当用户选择了
  * 高对比度调色板时，也会加上 `-hc`。
  */
+let installed = false;
+
 export function installColorMode(): void {
+  if (installed) return;
+  installed = true;
+
   extend(app as any, 'setColorScheme', function () {
     if (app.colorScheme !== 'auto' || !storedHighContrast()) return;
 

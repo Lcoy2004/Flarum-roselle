@@ -30,18 +30,26 @@ function schedule(): void {
   if (!frame) frame = requestAnimationFrame(measure);
 }
 
+let observersReady = false;
+
 export default function installAlignComposer(): void {
   window.addEventListener('resize', schedule, { passive: true });
 
-  // 侧边栏开合时卡片会移动（内容区域宽度改变），
-  // 并且每次切换页面都会重建。
+  // 侧边栏开合时卡片会移动（内容区域宽度改变）。观察器只挂一次：
+  // beforeMount 在首次挂载前运行；保留幂等守卫，安装器被重复调用时
+  // 也不会累积 ResizeObserver/MutationObserver。
   app.beforeMount(() => {
     requestAnimationFrame(() => {
-      const content = document.getElementById('content');
-      const area = document.querySelector('.App-content');
+      if (!observersReady) {
+        const content = document.getElementById('content');
+        const area = document.querySelector('.App-content');
 
-      if (typeof ResizeObserver !== 'undefined' && area) new ResizeObserver(schedule).observe(area);
-      if (content) new MutationObserver(schedule).observe(content, { childList: true });
+        if (content && area) {
+          if (typeof ResizeObserver !== 'undefined') new ResizeObserver(schedule).observe(area);
+          new MutationObserver(schedule).observe(content, { childList: true });
+          observersReady = true;
+        }
+      }
 
       schedule();
     });

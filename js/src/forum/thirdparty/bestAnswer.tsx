@@ -88,10 +88,15 @@ function acceptedBy(discussion: Discussion): string {
   return t('thirdparty.solved.accepted_by', { username: extractText(username(user)), ago: at ? humanTime(at) : '' });
 }
 
+let installed = false;
+
 export default function installBestAnswer(): void {
   // 个人资料顶部的 "0 个最佳答案"：Discourse 不显示为零的计数。
   // 在 beforeMount 中，以便在 fof 自身的项之后运行。
   app.beforeMount(() => {
+    if (installed) return;
+    installed = true;
+
     extend(UserCard.prototype, 'infoItems', function (this: any, items: any) {
       const count = Number(this.attrs.user?.attribute?.('bestAnswerCount')) || 0;
 

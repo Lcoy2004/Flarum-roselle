@@ -912,6 +912,7 @@ lcoy-roselle:
     nav:
       label: 讨论列表导航
       latest: 最新
+      default: 默认
       hot: 热门
       newest: 新帖
       unread: 未读

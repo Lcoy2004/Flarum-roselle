@@ -109,7 +109,13 @@ export function updateColoredAccents(): void {
  * 单独挂载一个组件，只为在每次 redraw 时被调用：页面
  * 切换、讨论加载完成以及标签变化都会经过一次 redraw。
  */
+let watched = false;
+
 export function watchColoredAccents(): void {
+  // 保持幂等：重复调用时不再创建第二个隐藏插槽和 redraw 回调。
+  if (watched) return;
+  watched = true;
+
   const slot = document.createElement('div');
   slot.hidden = true;
   document.body.appendChild(slot);

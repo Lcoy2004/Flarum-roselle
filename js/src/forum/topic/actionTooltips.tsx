@@ -26,8 +26,13 @@ function iconOnlyLabel(vnode: any): string | null {
   return typeof label === 'string' && label ? label : null;
 }
 
+let installed = false;
+
 export default function installActionTooltips(): void {
   app.beforeMount(() => {
+    if (installed) return;
+    installed = true;
+
     extend(CommentPost.prototype, 'actionItems', function (items: ItemList<Mithril.Children>) {
       Object.keys(items.toObject()).forEach((key) => {
         const vnode: any = items.get(key);

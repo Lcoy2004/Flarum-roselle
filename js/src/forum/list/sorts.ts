@@ -90,7 +90,7 @@ export function sortLabel(key: string): string {
 
   switch (key) {
     case 'latest':
-      return t('nav.latest');
+      return t('nav.default');
     case 'newest':
       return t('nav.newest');
     case 'top':

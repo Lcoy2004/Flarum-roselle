@@ -59,9 +59,9 @@
     border-bottom: 0;
     border-radius: var(--lcoy-composer-radius) var(--lcoy-composer-radius) 0 0;
     box-shadow: var(--lcoy-composer-shadow);
-    // 与 #reply-control 相同。高度本身由核心（jQuery，
-    // 200ms）做动画，与 Discourse 的 0.2s 过渡一致。
-    transition: max-width 0.2s, margin 0.2s, background-color 0.2s;
+    // 高度本身由核心（jQuery，200ms）做动画。这里不再给 max-width/
+    // margin 加过渡：它们会触发布局，打开编辑器时与高度动画叠加会卡。
+    transition: background-color 0.2s;
 
     // composer 获得焦点时，核心会绘制主色圆环；
     // Discourse 不会。
