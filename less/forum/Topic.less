@@ -23,6 +23,12 @@
   // tags 扩展用标签色绘制 hero，核心则居中；Discourse
   // 两者都不做。
   --hero-bg: transparent;
+  // 该扩展还会按首个标签色加上 `DiscussionHero--colored` 与
+  // `text-contrast--*`，把标题和标签文字改成“浅色背景上”的近黑色——
+  // 深色模式下就是黑底黑字。脚本会过滤这些类（js/src/forum/topic/hero.tsx），
+  // 这里再在 CSS 层兜一次底：类还在时也不让对比色盖过主题前景色。
+  --hero-color: var(--lcoy-primary);
+  --contrast-color: var(--lcoy-primary);
   background: none;
   color: var(--lcoy-primary);
   text-align: left;
@@ -71,6 +77,14 @@
     color: var(--lcoy-primary);
     overflow-wrap: anywhere;
     vertical-align: baseline;
+  }
+
+  // 标题下的分类/标签行：即使继承了标签扩展的对比色，
+  // 也保持主题的次要文本色。
+  .TagsLabel .TagLabel,
+  .TagsLabel .TagLabel-text {
+    color: var(--lcoy-primary-high) !important;
+    background-color: transparent !important;
   }
 
   // Discourse 的状态图标（置顶、锁定、隐藏……）只是
