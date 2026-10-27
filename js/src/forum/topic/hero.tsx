@@ -2,16 +2,19 @@
  * 主题头部：大标题，下面是分类和标签，与 Discourse 一致——去掉 flarum/tags
  * 用第一个标签颜色绘制的那条彩色带。核心的状态图标（置顶、锁定…）
  * 仍在标题之前。
+ *
+ * 标签扩展会给 hero 加 `DiscussionHero--colored` / `text-contrast--*`
+ * 并用首个标签色作背景；颜色一律由 CSS 覆盖
+ * （less/forum/Topic.less 的 `.DiscussionHero.LcoyTopicHero`），这里只负责
+ * 标记主题自己的头部。
  */
 import { extend } from 'flarum/common/extend';
+import classList from 'flarum/common/utils/classList';
 import DiscussionHero from 'flarum/forum/components/DiscussionHero';
 import type ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 
 import { discussionBadges } from '../utils/tags';
-
-/** flarum/tags 加在 hero 上、用于以标签颜色为其着色的类。 */
-const COLORED_CLASS = /^(DiscussionHero--colored|text-contrast--\w+)$/;
 
 export default function installHero(): void {
   extend(DiscussionHero.prototype, 'items', function (this: DiscussionHero, items: ItemList<Mithril.Children>) {
@@ -29,14 +32,6 @@ export default function installHero(): void {
   extend(DiscussionHero.prototype, 'view', function (this: DiscussionHero, vnode: any) {
     if (!vnode || !vnode.attrs) return;
 
-    // 标题位于白色卡片中：用标签颜色作背景不协调，而且 tags 计算出的
-    // 对比度会让文字变成白底白字。
-    delete vnode.attrs.style;
-
-    vnode.attrs.className = String(vnode.attrs.className || '')
-      .split(' ')
-      .filter((name: string) => name && !COLORED_CLASS.test(name))
-      .concat('LcoyTopicHero')
-      .join(' ');
+    vnode.attrs.className = classList(vnode.attrs.className, 'LcoyTopicHero');
   });
 }

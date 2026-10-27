@@ -87,6 +87,17 @@
     background-color: transparent !important;
   }
 
+  // tags 的 `.DiscussionHero--colored a` 会把所有链接刷成对比色；
+  // 正文中的分类/标签徽章保持灰色，悬停才加深。
+  .LcoyBadges a {
+    color: var(--lcoy-primary-high);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--lcoy-primary);
+    }
+  }
+
   // Discourse 的状态图标（置顶、锁定、隐藏……）只是
   // 灰色图标，没有徽章的彩色圆形。
   .DiscussionHero-badges {
