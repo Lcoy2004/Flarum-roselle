@@ -9,9 +9,9 @@
  * 只有按名称导入的图标会进入包中（lucide 声明了
  * `sideEffects: false`，因此 webpack 会丢弃其余约 3,500 个）。
  *
- * lucide 固定在 0.555.0：这是最接近
- * “Discourse Lucide Icons” 组件 sprite 的版本（238 个图案中有 226 个完全相同；
- * 1.x 重绘了数十个）。少数不同的来自 Meta 自身的 sprite。
+ * lucide 停在 1.x（1.62）：1.x 相对 0.55x 重绘了数十个图案，
+ * 与 “Discourse Lucide Icons” 组件 sprite 的相似度因此略有下降；
+ * 升级这个依赖时要重新核对图案是否仍与 Meta 接近。
  *
  * Lucide (https://lucide.dev)，ISC 许可证。Copyright (c) for portions of
  * Lucide are held by Cole Bemis 2013-2022 as part of Feather (MIT). All other

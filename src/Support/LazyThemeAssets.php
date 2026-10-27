@@ -18,6 +18,7 @@ use Ernestdefoe\Wardrobe\ThemeAssets;
 use Ernestdefoe\Wardrobe\ThemeRegistry;
 use Ernestdefoe\Wardrobe\WarmThemeAssets;
 use Flarum\Frontend\Compiler\RevisionCompiler;
+use Flarum\Frontend\Compiler\VersionerInterface;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Contracts\Container\Container;
@@ -42,9 +43,11 @@ final class LazyThemeAssets extends ThemeAssets
         private readonly Container $app,
         ThemeRegistry $themes,
         SettingsRepositoryInterface $config,
-        private readonly Cache $store
+        private readonly Cache $store,
+        VersionerInterface $versioner
     ) {
-        parent::__construct($app, $themes, $config, $store);
+        // Wardrobe 1.1.4 开始要求传入版本器；更早的版本会忽略多出来的参数。
+        parent::__construct($app, $themes, $config, $store, $versioner);
     }
 
     #[\Override]
@@ -120,12 +123,12 @@ final class LazyThemeAssets extends ThemeAssets
      * 空列表开始，并依据时间戳判断，如同新的请求。
      */
     #[\Override]
-    public function warmAll(): void
+    public function warmAll(?string $shared = null): void
     {
         \Closure::bind(function (): void {
             $this->fresh = [];
         }, $this, ThemeAssets::class)();
 
-        parent::warmAll();
+        parent::warmAll($shared);
     }
 }

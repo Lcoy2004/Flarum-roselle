@@ -1,5 +1,31 @@
 # 更新日志
 
+## 2.1.0（2026-10-27）
+
+安全修复、依赖升级与摘要页重排。
+
+### 安全
+
+- 资源加载器只从磁盘读取 `extend/` 列表：删除 `X-Lcoy-Probe` 请求头与 `extend/.enabled` 白名单，`extend.php` 不再读取 `$_SERVER` 等超全局变量（此前任何访客都能开关论坛的一部分）。新增测试守住这一点。
+- logo SVG 拒绝空字节（UTF-16/UTF-32 里搜不到 `<!ENTITY`）、拒绝 DTD 与非 UTF-8 编码。
+- 资料页的访问天数、阅读时长、已读帖子对隐藏在线状态的人返回 `null`；统计里的“给出的赞”只数公开且未隐藏的帖子；成员目录在“今天/本周”周期不显示访问列。
+- 资料摘要的聚合查询把“可见帖子”子查询收窄到本人帖子/本人点赞过的帖子。
+
+### 修复
+
+- `/api/lcoy-directory` 因 `Community::DIRECTORY_ENABLED` 常量不存在而一直 500；成员目录改由权限决定，只有组内列表跟随“群组页”开关。
+- 适配 Wardrobe 1.1.4 的构造签名与 `warmAll($shared)`。
+
+### 界面
+
+- 摘要页的“你最常回复的人 / 最常赞你的人 / 你最常赞的人”改为自适应卡片网格：整宽区块一行 2 张、半宽区块 1 张、手机单列，计数靠右，右侧不再留大片空白。
+
+### 依赖
+
+- `flarum-webpack-config` 3.1.0、`webpack` 5.112.2、`webpack-cli` 7.2.3、`lucide` 1.62.0、`eslint` 10.13.0、`@typescript-eslint/parser` 8.72.1、`fast-uri` 3.1.9。
+- `eslint-plugin-react` 的 peer 范围尚未包含 ESLint 10，已在运行时验证规则正常（`js/.npmrc` 使用 `legacy-peer-deps`）。
+- `typescript` 保持在 5.9：`@typescript-eslint/parser` 在 TS 7 下会直接抛错，等其支持后再升。
+
 ## 2.0.5（2026-10-25）
 
 手机端与细节修复。

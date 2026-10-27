@@ -49,7 +49,9 @@ final class SvgSanitizer
 
     public static function sanitize(string $svg, bool $allowAnimation = false): ?string
     {
-        if (trim($svg) === '' || stripos($svg, '<!ENTITY') !== false || stripos($svg, '<!DOCTYPE') !== false) {
+        // 空字节 = UTF-16/UTF-32：下面的 `<!ENTITY` 在这种编码里搜不到，
+        // 而 libxml 仍会读取 DTD。
+        if (trim($svg) === '' || str_contains($svg, "\0") || stripos($svg, '<!ENTITY') !== false || stripos($svg, '<!DOCTYPE') !== false) {
             return null;
         }
 
@@ -62,6 +64,13 @@ final class SvgSanitizer
         $root = $document->documentElement;
 
         if (! $loaded || ! $root || strtolower($root->localName) !== 'svg') {
+            return null;
+        }
+
+        // 第二道关卡，已是读好的文档：不接受 DTD，也只接受 UTF-8。
+        $encoding = strtolower((string) $document->xmlEncoding);
+
+        if ($document->doctype !== null || ($encoding !== '' && $encoding !== 'utf-8')) {
             return null;
         }
 

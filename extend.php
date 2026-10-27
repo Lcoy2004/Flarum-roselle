@@ -206,23 +206,10 @@ $features = [];
 // `$settings`，后者随后会被注册两次（并丢失默认值）。
 $requireFeature = static fn (string $file): array => require $file;
 
-// 只有列在 extend/.enabled 中的资源才会被加载（每行一个）：新资源
-// 经过测试后才加入列表，论坛绝不会因为它仍在开发中而崩溃。
-//
-// 为了在不影响站点用户的情况下测试某个资源，请求可以带上
-// `X-Lcoy-Probe: <resource>[,<resource>…]` 请求头，仅对该请求生效。
-$readList = static fn (string $text): array => array_values(array_filter(array_map('trim', preg_split('/[\s,]+/', $text) ?: [])));
-$enabledFile = __DIR__.'/extend/.enabled';
-$enabled = is_file($enabledFile) ? $readList((string) file_get_contents($enabledFile)) : [];
-
-if (isset($_SERVER['HTTP_X_LCOY_PROBE'])) {
-    $enabled = $readList((string) $_SERVER['HTTP_X_LCOY_PROBE']);
-}
-
-$featureFiles = array_filter(
-    glob(__DIR__.'/extend/*.php') ?: [],
-    static fn (string $file): bool => in_array(basename($file, '.php'), $enabled, true)
-);
+// extend/ 中的每个文件都会被加载，按文件名字母顺序（glob 的默认顺序）。
+// 资源列表只来自磁盘，绝不来自请求：能改资源列表的请求头或参数
+// 意味着任何访客都能自行打开或关闭论坛的一部分。
+$featureFiles = glob(__DIR__.'/extend/*.php') ?: [];
 
 foreach ($featureFiles as $featureFile) {
     // 加载失败的资源会被排除在外，论坛与其余部分继续运行：

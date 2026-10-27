@@ -57,14 +57,20 @@ final class ListDirectoryController implements RequestHandlerInterface
 
         $groupId = $this->groupId($actor, Arr::get($params, 'group'));
 
-        $this->community->assertEnabled($groupId === null ? Community::DIRECTORY_ENABLED : Community::GROUPS_ENABLED);
-        $this->community->assertCanListUsers($actor);
+        // 成员目录本身没有开关：能列出谁由权限决定（核心的
+        // `searchUsers`，或管理员把访客放进来的选项）。组内的
+        // 成员列表则跟随“群组页”的开关。
+        if ($groupId !== null) {
+            $this->community->assertEnabled(Community::GROUPS_ENABLED);
+        }
 
-        $columns = $this->directory->columns($actor);
-        $sortable = [...$columns, 'username', 'joinedAt'];
+        $this->community->assertCanListUsers($actor);
 
         $period = (string) Arr::get($params, 'period', 'all');
         $period = array_key_exists($period, Directory::PERIODS) ? $period : 'all';
+
+        $columns = $this->directory->columns($actor, $period);
+        $sortable = [...$columns, 'username', 'joinedAt'];
 
         $order = (string) Arr::get($params, 'order', '');
         $order = in_array($order, $sortable, true) ? $order : ($groupId === null ? $this->directory->defaultOrder() : 'username');

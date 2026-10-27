@@ -68,7 +68,7 @@ final class Directory
      *
      * @return list<string>
      */
-    public function columns(User $actor): array
+    public function columns(User $actor, string $period = 'all'): array
     {
         $columns = [];
 
@@ -78,7 +78,7 @@ final class Directory
 
         array_push($columns, 'topicCount', 'postCount');
 
-        if ($visits = $this->visitsSchema()) {
+        if (($visits = $this->visitsSchema()) && $this->canSeeVisits($actor, $period)) {
             $columns[] = 'daysVisited';
 
             if ($visits['read'] !== null) {
@@ -98,6 +98,18 @@ final class Directory
     public function canSortByLastSeen(User $actor): bool
     {
         return $actor->hasPermission('user.viewLastSeenAt');
+    }
+
+    /**
+     * 今天或这一周的访问天数说明谁来过这里——等同于“最后访问”，
+     * 而隐藏在线状态的人不显示它。短周期里，访问相关的列沿用
+     * 同一权限。
+     */
+    public function canSeeVisits(User $actor, string $period): bool
+    {
+        $days = self::PERIODS[$period] ?? null;
+
+        return $days === null || $days > 7 || $this->canSortByLastSeen($actor);
     }
 
     public function defaultOrder(): string
@@ -137,7 +149,7 @@ final class Directory
             $this->joinAggregate($users, 'likesGiven', $this->likesGiven($since));
         }
 
-        if ($visits = $this->visitsSchema()) {
+        if (($visits = $this->visitsSchema()) && $this->canSeeVisits($actor, $period)) {
             $this->joinAggregate($users, 'daysVisited', $this->visits($since, $visits['date'], null));
 
             if ($visits['read'] !== null) {

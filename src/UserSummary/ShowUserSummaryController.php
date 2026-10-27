@@ -83,8 +83,14 @@ final class ShowUserSummaryController implements RequestHandlerInterface
     /** @return array<string, mixed> */
     private function summary(User $user, User $actor): array
     {
-        // 操作者可见的帖子 id：所有统计的基础。
-        $visiblePosts = static fn (): Builder => Post::whereVisibleTo($actor)->select('posts.id')->toBase();
+        // 操作者可见的帖子 id：所有统计的基础。每项统计都把子查询收窄到
+        // 自己关心的范围（这个人的帖子，或他点赞过的帖子）；否则数据库每次
+        // 打开资料都会先算出全论坛可见帖子的集合。
+        $visiblePosts = static fn (?callable $narrow = null): Builder => Post::whereVisibleTo($actor)
+            ->select('posts.id')
+            ->when($narrow, $narrow)
+            ->toBase();
+        $byUser = static fn ($query) => $query->where('posts.user_id', $user->id);
 
         $likes = $this->extensions->isEnabled('flarum-likes');
         $mentions = $this->extensions->isEnabled('flarum-mentions');
@@ -92,8 +98,8 @@ final class ShowUserSummaryController implements RequestHandlerInterface
 
         // 三个人员列表共用一次查询获取用户。
         $lists = [
-            'mostRepliedTo' => $mentions ? $this->safely(fn (): Collection => $this->mostRepliedTo($user, $visiblePosts)) : null,
-            'mostLikedBy' => $likes ? $this->safely(fn (): Collection => $this->mostLikedBy($user, $visiblePosts)) : null,
+            'mostRepliedTo' => $mentions ? $this->safely(fn (): Collection => $this->mostRepliedTo($user, $visiblePosts, $byUser)) : null,
+            'mostLikedBy' => $likes ? $this->safely(fn (): Collection => $this->mostLikedBy($user, $visiblePosts, $byUser)) : null,
             'mostLiked' => $likes ? $this->safely(fn (): Collection => $this->mostLiked($user, $visiblePosts)) : null,
         ];
         $people = $this->safely(fn (): array => $this->users($lists, $actor));
@@ -107,7 +113,7 @@ final class ShowUserSummaryController implements RequestHandlerInterface
             'mostRepliedTo' => $people['mostRepliedTo'],
             'mostLikedBy' => $people['mostLikedBy'],
             'mostLiked' => $people['mostLiked'],
-            'topCategories' => $tags ? $this->safely(fn (): array => $this->topCategories($user, $actor, $visiblePosts)) : null,
+            'topCategories' => $tags ? $this->safely(fn (): array => $this->topCategories($user, $actor, $visiblePosts, $byUser)) : null,
         ];
     }
 
@@ -128,10 +134,10 @@ final class ShowUserSummaryController implements RequestHandlerInterface
     }
 
     /**
-     * @param callable(): Builder $visiblePosts
+     * @param callable(callable|null=): Builder $visiblePosts
      * @return Collection<int, object> linhas (user_id, total)
      */
-    private function mostRepliedTo(User $user, callable $visiblePosts): Collection
+    private function mostRepliedTo(User $user, callable $visiblePosts, callable $byUser): Collection
     {
         return $this->db->table('post_mentions_post as m')
             ->join('posts as mine', 'mine.id', '=', 'm.post_id')
@@ -139,8 +145,15 @@ final class ShowUserSummaryController implements RequestHandlerInterface
             ->where('mine.user_id', $user->id)
             ->where('target.user_id', '<>', $user->id)
             ->whereNotNull('target.user_id')
-            ->whereIn('mine.id', $visiblePosts())
-            ->whereIn('target.id', $visiblePosts())
+            ->whereIn('mine.id', $visiblePosts($byUser))
+            // 被提到的帖子也限制在这位用户参与过的范围里。
+            ->whereIn('target.id', $visiblePosts(fn ($query) => $query->whereIn(
+                'posts.id',
+                fn ($mentioned) => $mentioned->select('m2.mentions_post_id')
+                    ->from('post_mentions_post as m2')
+                    ->join('posts as mine2', 'mine2.id', '=', 'm2.post_id')
+                    ->where('mine2.user_id', $user->id)
+            )))
             ->groupBy('target.user_id')
             ->orderByDesc('total')
             ->limit(self::LIMIT * 2)
@@ -149,16 +162,16 @@ final class ShowUserSummaryController implements RequestHandlerInterface
     }
 
     /**
-     * @param callable(): Builder $visiblePosts
+     * @param callable(callable|null=): Builder $visiblePosts
      * @return Collection<int, object> linhas (user_id, total)
      */
-    private function mostLikedBy(User $user, callable $visiblePosts): Collection
+    private function mostLikedBy(User $user, callable $visiblePosts, callable $byUser): Collection
     {
         return $this->db->table('post_likes as l')
             ->join('posts as p', 'p.id', '=', 'l.post_id')
             ->where('p.user_id', $user->id)
             ->where('l.user_id', '<>', $user->id)
-            ->whereIn('p.id', $visiblePosts())
+            ->whereIn('p.id', $visiblePosts($byUser))
             ->groupBy('l.user_id')
             ->orderByDesc('total')
             ->limit(self::LIMIT * 2)
@@ -167,7 +180,7 @@ final class ShowUserSummaryController implements RequestHandlerInterface
     }
 
     /**
-     * @param callable(): Builder $visiblePosts
+     * @param callable(callable|null=): Builder $visiblePosts
      * @return Collection<int, object> linhas (user_id, total)
      */
     private function mostLiked(User $user, callable $visiblePosts): Collection
@@ -177,7 +190,11 @@ final class ShowUserSummaryController implements RequestHandlerInterface
             ->where('l.user_id', $user->id)
             ->where('p.user_id', '<>', $user->id)
             ->whereNotNull('p.user_id')
-            ->whereIn('p.id', $visiblePosts())
+            // 只看他点过赞的那批帖子。
+            ->whereIn('p.id', $visiblePosts(fn ($query) => $query->whereIn(
+                'posts.id',
+                fn ($liked) => $liked->select('l2.post_id')->from('post_likes as l2')->where('l2.user_id', $user->id)
+            )))
             ->groupBy('p.user_id')
             ->orderByDesc('total')
             ->limit(self::LIMIT * 2)
@@ -189,10 +206,10 @@ final class ShowUserSummaryController implements RequestHandlerInterface
      * 参与最多的分类：用户发起的主题以及在每个主标签中的回复
      * （首帖之后的帖子）。
      *
-     * @param callable(): Builder $visiblePosts
+     * @param callable(callable|null=): Builder $visiblePosts
      * @return array<int, array<string, mixed>>
      */
-    private function topCategories(User $user, User $actor, callable $visiblePosts): array
+    private function topCategories(User $user, User $actor, callable $visiblePosts, callable $byUser): array
     {
         // 该类来自 flarum/tags：只有安装它才存在。
         $tagClass = 'Flarum\\Tags\\Tag';
@@ -207,7 +224,7 @@ final class ShowUserSummaryController implements RequestHandlerInterface
             ->join('discussion_tag as dt', 'dt.discussion_id', '=', 'p.discussion_id')
             ->where('p.user_id', $user->id)
             ->where('p.type', 'comment')
-            ->whereIn('p.id', $visiblePosts())
+            ->whereIn('p.id', $visiblePosts($byUser))
             ->whereIn('dt.tag_id', $visibleTags)
             ->groupBy('dt.tag_id')
             ->select(

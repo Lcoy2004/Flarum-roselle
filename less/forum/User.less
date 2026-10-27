@@ -1168,10 +1168,13 @@
   }
 }
 
-// `.summary-user-list`：45px 行，40px 头像，用户名
-// 加粗，名称灰色，计数在下方。
+// `.summary-user-list`：卡片网格——整宽区块一行排 2–3 张，
+// 半宽的两列区块里排 1 张。头像 40px，用户名加粗、名称灰色，
+// 计数靠右，卡片内容撑满整行，右侧不留大片空白。
 .LcoySummaryUsers {
-  max-width: 95%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1180,8 +1183,17 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
     min-height: 45px;
-    margin: 0 0 10px;
+    margin: 0;
+    padding: 6px 10px;
+    border: 1px solid var(--lcoy-primary-low);
+    border-radius: var(--lcoy-radius);
+    background: var(--lcoy-surface);
+
+    &:hover {
+      background: var(--lcoy-hover);
+    }
   }
 
   &-avatar {
@@ -1197,11 +1209,17 @@
   }
 
   &-details {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 8px;
     min-width: 0;
     line-height: 1.3;
   }
 
   &-names {
+    flex: 1 1 auto;
+    min-width: 0;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -1222,6 +1240,7 @@
   }
 
   &-count {
+    flex: none;
     color: var(--lcoy-primary-medium);
     font-size: 0.8706em;
 

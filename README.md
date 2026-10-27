@@ -157,8 +157,7 @@ Releases are built from tags. Pushing a `vX.Y.Z` tag runs `.github/workflows/rel
 
 ```
 extend.php            base settings, frontend assets, service providers
-extend/               one file per feature; only files listed in extend/.enabled load
-  .enabled            feature whitelist (one name per line)
+extend/               one file per feature; every file loads
 src/                  PHP: API resources, formatters, controllers, policies
 js/src/forum/         forum app (initializers, features, adaptation layer)
 js/src/admin/         admin panel (cards, controls, panel chunk)
@@ -169,7 +168,7 @@ views/                error-page overrides
 assets/               fonts and locale flags
 ```
 
-A feature file that fails to load is skipped and logged, so the forum keeps running with the rest. For debugging a single feature without touching the whitelist, send the `X-Lcoy-Probe: <feature>` header.
+Every feature file in `extend/` is loaded (in alphabetical order). A feature file that fails to load is skipped and logged, so the forum keeps running with the rest. The feature list comes from disk only: no request header or parameter can change it.
 
 ## Languages
 

@@ -68,7 +68,17 @@ final class UserActivity
         ];
 
         if ($this->extensions->isEnabled('flarum-likes')) {
-            $summary['likesGiven'] = $this->db->table('post_likes')->where('user_id', $id)->count();
+            // 只数看得见的帖子：资料页人人可见，把私密或隐藏内容算进
+            // “给出的赞”会告诉别人他在别处点了什么。
+            $summary['likesGiven'] = $this->db->table('post_likes')
+                ->join('posts', 'posts.id', '=', 'post_likes.post_id')
+                ->join('discussions', 'discussions.id', '=', 'posts.discussion_id')
+                ->where('post_likes.user_id', $id)
+                ->where('posts.is_private', false)
+                ->whereNull('posts.hidden_at')
+                ->where('discussions.is_private', false)
+                ->whereNull('discussions.hidden_at')
+                ->count();
             $summary['likesReceived'] = $this->db->table('post_likes')
                 ->join('posts', 'posts.id', '=', 'post_likes.post_id')
                 ->where('posts.user_id', $id)
