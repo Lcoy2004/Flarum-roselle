@@ -99,16 +99,13 @@
   }
 
   .LcoySidebar-recommendationAvatar {
+    // 官方 .Avatar 靠 --size 推导字号（calc(var(--size) / 2)）并居中首字母
+    --size: 16px;
     flex: 0 0 16px;
-    width: 16px;
-    height: 16px;
+    width: var(--size);
+    height: var(--size);
     border-radius: 50%;
     object-fit: cover;
-
-    // 作者没有头像时，这里留一个中性圆点。
-    &--empty {
-      background: var(--lcoy-primary-200);
-    }
   }
 
   .LcoySidebar-recommendationUser {

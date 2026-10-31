@@ -20,8 +20,10 @@
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
 import { extend } from 'flarum/common/extend';
+import Avatar from 'flarum/common/components/Avatar';
 import Icon from 'flarum/common/components/Icon';
 import Link from 'flarum/common/components/Link';
+import User from 'flarum/common/models/User';
 import abbreviateNumber from 'flarum/common/utils/abbreviateNumber';
 import classList from 'flarum/common/utils/classList';
 import humanTime from 'flarum/common/utils/humanTime';
@@ -60,7 +62,22 @@ interface Recommendation {
   createdAt: string;
   commentCount: number;
   viewCount: number;
-  user: { displayName: string; avatarUrl: string | null } | null;
+  user: { id: number; displayName: string; avatarUrl: string | null } | null;
+}
+
+/** 加载失败的旧头像 URL：后端缓存快照可能指向已删除的文件。 */
+const failedAvatars = new Set<string>();
+
+function avatar(user: Recommendation['user']): User | null {
+  if (!user) return null;
+
+  const url = user.avatarUrl && !failedAvatars.has(user.avatarUrl) ? user.avatarUrl : null;
+
+  return new User({
+    type: 'users',
+    id: String(user.id),
+    attributes: { displayName: user.displayName, avatarUrl: url },
+  });
 }
 
 type Lists = Record<Group, Recommendation[]>;
@@ -162,18 +179,20 @@ function stat(group: Group, item: Recommendation): Mithril.Children {
 
 function itemRow(group: Group, item: Recommendation): Mithril.Children {
   const user = item.user;
-  const avatar = user?.avatarUrl ?? null;
 
   return (
     <li className="LcoySidebar-recommendation">
       <Link className="LcoySidebar-recommendationLink" href={app.route('discussion', { id: item.id, slug: item.slug })} title={item.title}>
         <span className="LcoySidebar-recommendationTitle">{item.title}</span>
         <span className="LcoySidebar-recommendationMeta">
-          {avatar ? (
-            <img className="LcoySidebar-recommendationAvatar" src={avatar} alt="" loading="lazy" decoding="async" />
-          ) : (
-            <span className="LcoySidebar-recommendationAvatar LcoySidebar-recommendationAvatar--empty" />
-          )}
+          {/* 官方 Avatar：无头像时渲染「首字母 + 姓名生成的背景色」，与核心默认头像一致 */}
+          <Avatar
+            user={avatar(user)}
+            className="LcoySidebar-recommendationAvatar"
+            onerror={() => {
+              if (user?.avatarUrl) failedAvatars.add(user.avatarUrl);
+            }}
+          />
           {user && <span className="LcoySidebar-recommendationUser">{user.displayName}</span>}
           {stat(group, item)}
         </span>
