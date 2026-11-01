@@ -421,15 +421,28 @@
 
 // ---------------------------------------------------------------------
 // 滚动时页头中的话题标题（Discourse 的 `.header-title.topic`）。
-// 从搜索列开始，左列留给 Logo 与主导航（FoF Links），避免两者
-// 占据同一网格单元而重叠。
+// 标题居中于整条页头（Logo 之后、右侧控件之前）。主导航在这一
+// 状态下让位，否则左侧链接会把标题挤到一边；滚回顶部即恢复。
 // ---------------------------------------------------------------------
 @media @tablet-up {
+  .Lcoy .App-header:has(.LcoyHeaderTopic) #header-primary {
+    display: none;
+  }
+
   .LcoyHeader-center:has(.LcoyHeaderTopic) {
-    grid-column: ~"3 / 5";
+    grid-column: ~"2 / 5";
     justify-self: stretch;
     max-width: none;
     min-width: 0;
+  }
+
+  .LcoyHeaderTopic {
+    align-items: center;
+  }
+
+  .LcoyHeaderTopic-title,
+  .LcoyHeaderTopic-badges {
+    justify-content: center;
   }
 }
 
@@ -462,6 +475,7 @@
   align-items: center;
   gap: 0.3em;
   min-width: 0;
+  max-width: 100%;
   color: var(--lcoy-primary);
   font-size: var(--lcoy-font-up-2);
   font-weight: 600;
@@ -475,6 +489,8 @@
 }
 
 .LcoyHeaderTopic-text {
+  // 居中后标题需要能自行收缩，否则长标题会溢出两边。
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
