@@ -101,7 +101,10 @@
 
   .Lcoy #header-primary {
     grid-area: lspace;
-    min-width: 0;
+    // 不能是 0：该列会被搜索列压成 0 宽，链接按钮溢出到相邻列，
+    // 滚动后的帖子标题就会压在链接上。min-content 让列至少容纳
+    // 一整行按钮；超出的项由 OverflowingList 折叠成菜单。
+    min-width: min-content;
   }
 
   .LcoyHeader-search {
@@ -417,12 +420,13 @@
 }
 
 // ---------------------------------------------------------------------
-// 滚动时页头中的话题标题（Discourse 的 `.header-title.topic`）：
-// 从 Logo 末端延伸至右侧图标。
+// 滚动时页头中的话题标题（Discourse 的 `.header-title.topic`）。
+// 从搜索列开始，左列留给 Logo 与主导航（FoF Links），避免两者
+// 占据同一网格单元而重叠。
 // ---------------------------------------------------------------------
 @media @tablet-up {
   .LcoyHeader-center:has(.LcoyHeaderTopic) {
-    grid-column: ~"2 / 5";
+    grid-column: ~"3 / 5";
     justify-self: stretch;
     max-width: none;
     min-width: 0;
