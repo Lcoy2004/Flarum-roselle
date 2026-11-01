@@ -50,7 +50,7 @@ export default function installShell() {
         'Lcoy--tinted': forumBool('lcoyTintedBackground', true),
         'Lcoy--card': forumBool('lcoyContentCard', true),
         'Lcoy--noSidebar': !sidebarEnabled,
-        'Lcoy--headerSearch': forumBool('lcoyHeaderSearch', true),
+        'Lcoy--headerSearch': forumBool('lcoyHeaderSearch', false),
         'Lcoy--noEventPosts': !forumBool('lcoyTopicEventPosts', true),
         'Lcoy--stickyAvatar': forumBool('lcoyTopicStickyAvatar', false),
         // 连接头像的时间线（less/forum/PostDirect.less）。

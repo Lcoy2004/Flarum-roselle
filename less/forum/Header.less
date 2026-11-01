@@ -549,10 +549,14 @@
       color: var(--lcoy-header-on) !important;
     }
 
+    // 主导航（FoF Links 等）也在这条规则里：否则会回落到核心的
+    // --header-colored-control-color（浅色调），在主色背景上几乎看不清。
     .LcoyHeader-toggle,
     .Header-secondary .Button:not(.Button--primary),
     .Header-secondary .Dropdown-toggle,
-    .LcoyUserMenuButton.Button {
+    .LcoyUserMenuButton.Button,
+    #header-primary .LinksButton.Button,
+    #header-primary .Dropdown-toggle {
       background: transparent !important;
       color: var(--lcoy-header-on) !important;
 

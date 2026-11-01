@@ -9,10 +9,13 @@ import type ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 
 import WelcomeBanner from '../list/WelcomeBanner';
+import { forumBool } from '../utils/settings';
 import SearchMenu from './SearchMenu';
 
 export default function installSearchMenu(): void {
   extend(WelcomeBanner.prototype, 'bodyItems', function (items: ItemList<Mithril.Children>) {
+    // 页头关闭了 Discourse 搜索时，横幅也保持 Flarum 的默认搜索。
+    if (!forumBool('lcoyHeaderSearch', false)) return;
     if (!items.has('search')) return;
 
     items.setContent(

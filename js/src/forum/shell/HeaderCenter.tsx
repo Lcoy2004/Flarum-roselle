@@ -88,7 +88,7 @@ export default class HeaderCenter extends Component {
 
     if (discussion && showingTopic) return this.topic(discussion);
 
-    return forumBool('lcoyHeaderSearch', true) ? <HeaderSearch state={app.search.state} /> : null;
+    return forumBool('lcoyHeaderSearch', false) ? <HeaderSearch state={app.search.state} /> : null;
   }
 
   onupdate() {

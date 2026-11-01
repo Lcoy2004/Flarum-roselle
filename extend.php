@@ -46,8 +46,8 @@ $forumSettings = [
     'lcoy.sidebar_tags_limit' => ['lcoySidebarTagsLimit', 6, 'intval'],
     'lcoy.sidebar_footer' => ['lcoySidebarFooter', true, 'boolval'],
 
-    // 页眉
-    'lcoy.header_search' => ['lcoyHeaderSearch', true, 'boolval'],
+    // 页眉：默认使用 Flarum 的搜索，关闭主题的 Discourse 搜索框。
+    'lcoy.header_search' => ['lcoyHeaderSearch', false, 'boolval'],
 
     // 快捷键
     'lcoy.keyboard_shortcuts' => ['lcoyKeyboardShortcuts', true, 'boolval'],
@@ -108,7 +108,8 @@ $forumSettings = [
     'lcoy.thirdparty_solved' => ['lcoyThirdPartySolved', true, 'boolval'],
     'lcoy.thirdparty_reactions' => ['lcoyThirdPartyReactions', true, 'boolval'],
     'lcoy.thirdparty_polls' => ['lcoyThirdPartyPolls', true, 'boolval'],
-    'lcoy.thirdparty_links_sidebar' => ['lcoyThirdPartyLinksSidebar', true, 'boolval'],
+    // 默认把 FoF Links 留在页头（Flarum 的默认位置）。
+    'lcoy.thirdparty_links_sidebar' => ['lcoyThirdPartyLinksSidebar', false, 'boolval'],
     'lcoy.thirdparty_upload_progress' => ['lcoyThirdPartyUploadProgress', true, 'boolval'],
     'lcoy.thirdparty_thumbnails' => ['lcoyThirdPartyThumbnails', true, 'boolval'],
     // forumaker/profile-cover 取代内置封面（thirdparty/profileCover）。

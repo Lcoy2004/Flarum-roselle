@@ -22,16 +22,4 @@
   text-overflow: ellipsis;
 }
 
-// 如果后台关闭侧边栏，链接回到头部，采用主题
-// 头部的按钮外观。
-.Header-primary .LinksButton.Button {
-  border-radius: var(--lcoy-radius-pill);
-  color: var(--lcoy-primary-high);
-
-  &:hover,
-  &:focus-visible,
-  &.active {
-    background: var(--lcoy-hover);
-    color: var(--lcoy-primary);
-  }
-}
+// 链接回到头部时不再覆盖颜色和圆角：沿用 Flarum 默认的按钮外观。

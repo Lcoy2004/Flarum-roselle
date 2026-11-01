@@ -68,8 +68,8 @@ final class PreBootShell
             'Lcoy--tinted' => $bool('lcoyTintedBackground', true),
             'Lcoy--card' => $bool('lcoyContentCard', true),
             'Lcoy--noSidebar' => ! $sidebar,
-            'Lcoy--headerSearch' => $bool('lcoyHeaderSearch', true),
-            'Lcoy--noEventPosts' => ! $bool('lcoyTopicEventPosts', false),
+            'Lcoy--headerSearch' => $bool('lcoyHeaderSearch', false),
+            'Lcoy--noEventPosts' => ! $bool('lcoyTopicEventPosts', true),
             // 连接各头像的时间线（less/forum/PostDirect.less）。
             'Lcoy--postDirect' => ($attrs['lcoyPostStyle'] ?? null) === 'direct',
         ]));

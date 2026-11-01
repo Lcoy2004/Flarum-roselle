@@ -89,7 +89,10 @@
     object-fit: contain;
   }
 
-  .Lcoy #header-primary {
+  // 手机页头放不下导航项：有侧边栏时，链接进入汉堡面板
+  // （links.tsx 在手机端也会把 fof 链接移入侧栏）。侧边栏被关闭时
+  // 没有面板可放，链接仍留在页头，至少可以点。
+  .Lcoy:not(.Lcoy--noSidebar) #header-primary {
     display: none;
   }
 
