@@ -20,11 +20,11 @@
     z-index: var(--zindex-header);
     transition: background 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
-    // .d-header 的网格：第一列跟随侧边栏（减去
-    // 11px），搜索位于卡片列，控件在最后一列。
+    // .d-header 的网格：Logo 与主导航紧贴左侧（与 Flarum 默认一样
+    // 从标题之后接着排），中间列留给搜索，右侧控件靠右。
     > .container {
       display: grid;
-      grid-template-columns: minmax(auto, 1fr) auto minmax(0, var(--lcoy-main-max)) auto minmax(auto, 1fr);
+      grid-template-columns: auto auto minmax(0, var(--lcoy-main-max)) minmax(0, 1fr) auto;
       grid-template-areas: "logo lspace search rspace panel";
       align-items: center;
       column-gap: 1rem;
@@ -34,10 +34,6 @@
       height: 100%;
       padding: 0;
     }
-  }
-
-  .Lcoy--sidebarOpen .App-header > .container {
-    grid-template-columns: ~"calc(var(--lcoy-sidebar-width) - 11px) 1fr minmax(0, var(--lcoy-main-max)) 1fr auto";
   }
 
   @media (max-width: 1000px) {
@@ -446,10 +442,13 @@
   }
 }
 
+// 标题与分类/标签同处一行：页头只有一行高度，比上下两行更透气。
 .LcoyHeaderTopic {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
+  gap: var(--lcoy-space-3);
   min-width: 0;
   animation: lcoy-header-topic-in 0.25s ease-out;
 
@@ -472,6 +471,7 @@
 
 .LcoyHeaderTopic-title {
   display: flex;
+  flex: 0 1 auto;
   align-items: center;
   gap: 0.3em;
   min-width: 0;
@@ -516,17 +516,25 @@
 
 .LcoyHeaderTopic-badges {
   display: flex;
+  flex: 0 1 auto;
   min-width: 0;
-  margin-top: 2px;
   overflow: hidden;
   font-size: var(--lcoy-font-down-1);
   white-space: nowrap;
+
+  // 徽章组默认会换行，页头里必须保持单行，超宽时由外层裁切。
+  .LcoyBadges {
+    flex-wrap: nowrap;
+    min-width: 0;
+    overflow: hidden;
+  }
 }
 
 // 手机端标题取代 Logo 和放大镜的位置。
 @media @phone {
   .Lcoy .App-header:has(.LcoyHeaderTopic) {
-    .Header-title {
+    .Header-title,
+    #header-primary {
       display: none;
     }
 
@@ -536,6 +544,16 @@
       min-width: 0;
       margin-right: auto;
     }
+  }
+
+  .LcoyHeaderTopic {
+    justify-content: flex-start;
+    gap: var(--lcoy-space-2);
+  }
+
+  // 手机页头只有一行高度，标题之外放不下分类/标签。
+  .LcoyHeaderTopic-badges {
+    display: none;
   }
 
   .LcoyHeaderTopic-title {
