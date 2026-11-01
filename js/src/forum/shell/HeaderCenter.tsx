@@ -54,6 +54,8 @@ function update() {
 }
 
 function schedule() {
+  // 只有帖子页会把标题搬进页头；其他页面不必在每次滚动时测量 DOM。
+  if (!app.current.matches(DiscussionPage)) return;
   if (frame) return;
 
   const wait = lastCheck + CHECK_EVERY_MS - performance.now();
