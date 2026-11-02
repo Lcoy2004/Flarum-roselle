@@ -65,9 +65,13 @@
 
   .Lcoy .Header-title {
     order: 0;
+    // 可以随屏幕收窄，但始终给 Logo 保留一个盒子（不能回到 0 宽，
+    // 否则 Logo 会溢出压在语言按钮上）。右侧留出空隙，不与语言按钮贴边。
+    flex: 0 1 auto;
     min-width: 0;
+    max-width: 40vw;
     margin: 0 auto 0 0;
-    padding: 0;
+    padding: 0 0.75rem 0 0;
     font-size: 1.1305rem;
     font-weight: 700;
     text-align: left;
@@ -87,6 +91,16 @@
     max-height: 2.4rem;
     max-width: 25vw;
     object-fit: contain;
+  }
+
+  // 标题被压窄时（小屏或放不下右侧控件），Logo 跟着缩放，
+  // 而不是溢出盒子。
+  .Lcoy .Header-title .Header-logo {
+    max-width: 100%;
+  }
+
+  .Lcoy .Header-title a {
+    max-width: 100%;
   }
 
   // 手机页头放不下导航项：有侧边栏时，链接进入汉堡面板
@@ -224,6 +238,25 @@
       min-width: 0;
       padding: 0;
       justify-content: center;
+    }
+  }
+
+  // 核心的搜索按钮在手机端只留放大镜：它的标签（"搜索社区"）
+  // 让按钮宽出近 80px，把 Logo 挤得没有位置。
+  .Lcoy .Header-secondary .Header-controls > li.item-search {
+    .Search {
+      width: auto;
+    }
+
+    .Search-input.Button {
+      width: 2.55rem;
+      min-width: 0;
+      padding: 0;
+      justify-content: center;
+
+      .Button-label {
+        display: none;
+      }
     }
   }
 }

@@ -114,9 +114,13 @@ export function flag(locale: string, size: number): Mithril.Children {
   );
 }
 
-/** 旗帜旁的完整代码："pt-BR" → "PT-BR"，"en" → "EN"。 */
+/**
+ * 旗帜旁的语言代码："pt-BR" → "PT"，"zh-Hans" → "ZH"。
+ * 只保留主语言：带地区或文字的完整代码（"ZH-HANS"）会让手机页头
+ * 的语言胶囊宽出一倍，挤得 Logo 没有位置。
+ */
 function shortCode(locale: string): string {
-  return locale.replace('_', '-').toUpperCase();
+  return locale.replace('_', '-').split('-')[0].toUpperCase();
 }
 
 /** 与核心相同的切换方式：已登录用户保存偏好；访客写入 cookie；页面重新加载。 */
