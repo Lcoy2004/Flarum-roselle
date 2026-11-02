@@ -18,6 +18,7 @@
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
 import ComposerState from 'flarum/forum/states/ComposerState';
+import DiscussionPage from 'flarum/forum/components/DiscussionPage';
 import TextEditor from 'flarum/common/components/TextEditor';
 import Button from 'flarum/common/components/Button';
 import type ItemList from 'flarum/common/utils/ItemList';
@@ -361,7 +362,31 @@ function installFooter(): void {
   });
 }
 
+/**
+ * 首次点击"回复"时，核心才去拉取 ReplyComposer 的按需块并执行它，
+ * 这一下会占住主线程（实测首次打开约 260ms）。在帖子页空闲时先预热，
+ * 把这段开销从点击时移走。
+ */
+let replyWarmed = false;
+
+function warmReplyComposer(): void {
+  if (replyWarmed) return;
+  replyWarmed = true;
+
+  // 不用 requestIdleCallback：后台标签页或持续动画的页面上它可能长时间
+  // 不触发，定时器更可靠；预热本身只是一个几 KB 的按需块。
+  window.setTimeout(() => {
+    (flarum as any).reg.asyncModuleImport('flarum/forum/components/ReplyComposer').catch(() => {});
+  }, 600);
+}
+
 export default function installComposerShell() {
+  // view 在讨论数据到达后才会运行；oncreate 首次挂载时 discussion 可能
+  // 仍为空，预热便永远不会触发。
+  extend(DiscussionPage.prototype, 'view', function (this: any) {
+    if (app.session.user && this.discussion?.canReply()) warmReplyComposer();
+  });
+
   setPlaceholderProvider(bodyPlaceholder);
   installLabels();
   installHeights();

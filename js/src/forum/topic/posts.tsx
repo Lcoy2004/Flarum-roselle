@@ -100,7 +100,15 @@ export default function installPosts(): void {
       // 提及从文本中移出。
       const replyInHeader = topicSettings.embeddedReplies() || topicSettings.replyToLine();
       decorateQuotes(body, this.attrs.post, replyInHeader ? replyMarkerId(this.attrs.post) : null);
-      markUnavailableMentions(body);
+
+      // 内容未变就不必再扫描每个提及：onupdate 在每次重绘时都会运行，
+      // 长帖子滚动或打开编辑器时这些查询会累积成卡顿。
+      const html = this.attrs.post.contentHtml() || '';
+
+      if ((body as any).lcoyMentionsHtml !== html) {
+        (body as any).lcoyMentionsHtml = html;
+        markUnavailableMentions(body);
+      }
     }
   });
 

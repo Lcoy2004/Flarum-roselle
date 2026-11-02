@@ -152,6 +152,9 @@ JS;
       if (!app || !header || !secondary) return false;
       app.classList.add.apply(app.classList, c.classes.concat(open ? ['Lcoy--sidebarOpen'] : []));
       if (c.logoOnly) header.classList.add('LcoyHeader--logoOnly');
+      // 胶囊按钮的圆角变量挂在 <html> 上（less/forum/Components.less），
+      // 避免根元素使用 :has() 造成整页样式重算。
+      if (c.classes.indexOf('Lcoy--pillButtons') !== -1) document.documentElement.classList.add('Lcoy--pillButtons');
       var title = header.querySelector('.Header-title');
       if (c.sidebar && title && !header.querySelector('.LcoyHeader-toggleSlot')) {
         var toggle = document.createElement('div');

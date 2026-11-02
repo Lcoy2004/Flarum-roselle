@@ -13,7 +13,10 @@
   --lcoy-button-radius: var(--lcoy-radius);
 }
 
-:root:has(#app.Lcoy--pillButtons) {
+// 类名直接写在 <html> 上（PreBootShell 与 installShell 都会设置）：
+// 原先用 `:root:has(#app…)`，每次 DOM 变动都要为根元素重新求值，
+// 手机端打开编辑器/加载帖子时会造成整页样式重算。
+:root.Lcoy--pillButtons {
   --lcoy-button-radius: var(--lcoy-radius-pill);
 }
 

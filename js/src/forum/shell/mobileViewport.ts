@@ -21,18 +21,19 @@ function update(): void {
   const viewport = window.visualViewport;
 
   if (!viewport || window.innerWidth >= 768) {
-    root.style.removeProperty('--lcoy-visual-height');
+    if (applied !== '') root.style.removeProperty('--lcoy-visual-height');
     applied = '';
 
     return;
   }
 
-  const height = Math.round(viewport.height);
+  const height = String(Math.round(viewport.height));
 
-  root.style.setProperty('--lcoy-visual-height', `${height}px`);
-
-  if (`${height}` !== applied) {
-    applied = `${height}`;
+  // visualViewport 在地址栏收放时会连续触发 scroll；只有高度真正
+  // 变化时才写变量并重绘，否则每次滚动都会让页面重新计算样式。
+  if (height !== applied) {
+    applied = height;
+    root.style.setProperty('--lcoy-visual-height', `${height}px`);
     m.redraw();
   }
 }

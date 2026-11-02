@@ -1386,7 +1386,10 @@
   // 弹窗、提示和 emoji 选择器的堆叠（它们以
   // --zindex-modal 计量）也会上升——否则"无法保存草稿"
   // 提示和 emoji 选择器会打开在编辑器后面被遮住。
-  body:has(.Composer.LcoyComposer.visible:not(.minimized)) {
+  // 这组层级始终生效：用 `body:has(.Composer…)` 检测编辑器会在每次
+  // 打开/关闭时让整页重新计算样式（手机端点击回复明显卡顿）。
+  // 编辑器未打开时没有元素使用 1100，层级高一点没有副作用。
+  body {
     --zindex-modal-background: 1101;
     --zindex-modal: 1102;
     --zindex-alerts: 1112;

@@ -522,6 +522,46 @@
   .LcoyTopic--timeline .Scrubber-description {
     color: var(--lcoy-primary-medium);
   }
+
+  // "只看楼主"（lcoy/only-op）原本只在右侧栏里；窄屏下侧栏被折叠成
+  // 浮动时间线，按钮随之消失。固定在左下角，与右下角的"1 / N"
+  // 标签同一高度，成为手机端可用的胶囊按钮。
+  .LcoyTopic .DiscussionPage-nav > ul > li.item-onlyOp {
+    display: block !important;
+    position: fixed;
+    left: var(--lcoy-space-3);
+    bottom: ~"calc(var(--lcoy-composer-height, 0px) + env(safe-area-inset-bottom, 0px) + 12px)";
+    z-index: var(--zindex-header);
+    margin: 0;
+    padding: 0;
+
+    > .Button {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--lcoy-space-1);
+      height: 44px;
+      min-width: 0;
+      padding: 0 var(--lcoy-space-3);
+      border: 1px solid var(--lcoy-primary-low);
+      border-radius: var(--lcoy-radius-pill);
+      background: var(--lcoy-surface);
+      box-shadow: var(--lcoy-shadow-dropdown);
+      color: var(--lcoy-primary);
+      font-size: var(--lcoy-font-down-1);
+      font-weight: 600;
+      white-space: nowrap;
+
+      &.active {
+        border-color: var(--lcoy-accent);
+        background: var(--lcoy-accent);
+        color: #fff;
+      }
+
+      &:disabled {
+        opacity: 0.55;
+      }
+    }
+  }
 }
 
 // 访客在 Discourse 的时间线上没有按钮：他通过话题末尾的

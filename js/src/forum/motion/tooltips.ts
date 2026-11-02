@@ -53,6 +53,12 @@ export default function installTooltips() {
 
     if (!element) return;
 
+    // 已处理且标签未变：不必在每次重绘时重新排队。长帖子滚动/打开
+    // 编辑器会重绘所有按钮，这个集合曾是最大的重复工作来源。
+    const label = element.getAttribute('aria-label');
+
+    if (element.dataset.lcoyTitle && element.dataset.lcoyTitle === label) return;
+
     pending.add(element);
 
     if (!scheduled) {

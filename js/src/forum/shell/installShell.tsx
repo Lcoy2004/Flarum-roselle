@@ -44,6 +44,10 @@ export default function installShell() {
 
     const sidebarEnabled = forumBool('lcoySidebarEnabled', true);
 
+    // 胶囊按钮的圆角变量挂在 <html> 上（Components.less），
+    // 这样不必用 `:root:has(#app…)` 在每次 DOM 变动时重算样式。
+    document.documentElement.classList.toggle('Lcoy--pillButtons', forumBool('lcoyPillButtons', true));
+
     appElement.classList.add(
       ...classList(SHELL_CLASS, {
         'Lcoy--pillButtons': forumBool('lcoyPillButtons', true),
