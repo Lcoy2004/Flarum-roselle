@@ -367,6 +367,9 @@ function installFooter(): void {
  * 这一下会占住主线程（实测首次打开约 260ms）。在帖子页空闲时先预热，
  * 把这段开销从点击时移走。
  */
+const REPLY_COMPOSER = 'flarum/forum/components/ReplyComposer';
+const REPLY_WARM_DELAY_MS = 600;
+
 let replyWarmed = false;
 
 function warmReplyComposer(): void {
@@ -376,8 +379,8 @@ function warmReplyComposer(): void {
   // 不用 requestIdleCallback：后台标签页或持续动画的页面上它可能长时间
   // 不触发，定时器更可靠；预热本身只是一个几 KB 的按需块。
   window.setTimeout(() => {
-    (flarum as any).reg.asyncModuleImport('flarum/forum/components/ReplyComposer').catch(() => {});
-  }, 600);
+    (flarum as any).reg.asyncModuleImport(REPLY_COMPOSER).catch(() => {});
+  }, REPLY_WARM_DELAY_MS);
 }
 
 export default function installComposerShell() {

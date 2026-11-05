@@ -48,6 +48,13 @@ import { heartIcon, openWhoReacted, type ReactorEntry } from './components/WhoRe
 const requestedParents = new Set<string>();
 
 export default function installPosts(): void {
+  // 主题自己的操作栏是否启用。把它写成帖子上的类名，CSS 就不必用
+  // `.Post-actions:has(.LcoyPostAction)`：Safari 15.4 之前的 iPadOS
+  // 不支持 :has()，整套操作栏样式会失效（点赞按钮随之消失/错位）。
+  extend(CommentPost.prototype, 'elementAttrs', function (this: any, attrs: any) {
+    if (topicSettings.postActions()) attrs.className = classList(attrs.className, 'LcoyPost--actions');
+  });
+
   extend(CommentPost.prototype, 'oninit', function (this: any) {
     const ui = postUi(this);
 

@@ -46,6 +46,13 @@ function flush() {
   pending.clear();
 }
 
+/** 已处理且标签未变：不必在每次重绘时重新排队。 */
+function synced(element: HTMLElement): boolean {
+  const own = element.dataset.lcoyTitle;
+
+  return !!own && own === element.getAttribute('aria-label');
+}
+
 export default function installTooltips() {
   // 等待一帧：按钮外层的 <Tooltip> 会在它之后挂载。
   extend(Button.prototype, ['oncreate', 'onupdate'] as any, function (this: any) {
@@ -53,11 +60,9 @@ export default function installTooltips() {
 
     if (!element) return;
 
-    // 已处理且标签未变：不必在每次重绘时重新排队。长帖子滚动/打开
-    // 编辑器会重绘所有按钮，这个集合曾是最大的重复工作来源。
-    const label = element.getAttribute('aria-label');
-
-    if (element.dataset.lcoyTitle && element.dataset.lcoyTitle === label) return;
+    // 长帖子滚动/打开编辑器会重绘所有按钮，这个集合曾是最大的
+    // 重复工作来源。
+    if (synced(element)) return;
 
     pending.add(element);
 

@@ -879,9 +879,11 @@
 }
 
 // ---------------------------------------------------------------------
-// 操作栏（仅当主题构建它时：内部有 .LcoyPostAction）
+// 操作栏。主题构建它时会在帖子上加 .LcoyPost--actions：用类名而不是
+// `.Post-actions:has(.LcoyPostAction)`，旧版 iPadOS Safari 不支持 :has，
+// 整套样式会失效（点赞按钮因此不可见）。
 // ---------------------------------------------------------------------
-.Post-actions:has(.LcoyPostAction) {
+.LcoyPost--actions .Post-actions {
   float: none;
   position: relative;
   margin: 20px 0 0;
@@ -921,7 +923,7 @@
 
 // 桌面端核心在悬停前隐藏操作；在 Discourse 中它们始终显示。
 @media @tablet-up {
-  .no-touch .Post-actions:has(.LcoyPostAction) {
+  .no-touch .LcoyPost--actions .Post-actions {
     opacity: 1;
   }
 }
@@ -1091,7 +1093,7 @@
 // ---------------------------------------------------------------------
 // 仅在主题的操作栏下：核心的页脚（操作栏旁高度为零
 // 且浮在右侧）无法容纳头像行和回复。
-.Post-actions:has(.LcoyPostAction) ~ .Post-footer {
+.LcoyPost--actions .Post-actions ~ .Post-footer {
   display: block;
   height: auto;
   margin: 0;
@@ -1508,7 +1510,7 @@
     }
   }
 
-  .Post-actions:has(.LcoyPostAction) {
+  .LcoyPost--actions .Post-actions {
     margin-top: var(--lcoy-space-3);
 
     > ul {
