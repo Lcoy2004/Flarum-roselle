@@ -599,7 +599,12 @@ function unifiedActions(component: any, post: Post, items: ItemList<Mithril.Chil
 
   const guest = !app.session.user;
 
-  if (!guest && !(post as any).canLike?.() && !(post as any).canReact?.()) {
+  // 只有明确“两项都不能”时才移除；属性缺失（旧缓存、精简的帖子
+  // 载荷）不能当作 false，否则点赞/回应按钮会整块消失。
+  const canLike = (post as any).canLike?.();
+  const canReact = (post as any).canReact?.();
+
+  if (!guest && canLike === false && canReact === false) {
     items.remove('like');
     return;
   }

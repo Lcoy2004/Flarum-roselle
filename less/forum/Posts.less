@@ -928,6 +928,15 @@
   }
 }
 
+// 兜底：Flarum 靠 `<body class="no-touch">`（`'ontouchstart' in window`）
+// 判断设备，iPad 的 Safari 有时会被误判为无触摸设备，于是核心在
+// 768px 以上把操作栏设为 opacity: 0。触摸屏没有悬停可以把它们点亮，
+// 点赞和 reaction 按钮就一起“消失”了。这里不依赖设备检测，也不依赖
+// 主题类名，始终显示帖子操作栏。
+.LcoyTopic .Post-actions {
+  opacity: 1;
+}
+
 .LcoyPostAction.Button {
   display: inline-flex;
   align-items: center;
