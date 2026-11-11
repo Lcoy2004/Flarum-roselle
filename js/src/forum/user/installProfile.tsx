@@ -381,22 +381,18 @@ function extendProfileHero() {
 }
 
 /**
- * 以粗体显示的超大显示名（flarum/nicknames 的昵称，与帖子中一致），
- * 同一行放图标（认证徽章、utils/userIcons）和徽章；
- * 如果不同，下方是 username。
+ * 以粗体显示的超大昵称（flarum/nicknames 的 displayName，与帖子中一致），
+ * 同一行放图标（认证徽章、utils/userIcons）和徽章。
+ * 只显示昵称：用户名不在这里重复出现。
  */
 function identity(user: User, badges: Mithril.Children = null): Mithril.Children {
-  const username = user.username();
-  const displayName = user.displayName() || username;
-
   return (
     <div className="LcoyUserHero-names">
       <h1 className="UserCard-identity LcoyUserHero-username">
-        <span className="username">{displayName}</span>
+        <span className="username">{user.displayName() || user.username()}</span>
         {userIcons(user, 'profile')}
         {badges}
       </h1>
-      {displayName !== username && <h2 className="LcoyUserHero-displayName">{username}</h2>}
     </div>
   );
 }

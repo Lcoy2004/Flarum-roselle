@@ -548,8 +548,8 @@
       order: 6;
     }
 
-    > ul > li.item-lcoyNames,
-    > ul > li.item-user:not(:has(~ li.item-lcoyNames)) {
+    // 名称行占据左侧，其余项目（日期、编辑标记）推到右侧。
+    > ul > li.item-user {
       margin-right: auto;
     }
 
@@ -568,21 +568,6 @@
       font-size: inherit;
       color: var(--lcoy-primary);
     }
-  }
-
-  .LcoyPostNames {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.33em;
-    min-width: 0;
-    font-size: inherit;
-    white-space: nowrap;
-  }
-
-  .LcoyPostNames-username {
-    color: var(--lcoy-primary-high);
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
   .PostMeta .Button--text {
@@ -921,14 +906,7 @@
   }
 }
 
-// 桌面端核心在悬停前隐藏操作；在 Discourse 中它们始终显示。
-@media @tablet-up {
-  .no-touch .LcoyPost--actions .Post-actions {
-    opacity: 1;
-  }
-}
-
-// 兜底：Flarum 靠 `<body class="no-touch">`（`'ontouchstart' in window`）
+// Flarum 靠 `<body class="no-touch">`（`'ontouchstart' in window`）
 // 判断设备，iPad 的 Safari 有时会被误判为无触摸设备，于是核心在
 // 768px 以上把操作栏设为 opacity: 0。触摸屏没有悬停可以把它们点亮，
 // 点赞和 reaction 按钮就一起“消失”了。这里不依赖设备检测，也不依赖
@@ -1497,21 +1475,6 @@
     // 它就是头像，不是单独的图标。
     .Post-side .LcoyPostAvatar-flair {
       display: none;
-    }
-
-    .LcoyPostNames {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0;
-      white-space: normal;
-    }
-
-    .LcoyPostNames-username {
-      font-weight: 700;
-    }
-
-    .LcoyPostNames-username {
-      line-height: 1.2;
     }
 
     .PostStream-timeGap {

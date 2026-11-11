@@ -1,5 +1,11 @@
 # 更新日志
 
+## 2.3.0（2026-11-11）
+
+- 帖子头部、个人主页与用户卡片只显示昵称（flarum/nicknames 的 `displayName`），不再在下方重复显示用户名。
+- 清理随之失效的样式（`LcoyPostNames`、`LcoyUserHero-displayName`、`LcoyUserCard-secondary`），并移除帖子操作栏中冗余的平板透明规则。
+- 更新前端开发依赖：lucide 1.70、eslint 10.14、@typescript-eslint/parser 8.72.2、webpack 5.112.2、webpack-cli 7.3.1、prettier 3.9.10。
+
 ## 2.2.2（2026-11-06）
 
 - 平板与触摸屏的点赞/回应按钮：Flarum 在 768px 以上用 `.no-touch` 把帖子操作栏设为透明、靠鼠标悬停显示；iPad 的 Safari 会被误判为无触摸设备，触摸屏无法悬停，整条操作栏因此不可见。现在无条件显示帖子操作栏，且不再依赖主题类名，旧缓存 JS 也不会再受影响。

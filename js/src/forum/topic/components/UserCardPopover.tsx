@@ -180,7 +180,6 @@ class LcoyUserCard extends Component<LcoyUserCardAttrs> {
     const recentRead = user.attribute<number | null | undefined>('lcoyRecentTimeRead');
     const likes = user.attribute<number | null | undefined>('lcoyLikesReceived');
     const solutions = user.attribute<number | null | undefined>('bestAnswerCount');
-    const showName = user.displayName() !== user.username();
 
     // flarum/messages 的“发消息”变成主按钮；其余
     // 控制项（管理操作）放进“…”里。
@@ -255,8 +254,7 @@ class LcoyUserCard extends Component<LcoyUserCardAttrs> {
                 </Link>
                 {userIcons(user, 'card')}
               </div>
-              {/* 昵称（flarum/nicknames）突出显示，与帖子中一致；下面一行是 username。 */}
-              {showName && <span className="LcoyUserCard-secondary">{user.username()}</span>}
+              {/* 只显示昵称（flarum/nicknames 的 displayName）：用户名不重复。 */}
             </div>
 
             <div className="LcoyUserCard-controls">

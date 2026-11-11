@@ -184,7 +184,13 @@ export default function installTimeline(): void {
       m('.LcoyTimelineSheet', [
         m('h2.LcoyTimelineSheet-title', discussion.title()),
         m('.LcoyTimelineSheet-badges', discussionBadges(discussion)),
-        excerpt ? m('.LcoyTimelineSheet-excerpt', [m('span.LcoyTimelineSheet-user', (author ? author.username() : '') + ':'), ' ', excerpt]) : null,
+        excerpt
+          ? m('.LcoyTimelineSheet-excerpt', [
+              m('span.LcoyTimelineSheet-user', (author ? author.displayName() || author.username() : '') + ':'),
+              ' ',
+              excerpt,
+            ])
+          : null,
       ])
     );
   });

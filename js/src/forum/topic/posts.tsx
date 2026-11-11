@@ -183,20 +183,9 @@ export default function installPosts(): void {
 
 function buildHeader(post: any, items: ItemList<Mithril.Children>) {
   const model: PostModel = post.attrs.post;
-  const user = model.user();
 
-  // Discourse 的顺序：粗体姓名，然后是用户名（不同名时）。
-  // 分组不出现在文字中：
-  // 它已经作为 flair 显示在头像上。
-  if (user && user.username() !== user.displayName()) {
-    items.add(
-      'lcoyNames',
-      <span className="LcoyPostNames">
-        <span className="LcoyPostNames-username">{user.username()}</span>
-      </span>,
-      95
-    );
-  }
+  // 头部只显示昵称（displayName，由核心的 PostUser 绘制）。
+  // 分组不出现在文字中：它已经作为 flair 显示在头像上。
 
   // 核心中用于显示已删除帖子内容的“…”与紧邻下方操作栏的“…”
   // 重复：改为带标签的眼睛图标。
