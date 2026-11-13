@@ -45,8 +45,13 @@
 .Button {
   border-radius: var(--lcoy-button-radius);
   font-weight: 400;
-  // Discourse 中 `--d-button-transition: none`：悬停和焦点立即切换。
-  transition: none;
+  // 悬停/激活只切换背景和文字色：用统一的短过渡，
+  // 避免状态切换生硬，又不拖慢点击反馈。
+  transition:
+    background-color var(--lcoy-duration) var(--lcoy-ease),
+    color var(--lcoy-duration) var(--lcoy-ease),
+    border-color var(--lcoy-duration) var(--lcoy-ease),
+    box-shadow var(--lcoy-duration) var(--lcoy-ease);
 
   // 核心用内阴影压暗按钮；Horizon 只切换背景。
   &:active,
@@ -218,7 +223,10 @@
   border: 1px solid var(--lcoy-primary-300);
   border-radius: var(--lcoy-radius);
   box-shadow: none;
-  transition: none;
+  transition:
+    border-color var(--lcoy-duration) var(--lcoy-ease),
+    background-color var(--lcoy-duration) var(--lcoy-ease),
+    box-shadow var(--lcoy-duration) var(--lcoy-ease);
   .placeholder(var(--lcoy-primary-medium));
 
   &:hover:not(:focus):not([disabled]) {
@@ -451,7 +459,9 @@ textarea.FormControl {
 
   > li > a,
   > li > button {
-    transition: none;
+    transition:
+      background-color var(--lcoy-duration) var(--lcoy-ease),
+      color var(--lcoy-duration) var(--lcoy-ease);
 
     &:hover,
     &:focus-visible {

@@ -69,6 +69,11 @@
   --lcoy-shadow-card: 0 4px 14px rgba(0, 0, 0, 0.06);
   --lcoy-shadow-dropdown: 0 2px 12px rgba(0, 0, 0, 0.15);
 
+  // 动效：悬停、聚焦等微交互共用同一缓动与时长，
+  // 使切换看起来连贯而非跳变。
+  --lcoy-ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --lcoy-duration: 140ms;
+
   // 控件基础（"旧货店"式做法：每个控件只有一种尺寸和一个
   // 状态，且集中在一处）。普通字段与按钮的高度，以及登录
   // 表单的高度。字段焦点只有高亮色边框——
@@ -81,6 +86,13 @@
 [data-theme^=dark] {
   --lcoy-shadow-card: 0 4px 14px rgba(0, 0, 0, 0.35);
   --lcoy-shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+// 要求减少动画的人看到即时切换：过渡都读取这个令牌。
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --lcoy-duration: 1ms;
+  }
 }
 
 // ---------------------------------------------------------------------
@@ -177,7 +189,7 @@
   --lcoy-accent-hover: ~"oklch(from var(--lcoy-accent) calc(l * 0.81) c h)"; // --tertiary-hover
   --lcoy-header-button-bg: var(--lcoy-accent);
   --lcoy-page-bg: ~"oklch(from var(--lcoy-accent) 97.8% calc(c * 0.035) h)";
-  --lcoy-card-shadow: ~"0 2px 6px oklch(from var(--lcoy-accent) l c h / 0.24)";
+  --lcoy-card-shadow: ~"0 1px 2px oklch(from var(--lcoy-accent) l c h / 0.07), 0 12px 32px -18px oklch(from var(--lcoy-accent) l c h / 0.5)";
   --lcoy-panel-shadow: 0 0 30px -2px rgba(0, 0, 0, 0.5);
   --lcoy-cloak: rgba(0, 0, 0, 0.3);
 }
@@ -191,7 +203,7 @@
   --lcoy-accent-hover: ~"oklch(from var(--lcoy-accent) calc(l * 0.81) c h)";
   --lcoy-header-button-bg: var(--lcoy-accent-hover);
   --lcoy-page-bg: #000;
-  --lcoy-card-shadow: ~"0 2px 6px oklch(from var(--lcoy-accent) l c h / 0.05)";
+  --lcoy-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 32px -18px rgba(0, 0, 0, 0.85);
   --lcoy-panel-shadow: 0 0 30px -2px rgba(0, 0, 0, 0.5);
   --lcoy-cloak: rgba(0, 0, 0, 0.3);
 }

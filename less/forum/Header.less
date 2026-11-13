@@ -142,7 +142,7 @@
   background: transparent !important;
   box-shadow: none !important;
   color: var(--lcoy-shell-icon);
-  transition: none;
+  transition: color var(--lcoy-duration) var(--lcoy-ease);
 
   &:hover,
   &:focus-visible {
@@ -194,8 +194,11 @@
     line-height: 1.4;
     box-shadow: none !important;
     text-align: left;
-    // Discourse 的搜索在聚焦时切换边框，无动画。
-    transition: none;
+    // 聚焦时边框切到高亮色：与其他字段用同一段短过渡。
+    transition:
+      border-color var(--lcoy-duration) var(--lcoy-ease),
+      background-color var(--lcoy-duration) var(--lcoy-ease),
+      color var(--lcoy-duration) var(--lcoy-ease);
 
     .LcoyIcon {
       width: 16px;
@@ -264,7 +267,7 @@
     background: transparent !important;
     box-shadow: none !important;
     font-size: 15px;
-    transition: none;
+    transition: color var(--lcoy-duration) var(--lcoy-ease);
 
     .Button-icon {
       font-size: 21px;

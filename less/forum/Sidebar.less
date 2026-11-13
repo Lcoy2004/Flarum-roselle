@@ -165,7 +165,8 @@ html.Lcoy--overlayLock body {
   flex: 0 0 24px;
   width: 24px;
   font-size: 0.7579rem;
-  transition: none;
+  // 折叠/展开时箭头平滑旋转，而不是瞬间翻转。
+  transition: transform var(--lcoy-duration) var(--lcoy-ease);
 
   .collapsed & {
     transform: rotate(-90deg);
@@ -213,7 +214,9 @@ html.Lcoy--overlayLock body {
     text-decoration: none;
     box-shadow: none;
     white-space: nowrap;
-    transition: none;
+    transition:
+      background-color var(--lcoy-duration) var(--lcoy-ease),
+      color var(--lcoy-duration) var(--lcoy-ease);
 
     // 图标位于 24px 的列中并居中（.sidebar-section-link-prefix）。
     > .Button-icon,
@@ -225,6 +228,7 @@ html.Lcoy--overlayLock body {
       font-size: 16px;
       text-align: center;
       color: var(--lcoy-primary-high);
+      transition: color var(--lcoy-duration) var(--lcoy-ease);
     }
 
     .Button-label {

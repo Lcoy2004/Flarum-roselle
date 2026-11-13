@@ -80,7 +80,10 @@
     font-weight: 500;
     line-height: 1.25;
     white-space: nowrap;
-    transition: none;
+    transition:
+      background-color var(--lcoy-duration) var(--lcoy-ease),
+      border-color var(--lcoy-duration) var(--lcoy-ease),
+      color var(--lcoy-duration) var(--lcoy-ease);
 
     // 与 Meta 一致：悬停只切换背景（primary-100）；键盘焦点
     // 点亮边框，周围无环。
@@ -292,9 +295,7 @@
   line-height: 1;
   text-decoration: none;
   white-space: nowrap;
-  // `.nav-pills > li > a { transition: var(--d-button-transition) }`，它在 Meta 上是
-  // `none`；只有图标有 `color .2s`。
-  transition: none;
+  transition: color var(--lcoy-duration) var(--lcoy-ease);
 
   .icon,
   .Button-icon,
@@ -302,6 +303,7 @@
     transition: color 0.2s;
   }
 
+  // 下划线从中间展开：悬停时不再突然出现整条色块。
   &::after {
     content: '';
     position: absolute;
@@ -309,7 +311,10 @@
     right: 0;
     bottom: 0;
     height: 0.125em;
-    background: transparent;
+    background: var(--lcoy-hover-accent-text);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform var(--lcoy-duration) var(--lcoy-ease);
   }
 
   // 文字中的高亮色：深色模式下使用其浅色调（Meta 深色方案的
@@ -322,7 +327,7 @@
     text-decoration: none;
 
     &::after {
-      background: var(--lcoy-hover-accent-text);
+      transform: scaleX(1);
     }
   }
 }
@@ -333,6 +338,7 @@
 
   &::after {
     background: var(--lcoy-hover-accent-text);
+    transform: scaleX(1);
   }
 }
 
@@ -370,7 +376,10 @@
   border-radius: 50%;
   background: var(--lcoy-surface);
   color: var(--lcoy-primary);
-  transition: none;
+  transition:
+    background-color var(--lcoy-duration) var(--lcoy-ease),
+    border-color var(--lcoy-duration) var(--lcoy-ease),
+    color var(--lcoy-duration) var(--lcoy-ease);
 
   &:hover,
   &:focus-visible {
@@ -394,7 +403,6 @@
   font-size: var(--lcoy-font-0);
   font-weight: normal;
   white-space: nowrap;
-  transition: none;
 
   .Button-icon {
     margin: 0;
