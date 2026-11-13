@@ -80,8 +80,6 @@ async function switchTo(kind: 'reply' | 'new_topic', discussion: Discussion | nu
   await app.composer.show();
 }
 
-export { switchTo as switchComposer };
-
 export default class ComposerActionTitle extends Component<ComposerActionTitleAttrs> {
   view(): Mithril.Children {
     if (app.composer.position === 'minimized') return this.draftView();

@@ -521,40 +521,33 @@
       }
     }
 
-    // 左侧：名称和次要名称；右侧："回复给"、铅笔、日期。
+    // 左侧：名称；右侧："回复给"、铅笔、日期。
     .item-user {
       order: 1;
     }
 
-    .item-lcoyNames {
-      order: 2;
-    }
-
     .item-lcoyReplyTo {
-      order: 3;
+      order: 2;
       margin-right: 2em;
     }
 
     .item-edited {
-      order: 4;
+      order: 3;
       margin-right: 0.5em;
     }
 
     .item-meta {
-      order: 5;
+      order: 4;
     }
 
     .item-toggle {
-      order: 6;
+      order: 5;
     }
 
     // 名称行占据左侧，其余项目（日期、编辑标记）推到右侧。
     > ul > li.item-user {
       margin-right: auto;
     }
-
-    // 用户头衔（.user-title）位于名称之后，与
-    // Discourse 一致——没有 order 时它会跑到名称之前。存在时，它
   }
 
   // 作者名称用黑色（文字色），而非头部的灰色。
@@ -1435,37 +1428,14 @@
         margin: 0 0 0 auto;
       }
 
-      > ul > li.item-lcoyNames,
-      > ul > li.item-lcoyNames:has(~ li.item-lcoyUserTitle) {
-        margin-right: 0;
-      }
-
-      // 名称始终把日期推到第一行右侧——即使
-      // 没有次要名称（此前日期紧贴名称："beatriz 7 h"）。
-      > ul > li.item-user,
-      > ul > li.item-user:not(:has(~ li.item-lcoyNames)),
-      > ul > li.item-user:not(:has(~ li.item-lcoyNames)):has(~ li.item-lcoyUserTitle) {
+      // 名称始终把日期推到第一行右侧（此前日期紧贴名称："beatriz 7 h"）。
+      > ul > li.item-user {
         margin-right: auto;
       }
 
       .item-lcoyReplyTo ~ .item-edited,
       .item-lcoyReplyTo ~ .item-meta {
         margin-left: 0;
-      }
-
-      .item-lcoyNames {
-        order: 3;
-        flex-basis: 100%;
-      }
-
-      // 手机端标题堆叠在名称下方，与 Discourse 一致。
-      .item-lcoyUserTitle,
-      .item-lcoyNames + .item-lcoyUserTitle,
-      .item-user + .item-lcoyUserTitle {
-        order: 4;
-        flex-basis: 100%;
-        margin: 0;
-        line-height: 1.2;
       }
     }
 
@@ -1524,9 +1494,8 @@
     opacity: 0;
     transition: opacity 0.15s;
 
+    // 尺寸在下方（"…" 位于文字行中）统一为 24px。
     .Dropdown-toggle {
-      width: 28px;
-      height: 28px;
       padding: 0;
       background: none !important;
       color: var(--lcoy-primary-medium);

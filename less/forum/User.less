@@ -203,39 +203,28 @@
   min-width: 0;
 }
 
-.LcoyUserHero .UserCard-identity.LcoyUserHero-username {
-  display: block;
-  margin: 0;
-  font-size: 2em;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: normal;
-  color: var(--lcoy-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  .username {
-    color: inherit;
-  }
-}
-
-// 图标（验证徽章）和非分组徽章（例如封禁）：
-// 位于名称行、名称之后，与高度居中。仅在名称
-// 放不下时换行；名称用省略号截断，h1 允许徽章的 popover
-// 溢出。
+// 名称行：图标（验证徽章）和非分组徽章（例如封禁）位于名称之后、
+// 与高度居中。仅在名称放不下时换行；名称本身用省略号截断，h1 不裁剪，
+// 以便徽章的 popover 溢出。
 .LcoyUserHero .UserCard-identity.LcoyUserHero-username {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0 0.3em;
+  margin: 0;
   overflow: visible;
+  font-size: 2em;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: normal;
+  color: var(--lcoy-primary);
 
   .username {
     min-width: 0;
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: inherit;
   }
 
   // 盒子没有自己的行高：其中心就是徽章的中心。微小的
@@ -1232,13 +1221,6 @@
     .icon {
       font-size: 0.9em;
     }
-  }
-}
-
-.LcoyUserSummary-most-liked-by,
-.LcoyUserSummary-most-liked {
-  .LcoySummaryUsers-count .icon {
-    color: var(--lcoy-love);
   }
 }
 

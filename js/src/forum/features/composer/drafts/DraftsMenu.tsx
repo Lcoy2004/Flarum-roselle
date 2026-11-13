@@ -64,10 +64,14 @@ export default class DraftsMenu extends Component {
 
   private readonly place = () => {
     const root = this.element as HTMLElement | undefined;
-    const menu = root?.querySelector<HTMLElement>('.LcoyDraftsMenu-menu');
-    const anchor = root?.closest<HTMLElement>('.LcoySidebar-newTopic') || root;
 
-    if (!root || !menu || !anchor || !root.classList.contains('open')) return;
+    // 关闭状态下也会收到滚动事件：先判断，避免每帧做无用的 DOM 查询。
+    if (!root || !root.classList.contains('open')) return;
+
+    const menu = root.querySelector<HTMLElement>('.LcoyDraftsMenu-menu');
+    const anchor = root.closest<HTMLElement>('.LcoySidebar-newTopic') || root;
+
+    if (!menu || !anchor) return;
 
     const rect = anchor.getBoundingClientRect();
     const phone = window.innerWidth < 768;

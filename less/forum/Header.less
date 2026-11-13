@@ -552,12 +552,9 @@
   }
 
   // 手机页头只有一行高度，标题之外放不下分类/标签。
+  // 标题字号由 Mobile.less 统一决定（那里还会按可用宽度收窄）。
   .LcoyHeaderTopic-badges {
     display: none;
-  }
-
-  .LcoyHeaderTopic-title {
-    font-size: var(--lcoy-font-up-1);
   }
 }
 
