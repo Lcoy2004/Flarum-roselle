@@ -4,7 +4,9 @@
 // 立即恢复。类由 js/src/forum/shell/readingFocus.ts 切换。
 // =====================================================================
 
-@media @tablet-up {
+// 时间线只在桌面断点（992px+）是右侧一列：平板与手机上它是
+// 底部的浮动标签页，不参与这里的降权。
+@media @desktop-up {
   .LcoyTopic .Page-sidebar .DiscussionPage-nav {
     transition:
       opacity var(--lcoy-duration-slow) var(--lcoy-ease),
@@ -27,10 +29,11 @@
     transition: column-gap var(--lcoy-duration-slow) var(--lcoy-ease);
   }
 
-  // 宽屏上再收紧时间线列，正文获得更多横向空间。
+  // 宽屏上收紧列间距；不改变时间线列宽（网格轨道宽度不可过渡，
+  // 突变会打断连贯感），视觉让位交给透明度与位移。
   @media @desktop-hd {
     .Lcoy--readingFocus .LcoyTopic {
-      --lcoy-topic-timeline-gap: 24px;
+      --lcoy-topic-timeline-gap: var(--lcoy-space-4);
     }
   }
 

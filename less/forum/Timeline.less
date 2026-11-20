@@ -85,9 +85,9 @@
 }
 
 // ---------------------------------------------------------------------
-// 桌面端（从 925px 起，与 Discourse 一致）：该列
+// 桌面端（从 Flarum 的桌面断点 992px 起）：该列
 // ---------------------------------------------------------------------
-@media (min-width: 925px) {
+@media @desktop-up {
   .LcoyTopic--timeline .DiscussionPage-nav {
     > ul {
       display: flex;
@@ -310,7 +310,7 @@
   display: none;
 }
 
-@media (max-width: 924px) {
+@media @phone, @tablet {
   .LcoyTopic--timeline .PostStreamScrubber {
     margin: 0;
   }
@@ -568,15 +568,15 @@
 
 // 访客在 Discourse 的时间线上没有按钮：他通过话题末尾的
 // "回复"来回复。
-@media (min-width: 925px) {
+@media @desktop-up {
   .LcoyTopic--timeline.LcoyTopic--guest .DiscussionPage-nav .item-controls {
     display: none;
   }
 }
 
-// 时间线列只有 clamp(140px, 14vw, 240px) 宽，而菜单最小 220px：
+// 时间线列最窄只有 160px，而菜单最小 220px：
 // 以右边缘对齐，菜单向左展开，不会越出卡片造成横向滚动。
-@media @tablet-up {
+@media @desktop-up {
   .LcoyTopic--timeline .DiscussionPage-nav .Dropdown-menu {
     right: 0;
     left: auto;

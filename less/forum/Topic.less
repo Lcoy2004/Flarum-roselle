@@ -12,9 +12,33 @@
   // 时间线列固定为「够用即可」的宽度，剩余宽度全部给正文：
   // 之前正文列是 minmax(0, 759px)、时间线是 1fr，剩余空间被
   // 时间线吃掉，窄屏下正文只剩 300 多像素。
-  --lcoy-topic-timeline-col: ~"clamp(140px, 14vw, 240px)";
-  --lcoy-topic-timeline-gap: var(--lcoy-space-6);
+  //
+  // 220px 是时间线内容（日期 + 轨道）的最小舒适宽度，
+  // 再窄会撑出横向滚动；之后随 Flarum 断点逐级放宽。
+  --lcoy-topic-timeline-col: 220px;
+  --lcoy-topic-timeline-gap: var(--lcoy-space-5);
   --lcoy-topic-sticky-top: calc(var(--lcoy-header-height) + var(--lcoy-space-6));
+}
+
+@media @desktop-hd {
+  .LcoyTopic {
+    --lcoy-topic-timeline-col: 230px;
+    --lcoy-topic-timeline-gap: var(--lcoy-space-6);
+  }
+}
+
+@media (min-width: 1280px) {
+  .LcoyTopic {
+    --lcoy-topic-timeline-col: 240px;
+    --lcoy-topic-timeline-gap: var(--lcoy-space-8);
+  }
+}
+
+@media @desktop-xl {
+  .LcoyTopic {
+    --lcoy-topic-timeline-col: 260px;
+    --lcoy-topic-timeline-gap: 56px;
+  }
 }
 
 // ---------------------------------------------------------------------
@@ -50,7 +74,7 @@
     background: var(--lcoy-border);
   }
 
-  @media (min-width: 925px) {
+  @media @desktop-up {
     &::after {
       width: ~"calc(100% - var(--lcoy-topic-timeline-col) - var(--lcoy-topic-timeline-gap))";
     }
@@ -150,15 +174,15 @@
 }
 
 // ---------------------------------------------------------------------
-// 双栏——仅在 925px 及以上：低于此值 Discourse 隐藏
-// 时间线，并在屏幕底部显示"1 / 11"标签页（见 Timeline.less）。
+// 三栏（侧栏 + 正文 + 时间线）：从 Flarum 的桌面断点（992px）起。
+// 低于此值时间线折成屏幕底部的"1 / 11"标签页（见 Timeline.less），
+// 正文独享卡片宽度。
 // ---------------------------------------------------------------------
-@media (min-width: 925px) {
+@media @desktop-up {
   .Lcoy .LcoyTopic .Page-container.container,
   .LcoyTopic .Page-container.container {
     display: grid;
-    // 正文列拿走所有剩余宽度（上限由卡片宽度决定），时间线列
-    // 固定为 clamp 宽度，三栏在任何桌面上都不会互相挤压。
+    // 正文列拿走所有剩余宽度，时间线列由上面的分档变量决定。
     grid-template-columns: minmax(0, 1fr) var(--lcoy-topic-timeline-col);
     grid-template-areas:
       "hero hero"
@@ -200,17 +224,10 @@
   }
 }
 
-@media @desktop-up {
-  .LcoyTopic {
-    --lcoy-topic-timeline-gap: ~"clamp(32px, 4vw, 56px)";
-  }
-}
-
 // ---------------------------------------------------------------------
-// 手机
+// 平板与手机：单列；时间线变为浮动标签页（见 Timeline.less）。
 // ---------------------------------------------------------------------
-// 窄平板：单列；导航变为浮动标签页。
-@media (min-width: 768px) and (max-width: 924px) {
+@media @phone, @tablet {
   .LcoyTopic .Page-container.container {
     display: block;
   }
