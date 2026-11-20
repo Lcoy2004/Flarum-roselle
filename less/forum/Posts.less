@@ -18,8 +18,9 @@
   // 比调色板的"极低"要亮得多。
   --lcoy-post-aside-bg: var(--lcoy-primary-very-low);
   --lcoy-post-aside-border: var(--lcoy-primary-300);
-  // 帖子文字跟随读者的"文字大小"（extras）。
-  --lcoy-post-font: calc(16px * var(--lcoy-text-scale, 1));
+  // 帖子文字跟随读者的"文字大小"（extras）；16.5px 比核心的
+  // 16px 略大，中文正文的阅读节奏更舒展。
+  --lcoy-post-font: calc(16.5px * var(--lcoy-text-scale, 1));
 }
 
 .LcoyTopic {
@@ -38,8 +39,8 @@
 // ---------------------------------------------------------------------
 .lcoy-cooked() {
   font-size: var(--lcoy-post-font);
-  // 1.65：中文正文的行距比 Discourse 的 1.5 略松，长段落更好读。
-  line-height: 1.65;
+  // 1.7：中文正文的行距比 Discourse 的 1.5 略松，长段落更好读。
+  line-height: 1.7;
   color: var(--lcoy-primary);
   overflow-wrap: break-word;
 
@@ -489,7 +490,7 @@
 // ---------------------------------------------------------------------
 .LcoyTopic {
   .Post {
-    padding: 16px 0 22px;
+    padding: 18px 0 26px;
     border-radius: 0;
   }
 
@@ -502,7 +503,7 @@
 
   .Post-header {
     margin: 0;
-    padding: 0 0 6px;
+    padding: 0 0 8px;
     font-size: var(--lcoy-post-font);
     line-height: 1.4;
 

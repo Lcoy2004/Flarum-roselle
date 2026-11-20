@@ -176,10 +176,18 @@
 // ---------------------------------------------------------------------
 :root {
   --lcoy-card-radius: 16px;           // .list-container / .regular
+  --lcoy-card-pad: var(--lcoy-space-4); // 卡片内边距：桌面放大到 20px
   --lcoy-main-gap: 16px;              // 侧边栏展开时的 --d-main-content-gap
   --lcoy-main-gap-wide: 32px;         // ……以及侧边栏收起时
   --lcoy-header-pad: 0.67rem;         // .d-header > .wrap (10,72px)
   --lcoy-row-height: 2.3rem;          // --d-sidebar-row-height (36,8px)
+}
+
+// 平板及以上，卡片内边距放大一档，正文四周更透气。
+@media @tablet-up {
+  :root {
+    --lcoy-card-pad: var(--lcoy-space-5);
+  }
 }
 
 // 在 768 到 1279px 之间，侧边栏稍窄一些：笔记本上把
@@ -199,7 +207,7 @@
   --lcoy-accent-hover: ~"oklch(from var(--lcoy-accent) calc(l * 0.81) c h)"; // --tertiary-hover
   --lcoy-header-button-bg: var(--lcoy-accent);
   --lcoy-page-bg: ~"oklch(from var(--lcoy-accent) 97.8% calc(c * 0.035) h)";
-  --lcoy-card-shadow: ~"0 1px 2px oklch(from var(--lcoy-accent) l c h / 0.07), 0 12px 32px -18px oklch(from var(--lcoy-accent) l c h / 0.5)";
+  --lcoy-card-shadow: ~"0 1px 2px oklch(from var(--lcoy-accent) l c h / 0.07), 0 16px 40px -20px oklch(from var(--lcoy-accent) l c h / 0.55)";
   --lcoy-panel-shadow: 0 0 30px -2px rgba(0, 0, 0, 0.5);
   --lcoy-cloak: rgba(0, 0, 0, 0.3);
 }
@@ -213,7 +221,7 @@
   --lcoy-accent-hover: ~"oklch(from var(--lcoy-accent) calc(l * 0.81) c h)";
   --lcoy-header-button-bg: var(--lcoy-accent-hover);
   --lcoy-page-bg: #000;
-  --lcoy-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 32px -18px rgba(0, 0, 0, 0.85);
+  --lcoy-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.55), 0 16px 40px -20px rgba(0, 0, 0, 0.9);
   --lcoy-panel-shadow: 0 0 30px -2px rgba(0, 0, 0, 0.5);
   --lcoy-cloak: rgba(0, 0, 0, 0.3);
 }
