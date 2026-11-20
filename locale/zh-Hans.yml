@@ -909,7 +909,6 @@ lcoy-roselle:
       created_at: 创建：{date}
       last_reply_at: 最新回复：{date}
       read_more: 阅读更多
-      no_participants: 暂无回复
     mobile_nav:
       label: 主导航
       discussions: 讨论

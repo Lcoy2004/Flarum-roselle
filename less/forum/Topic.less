@@ -9,10 +9,11 @@
 // =====================================================================
 
 .LcoyTopic {
-  // 帖子列随内容宽度增长（后台）：351px 是
-  // 时间线和间隙（Discourse 默认下为 1110 − 759）。
-  --lcoy-topic-stream-max: ~"calc(var(--lcoy-main-max, 1110px) - 351px)";
-  --lcoy-topic-timeline-gap: 66px;
+  // 时间线列固定为「够用即可」的宽度，剩余宽度全部给正文：
+  // 之前正文列是 minmax(0, 759px)、时间线是 1fr，剩余空间被
+  // 时间线吃掉，窄屏下正文只剩 300 多像素。
+  --lcoy-topic-timeline-col: ~"clamp(140px, 14vw, 240px)";
+  --lcoy-topic-timeline-gap: var(--lcoy-space-6);
   --lcoy-topic-sticky-top: calc(var(--lcoy-header-height) + var(--lcoy-space-6));
 }
 
@@ -38,15 +39,21 @@
   border-bottom: 0;
 
   // 标题占据卡片宽度（Discourse 的 #topic-title），但其下方的线
-  // 是第一个帖子的边框：只有流的宽度。
+  // 是第一个帖子的边框：只到正文列的右端。
   &::after {
     content: "";
     position: absolute;
     left: 0;
     bottom: 0;
-    width: ~"min(100%, var(--lcoy-topic-stream-max, 759px))";
+    width: 100%;
     height: 1px;
     background: var(--lcoy-border);
+  }
+
+  @media (min-width: 925px) {
+    &::after {
+      width: ~"calc(100% - var(--lcoy-topic-timeline-col) - var(--lcoy-topic-timeline-gap))";
+    }
   }
 
   .container {
@@ -150,11 +157,13 @@
   .Lcoy .LcoyTopic .Page-container.container,
   .LcoyTopic .Page-container.container {
     display: grid;
-    grid-template-columns: minmax(0, var(--lcoy-topic-stream-max)) minmax(120px, 1fr);
+    // 正文列拿走所有剩余宽度（上限由卡片宽度决定），时间线列
+    // 固定为 clamp 宽度，三栏在任何桌面上都不会互相挤压。
+    grid-template-columns: minmax(0, 1fr) var(--lcoy-topic-timeline-col);
     grid-template-areas:
       "hero hero"
       "content sidebar";
-    column-gap: var(--lcoy-space-6);
+    column-gap: var(--lcoy-topic-timeline-gap);
     row-gap: 0;
     flex-direction: initial;
   }
@@ -192,9 +201,8 @@
 }
 
 @media @desktop-up {
-  .Lcoy .LcoyTopic .Page-container.container,
-  .LcoyTopic .Page-container.container {
-    column-gap: var(--lcoy-topic-timeline-gap);
+  .LcoyTopic {
+    --lcoy-topic-timeline-gap: ~"clamp(32px, 4vw, 56px)";
   }
 }
 

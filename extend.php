@@ -76,8 +76,6 @@ $forumSettings = [
     'lcoy.list_views' => ['lcoyListViews', true, 'boolval'],
     'lcoy.list_heat' => ['lcoyListHeat', true, 'boolval'],
     'lcoy.list_excerpts' => ['lcoyListExcerpts', true, 'boolval'],
-    // 桌面悬停浮层：摘要 / 最近回复者。
-    'lcoy.list_peek' => ['lcoyListPeek', true, 'boolval'],
 
     // 手机端交互
     'lcoy.mobile_nav' => ['lcoyMobileNav', true, 'boolval'],

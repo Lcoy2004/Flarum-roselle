@@ -574,6 +574,15 @@
   }
 }
 
+// 时间线列只有 clamp(140px, 14vw, 240px) 宽，而菜单最小 220px：
+// 以右边缘对齐，菜单向左展开，不会越出卡片造成横向滚动。
+@media @tablet-up {
+  .LcoyTopic--timeline .DiscussionPage-nav .Dropdown-menu {
+    right: 0;
+    left: auto;
+  }
+}
+
 // 菜单中只有一项时（访客只有"回复"，而它已是主
 // 按钮），菜单按钮会变成一个空的方形。
 .DiscussionPage-nav .Dropdown--split.itemCount1 > .Dropdown-toggle {

@@ -242,10 +242,6 @@ export default function installListItem(): void {
 
     const badges = badgeList.toArray();
 
-    // 悬停浮层：桌面端把摘要 / 最近回复者放到按需出现的一层里，
-    // 默认列表保持干净（见下方 peekView）。
-    const peek = forumBool('lcoyListPeek', true) ? peekView(this) : null;
-
     return (
       <div className="DiscussionListItem-main LcoyTopic">
         <h2 className="DiscussionListItem-title LcoyTopic-titleLine">
@@ -262,7 +258,6 @@ export default function installListItem(): void {
           {isPhone() && forumBool('lcoyMobileCards', true) ? mobilePostersView(this) : null}
         </div>
         {excerpt ? <div className="LcoyTopic-excerpt">{excerpt}</div> : null}
-        {peek}
       </div>
     );
   });
@@ -286,34 +281,6 @@ function mobilePostersView(item: DiscussionListItem): Mithril.Children {
       {shown.map((poster) => posterAvatar(poster, t('list.participant'), 'LcoyTopic-mobilePoster'))}
       {posters.length > shown.length ? <span className="LcoyTopic-mobilePostersMore">+{posters.length - shown.length}</span> : null}
     </span>
-  );
-}
-
-/**
- * 悬停浮层（`LcoyTopic-peek`）：绝对定位在行下方，
- * 不参与布局，所以悬停时相邻行不会跳动。有首帖摘要
- * （置顶帖的 `firstPostExcerpt`）时显示两行摘要，否则显示
- * 最近回复者一行——两者都来自列表已有的数据。
- */
-function peekView(item: DiscussionListItem): Mithril.Children {
-  const discussion: Discussion = item.attrs.discussion;
-  const excerpt = discussion.attribute<string | null>('firstPostExcerpt');
-  const author = item.attrs.author || discussion.user();
-  const last = discussion.replyCount() ? discussion.lastPostedUser() : null;
-  const latest = last || author;
-  const age = shortAge(discussion.lastPostedAt() || discussion.createdAt());
-  const replies = discussion.replyCount() ?? 0;
-
-  return (
-    <div className="LcoyTopic-peek" aria-hidden="true">
-      {typeof excerpt === 'string' && excerpt ? <p className="LcoyTopic-peekText">{truncate(excerpt, 160)}</p> : null}
-      <div className="LcoyTopic-peekRow">
-        {latest ? <Avatar user={latest} title="" className="LcoyTopic-peekAvatar" /> : null}
-        <span className="LcoyTopic-peekName">{latest ? latest.displayName() : t('list.no_participants')}</span>
-        <span className="LcoyTopic-peekMeta">{age}</span>
-        <span className="LcoyTopic-peekMeta">{t('list.replies_a11y', { count: replies })}</span>
-      </div>
-    </div>
   );
 }
 

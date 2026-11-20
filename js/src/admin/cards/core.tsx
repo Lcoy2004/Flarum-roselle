@@ -402,7 +402,6 @@ const CORE_CARDS: CardDef[] = [
         {toggle('list_views', '浏览列', '每条讨论被浏览的次数，由 fof/discussion-views 统计。未启用该扩展时不会显示这一列。')}
         {toggle('list_heat', '高数值高亮', '当数值远高于其它时，将其显示为橙色或红色，类似 Discourse 的热力图。')}
         {toggle('list_excerpts', '置顶讨论的摘要', '标题下方显示置顶讨论第一条帖子的开头。')}
-        {toggle('list_peek', '悬停浮层', '桌面端鼠标停在讨论上时，在行下方浮出摘要或最近回复者；卡片位置不会移动。')}
       </>
     ),
   },
