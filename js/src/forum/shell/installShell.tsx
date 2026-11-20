@@ -19,6 +19,8 @@ import type Mithril from 'mithril';
 import LcoySidebar from '../components/LcoySidebar';
 import HeaderToggle from '../components/HeaderToggle';
 import HeaderCenter, { watchHeaderTopic } from './HeaderCenter';
+import MobileNav from './MobileNav';
+import installReadingFocus from './readingFocus';
 import { watchColoredAccents } from './coloredAccents';
 import installShortcuts from './shortcuts';
 import extendHeader from './extendHeader';
@@ -34,6 +36,7 @@ const INLINE_HERO_PAGES = /\b(DiscussionPage|UserPage)\b/;
 
 export default function installShell() {
   installMobileViewport();
+  installReadingFocus();
 
   // 扩展实例，而不是原型：核心 2.0 不会在模块注册表中
   // 导出 ForumApplication 类。initializer 在 mount 之前运行。
@@ -82,7 +85,43 @@ export default function installShell() {
   installThemePreview();
   installModalLayout();
   installInlineHero();
+  installMobileNav();
   removeDiscussionPane();
+}
+
+/**
+ * 底部导航：作为 PageStructure 的根项渲染在页面末尾，
+ * 固定定位；手机上滚动时收起、向上滚动时恢复。
+ */
+function installMobileNav() {
+  override(PageStructure.prototype, 'rootItems', function (this: PageStructure, original: () => ItemList<Mithril.Children>) {
+    const items = original();
+
+    if (forumBool('lcoyMobileNav', true)) items.add('lcoyMobileNav', <MobileNav />, 5);
+
+    return items;
+  });
+
+  // 向下滚动收起导航，向上滚动露出；编辑器打开的状态由
+  // body.Lcoy--composing 在 CSS 层处理。
+  let lastY = window.scrollY;
+
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (window.innerWidth >= 768) return;
+
+      const y = window.scrollY;
+      const delta = y - lastY;
+
+      lastY = y;
+
+      if (Math.abs(delta) < 12) return;
+
+      document.getElementById('app')?.classList.toggle('Lcoy--navHidden', delta > 0 && y > 120);
+    },
+    { passive: true }
+  );
 }
 
 function mountSidebar(appElement: HTMLElement) {

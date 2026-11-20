@@ -603,7 +603,7 @@ button.LcoyTopicMap-stat {
 .LcoyNewReplies {
   position: fixed;
   left: 50%;
-  bottom: calc(var(--lcoy-space-4) + env(safe-area-inset-bottom, 0px));
+  bottom: ~"calc(var(--lcoy-space-4) + var(--lcoy-nav-offset, 0px))";
   z-index: var(--zindex-header);
   transform: translateX(-50%);
   animation: lcoyNewRepliesIn 0.2s ease-out;

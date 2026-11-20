@@ -909,6 +909,20 @@ lcoy-roselle:
       created_at: 'Created: {date}'
       last_reply_at: 'Latest reply: {date}'
       read_more: read more
+      no_participants: No replies yet
+    mobile_nav:
+      label: Main navigation
+      discussions: Discussions
+      tags: Tags
+      categories: Categories
+      compose: Post
+      notifications: Notifications
+      profile: Profile
+      login: Log in
+    swipe:
+      follow: Follow
+      unfollow: Unfollow
+      mark_read: Mark read
     nav:
       label: Discussion list navigation
       latest: Latest

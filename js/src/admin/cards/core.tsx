@@ -314,6 +314,20 @@ const CORE_CARDS: CardDef[] = [
 
   // ── 讨论列表 ───────────────────────────────────────────────────────
   {
+    id: 'mobile',
+    group: 'navigation',
+    icon: 'fas fa-mobile-screen',
+    title: () => trans(`${KEY}.section_mobile`, '手机端'),
+    keywords: '手机 mobile 底部导航 bottom nav 卡片 card 滑动 swipe 手势 gesture 触摸 touch',
+    body: () => (
+      <>
+        {toggle('mobile_nav', '底部导航', '手机端固定在底部的「讨论 / 标签 / 发帖 / 通知 / 我的」；发帖按钮居中凸起。')}
+        {toggle('mobile_cards', '卡片式列表', '手机端讨论列表改为带间距的卡片，并显示参与者头像堆叠。')}
+        {toggle('mobile_swipe', '滑动手势', '左滑关注讨论、右滑标记已读；只在支持触摸的设备上生效。')}
+      </>
+    ),
+  },
+  {
     id: 'welcome-banner',
     group: 'list',
     icon: 'fas fa-panorama',
@@ -388,6 +402,7 @@ const CORE_CARDS: CardDef[] = [
         {toggle('list_views', '浏览列', '每条讨论被浏览的次数，由 fof/discussion-views 统计。未启用该扩展时不会显示这一列。')}
         {toggle('list_heat', '高数值高亮', '当数值远高于其它时，将其显示为橙色或红色，类似 Discourse 的热力图。')}
         {toggle('list_excerpts', '置顶讨论的摘要', '标题下方显示置顶讨论第一条帖子的开头。')}
+        {toggle('list_peek', '悬停浮层', '桌面端鼠标停在讨论上时，在行下方浮出摘要或最近回复者；卡片位置不会移动。')}
       </>
     ),
   },
@@ -449,6 +464,15 @@ const CORE_CARDS: CardDef[] = [
         )}
       />
     ),
+  },
+  {
+    id: 'reading-focus',
+    group: 'topic',
+    icon: 'fas fa-eye',
+    title: () => trans(`${KEY}.section_reading_focus`, '阅读聚焦'),
+    description: help('reading_focus', '滚动到标题下方后，时间线会变淡并向右让位，把注意力留给正文；指针移回时间线或向上滚动即恢复。'),
+    keywords: '聚焦 focus 阅读 reading 时间线 timeline 滚动 scroll 降权',
+    master: 'lcoy.reading_focus',
   },
   {
     // Discourse 风格的帖子，使用 avocado 时间线连接头像

@@ -34,8 +34,15 @@
   --lcoy-space-2: 8px;
   --lcoy-space-3: 12px;
   --lcoy-space-4: 16px;
+  --lcoy-space-5: 20px;
   --lcoy-space-6: 24px;
   --lcoy-space-8: 32px;
+
+  // Flarum 核心的容器宽度变量：核心与扩展的 .container
+  // 也跟随主题的内容宽度，避免两套宽度并存。
+  --container-hd: var(--lcoy-main-max);
+  --container-xl: var(--lcoy-main-max);
+  --container-xxl: var(--lcoy-main-max);
 
   --lcoy-radius-large: 16px;    // 主卡片、分类框（--d-border-radius-large，在 Meta 上测量）
   --lcoy-radius: 8px;           // 方形按钮、下拉菜单、小框
@@ -70,9 +77,11 @@
   --lcoy-shadow-dropdown: 0 2px 12px rgba(0, 0, 0, 0.15);
 
   // 动效：悬停、聚焦等微交互共用同一缓动与时长，
-  // 使切换看起来连贯而非跳变。
+  // 使切换看起来连贯而非跳变。`slow` 用于带空间位移的场景
+  // （阅读聚焦、侧栏）。
   --lcoy-ease: cubic-bezier(0.2, 0.7, 0.3, 1);
-  --lcoy-duration: 140ms;
+  --lcoy-duration: 160ms;
+  --lcoy-duration-slow: 240ms;
 
   // 控件基础（"旧货店"式做法：每个控件只有一种尺寸和一个
   // 状态，且集中在一处）。普通字段与按钮的高度，以及登录
@@ -113,6 +122,7 @@
   --lcoy-border: #e9e9e9;             // 列表和卡片的细分隔线
 
   --lcoy-surface: #ffffff;
+  --lcoy-surface-raised: #ffffff;
   // 内容卡片让页面背景透出——即 Flarum 的默认
   // 背景，以及管理员自定义 CSS 时其置于背后的图片。
   --lcoy-surface-glass: ~"color-mix(in srgb, var(--lcoy-surface) 62%, transparent)";
@@ -145,9 +155,12 @@
   --lcoy-primary-medium: #8f8f8f;
   --lcoy-primary-high: #b5b5b5;
   --lcoy-primary-very-high: #dedede;
-  --lcoy-border: #2e2e2e;
+  --lcoy-border: #3a3a3a;
 
   --lcoy-surface: #1a1a1a;
+  // 浮层 / 悬停卡片用比表面亮一档的底色，避免深色下
+  // 表面、悬停与边框糊成一片。
+  --lcoy-surface-raised: #222222;
   --lcoy-surface-glass: ~"color-mix(in srgb, var(--lcoy-surface) 62%, transparent)";
   --lcoy-selected: ~"oklch(from var(--lcoy-accent) calc(l * 0.7) calc(c * 0.25) h)";
   --lcoy-hover: ~"oklch(from var(--lcoy-accent) calc(l * 0.7) calc(c * 0.25) h / 0.75)";

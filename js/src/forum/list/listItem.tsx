@@ -12,6 +12,7 @@ import DiscussionListItem from 'flarum/forum/components/DiscussionListItem';
 import IndexPage from 'flarum/forum/components/IndexPage';
 import Link from 'flarum/common/components/Link';
 import Avatar from 'flarum/common/components/Avatar';
+import Icon from 'flarum/common/components/Icon';
 import Tooltip from 'flarum/common/components/Tooltip';
 import listItems from 'flarum/common/helpers/listItems';
 import highlight from 'flarum/common/helpers/highlight';
@@ -24,11 +25,18 @@ import Discussion from 'flarum/common/models/Discussion';
 import type User from 'flarum/common/models/User';
 import type Mithril from 'mithril';
 
-import { forumBool, t } from '../utils/settings';
+import { forumBool, isExtensionEnabled, t } from '../utils/settings';
 import { fullDate, shortAge } from '../utils/dates';
 import { discussionBadges } from '../utils/tags';
 import { activityCold, discussionViews, repliesHeat } from './metrics';
 import { viewsHeat, viewsNumber } from '../utils/views';
+import { attachSwipe } from './swipe';
+
+const PHONE_QUERY = '(max-width: 767.98px)';
+
+function isPhone(): boolean {
+  return window.matchMedia(PHONE_QUERY).matches;
+}
 
 /**
  * `lcoyParticipants` 属性（extend/topic.php）：只包含该行头像所需的
@@ -110,6 +118,49 @@ function posterAvatar(poster: Participant, role: string, className = ''): Mithri
 }
 
 export default function installListItem(): void {
+  // 手机端使用主题自己的手势：关闭核心的 Slidable（它把
+  // 右滑绑成“标记已读”、左滑绑成控件菜单），语义改为
+  // 左滑关注、右滑标记已读，操作层由主题绘制。
+  override(DiscussionListItem.prototype as any, 'isSlidableEnabled', () => false);
+
+  // 滑动时露出的操作层：位于内容之下，绝对定位，不参与布局。
+  extend(DiscussionListItem.prototype, 'viewItems', function (this: DiscussionListItem, items: ItemList<Mithril.Children>) {
+    if (isMinimal(this) || !forumBool('lcoyMobileSwipe', true)) return;
+
+    items.add('lcoySwipeRead', swipeLayer(this, 'read'), 95);
+    items.add('lcoySwipeSubscribe', swipeLayer(this, 'subscribe'), 94);
+  });
+
+  extend(DiscussionListItem.prototype, 'oncreate', function (this: DiscussionListItem, _val: any, vnode: any) {
+    if (isMinimal(this) || !forumBool('lcoyMobileSwipe', true) || !isPhone()) return;
+
+    const discussion = this.attrs.discussion;
+    const canSubscribe = !!app.session.user && isExtensionEnabled('flarum-subscriptions');
+
+    (vnode.dom as any)._lcoyDetachSwipe = attachSwipe(vnode.dom as HTMLElement, {
+      left: canSubscribe
+        ? {
+            label: t('swipe.follow'),
+            run: () => {
+              const next = (discussion as any).subscription?.() ? null : 'follow';
+              discussion.save({ subscription: next } as any).then(() => m.redraw());
+            },
+          }
+        : undefined,
+      right: discussion.isUnread()
+        ? {
+            label: t('swipe.mark_read'),
+            run: () => this.markAsRead(),
+          }
+        : undefined,
+    });
+  });
+
+  extend(DiscussionListItem.prototype, 'onremove', function (this: DiscussionListItem, _val: any, vnode: any) {
+    ((vnode.dom as any)._lcoyDetachSwipe as (() => void) | undefined)?.();
+    (vnode.dom as any)._lcoyDetachSwipe = undefined;
+  });
+
   // 从主题返回时，Discourse 会用 --tertiary-low 点亮该行
   // 并在 2.5 秒后消失（`.topic-list-item.highlighted`）。核心已经记录
   // 是哪一个（lastDiscussion）并滚动到它；主题只负责点亮该行。
@@ -191,6 +242,10 @@ export default function installListItem(): void {
 
     const badges = badgeList.toArray();
 
+    // 悬停浮层：桌面端把摘要 / 最近回复者放到按需出现的一层里，
+    // 默认列表保持干净（见下方 peekView）。
+    const peek = forumBool('lcoyListPeek', true) ? peekView(this) : null;
+
     return (
       <div className="DiscussionListItem-main LcoyTopic">
         <h2 className="DiscussionListItem-title LcoyTopic-titleLine">
@@ -204,11 +259,89 @@ export default function installListItem(): void {
           {discussionBadges(discussion)}
           {!info.isEmpty() && <ul className="DiscussionListItem-info LcoyTopic-info">{listItems(info.toArray())}</ul>}
           {!extraStats.isEmpty() && <span className="LcoyTopic-stats">{extraStats.toArray()}</span>}
+          {isPhone() && forumBool('lcoyMobileCards', true) ? mobilePostersView(this) : null}
         </div>
         {excerpt ? <div className="LcoyTopic-excerpt">{excerpt}</div> : null}
+        {peek}
       </div>
     );
   });
+}
+
+/**
+ * 手机卡片上的参与者头像堆叠：桌面端由 `LcoyCell--posters`
+ * 列承担，手机没有该列，这里使用同一份 `lcoyParticipants`
+ * 数据画三枚小头像。
+ */
+function mobilePostersView(item: DiscussionListItem): Mithril.Children {
+  const discussion: Discussion = item.attrs.discussion;
+  const posters = (discussion.attribute<Participant[]>('lcoyParticipants') || []).filter((poster) => poster.avatarUrl);
+
+  if (posters.length < 2) return null;
+
+  const shown = posters.slice(0, 3);
+
+  return (
+    <span className="LcoyTopic-mobilePosters">
+      {shown.map((poster) => posterAvatar(poster, t('list.participant'), 'LcoyTopic-mobilePoster'))}
+      {posters.length > shown.length ? <span className="LcoyTopic-mobilePostersMore">+{posters.length - shown.length}</span> : null}
+    </span>
+  );
+}
+
+/**
+ * 悬停浮层（`LcoyTopic-peek`）：绝对定位在行下方，
+ * 不参与布局，所以悬停时相邻行不会跳动。有首帖摘要
+ * （置顶帖的 `firstPostExcerpt`）时显示两行摘要，否则显示
+ * 最近回复者一行——两者都来自列表已有的数据。
+ */
+function peekView(item: DiscussionListItem): Mithril.Children {
+  const discussion: Discussion = item.attrs.discussion;
+  const excerpt = discussion.attribute<string | null>('firstPostExcerpt');
+  const author = item.attrs.author || discussion.user();
+  const last = discussion.replyCount() ? discussion.lastPostedUser() : null;
+  const latest = last || author;
+  const age = shortAge(discussion.lastPostedAt() || discussion.createdAt());
+  const replies = discussion.replyCount() ?? 0;
+
+  return (
+    <div className="LcoyTopic-peek" aria-hidden="true">
+      {typeof excerpt === 'string' && excerpt ? <p className="LcoyTopic-peekText">{truncate(excerpt, 160)}</p> : null}
+      <div className="LcoyTopic-peekRow">
+        {latest ? <Avatar user={latest} title="" className="LcoyTopic-peekAvatar" /> : null}
+        <span className="LcoyTopic-peekName">{latest ? latest.displayName() : t('list.no_participants')}</span>
+        <span className="LcoyTopic-peekMeta">{age}</span>
+        <span className="LcoyTopic-peekMeta">{t('list.replies_a11y', { count: replies })}</span>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * 滑动操作层：与核心的 Slidable 相同的“藏在行下面”，
+ * 由主题控制颜色与文案。内容层滑动时（`data-swipe`）淡入。
+ */
+function swipeLayer(item: DiscussionListItem, kind: 'read' | 'subscribe'): Mithril.Children {
+  if (kind === 'read') {
+    const unread = item.attrs.discussion.isUnread();
+
+    return (
+      <span className={classList('LcoySwipeLayer', 'LcoySwipeLayer--read', { 'is-disabled': !unread })} aria-hidden="true">
+        <Icon name="fas fa-check" />
+        <span className="LcoySwipeLayer-label">{t('swipe.mark_read')}</span>
+      </span>
+    );
+  }
+
+  const available = !!app.session.user && isExtensionEnabled('flarum-subscriptions');
+  const subscribed = !!(item.attrs.discussion as any).subscription?.();
+
+  return (
+    <span className={classList('LcoySwipeLayer', 'LcoySwipeLayer--subscribe', { 'is-disabled': !available })} aria-hidden="true">
+      <Icon name={subscribed ? 'fas fa-star' : 'far fa-star'} />
+      <span className="LcoySwipeLayer-label">{subscribed ? t('swipe.unfollow') : t('swipe.follow')}</span>
+    </span>
+  );
 }
 
 /**

@@ -20,6 +20,17 @@ import { t } from '../utils/settings';
 const HIGHLIGHT_MS = 2500;
 
 export default function installLayout(): void {
+  // 从列表进入话题：内容轻微上移淡入，形成“继续阅读”的衔接感。
+  // 关闭系统动画时不执行（CSS 里同样有 prefers-reduced-motion 兜底）。
+  extend(DiscussionPage.prototype, 'oncreate', function () {
+    const root = document.getElementById('app');
+
+    if (!root || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    root.classList.add('Lcoy--entering');
+    window.setTimeout(() => root.classList.remove('Lcoy--entering'), 280);
+  });
+
   extend(DiscussionPage.prototype, 'view', function (this: any, vnode: any) {
     if (!vnode || !vnode.attrs) return;
 

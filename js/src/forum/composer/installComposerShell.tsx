@@ -155,6 +155,13 @@ function installHeights(): void {
 }
 
 function installRoot(): void {
+  // 编辑器打开/关闭时给 body 打标记：手机底部导航、浮动胶囊
+  // 据此让位（CSS 只读这个类，不在热路径上用 :has）。
+  const toggleComposing = (on: boolean) => document.body.classList.toggle('Lcoy--composing', on);
+
+  extend('flarum/forum/components/Composer' as any, 'oncreate', () => toggleComposing(true));
+  extend('flarum/forum/components/Composer' as any, 'onremove', () => toggleComposing(false));
+
   // CSS 所需的类名：编辑器类型，以及预览是否
   // 位于侧边（`show-preview` / `hide-preview`，会改变宽度）。
   extend('flarum/forum/components/Composer' as any, 'view', function (vdom: any) {
