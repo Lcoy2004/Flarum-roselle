@@ -233,14 +233,21 @@ export default function installTimeline(): void {
     document.documentElement.style.setProperty('--lcoy-composer-height', `${height}px`);
   });
 
-  // Discourse 的轨道在每次变化（包括滚动）时用 CSS 过渡（.15s ease-out）
-  // 动画化高度；核心只在跳转时用 jQuery 动画。去掉 jQuery 后，
-  // 由 LESS 的过渡负责。
+  // 轨道高度的动画只给「离散」更新：首次绘制、跳转到某楼、加载完成。
+  // 滚动中的每一帧都会重写高度，此时给根元素加 `--instant`，
+  // 让 LESS 关掉过渡直接落位——否则过渡被逐帧重启，在帖子底部
+  // 索引反复取整时会表现为滑条持续闪烁。只动画侧栏，不影响正文。
   override(
     'flarum/forum/components/PostStreamScrubber',
     'updateScrubberValues',
     function (this: any, original: (options?: any) => void, options: any = {}) {
-      return original(topicSettings.timeline() ? { ...options, animate: false } : options);
+      const animated = topicSettings.timeline();
+
+      if (animated) {
+        this.element?.classList.toggle('LcoyScrubber--instant', !!options.fromScroll);
+      }
+
+      return original(animated ? { ...options, animate: false } : options);
     }
   );
 }

@@ -202,10 +202,34 @@
       border-left: 0;
     }
 
-    // 不给轨道高度加 CSS 过渡：核心在滚动的每一帧都会重写
-    // before/handle/after 的高度，过渡会被逐帧重新开始，在帖子
-    // 底部（索引在 count 附近反复取整）表现为滑条持续闪烁。
-    // 高度直接跟随滚动，拖动与非拖动状态下都只重绘一次。
+    // 轨道高度：离散更新（首屏、跳转、加载完成）用 0.15s 过渡，
+    // 滚动中的逐帧更新由 `.LcoyScrubber--instant` 直接落位。
+    // 过渡只是侧栏的视觉反馈，不会改变正文的行数或行距。
+    .PostStreamScrubber:not(.LcoyScrubber--instant) {
+      .Scrubber-before,
+      .Scrubber-after,
+      .Scrubber-handle {
+        transition: height 0.15s ease-out;
+      }
+    }
+
+    .PostStreamScrubber.LcoyScrubber--instant {
+      .Scrubber-before,
+      .Scrubber-after,
+      .Scrubber-handle {
+        transition: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .PostStreamScrubber {
+        .Scrubber-before,
+        .Scrubber-after,
+        .Scrubber-handle {
+          transition: none;
+        }
+      }
+    }
 
     .Scrubber-handle {
       padding: 0;
