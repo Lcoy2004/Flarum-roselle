@@ -202,15 +202,10 @@
       border-left: 0;
     }
 
-    // Discourse 的 .timeline-padding：高度带动画（.15s ease-out），
-    // 读者拖动滑块时更短。
-    .PostStreamScrubber:not(.dragging) {
-      .Scrubber-before,
-      .Scrubber-after,
-      .Scrubber-handle {
-        transition: height 0.15s ease-out;
-      }
-    }
+    // 不给轨道高度加 CSS 过渡：核心在滚动的每一帧都会重写
+    // before/handle/after 的高度，过渡会被逐帧重新开始，在帖子
+    // 底部（索引在 count 附近反复取整）表现为滑条持续闪烁。
+    // 高度直接跟随滚动，拖动与非拖动状态下都只重绘一次。
 
     .Scrubber-handle {
       padding: 0;

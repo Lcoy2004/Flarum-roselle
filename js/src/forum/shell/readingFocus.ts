@@ -1,11 +1,13 @@
 /*
  * 阅读聚焦模式（桌面）：话题页向下滚动、标题离开视口后，
- * 时间线降低视觉权重并略向右让位；指针移回时间线/侧栏、
- * 或向上滚动时恢复。
+ * 时间线降低视觉权重并略向右让位；向上滚动时恢复。
  *
- * 不用 IntersectionObserver：判断只需标题盒子的位置，
- * 而滚动事件本来就要监听（rAF 合并，一帧最多测量一次），
- * 这样也避免依赖 DiscussionPage 的生命周期钩子。
+ * 指针移回时间线时由 CSS 的 `:hover` 单独恢复完整权重，
+ * 不参与类的切换——否则指针落在时间线边缘时，「移入恢复 →
+ * 位移让指针离开 → 再次降权」会形成反复闪烁的反馈环。
+ *
+ * 只用不改变布局的属性（opacity / transform）：聚焦态若同时
+ * 改列宽或间距，滚动中会不断触发重排，也与滚动事件互相激发。
  */
 import { forumBool } from '../utils/settings';
 
@@ -23,14 +25,12 @@ export default function installReadingFocus(): void {
   let hero: HTMLElement | null = null;
   let frame = 0;
   let heroVisible = true;
-  /** 指针停在时间线/侧栏上：暂时恢复正常权重。 */
-  let hovering = false;
   /** 用户正在向上滚动：不进入聚焦，直到再次向下滚。 */
   let scrollingUp = false;
   let lastY = window.scrollY;
 
   const apply = () => {
-    APP()?.classList.toggle('Lcoy--readingFocus', !heroVisible && !hovering && !scrollingUp);
+    APP()?.classList.toggle('Lcoy--readingFocus', !heroVisible && !scrollingUp);
   };
 
   const measure = () => {
@@ -80,22 +80,8 @@ export default function installReadingFocus(): void {
     { passive: true }
   );
 
-  // 指针移到时间线或侧栏上：恢复完整权重，方便直接操作。
-  document.addEventListener(
-    'pointermove',
-    (event) => {
-      const inside = !!(event.target as HTMLElement | null)?.closest('.Page-sidebar, .DiscussionPage-nav');
-
-      if (inside === hovering) return;
-
-      hovering = inside;
-      apply();
-    },
-    { passive: true }
-  );
-
-  // 路由切换后标题是新的节点：`isConnected` 会在下一次测量时
-  // 发现旧节点已移除，从而重新查询。
+  // 指针移回时间线时的恢复完全交给 CSS 的 `:hover`，
+  // 不在 JS 里切换类，避免“移入 → 位移 → 移出”的反复触发。
 
   schedule();
 }
