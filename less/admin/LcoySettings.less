@@ -113,6 +113,7 @@
     flex-shrink: 0;
     text-align: center;
     font-size: 13px;
+    line-height: 1;
     color: var(--muted-color);
   }
 
@@ -189,6 +190,7 @@
 
   > i {
     font-size: 17px;
+    line-height: 1;
     color: var(--lcoy-admin-accent);
   }
 }
@@ -283,13 +285,16 @@
   background: var(--lcoy-admin-tint);
   color: var(--lcoy-admin-accent);
   font-size: 14px;
+  line-height: 1;
   transition: background 0.2s, color 0.2s;
 }
 
 .LcoyAdmin-card-heading {
   flex: 1;
   min-width: 0;
-  padding-top: 1px;
+  // 标题行的视觉中心对准旁边的 32px 图标（图标在头部内垂直居中于
+  // 首行的眼睛位置），否则图标看起来会比标题低半个字。
+  padding-top: 6px;
 }
 
 .LcoyAdmin-card-title {
@@ -732,14 +737,6 @@
     border-radius: 999px;
     white-space: nowrap;
   }
-
-  .LcoyAdmin-card-body {
-    padding-left: 18px;
-  }
-
-  .LcoyAdmin-card-lock {
-    margin-left: 18px;
-  }
 }
 
 @media (max-width: 560px) {
@@ -881,5 +878,11 @@
   .LcoyAdmin-paletteRow {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  // 纵向排列后，标签不再需要横向的 56px 基准：否则会撑出一段空白，
+  // 把色块推到远离标题的位置。
+  .LcoyAdmin-paletteScheme {
+    flex: 0 0 auto;
   }
 }
