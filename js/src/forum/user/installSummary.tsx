@@ -6,8 +6,9 @@
  * 响应 `/u/{username}[/{filter}]`，因此 URL 可直接打开，无需在 PHP 中新增路由。
  *
  * 资料链接（`app.route.user`：头像、帖子中的名字、会话菜单）
- * 会在管理后台选定的标签页打开（`lcoy.user_default_tab`）：活动页，
- * 与 Flarum 一致（默认），或摘要页，与 Discourse 一致。
+ * 会在管理后台选定的标签页打开（`lcoy.user_default_tab`）：默认是“讨论”，
+ * 进入个人主页即可看到对方发起的主题；也可以改为“摘要”。
+ * 讨论与回复分成两个标签页，回复流只列回复（`lcoyReplies`）。
  */
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
@@ -30,14 +31,13 @@ export default function installSummary() {
   } as any;
 
   // 配置在构建链接时读取：在 initializer 中 `app.forum` 还不存在。
-  const userUrl = app.route.user;
   app.route.user = (user: User) =>
     app.forum && forumBool('lcoyUserSummary', true) && app.forum.attribute('lcoyUserDefaultTab') === 'summary'
       ? app.route('user.summary', { username: user.slug() })
-      : userUrl(user);
+      : app.route('user.discussions', { username: user.slug() });
 
-  // 帖子获得 Discourse 专属地址（`/u/:username/activity`）：
-  // 核心的 `/u/:username` 变成入口，打开摘要。
+  // 帖子（回复）获得 Discourse 专属地址（`/u/:username/activity`）：
+  // 核心的 `/u/:username` 变成入口，打开默认标签页。
   app.routes['user.activity'] = {
     path: '/u/:username/activity',
     component: PostsUserPage,
@@ -47,13 +47,17 @@ export default function installSummary() {
   extend(UserPage.prototype, 'oninit', function () {
     const username = m.route.param('username');
 
-    if (!username || !forumBool('lcoyUserSummary', true) || app.forum.attribute('lcoyUserDefaultTab') !== 'summary') return;
+    if (!username) return;
 
     // 只有不带标签页的地址：核心的 `user` 和 `user.posts` 路由共用
     // 同一路径，因此路由名不足以区分。
-    if (m.route.get().split('?')[0] === app.route('user', { username })) {
-      m.route.set(app.route('user.summary', { username }), undefined, { replace: true });
-    }
+    if (m.route.get().split('?')[0] !== app.route('user', { username })) return;
+
+    // 入口落在管理员选择的标签页。“讨论”是默认：点开个人主页
+    // 就能看到对方发起的主题，而不是在回帖流里翻找。
+    const summary = forumBool('lcoyUserSummary', true) && app.forum.attribute('lcoyUserDefaultTab') === 'summary';
+
+    m.route.set(app.route(summary ? 'user.summary' : 'user.discussions', { username }), undefined, { replace: true });
   });
 
   extend(UserPage.prototype, 'navItems', function (this: UserPage, items: ItemList<Mithril.Children>) {

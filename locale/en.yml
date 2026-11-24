@@ -413,8 +413,8 @@ lcoy-roselle:
       section_colored: Colored highlights
       colored_accents_help: "On a tag page or in a discussion, the theme's accent colour (buttons, links, active tab, tinted background) becomes the colour of the primary tag. Elsewhere it goes back to the forum's primary colour."
       user_default_tab_label: When a profile opens
-      user_default_tab_help: Which tab the profile opens on when an avatar or name is clicked.
-      user_default_tab_activity: Activity (posts), as in Flarum
+      user_default_tab_help: Which tab the profile opens on when an avatar or name is clicked. "Discussions" lists the topics the user started; replies have their own tab.
+      user_default_tab_activity: Discussions (topics they started)
       user_default_tab_summary: Summary, as in Discourse
   forum:
     auth:
@@ -1199,6 +1199,7 @@ lcoy-roselle:
       nav:
         activity: Activity
         posts: Posts
+        replies: Replies
         discussions: Discussions
         read: Read
         reactions: Reactions
@@ -1301,6 +1302,7 @@ lcoy-roselle:
         profile: Profile
       profile:
         activity: Activity
+        replies: Replies
         messages: Messages
         dark_mode: Dark mode
         light_mode: Light mode

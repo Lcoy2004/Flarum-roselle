@@ -1,6 +1,6 @@
 {
   "name": "@lcoy/roselle",
-  "version": "2.4.5",
+  "version": "2.5.0",
   "private": true,
   "prettier": "@flarum/prettier-config",
   "devDependencies": {

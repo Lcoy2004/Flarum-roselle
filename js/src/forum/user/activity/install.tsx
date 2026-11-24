@@ -29,15 +29,15 @@ import type Mithril from 'mithril';
 import { forumBool, isExtensionEnabled, t } from '../../utils/settings';
 
 /**
- * 子标签页的顺序，与 Discourse 一致：全部、主题、已读、草稿、
- * 点赞、收藏、反应、投票、已解决。提及和媒体（Discourse 这一行没有）
- * 排在其后；其他扩展的放在最后。
+ * 子标签页的顺序，与 Discourse 一致：讨论、回复（首帖已从回复中剔除）、
+ * 已读、点赞、收藏、反应、投票、已解决。提及和媒体
+ *（Discourse 这一行没有）排在其后；其他扩展的放在最后。
+ * 草稿不在资料页出现：入口只在“发起主题”按钮和用户菜单里。
  */
 export const ACTIVITY_ORDER = [
-  'posts',
   'discussions',
+  'posts',
   'lcoyRead',
-  'lcoyDrafts',
   'likes',
   // 点赞 + 反应：取代“点赞”。
   'lcoyReactions',
@@ -89,11 +89,11 @@ export function activityTabOn(tab: Tab, user: User): boolean {
   }
 }
 
-/** 手动输入但无权查看的标签页会退回帖子页。 */
+/** 手动输入但无权查看的标签页会退回资料默认页（讨论）。 */
 export function leaveIfHidden(tab: Tab, user: User): boolean {
   if (activityTabOn(tab, user)) return false;
 
-  m.route.set(app.route('user.posts', { username: user.slug() }), undefined, { replace: true });
+  m.route.set(app.route('user.discussions', { username: user.slug() }), undefined, { replace: true });
 
   return true;
 }

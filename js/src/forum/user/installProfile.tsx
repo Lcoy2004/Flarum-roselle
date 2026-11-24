@@ -68,7 +68,8 @@ const PREFERENCE_PAGES = ['security', 'ignored-users'];
 
 /** “活动”标签页，使用 Discourse 的名称和图标。 */
 const ACTIVITY_LABELS: Record<string, { icon: string; label?: string }> = {
-  posts: { icon: 'fas fa-bars', label: 'user.nav.posts' },
+  // 核心的“帖子”流在个人主页只列回复（首帖属于“讨论”）。
+  posts: { icon: 'far fa-comment', label: 'user.nav.replies' },
   discussions: { icon: 'fas fa-list-ul', label: 'user.nav.discussions' },
   likes: { icon: 'far fa-heart' },
   mentions: { icon: 'fas fa-at' },
@@ -111,10 +112,20 @@ export default function installProfile() {
  * 而那正是核心 PostListItem 绘制的内容。
  */
 function extendUserStream() {
-  // 条目的分类（“Bug • 5 天前”）来自主题的标签，
-  // 而核心的帖子列表不包含它们。
   extend(PostListState.prototype, 'requestParams' as any, function (this: PostListState, params: any) {
-    if (!isTagsEnabled() || !params) return;
+    if (!params) return;
+
+    // 个人主页的帖子流只列回复：首帖（新讨论）在“讨论”标签页，
+    // 否则两者混在同一串里，新讨论会淹没在回帖中间。
+    const route = app.current.get('routeName') || '';
+
+    if (route === 'user.activity' || route === 'user.posts') {
+      params.filter = { ...(params.filter || {}), lcoyReplies: 1 };
+    }
+
+    // 条目的分类（“Bug • 5 天前”）来自主题的标签，
+    // 而核心的帖子列表不包含它们。
+    if (!isTagsEnabled()) return;
 
     const include = typeof params.include === 'string' ? params.include.split(',') : Array.isArray(params.include) ? params.include : [];
 
@@ -191,9 +202,11 @@ function extendUserPage() {
     const activityActive = activity.toArray().some(isActive);
 
     if (!activity.isEmpty() && this.user) {
+      // “活动”分组先落在“讨论”：进入个人主页即可看到对方发起的主题，
+      // 回复在自己的标签页里，两者不再混成一串。
       primary.add(
         'activity',
-        <LinkButton href={app.route('user.activity', { username: this.user.slug() })} icon="fas fa-bars" active={activityActive}>
+        <LinkButton href={app.route('user.discussions', { username: this.user.slug() })} icon="fas fa-bars" active={activityActive}>
           {t('user.nav.activity')}
         </LinkButton>,
         105

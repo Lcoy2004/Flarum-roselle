@@ -605,7 +605,7 @@ const CORE_CARDS: CardDef[] = [
       <>
         {toggle('user_cover', '个人主页顶部的封面', '大头像和用户名后面的宽幅背景，如同 Discourse。')}
         {toggle('user_stats', '统计', '用户名下方显示加入日期、最后访问时间以及帖子和讨论数量。只有启用 Likes 扩展时才显示赞。')}
-        {toggle('user_summary', '摘要标签页', '第一个标签页，显示该用户的各项数据及其主要讨论和回复。')}
+        {toggle('user_summary', '摘要标签页', '概览标签页，显示该用户的各项数据及其主要讨论和回复。')}
         {/* 没有摘要标签页时，在该标签页打开个人主页就没有地方可去。 */}
         {getBool('lcoy.user_summary') && (
           <AdminSubGroup>
@@ -614,10 +614,10 @@ const CORE_CARDS: CardDef[] = [
               label={trans(`${KEY}.user_default_tab_label`, '打开个人主页时')}
               help={trans(`${KEY}.user_default_tab_help`, '点击头像或昵称时，个人主页默认打开哪个标签页。')}
               options={{
-                activity: trans(`${KEY}.user_default_tab_activity`, '活动（帖子），同 Flarum'),
+                activity: trans(`${KEY}.user_default_tab_activity`, '讨论（对方发起的主题）'),
                 summary: trans(`${KEY}.user_default_tab_summary`, '概要，同 Discourse'),
               }}
-              default="summary"
+              default="activity"
             />
           </AdminSubGroup>
         )}

@@ -126,7 +126,9 @@ $forumSettings = [
     'lcoy.user_cover' => ['lcoyUserCover', true, 'boolval'],
     'lcoy.user_stats' => ['lcoyUserStats', true, 'boolval'],
     'lcoy.user_summary' => ['lcoyUserSummary', true, 'boolval'],
-    'lcoy.user_default_tab' => ['lcoyUserDefaultTab', 'summary', null],
+    // 个人资料的入口：默认打开“讨论”（此人发起的主题），
+    // 也可以改成 Discourse 式的“摘要”。
+    'lcoy.user_default_tab' => ['lcoyUserDefaultTab', 'activity', null],
     // "活动" 子标签（extend/activity.php），每个都依赖各自的扩展。
     'lcoy.user_activity_read' => ['lcoyUserActivityRead', true, 'boolval'],
     'lcoy.user_activity_reactions' => ['lcoyUserActivityReactions', true, 'boolval'],

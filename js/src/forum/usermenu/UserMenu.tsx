@@ -315,15 +315,16 @@ export default class UserMenu extends Component<UserMenuAttrs> {
     // 标签页中：头像已经在头部。
     ['lcoyIdentity', 'lcoyIdentitySeparator'].forEach((key) => items.has(key) && items.remove(key));
 
-    // 不要“摘要”：“个人资料”已经打开摘要（资料的默认标签页）。
+    // 不要“摘要”：“个人资料”已经开始于“讨论”（资料的默认标签页）。
 
     if (!items.has('lcoyActivity')) {
+      // “个人资料”落在讨论；这一项直达回复（不再混入新讨论）。
       const route = app.routes['user.activity'] ? 'user.activity' : 'user.posts';
 
       items.add(
         'lcoyActivity',
-        <LinkButton icon="fas fa-bars-staggered" href={app.route(route, { username: user.slug() })}>
-          {um('profile.activity')}
+        <LinkButton icon="far fa-comment" href={app.route(route, { username: user.slug() })}>
+          {um('profile.replies')}
         </LinkButton>,
         94
       );

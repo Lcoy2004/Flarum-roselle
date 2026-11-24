@@ -9,8 +9,7 @@
  *   不做询问。
  * - 没有保存按钮（fof 的软盘按钮会从控制项中移除）：编辑器页脚
  *   以低调方式显示“保存中……”/“草稿已保存”，失败时给出提示。
- * - 列表位于“发起主题”按钮的“⌄”、用户菜单以及个人资料页的
- *   “草稿”标签中。
+ * - 列表位于“发起主题”按钮的“⌄”和用户菜单中。
  *
  * 一切都取决于 `draftsOn()`：未启用 fof-drafts 时均不显示。
  */
@@ -19,7 +18,6 @@ import { extend, override } from 'flarum/common/extend';
 import ComposerState from 'flarum/forum/states/ComposerState';
 import TextEditor from 'flarum/common/components/TextEditor';
 import SessionDropdown from 'flarum/forum/components/SessionDropdown';
-import UserPage from 'flarum/forum/components/UserPage';
 import LinkButton from 'flarum/common/components/LinkButton';
 import Icon from 'flarum/common/components/Icon';
 import UserPageResolver from 'flarum/forum/resolvers/UserPageResolver';
@@ -239,23 +237,6 @@ export default function installDrafts() {
       </LinkButton>,
       // 紧接在“个人资料”（100）之后、“设置”（50）之前。
       90
-    );
-  });
-
-  extend(UserPage.prototype, 'navItems', function (this: UserPage, items: ItemList<Mithril.Children>) {
-    if (!this.user || this.user !== app.session.user || !draftsOn()) return;
-
-    const count = draftCount();
-
-    items.add(
-      'lcoyDrafts',
-      <LinkButton href={app.route('user.drafts', { username: this.user.slug() })} icon="fas fa-pen-ruler">
-        {t('composer.drafts.nav')}
-        {/* “草稿 (2)”，与 Discourse 的子标签一致。 */}
-        {count > 0 && ` (${count})`}
-      </LinkButton>,
-      // 位于帖子（100）和主题（90）之后，其他扩展的标签之前。
-      70
     );
   });
 }

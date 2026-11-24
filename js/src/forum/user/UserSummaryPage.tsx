@@ -133,7 +133,7 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
       .find<Post[]>(
         'posts',
         {
-          filter: { author: user.slug(), type: 'comment' },
+          filter: { author: user.slug(), type: 'comment', lcoyReplies: 1 },
           sort: '-createdAt',
           include: 'discussion',
           fields: REPLY_FIELDS,
@@ -195,21 +195,21 @@ export default class UserSummaryPage<Attrs extends IUserPageAttrs = IUserPageAtt
     items.add(
       'columns',
       <div className="LcoyUserSummary-columns">
-        <section className="LcoyUserSummary-section LcoyUserSummary-replies">
-          <h3 className="LcoyUserSummary-heading">{t('user.summary.top_replies_heading')}</h3>
-          {this.list(this.replies, (post) => this.replyItem(post), t('user.summary.no_replies'))}
-          {!!this.replies?.length && (
-            <Link className="LcoyUserSummary-more" href={app.route('user.posts', { username: user.slug() })}>
-              {t('user.summary.more_replies')}
-            </Link>
-          )}
-        </section>
         <section className="LcoyUserSummary-section LcoyUserSummary-topics">
           <h3 className="LcoyUserSummary-heading">{t('user.summary.top_topics_heading')}</h3>
           {this.list(this.topics, (discussion) => this.topicItem(discussion), t('user.summary.no_topics'))}
           {!!this.topics?.length && (
             <Link className="LcoyUserSummary-more" href={app.route('user.discussions', { username: user.slug() })}>
               {t('user.summary.more_topics')}
+            </Link>
+          )}
+        </section>
+        <section className="LcoyUserSummary-section LcoyUserSummary-replies">
+          <h3 className="LcoyUserSummary-heading">{t('user.summary.top_replies_heading')}</h3>
+          {this.list(this.replies, (post) => this.replyItem(post), t('user.summary.no_replies'))}
+          {!!this.replies?.length && (
+            <Link className="LcoyUserSummary-more" href={app.route('user.activity', { username: user.slug() })}>
+              {t('user.summary.more_replies')}
             </Link>
           )}
         </section>

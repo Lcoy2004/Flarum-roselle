@@ -145,11 +145,21 @@ final class PreloadContent
         $comments = (int) ($user->attributes->commentCount ?? 0);
 
         $summaryOn = (bool) $this->settings->get('lcoy.user_summary', true);
-        $summaryDefault = $summaryOn && $this->settings->get('lcoy.user_default_tab', 'summary') === 'summary';
+        $summaryDefault = $summaryOn && $this->settings->get('lcoy.user_default_tab', 'activity') === 'summary';
 
         // 当摘要为默认选项卡时，`/u/:username` 会打开摘要（JS 会替换地址）。
         if ($filter === 'summary' || ($filter === '' && $summaryDefault)) {
             return $summaryOn && $slug !== '' ? $this->summaryPlan($id, $slug, $username, $comments) : [];
+        }
+
+        // 资料的入口默认落在“讨论”：首屏就是此人发起的主题列表。
+        if ($filter === '') {
+            return [['/discussions', [
+                'include' => 'user,lastPostedUser',
+                'filter' => ['author' => $slug],
+                'sort' => '-createdAt',
+                'page' => ['offset' => 0],
+            ]]];
         }
 
         $own = $actorId !== null && $actorId === $id;
@@ -169,8 +179,9 @@ final class PreloadContent
             return $own ? [['/bookmarks', ['include' => implode(',', $include), 'page' => ['offset' => 0, 'limit' => 20]]]] : [];
         }
 
-        if ($filter === 'activity' || $filter === '' || $filter === 'posts') {
+        if ($filter === 'activity' || $filter === 'posts') {
             // 核心的帖子列表（PostListState），并带上主题额外添加的标签。
+            // `lcoyReplies` 与 JS 一致：只列回复，首帖属于“讨论”。
             $include = ['user', 'discussion'];
             if ($this->extensions->isEnabled('flarum-tags')) {
                 $include[] = 'discussion.tags';
@@ -178,7 +189,7 @@ final class PreloadContent
 
             return [['/posts', [
                 'include' => implode(',', $include),
-                'filter' => ['type' => 'comment', 'author' => $slug],
+                'filter' => ['type' => 'comment', 'author' => $slug, 'lcoyReplies' => 1],
                 'sort' => '-createdAt',
                 'page' => ['offset' => 0],
             ]]];
@@ -200,7 +211,7 @@ final class PreloadContent
         $plan = [
             // `fields`（稀疏字段集）与 UserSummaryPage 相同：只包含列表绘制所需的内容。
             ['/discussions', ['filter' => ['author' => $slug], 'sort' => '-commentCount', 'include' => 'firstPost', 'fields' => ['discussions' => 'title,slug,commentCount,createdAt,firstPost', 'posts' => 'likesCount'], 'page' => ['limit' => 20, 'total' => 0]]],
-            ['/posts', ['filter' => ['author' => $slug, 'type' => 'comment'], 'sort' => '-createdAt', 'include' => 'discussion', 'fields' => ['posts' => self::REPLY_POST_FIELDS, 'discussions' => 'title,slug'], 'page' => ['limit' => 50, 'total' => 0]]],
+            ['/posts', ['filter' => ['author' => $slug, 'type' => 'comment', 'lcoyReplies' => 1], 'sort' => '-createdAt', 'include' => 'discussion', 'fields' => ['posts' => self::REPLY_POST_FIELDS, 'discussions' => 'title,slug'], 'page' => ['limit' => 50, 'total' => 0]]],
             // 没有 `usersummary` 功能时该路由不存在：返回 404，因此跳过。
             ["/lcoy-user-summary/$id", []],
         ];
@@ -211,7 +222,7 @@ final class PreloadContent
             $sampleKey = PreloadKey::make($plan[1][0], $plan[1][1]);
             $plan[] = [
                 '/posts',
-                ['filter' => ['author' => $slug, 'type' => 'comment'], 'sort' => '-createdAt', 'fields' => ['posts' => self::REPLY_POST_FIELDS], 'page' => ['limit' => 1, 'total' => 0]],
+                ['filter' => ['author' => $slug, 'type' => 'comment', 'lcoyReplies' => 1], 'sort' => '-createdAt', 'fields' => ['posts' => self::REPLY_POST_FIELDS], 'page' => ['limit' => 1, 'total' => 0]],
                 static function (array $out) use ($sampleKey): ?object {
                     $first = $out[$sampleKey]->data[0] ?? null;
 

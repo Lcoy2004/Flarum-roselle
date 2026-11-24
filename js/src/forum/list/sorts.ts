@@ -61,6 +61,10 @@ export default function installSorts(): void {
   });
 
   extend(DiscussionListState.prototype, 'requestParams', function (this: DiscussionListState, params) {
+    // 个人主页等按作者过滤的列表：这些是给全站列表的“新 / 未读 / 热门”
+    // 筛选，混进作者的列表后会把范围缩小成“我还没读过的”，几乎总是空的。
+    if ((params.filter as Record<string, any> | undefined)?.author) return;
+
     const sort = this.getParams().sort;
 
     if (sort === HOT_SORT && sort in this.sortMap()) {

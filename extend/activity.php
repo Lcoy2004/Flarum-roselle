@@ -26,11 +26,14 @@ use Flarum\Search\Database\DatabaseSearchDriver;
 use Lcoy\Roselle\Activity\Api\ForumActivityFields;
 use Lcoy\Roselle\Activity\Api\ListReactionsController;
 use Lcoy\Roselle\Activity\Search\ReadByFilter;
+use Lcoy\Roselle\Activity\Search\RepliesOnlyFilter;
 use Lcoy\Roselle\Activity\Search\VotedByFilter;
 
 return [
     (new Extend\SearchDriver(DatabaseSearchDriver::class))
-        ->addFilter(DiscussionSearcher::class, ReadByFilter::class),
+        ->addFilter(DiscussionSearcher::class, ReadByFilter::class)
+        // 个人主页的“回复”标签页：去掉主题首帖，只留回复。
+        ->addFilter(PostSearcher::class, RepliesOnlyFilter::class),
 
     (new Extend\ApiResource(ForumResource::class))
         ->fields(ForumActivityFields::class),
