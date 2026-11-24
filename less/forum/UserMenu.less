@@ -613,13 +613,21 @@
     justify-content: flex-start;
     white-space: nowrap;
     transition: none;
+    // 间距只由图标的右外边距给出：`.Button` 自带的 7px gap 叠在
+    // 0.5em 之上会让图标离文字过远。
+    gap: 0;
 
     .Button-icon,
     .icon {
-      width: 1em;
+      // 1.1em：Lucide 的 24 视框自带内边距，按 1em 绘制时图案比
+      // 中文正文的字面明显小一圈，看起来像没有对齐。
+      width: 1.1em;
+      height: 1.1em;
+      flex-shrink: 0;
       margin: 0 0.5em 0 0;
       color: var(--lcoy-primary-medium);
       font-size: 1em;
+      line-height: 1;
       text-align: center;
     }
 
