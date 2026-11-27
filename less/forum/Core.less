@@ -64,6 +64,21 @@ body {
     font-family: var(--lcoy-font);
   }
 
+  // 没有头像图片时，核心用 `--avatar-bg`（按名字推导的颜色）画底色，
+  // 文字固定为白色 —— 白字压在浅绿/浅黄上只有 1.5:1。这里不用原色
+  // 填充，而是取同一色相的一对“浅底 + 深字”（深色模式反之），
+  // 对比度由亮度固定：浅色下约 92% 对 38%，深色下约 26% 对 88%。
+  .Avatar:not(:has(img)) {
+    background-color: ~"oklch(from var(--avatar-bg, var(--lcoy-primary-300)) 92% calc(c * 0.55) h)";
+    color: ~"oklch(from var(--avatar-bg, var(--lcoy-primary-300)) 38% calc(c * 0.9) h)";
+  }
+
+  // 深色模式：同一色相的深底 + 浅字。
+  [data-theme^=dark] & .Avatar:not(:has(img)) {
+    background-color: ~"oklch(from var(--avatar-bg, var(--lcoy-primary-300)) 26% calc(c * 0.6) h)";
+    color: ~"oklch(from var(--avatar-bg, var(--lcoy-primary-300)) 88% calc(c * 0.55) h)";
+  }
+
   // 文本框和按钮继承主题字体，而非系统字体。
   button, input, select, textarea {
     font-family: inherit;

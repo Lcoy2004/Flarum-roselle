@@ -105,20 +105,36 @@ function installMobileNav() {
   // 向下滚动收起导航，向上滚动露出；编辑器打开的状态由
   // body.Lcoy--composing 在 CSS 层处理。
   let lastY = window.scrollY;
+  let hidden = false;
+  let frame = 0;
 
   window.addEventListener(
     'scroll',
     () => {
-      if (window.innerWidth >= 768) return;
+      if (frame) return;
 
-      const y = window.scrollY;
-      const delta = y - lastY;
+      // 一帧只处理一次：滚动事件在一帧里可能来十几次，
+      // 每次都写类名会让手机上的合成线程反复失效。
+      frame = requestAnimationFrame(() => {
+        frame = 0;
 
-      lastY = y;
+        if (window.innerWidth >= 768) return;
 
-      if (Math.abs(delta) < 12) return;
+        const y = window.scrollY;
+        const delta = y - lastY;
 
-      document.getElementById('app')?.classList.toggle('Lcoy--navHidden', delta > 0 && y > 120);
+        lastY = y;
+
+        if (Math.abs(delta) < 12) return;
+
+        const next = delta > 0 && y > 120;
+
+        // 状态没变就不碰 DOM。
+        if (next === hidden) return;
+
+        hidden = next;
+        document.getElementById('app')?.classList.toggle('Lcoy--navHidden', next);
+      });
     },
     { passive: true }
   );

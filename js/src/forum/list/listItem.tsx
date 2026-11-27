@@ -34,8 +34,21 @@ import { attachSwipe } from './swipe';
 
 const PHONE_QUERY = '(max-width: 767.98px)';
 
+/**
+ * 手机断点的缓存：列表每一行在每次重绘时都会问一次，
+ * 长列表里就是几十次 matchMedia；缓存后只在断点真正变化时更新。
+ */
+let phoneMatches: boolean | null = null;
+
 function isPhone(): boolean {
-  return window.matchMedia(PHONE_QUERY).matches;
+  if (phoneMatches === null) {
+    const query = window.matchMedia(PHONE_QUERY);
+
+    phoneMatches = query.matches;
+    query.addEventListener?.('change', (event) => (phoneMatches = event.matches));
+  }
+
+  return phoneMatches;
 }
 
 /**
@@ -180,15 +193,19 @@ export default function installListItem(): void {
   extend(DiscussionListItem.prototype, 'contentItems', function (this: DiscussionListItem, items: ItemList<Mithril.Children>) {
     if (isMinimal(this)) return;
 
+    const phone = isPhone();
+
     // 左侧的大头像和核心的统计列移除：
     // Discourse 在各自的列中显示发帖人和数字。
     items.remove('author');
     items.remove('stats');
 
-    // 仅在移动端显示（CSS 在桌面端隐藏），与 Discourse 的 48px 头像相同。
-    items.add('lcoyAvatar', avatarView(this), 100);
+    // 手机端不画 48px 头像：标题要占满整行宽度，也省掉每行一次头像绘制。
+    if (!phone) {
+      items.add('lcoyAvatar', avatarView(this), 100);
+    }
 
-    if (forumBool('lcoyListPosters', true)) {
+    if (!phone && forumBool('lcoyListPosters', true)) {
       items.add('lcoyPosters', postersView(this), 60);
     }
 
@@ -223,10 +240,14 @@ export default function installListItem(): void {
     const jumpTo = this.getJumpTo();
     const info = this.infoItems();
     const searching = !!this.attrs.params.q;
+    const phone = isPhone();
 
     // 置顶帖的摘录是可选的；搜索的摘录不是 —— 它就是搜索结果。
+    // 手机端不画摘录：卡片只留标题和一行元信息，减少三到四行文字。
     const excerpt =
-      info.has('excerpt') && (searching || forumBool('lcoyListExcerpts', true)) ? excerptView(this, info.get('excerpt'), searching) : null;
+      info.has('excerpt') && (searching || (forumBool('lcoyListExcerpts', true) && !phone))
+        ? excerptView(this, info.get('excerpt'), searching)
+        : null;
 
     MOVED_INFO.forEach((key) => info.remove(key));
 
@@ -255,33 +276,11 @@ export default function installListItem(): void {
           {discussionBadges(discussion)}
           {!info.isEmpty() && <ul className="DiscussionListItem-info LcoyTopic-info">{listItems(info.toArray())}</ul>}
           {!extraStats.isEmpty() && <span className="LcoyTopic-stats">{extraStats.toArray()}</span>}
-          {isPhone() && forumBool('lcoyMobileCards', true) ? mobilePostersView(this) : null}
         </div>
         {excerpt ? <div className="LcoyTopic-excerpt">{excerpt}</div> : null}
       </div>
     );
   });
-}
-
-/**
- * 手机卡片上的参与者头像堆叠：桌面端由 `LcoyCell--posters`
- * 列承担，手机没有该列，这里使用同一份 `lcoyParticipants`
- * 数据画三枚小头像。
- */
-function mobilePostersView(item: DiscussionListItem): Mithril.Children {
-  const discussion: Discussion = item.attrs.discussion;
-  const posters = (discussion.attribute<Participant[]>('lcoyParticipants') || []).filter((poster) => poster.avatarUrl);
-
-  if (posters.length < 2) return null;
-
-  const shown = posters.slice(0, 3);
-
-  return (
-    <span className="LcoyTopic-mobilePosters">
-      {shown.map((poster) => posterAvatar(poster, t('list.participant'), 'LcoyTopic-mobilePoster'))}
-      {posters.length > shown.length ? <span className="LcoyTopic-mobilePostersMore">+{posters.length - shown.length}</span> : null}
-    </span>
-  );
 }
 
 /**

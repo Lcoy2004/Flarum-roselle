@@ -79,7 +79,6 @@ $forumSettings = [
 
     // 手机端交互
     'lcoy.mobile_nav' => ['lcoyMobileNav', true, 'boolval'],
-    'lcoy.mobile_cards' => ['lcoyMobileCards', true, 'boolval'],
     'lcoy.mobile_swipe' => ['lcoyMobileSwipe', true, 'boolval'],
     // 桌面阅读聚焦：滚动后时间线降权。
     'lcoy.reading_focus' => ['lcoyReadingFocus', true, 'boolval'],

@@ -318,11 +318,10 @@ const CORE_CARDS: CardDef[] = [
     group: 'navigation',
     icon: 'fas fa-mobile-screen',
     title: () => trans(`${KEY}.section_mobile`, '手机端'),
-    keywords: '手机 mobile 底部导航 bottom nav 卡片 card 滑动 swipe 手势 gesture 触摸 touch',
+    keywords: '手机 mobile 底部导航 bottom nav 滑动 swipe 手势 gesture 触摸 touch',
     body: () => (
       <>
         {toggle('mobile_nav', '底部导航', '手机端固定在底部的「讨论 / 标签 / 发帖 / 通知 / 我的」；发帖按钮居中凸起。')}
-        {toggle('mobile_cards', '卡片式列表', '手机端讨论列表改为带间距的卡片，并显示参与者头像堆叠。')}
         {toggle('mobile_swipe', '滑动手势', '左滑关注讨论、右滑标记已读；只在支持触摸的设备上生效。')}
       </>
     ),

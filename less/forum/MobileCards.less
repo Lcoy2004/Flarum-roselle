@@ -16,9 +16,13 @@
   .LcoyList .DiscussionListItem {
     border: 1px solid var(--lcoy-border);
     border-bottom: 1px solid var(--lcoy-border);
-    border-radius: 14px;
+    border-radius: 12px;
     background: var(--lcoy-surface);
     overflow: hidden;
+    // 横滑手势只接管水平方向：纵向滚动与双指缩放仍交给浏览器，
+    // 这样 touchmove 可以是 passive 监听，不阻塞主线程。
+    touch-action: pan-y pinch-zoom;
+    -webkit-tap-highlight-color: transparent;
 
     &:hover,
     &:focus-within {
@@ -30,8 +34,8 @@
   .LcoyList .DiscussionListItem .DiscussionListItem-content {
     position: relative;
     z-index: 1;
-    padding: var(--lcoy-space-3);
-    border-radius: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
     background: var(--lcoy-surface);
 
     &.is-swiping,

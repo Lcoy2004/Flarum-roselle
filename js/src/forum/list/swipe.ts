@@ -99,9 +99,9 @@ export function attachSwipe(row: HTMLElement, actions: SwipeActions): () => void
       return;
     }
 
-    // 只在横向锁定后阻止滚动。
-    if (event.cancelable) event.preventDefault();
-
+    // 只在横向锁定后处理位移。监听保持 passive：横向手势由
+    // `touch-action: pan-y` 在 CSS 层挡住，纵向滚动与缩放始终由
+    // 浏览器负责，滚动不会被这个监听阻塞（手机上这是主要的卡顿来源）。
     dx = Math.max(-MAX, Math.min(MAX, x));
     content.style.transform = `translate3d(${dx}px, 0, 0)`;
     row.dataset.swipe = Math.abs(dx) >= THRESHOLD ? (dx < 0 ? 'left' : 'right') : 'idle';
@@ -139,7 +139,7 @@ export function attachSwipe(row: HTMLElement, actions: SwipeActions): () => void
 
   row.addEventListener('click', blockClick, true);
   row.addEventListener('touchstart', onStart, { passive: true });
-  row.addEventListener('touchmove', onMove, { passive: false });
+  row.addEventListener('touchmove', onMove, { passive: true });
   row.addEventListener('touchend', onEnd);
   row.addEventListener('touchcancel', onCancel);
 

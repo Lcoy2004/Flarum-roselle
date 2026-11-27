@@ -22,6 +22,11 @@ const DIRECTION_DELTA = 48;
 export default function installReadingFocus(): void {
   if (!forumBool('lcoyReadingFocus', true)) return;
 
+  // 手机上时间线是底部的浮标，阅读聚焦在 CSS 层不生效；
+  // 这里也直接跳过，省掉每次滚动后的标题测量（手机滚动卡顿
+  // 的一处来源）。
+  if (window.matchMedia('(max-width: 767.98px)').matches) return;
+
   let hero: HTMLElement | null = null;
   let frame = 0;
   let heroVisible = true;
