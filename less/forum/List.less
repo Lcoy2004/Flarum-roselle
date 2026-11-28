@@ -289,10 +289,6 @@
   color: var(--lcoy-primary-very-high);
 }
 
-.LcoyListItem-avatar {
-  display: none;
-}
-
 .LcoyTopic.DiscussionListItem-main {
   flex: 1 1 auto;
   align-self: stretch;
@@ -723,6 +719,10 @@
     margin: 0;
   }
 
+  // 两列：标题占满剩余宽度，右侧一列放回复数与时间。
+  // 列表缩略图（ThumbSlider / LcoyTopicThumbnail）在手机上隐藏，
+  // 见 by thirdparty/*.less：它们会让每一行的标题起点跟着图片跳动，
+  // 也是每行最重的一次解码。
   .LcoyList .DiscussionListItem-content {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -735,11 +735,6 @@
     &:active {
       background: transparent;
     }
-  }
-
-  // 头像在 JS 里就不渲染了；这里再做一道保险。
-  .LcoyListItem-avatar {
-    display: none;
   }
 
   .LcoyTopic.DiscussionListItem-main {
@@ -796,11 +791,6 @@
   .LcoyTopic-meta .LcoyBadges {
     flex-wrap: nowrap;
     overflow: hidden;
-  }
-
-  // 手机端不显示参与者头像堆叠（JS 也不再渲染）。
-  .LcoyTopic-mobilePosters {
-    display: none;
   }
 
   .LcoyCell--posters,

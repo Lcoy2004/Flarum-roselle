@@ -11,7 +11,6 @@ import { extend, override } from 'flarum/common/extend';
 import DiscussionListItem from 'flarum/forum/components/DiscussionListItem';
 import IndexPage from 'flarum/forum/components/IndexPage';
 import Link from 'flarum/common/components/Link';
-import Avatar from 'flarum/common/components/Avatar';
 import Icon from 'flarum/common/components/Icon';
 import Tooltip from 'flarum/common/components/Tooltip';
 import listItems from 'flarum/common/helpers/listItems';
@@ -137,8 +136,9 @@ export default function installListItem(): void {
   override(DiscussionListItem.prototype as any, 'isSlidableEnabled', () => false);
 
   // 滑动时露出的操作层：位于内容之下，绝对定位，不参与布局。
+  // 只在手机上生成：桌面上它永远不可见，却会为每一行多出两个节点。
   extend(DiscussionListItem.prototype, 'viewItems', function (this: DiscussionListItem, items: ItemList<Mithril.Children>) {
-    if (isMinimal(this) || !forumBool('lcoyMobileSwipe', true)) return;
+    if (isMinimal(this) || !forumBool('lcoyMobileSwipe', true) || !isPhone()) return;
 
     items.add('lcoySwipeRead', swipeLayer(this, 'read'), 95);
     items.add('lcoySwipeSubscribe', swipeLayer(this, 'subscribe'), 94);
@@ -193,19 +193,14 @@ export default function installListItem(): void {
   extend(DiscussionListItem.prototype, 'contentItems', function (this: DiscussionListItem, items: ItemList<Mithril.Children>) {
     if (isMinimal(this)) return;
 
-    const phone = isPhone();
-
     // 左侧的大头像和核心的统计列移除：
     // Discourse 在各自的列中显示发帖人和数字。
+    // 主题自己的行也不画头像（桌面与手机都不显示），
+    // 因此这里连元素都不再生成。
     items.remove('author');
     items.remove('stats');
 
-    // 手机端不画 48px 头像：标题要占满整行宽度，也省掉每行一次头像绘制。
-    if (!phone) {
-      items.add('lcoyAvatar', avatarView(this), 100);
-    }
-
-    if (!phone && forumBool('lcoyListPosters', true)) {
+    if (!isPhone() && forumBool('lcoyListPosters', true)) {
       items.add('lcoyPosters', postersView(this), 60);
     }
 
@@ -361,22 +356,6 @@ function excerptView(item: DiscussionListItem, original: Mithril.Children, searc
       {t('list.read_more')}
     </Link>,
   ];
-}
-
-function avatarView(item: DiscussionListItem): Mithril.Children {
-  const user = item.attrs.author || item.attrs.discussion.user();
-
-  return (
-    <div className="LcoyListItem-avatar">
-      {user ? (
-        <Link href={app.route.user(user)} aria-label={user.displayName()}>
-          <Avatar user={user} title="" />
-        </Link>
-      ) : (
-        <Avatar user={null} title="" />
-      )}
-    </div>
-  );
 }
 
 function postersView(item: DiscussionListItem): Mithril.Children {

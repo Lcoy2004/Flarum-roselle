@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------
 // 列表中的 fof/discussion-thumbnail：标题前的圆角方块
-// （Horizon 的缩略图组件）；手机端取代头像。
+// （Horizon 的缩略图组件）。手机端隐藏：卡片只留标题与计数，
+// 图片留在帖子内部。
 // ---------------------------------------------------------------------
 .LcoyTopicThumbnail {
   flex: 0 0 auto;
@@ -21,16 +22,7 @@
 }
 
 @media @phone {
-  .LcoyList .DiscussionListItem-content:has(.LcoyTopicThumbnail) .LcoyListItem-avatar {
-    display: none;
-  }
-
   .LcoyTopicThumbnail {
-    grid-column: 1;
-    grid-row: ~"1 / span 2";
-    align-self: start;
-    width: 48px;
-    height: 48px;
-    margin: 0;
+    display: none;
   }
 }

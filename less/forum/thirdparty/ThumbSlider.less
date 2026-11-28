@@ -72,33 +72,13 @@
 }
 
 // ---------------------------------------------------------------------
-// 手机：缩略图顶替左侧 48px 的作者头像（Discourse 的做法）。只在滑块
-// 真的显示出来（--ready / --fallback）时隐藏头像，坏图时头像还在。
+// 手机：列表里不显示滑块。
+//
+// 它是每行最重的一次图片解码，也会让“有图 / 无图”两行的标题起点
+// 相差 58px —— 手机卡片只保留标题、分类与计数，图片留给帖子本身。
 // ---------------------------------------------------------------------
 @media @phone {
-  .LcoyList .DiscussionListItem .ThumbSlider--ready,
-  .LcoyList .DiscussionListItem .ThumbSlider--fallback {
-    grid-column: 1;
-    grid-row: ~"1 / span 2";
-    align-self: start;
-    width: 48px !important;
-    margin: 0;
-    border-radius: 8px;
-  }
-
-  .LcoyList .DiscussionListItem-content:has(> .ThumbSlider--ready) .LcoyListItem-avatar,
-  .LcoyList .DiscussionListItem-content:has(> .ThumbSlider--fallback) .LcoyListItem-avatar {
-    display: none;
-  }
-
-  // 方形裁切，和头像一样高；轨道不再按 2:3 撑高。
-  .LcoyList .DiscussionListItem .ThumbSlider--ready .ThumbSlider__track,
-  .LcoyList .DiscussionListItem .ThumbSlider--fallback .ThumbSlider__track {
-    aspect-ratio: 1 / 1;
-  }
-
-  .LcoyList .DiscussionListItem .ThumbSlider__counter {
-    font-size: 8.5px;
-    padding: 0 3px;
+  .LcoyList .DiscussionListItem .ThumbSlider {
+    display: none !important;
   }
 }

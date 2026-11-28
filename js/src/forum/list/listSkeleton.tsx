@@ -4,9 +4,9 @@
  *
  * 每一行使用真实行的相同类名（listItem.tsx）：标题、
  * 徽章、发帖人、回复、浏览量以及活动，桌面端按列显示，
- * 移动端显示 48px 头像且数字位于角落。占位条
- * 位于这些元素内部（使用它们的字体和行高），
- * 落在文字将要出现的位置：列表加载完成时不会跳动。
+ * 移动端是紧凑卡片（无头像、无摘要）。占位条位于这些元素内部
+ *（使用它们的字体和行高），落在文字将要出现的位置：
+ * 列表加载完成时不会跳动。
  */
 import app from 'flarum/forum/app';
 import type Mithril from 'mithril';
@@ -24,9 +24,6 @@ function row(index: number, showViews: boolean): Mithril.Children {
     <li key={`lcoy-skeleton-${index}`} className="LcoyListSkeleton-item" aria-hidden="true">
       <div className="DiscussionListItem LcoyListSkeleton">
         <div className="DiscussionListItem-content">
-          <div className="LcoyListItem-avatar">
-            <span className="Avatar LcoySkeleton" />
-          </div>
           <div className="DiscussionListItem-main LcoyTopic">
             <h2 className="DiscussionListItem-title LcoyTopic-titleLine">
               <span className="LcoySkeleton LcoySkeleton--line" style={{ width: `${TITLES[index % TITLES.length]}%` }} />

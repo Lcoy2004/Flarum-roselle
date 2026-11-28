@@ -1,6 +1,6 @@
 // =====================================================================
 // 讨论列表的交互层：
-//   · 手机：卡片流 + 左右滑动操作层 + 参与者头像堆叠。
+//   · 手机：一行一张卡片 + 左右滑动操作层。
 // =====================================================================
 
 // ---------------------------------------------------------------------
@@ -94,53 +94,6 @@
   .LcoyList .DiscussionListItem[data-swipe='right'] .LcoySwipeLayer--read,
   .LcoyList .DiscussionListItem[data-swipe='left'] .LcoySwipeLayer--subscribe {
     opacity: 1;
-  }
-}
-
-// ---------------------------------------------------------------------
-// 卡片中的参与者头像堆叠（仅手机绘制）
-// ---------------------------------------------------------------------
-.LcoyTopic-mobilePosters {
-  display: inline-flex;
-  align-items: center;
-  margin-left: auto;
-  padding-right: 4px;
-}
-
-.LcoyTopic-mobilePoster {
-  display: inline-flex;
-  flex: none;
-  margin-left: -6px;
-  border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--lcoy-surface);
-
-  &:first-child {
-    margin-left: 0;
-  }
-
-  .Avatar {
-    .Avatar--size(20px);
-  }
-}
-
-.LcoyTopic-mobilePostersMore {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  margin-left: -6px;
-  border-radius: 50%;
-  background: var(--lcoy-accent-low);
-  color: var(--lcoy-accent);
-  font-size: 10px;
-  font-weight: 700;
-  box-shadow: 0 0 0 2px var(--lcoy-surface);
-}
-
-@media (min-width: 768px) {
-  .LcoyTopic-mobilePosters {
-    display: none;
   }
 }
 
